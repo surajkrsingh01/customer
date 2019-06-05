@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="?attr/selectableItemBackground"
+    android:id="@+id/relative_category"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true">
+
+    <LinearLayout
+        android:layout_margin="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+    <TextView
+        android:textAlignment="center"
+        android:id="@+id/tv_Category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:textColor="@color/primary_text_color"
+        android:text="My Category"/>
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/iv_options"
+        android:layout_gravity="center"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:src="@drawable/more_option_down"
+        android:tint="@color/white"/>
+    </LinearLayout>
+</RelativeLayout>

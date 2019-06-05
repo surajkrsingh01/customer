@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="?attr/borderBottomSolidBackground"
+    android:paddingTop="@dimen/view_vertical_margin"
+    android:paddingBottom="@dimen/view_vertical_margin"
+    android:paddingLeft="@dimen/view_horizontal_margin"
+    android:paddingRight="@dimen/view_horizontal_margin"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/text_header"
+        android:layout_toLeftOf="@+id/ratingBar"
+        android:textSize="@dimen/small_text_size"
+        android:textColor="?attr/primaryTextColor"
+        android:text="Vipin Dhama"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="true"
+        style="?android:attr/ratingBarStyleSmall"
+        android:numStars="5"
+        android:stepSize="0.5"
+        android:rating="4.5" />
+
+    <TextView
+        android:id="@+id/text_sub_header"
+        android:layout_below="@+id/text_header"
+        android:textSize="@dimen/very_small_text_size"
+        android:textColor="?attr/secondaryTextColor"
+        android:text="4 hours ago"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/text_desc"
+        android:layout_below="@+id/text_sub_header"
+        android:layout_marginTop="@dimen/view_vertical_margin"
+        android:textSize="@dimen/very_small_text_size"
+        android:textColor="?attr/primaryTextColor"
+        android:text="4 hours ago"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

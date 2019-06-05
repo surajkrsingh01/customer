@@ -1,0 +1,12 @@
+<resources>
+
+    <!-- Forgot_password. -->
+    <dimen name="forgot_password_very_large_text_size">20sp</dimen>
+    <dimen name="forgot_password_very_small_text_size">12sp</dimen>
+    <dimen name="forgot_password_view_margin">36dp</dimen>
+    <dimen name="forgot_password_action_margin">20dp</dimen>
+    <dimen name="forgot_password_btn_size">60dp</dimen>
+    <dimen name="product_category_grid_image_height">150dp</dimen>
+    <dimen name="profile_view_width">50dp</dimen>
+
+</resources>

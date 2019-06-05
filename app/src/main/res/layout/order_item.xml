@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:layout_marginTop="10dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/relative_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/linear_details"
+            android:orientation="horizontal"
+            android:layout_toLeftOf="@+id/btn_reorder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+            android:id="@+id/tv_orderId"
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="@dimen/home_list_cat_name_text_size_type_4"
+            android:text="Order Id - "
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+            <TextView
+            android:id="@+id/tv_orderStatus"
+            android:textStyle="bold"
+            android:textColor="@color/orange500"
+            android:textSize="@dimen/home_list_title_text_size_type_4"
+            android:text="(Status)"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_below="@+id/linear_details"
+            android:id="@+id/tv_orderTotalAmount"
+            android:textColor="?attr/secondaryTextColor"
+            android:text="Order Total Amount - Rs 500 "
+            android:textSize="@dimen/home_list_title_text_size_type_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_below="@+id/tv_orderTotalAmount"
+            android:id="@+id/tv_date"
+            android:textStyle="bold"
+            android:textColor="?attr/secondaryTextColor"
+            android:text="13:25, Apr 04 2019"
+            android:textSize="@dimen/home_list_title_text_size_type_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <Button
+            android:layout_marginTop="15dp"
+            android:layout_alignParentRight="true"
+            android:id="@+id/btn_reorder"
+            android:background="@drawable/red_solid_round_corner_background"
+            android:textColor="@color/white"
+            android:text="Reorder"
+            android:layout_marginRight="@dimen/view_horizontal_margin"
+            android:layout_marginLeft="@dimen/view_horizontal_margin"
+            android:textSize="@dimen/home_list_header_text_size"
+            android:textAllCaps="true"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/seperator"
+        android:background="?attr/separatorColor"
+        android:layout_marginTop="@dimen/separator_margin"
+        android:layout_below="@+id/relative_header"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+</RelativeLayout>

@@ -1,0 +1,77 @@
+{
+  "project_info": {
+    "project_number": "64119517741",
+    "firebase_url": "https://shoppurs-2a1ac.firebaseio.com",
+    "project_id": "shoppurs-2a1ac",
+    "storage_bucket": "shoppurs-2a1ac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:64119517741:android:bd50a424a4c9b7c9",
+        "android_client_info": {
+          "package_name": "com.shoppurscustomer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "64119517741-g64l9atm4cjvfk9mp60e7it0hobf98u7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-GKvcnqqzEBxT6OvmVPfNs7FBppblo-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "64119517741-g64l9atm4cjvfk9mp60e7it0hobf98u7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:64119517741:android:15443ec696fff711",
+        "android_client_info": {
+          "package_name": "com.shoppursshop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "64119517741-mbpct0dr1h33tev0voio40kmep55h2bq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shoppursshop",
+            "certificate_hash": "b79af5fec65de8fa6596d83f53b0532bca7ab0f9"
+          }
+        },
+        {
+          "client_id": "64119517741-g64l9atm4cjvfk9mp60e7it0hobf98u7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-GKvcnqqzEBxT6OvmVPfNs7FBppblo-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "64119517741-g64l9atm4cjvfk9mp60e7it0hobf98u7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

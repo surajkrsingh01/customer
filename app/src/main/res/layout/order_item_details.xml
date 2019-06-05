@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/relative_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+            <TextView
+            android:id="@+id/tv_shopname"
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="@dimen/home_list_cat_name_text_size_type_4"
+            android:text="Shop Name"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_prodname"
+            android:textColor="?attr/secondaryTextColor"
+            android:text="Product Name "
+            android:textSize="@dimen/home_list_title_text_size_type_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_qty"
+            android:textStyle="bold"
+            android:textColor="?attr/secondaryTextColor"
+            android:text="Quantity"
+            android:textSize="@dimen/home_list_title_text_size_type_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_status"
+            android:textStyle="bold"
+            android:textColor="@color/orange500"
+            android:textSize="@dimen/home_list_title_text_size_type_4"
+            android:text="(Status)"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/seperator"
+        android:background="?attr/separatorColor"
+        android:layout_marginTop="@dimen/separator_margin"
+        android:layout_below="@+id/relative_header"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+</RelativeLayout>

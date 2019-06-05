@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_favrouite"
+        android:orderInCategory="100"
+        android:title="favrouite"
+        android:icon="@drawable/favrorite_select"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_rating"
+        android:orderInCategory="100"
+        android:title="star"
+        android:icon="@drawable/rating_icon"
+        app:showAsAction="always" />
+
+
+    <item
+        android:id="@+id/action_search"
+        android:orderInCategory="100"
+        android:title="search"
+        android:icon="@drawable/ic_search_black_24dp"
+        app:showAsAction="always" />
+
+
+
+</menu>

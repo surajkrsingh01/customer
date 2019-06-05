@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/white</color>
+    <color name="colorPrimary50">@color/grey50</color>
+    <color name="colorPrimary100">@color/grey100</color>
+    <color name="colorPrimary200">@color/grey200</color>
+    <color name="colorPrimary300">@color/grey300</color>
+    <color name="colorPrimary400">@color/grey400</color>
+    <color name="colorPrimary500">@color/grey500</color>
+    <color name="colorPrimary600">@color/grey600</color>
+    <color name="colorPrimary700">@color/grey700</color>
+    <color name="colorPrimary800">@color/grey800</color>
+    <color name="colorPrimary900">@color/grey900</color>
+    <color name="colorPrimaryDark">@color/grey300</color>
+    <color name="colorAccent">@color/accent_blue_A_400</color>
+
+
+    <color name="dark_color">@color/grey900</color>
+    <color name="dark_separator_color">@color/grey800</color>
+    <color name="primary_text_color">@color/grey900</color>
+    <color name="secondary_text_color">@color/grey500</color>
+    <color name="ternary_text_color">@color/grey400</color>
+
+    <color name="accent_color_1">@color/blue500</color>
+    <color name="accent_color_2">@color/orange700</color>
+    <color name="input_color_1">@color/orange700</color>
+    <color name="hint_color_1">@color/orange500</color>
+
+    <color name="bottom_nav_selected_color">@color/red_600</color>
+    <color name="bottom_nav_fore_color">@color/grey600</color>
+    <color name="bottom_nav_back_color">@color/colorPrimary</color>
+
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="blackT">#26000000</color>
+    <color name="blackTransparent">#26cfcdcd</color>
+    <color name="start_color">#00ffffff</color>
+    <color name="end_color">#46000000</color>
+	
+	<color name="teal_50">#e0f2f1</color>
+    <color name="teal_100">#b2dfdb</color>
+    <color name="teal_200">#80cbc4</color>
+    <color name="teal_300">#4db6ac</color>
+    <color name="teal_400">#26a69a</color>
+    <color name="teal_500">#009688</color>
+    <color name="teal_600">#00897b</color>
+    <color name="teal_700">#00796b</color>
+    <color name="teal_800">#00695c</color>
+    <color name="teal_900">#004d40</color>
+    <color name="accent_teal_A_100">#a7ffeb</color>
+    <color name="accent_teal_A_200">#64ffda</color>
+    <color name="accent_teal_A_400">#1de9b6</color>
+    <color name="accent_teal_A_700">#00bfa5</color>
+
+    <color name="blue50">#e3f2fd</color>
+    <color name="blue100">#bbdefb</color>
+    <color name="blue200">#90caf9</color>
+    <color name="blue300">#64b5f6</color>
+    <color name="blue400">#42a5f5</color>
+    <color name="blue500">#42a5f5</color>
+    <color name="blue600">#1e88e5</color>
+    <color name="blue700">#42a5f5</color>
+    <color name="blue800">#1565c0</color>
+    <color name="blue900">#0d47a1</color>
+    <color name="accent_blue_A_100">#82B1FF</color>
+    <color name="accent_blue_A_200">#448AFF</color>
+    <color name="accent_blue_A_400">#2979FF</color>
+    <color name="accent_blue_A_700">#2962FF</color>
+
+    <color name="light_blue50">#E1F5FE</color>
+    <color name="light_blue100">#B3E5FC</color>
+    <color name="light_blue200">#81D4FA</color>
+    <color name="light_blue300">#4FC3F7</color>
+    <color name="light_blue400">#29B6F6</color>
+    <color name="light_blue500">#03A9F4</color>
+    <color name="light_blue600">#039BE5</color>
+    <color name="light_blue700">#0288D1</color>
+    <color name="light_blue800">#0277BD</color>
+    <color name="light_blue900">#01579B</color>
+    <color name="accent_light_blue_A_100">#80D8FF</color>
+    <color name="accent_light_blue_A_200">#40C4FF</color>
+    <color name="accent_light_blue_A_400">#00B0FF</color>
+    <color name="accent_light_blue_A_700">#0091EA</color>
+
+
+    <color name="cyan50">#E0F7FA</color>
+    <color name="cyan100">#B2EBF2</color>
+    <color name="cyan200">#80DEEA</color>
+    <color name="cyan300">#4DD0E1</color>
+    <color name="cyan400">#26C6DA</color>
+    <color name="cyan500">#00BCD4</color>
+    <color name="cyan600">#00ACC1</color>
+    <color name="cyan700">#0097A7</color>
+    <color name="cyan800">#00838F</color>
+    <color name="cyan900">#006064</color>
+    <color name="accent_cyan_A_100">#84FFFF</color>
+    <color name="accent_cyan_A_200">#18FFFF</color>
+    <color name="accent_cyan_A_400">#00E5FF</color>
+    <color name="accent_cyan_A_700">#00B8D4</color>
+
+
+    <color name="yellow50">#fff8e1</color>
+    <color name="yellow100">#ffecb3</color>
+    <color name="yellow200">#ffe082</color>
+    <color name="yellow300">#ffd54f</color>
+    <color name="yellow400">#ffca28</color>
+    <color name="yellow500">#ffc107</color>
+    <color name="yellow600">#ffb300</color>
+    <color name="yellow700">#ffa000</color>
+    <color name="yellow800">#ff8f00</color>
+    <color name="yellow900">#ff6f00</color>
+    <color name="accent_yellowA100">#ffe57f</color>
+    <color name="accent_yellowA200">#ffd740</color>
+    <color name="accent_yellowA400">#ffc400</color>
+    <color name="accent_yellowA700">#ffab00</color>
+
+    <color name="red_50">#ffebee</color>
+    <color name="red_100">#ffcdd2</color>
+    <color name="red_200">#ef9a9a</color>
+    <color name="red_300">#e57373</color>
+    <color name="red_400">#ef5350</color>
+    <color name="red_500">#f44336</color>
+    <color name="red_600">#e53935</color>
+    <color name="red_700">#d32f2f</color>
+    <color name="red_800">#c62828</color>
+    <color name="red_900">#b71c1c</color>
+    <color name="accent_red_A_100">#FF8A80</color>
+    <color name="accent_red_A_200">#FF5252</color>
+    <color name="accent_red_A_400">#FF1744</color>
+    <color name="accent_red_A_700">#D50000</color>
+
+
+    <color name="pink50">#FCE4EC</color>
+    <color name="pink100">#F8BBD0</color>
+    <color name="pink200">#F48FB1</color>
+    <color name="pink300">#F06292</color>
+    <color name="pink400">#EC407A</color>
+    <color name="pink500">#E91E63</color>
+    <color name="pink600">#D81B60</color>
+    <color name="pink700">#C2185B</color>
+    <color name="pink800">#AD1457</color>
+    <color name="pink900">#880E4F</color>
+    <color name="accent_pink_A_100">#FF80AB</color>
+    <color name="accent_pink_A_200">#FF4081</color>
+    <color name="accent_pink_A_400">#F50057</color>
+    <color name="accent_pink_A_700">#C51162</color>
+
+
+    <color name="purple50">#F3E5F5</color>
+    <color name="purple100">#E1BEE7</color>
+    <color name="purple200">#CE93D8</color>
+    <color name="purple300">#BA68C8</color>
+    <color name="purple400">#AB47BC</color>
+    <color name="purple500">#9C27B0</color>
+    <color name="purple600">#8E24AA</color>
+    <color name="purple700">#7B1FA2</color>
+    <color name="purple800">#6A1B9A</color>
+    <color name="purple900">#4A148C</color>
+    <color name="accent_purple_A_100">#EA80FC</color>
+    <color name="accent_purple_A_200">#E040FB</color>
+    <color name="accent_purple_A_400">#D500F9</color>
+    <color name="accent_purple_A_700">#AA00FF</color>
+
+
+    <color name="deep_purple_50">#ede7f6</color>
+    <color name="deep_purple_100">#d1c4e9</color>
+    <color name="deep_purple_200">#b39ddb</color>
+    <color name="deep_purple_300">#9575cd</color>
+    <color name="deep_purple_400">#7e57c2</color>
+    <color name="deep_purple_500">#673ab7</color>
+    <color name="deep_purple_600">#5e35b1</color>
+    <color name="deep_purple_700">#512da8</color>
+    <color name="deep_purple_800">#4527a0</color>
+    <color name="deep_purple_900">#311b92</color>
+    <color name="deep_accent_purple_A_100">#B388FF</color>
+    <color name="deep_accent_purple_A_200">#7C4DFF</color>
+    <color name="deep_accent_purple_A_400">#651FFF</color>
+    <color name="deep_accent_purple_A_700">#6200EA</color>
+
+
+    <color name="indigo_50">#e8eaf6</color>
+    <color name="indigo_100">#c5cae9</color>
+    <color name="indigo_200">#9fa8da</color>
+    <color name="indigo_300">#7986cb</color>
+    <color name="indigo_400">#5c6bc0</color>
+    <color name="indigo_500">#3f51b5</color>
+    <color name="indigo_600">#3949ab</color>
+    <color name="indigo_700">#303f9f</color>
+    <color name="indigo_800">#283593</color>
+    <color name="indigo_900">#1a237e</color>
+    <color name="accent_indigo_A_100">#8c9eff</color>
+    <color name="accent_indigo_A_200">#536dfe</color>
+    <color name="accent_indigo_A_400">#3d5afe</color>
+    <color name="accent_indigo_A_700">#304ffe</color>
+
+    <color name="orange50">#FFF3E0</color>
+    <color name="orange100">#FFE0B2</color>
+    <color name="orange200">#FFCC80</color>
+    <color name="orange300">#FFB74D</color>
+    <color name="orange400">#FFA726</color>
+    <color name="orange500">#FF9800</color>
+    <color name="orange600">#FB8C00</color>
+    <color name="orange700">#F57C00</color>
+    <color name="orange800">#EF6C00</color>
+    <color name="orange900">#E65100</color>
+    <color name="accent_orangeA100">#FFD180</color>
+    <color name="accent_orangeA200">#FFAB40</color>
+    <color name="accent_orangeA400">#FF9100</color>
+    <color name="accent_orangeA700">#FF6D00</color>
+
+    <color name="grey500">#9e9e9e</color>
+    <color name="grey600">#757575</color>
+    <color name="grey700">#616161</color>
+    <color name="grey800">#424242</color>
+    <color name="grey900">#212121</color>
+    <color name="grey400">#bdbdbd</color>
+    <color name="grey300">#e0e0e0</color>
+    <color name="grey200">#eeeeee</color>
+    <color name="grey100">#f5f5f5</color>
+    <color name="grey50">#fafafa</color>
+
+    <color name="blue_grey500">#607D8B</color>
+    <color name="blue_grey600">#546E7A</color>
+    <color name="blue_grey700">#455A64</color>
+    <color name="blue_grey800">#37474F</color>
+    <color name="blue_grey900">#263238</color>
+    <color name="blue_grey400">#78909C</color>
+    <color name="blue_grey300">#90A4AE</color>
+    <color name="blue_grey200">#B0BEC5</color>
+    <color name="blue_grey100">#CFD8DC</color>
+    <color name="blue_grey50">#ECEFF1</color>
+
+    <color name="green50">#F1F8E9</color>
+    <color name="green100">#DCEDC8</color>
+    <color name="green200">#C5E1A5</color>
+    <color name="green300">#AED581</color>
+    <color name="green400">#9CCC65</color>
+    <color name="green500">#8BC34A</color>
+    <color name="green600">#7CB342</color>
+    <color name="green700">#689F38</color>
+    <color name="green800">#558B2F</color>
+    <color name="green900">#33691E</color>
+    <color name="accent_green_A_100">#B9F6CA</color>
+    <color name="accent_green_A_200">#69F0AE</color>
+    <color name="accent_green_A_400">#00E676</color>
+    <color name="accent_green_A_700">#00C853</color>
+
+
+    <color name="light_green50">#F1F8E9</color>
+    <color name="light_green100">#DCEDC8</color>
+    <color name="light_green200">#C5E1A5</color>
+    <color name="light_green300">#AED581</color>
+    <color name="light_green400">#9CCC65</color>
+    <color name="light_green500">#8BC34A</color>
+    <color name="light_green600">#7CB342</color>
+    <color name="light_green700">#689F38</color>
+    <color name="light_green800">#558B2F</color>
+    <color name="light_green900">#33691E</color>
+    <color name="accent_light_green_A_100">#CCFF90</color>
+    <color name="accent_light_green_A_200">#B2FF59</color>
+    <color name="accent_light_green_A_400">#76FF03</color>
+    <color name="accent_light_green_A_700">#64DD17</color>
+
+
+    <color name="lime50">#F9FBE7</color>
+    <color name="lime100">#F0F4C3</color>
+    <color name="lime200">#E6EE9C</color>
+    <color name="lime300">#DCE775</color>
+    <color name="lime400">#D4E157</color>
+    <color name="lime500">#CDDC39</color>
+    <color name="lime600">#C0CA33</color>
+    <color name="lime700">#AFB42B</color>
+    <color name="lime800">#9E9D24</color>
+    <color name="lime900">#827717</color>
+    <color name="accent_lime100">#F4FF81</color>
+    <color name="accent_lime200">#EEFF41</color>
+    <color name="accent_lime400">#C6FF00</color>
+    <color name="accent_lime700">#AEEA00</color>
+
+
+    <color name="amber50">#FFF8E1</color>
+    <color name="amber100">#FFECB3</color>
+    <color name="amber200">#FFE082</color>
+    <color name="amber300">#FFD54F</color>
+    <color name="amber400">#FFCA28</color>
+    <color name="amber500">#FFC107</color>
+    <color name="amber600">#FFB300</color>
+    <color name="amber700">#FFA000</color>
+    <color name="amber800">#FF8F00</color>
+    <color name="amber900">#FF6F00</color>
+    <color name="accent_amber100">#FFE57F</color>
+    <color name="accent_amber200">#FFD740</color>
+    <color name="accent_amber400">#FFC400</color>
+    <color name="accent_amber700">#FFAB00</color>
+
+
+    <color name="deep_orange50">#FBE9E7</color>
+    <color name="deep_orange100">#FFCCBC</color>
+    <color name="deep_orange200">#FFAB91</color>
+    <color name="deep_orange300">#FF8A65</color>
+    <color name="deep_orange400">#FF7043</color>
+    <color name="deep_orange500">#FF5722</color>
+    <color name="deep_orange600">#F4511E</color>
+    <color name="deep_orange700">#E64A19</color>
+    <color name="deep_orange800">#D84315</color>
+    <color name="deep_orange900">#BF360C</color>
+    <color name="accent_deep_orangeA100">#FF9E80</color>
+    <color name="accent_deep_orangeA200">#FF6E40</color>
+    <color name="accent_deep_orangeA400">#FF3D00</color>
+    <color name="accent_deep_orangeA700">#DD2C00</color>
+
+
+    <color name="brown50">#EFEBE9</color>
+    <color name="brown100">#D7CCC8</color>
+    <color name="brown200">#BCAAA4</color>
+    <color name="brown300">#A1887F</color>
+    <color name="brown400">#8D6E63</color>
+    <color name="brown500">#795548</color>
+    <color name="brown600">#6D4C41</color>
+    <color name="brown700">#5D4037</color>
+    <color name="brown800">#4E342E</color>
+    <color name="brown900">#3E2723</color>
+    <color name="transparent_light_grey">#ECEFF1</color>
+
+
+</resources>

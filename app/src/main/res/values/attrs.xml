@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<declare-styleable name="CalendarView">
+		<attr name="dateFormat" format="string"/>
+	</declare-styleable>
+
+	<attr name="backgroundColor" format="color"/>
+	<attr name="primaryTextColor" format="color"/>
+	<attr name="secondaryTextColor" format="color"/>
+    <attr name="ternaryTextColor" format="color"/>
+    <attr name="bottomNavTextColor" format="color"/>
+    <attr name="bottomNavSelectedTextColor" format="color"/>
+	<attr name="ascentTextColor" format="color"/>
+	<attr name="separatorColor" format="color"/>
+	<attr name="circleIconColor" format="color"/>
+	<attr name="listItemBackgroundColor" format="color"/>
+
+	<attr name="borderBottomTransparentBackground" format="reference"/>
+	<attr name="borderBottomSolidBackground" format="reference"/>
+	<attr name="primaryColorStrokeCircleBackground" format="reference"/>
+	<attr name="greyLeftBottomBackground" format="reference"/>
+	<attr name="greyRightBottomBackground" format="reference"/>
+	<attr name="headerBackground" format="reference"/>
+	<attr name="navBarBackground" format="reference"/>
+	<attr name="navBarMenuBackgroundSelector" format="reference"/>
+	<attr name="editTextBackground" format="reference"/>
+	<attr name="borderBackground" format="reference"/>
+	<attr name="solidBorderBackground" format="reference"/>
+	<attr name="summaryPrimaryBackground" format="reference"/>
+	<attr name="summarySecondaryBackground" format="reference"/>
+	<attr name="commentSectionBackground" format="reference"/>
+
+</resources>
