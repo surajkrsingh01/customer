@@ -21,6 +21,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.ProductListActivity;
+import com.shoppurscustomer.activities.ShopProductListActivity;
 import com.shoppurscustomer.models.MyHeader;
 import com.shoppurscustomer.models.MyShop;
 import com.shoppurscustomer.utilities.Constants;
@@ -113,7 +114,7 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 case MotionEvent.ACTION_UP:
                     // Log.i("Adapter","onPressUp");
                     MyShop shop = (MyShop) mShopList.get(getAdapterPosition());
-                    Intent intent = new Intent(context,ProductListActivity.class);
+                    Intent intent = new Intent(context, ShopProductListActivity.class);
                     intent.putExtra("callingClass","ShopListActivity");
                     intent.putExtra("name",shop.getName());
                     intent.putExtra("address",shop.getAddress());

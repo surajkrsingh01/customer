@@ -235,7 +235,7 @@ public class ProductListActivity extends NetworkBaseActivity {
         Map<String,String> params=new HashMap<>();
         params.put("subCatId", subcatid);
         params.put("shopCode", shopCode);
-        params.put("dbName",dbname);
+        params.put("dbName",shopCode);
         params.put("dbUserName",dbuser);
         params.put("dbPassword",dbpassword);
         Log.d(TAG, params.toString());
