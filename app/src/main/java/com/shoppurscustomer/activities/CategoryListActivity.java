@@ -1,17 +1,14 @@
 package com.shoppurscustomer.activities;
 
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -21,6 +18,7 @@ import com.shoppurscustomer.adapters.CategoryAdapter;
 import com.shoppurscustomer.models.CatListItem;
 import com.shoppurscustomer.models.Category;
 import com.shoppurscustomer.models.SubCategory;
+import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
 
 import org.json.JSONArray;
@@ -42,8 +40,9 @@ public class CategoryListActivity extends NetworkBaseActivity {
     private ProgressBar progressBar;
     private StaggeredGridLayoutManager staggeredGridLayoutManager;
     private boolean isCategoriesLoaded, isSubcategoriesLoaded;
-
+    private String dbname;
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +53,8 @@ public class CategoryListActivity extends NetworkBaseActivity {
         isCategoriesLoaded =false;
         isSubcategoriesLoaded =false;
         itemList = new ArrayList<>();
+        dbname = sharedPreferences.getString(Constants.DB_NAME,"");
+
         /*
         CatListItem myItem = new CatListItem();
         myItem.setTitle("Products");
@@ -181,6 +182,7 @@ public class CategoryListActivity extends NetworkBaseActivity {
         LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(this, resId);
         recyclerView.setLayoutAnimation(animation);*/
             myItemAdapter = new CategoryAdapter(this, itemList, "catList");
+             myItemAdapter.setColorTheme(colorTheme);
             recyclerView.setAdapter(myItemAdapter);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -191,11 +193,11 @@ public class CategoryListActivity extends NetworkBaseActivity {
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(getResources().getColor(R.color.blue700));
-        }
+        }*/
 
         initFooter(this,1);
 
@@ -230,9 +232,11 @@ public class CategoryListActivity extends NetworkBaseActivity {
 
 
     public void volleyRequest(){
+        Map<String,String> params=new HashMap<>();
+        params.put("dbName", dbname);
         String url=getResources().getString(R.string.url)+"/cat_subcat";
         showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(),"categories");
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"categories");
     }
 
 

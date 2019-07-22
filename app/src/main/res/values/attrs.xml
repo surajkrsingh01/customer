@@ -7,6 +7,7 @@
 	<attr name="backgroundColor" format="color"/>
 	<attr name="primaryTextColor" format="color"/>
 	<attr name="secondaryTextColor" format="color"/>
+	<attr name="secondarySeparatorColor" format="color"/>
     <attr name="ternaryTextColor" format="color"/>
     <attr name="bottomNavTextColor" format="color"/>
     <attr name="bottomNavSelectedTextColor" format="color"/>
@@ -29,5 +30,6 @@
 	<attr name="summaryPrimaryBackground" format="reference"/>
 	<attr name="summarySecondaryBackground" format="reference"/>
 	<attr name="commentSectionBackground" format="reference"/>
+	<attr name="solidPrimaryStrokeBorderBackground" format="reference"/>
 
 </resources>

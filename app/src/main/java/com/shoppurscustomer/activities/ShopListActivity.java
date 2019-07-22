@@ -1,19 +1,18 @@
 package com.shoppurscustomer.activities;
 
 import android.graphics.PorterDuff;
-import android.os.Build;
-import android.support.v4.widget.SwipeRefreshLayout;
+
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -47,6 +46,7 @@ public class ShopListActivity extends NetworkBaseActivity {
     private String subCatName, subCatId, catId;
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
     private String dbName, dbUserName, dbPassword;
+    private ImageView imamge_search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,7 @@ public class ShopListActivity extends NetworkBaseActivity {
         dbPassword = sharedPreferences.getString(Constants.DB_PASSWORD,"");
 
         swipeRefreshLayout=findViewById(R.id.swipe_refresh);
+        imamge_search = findViewById(R.id.image_search);
         progressBar=findViewById(R.id.progress_bar);
         textViewError = findViewById(R.id.text_error);
         recyclerViewNormalshop=findViewById(R.id.recycler_view_normal_shop);
@@ -82,11 +83,23 @@ public class ShopListActivity extends NetworkBaseActivity {
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        imamge_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BottomSearchFragment bottomSearchFragment = new BottomSearchFragment();
+                bottomSearchFragment.setCallingActivityName("ShopListActivity", sharedPreferences, isDarkTheme);
+                bottomSearchFragment.setSubCatName(subCatName);
+                bottomSearchFragment.setSubcatId(subCatId);
+                bottomSearchFragment.setCatId(catId);
+                bottomSearchFragment.show(getSupportFragmentManager(), bottomSearchFragment.getTag());
+            }
+        });
+
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(getResources().getColor(R.color.yellow500));
-        }
+        }*/
 
         initFooter(this,1);
         getFavoriteShops();
@@ -140,9 +153,7 @@ public class ShopListActivity extends NetworkBaseActivity {
         recyclerViewFavoriteshop.setAdapter(myFavoriteshopAdapter);
 
         Map<String,String> params=new HashMap<>();
-        params.put("dbName",dbName);
-        params.put("dbUserName",dbUserName);
-        params.put("dbPassword",dbPassword);
+        params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url)+"/shop/favourite_shops";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"FavoriteShops");
@@ -158,6 +169,7 @@ public class ShopListActivity extends NetworkBaseActivity {
 
         Map<String,String> params=new HashMap<>();
         params.put("subcatid",subCatId);
+        params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url)+"/shoplist";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
@@ -246,7 +258,7 @@ public class ShopListActivity extends NetworkBaseActivity {
         } else if(item.getItemId()== R.id.action_search){
             //DialogAndToast.showToast("Search Clicked..", this);
             BottomSearchFragment bottomSearchFragment = new BottomSearchFragment();
-            bottomSearchFragment.setCallingActivityName("ShopList");
+            bottomSearchFragment.setCallingActivityName("ShopListActivity", sharedPreferences, isDarkTheme);
             bottomSearchFragment.setSubCatName(subCatName);
             bottomSearchFragment.setSubcatId(subCatId);
             bottomSearchFragment.setCatId(catId);

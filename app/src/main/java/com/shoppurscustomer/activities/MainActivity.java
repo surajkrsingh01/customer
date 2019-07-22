@@ -1,21 +1,26 @@
 package com.shoppurscustomer.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.Settings.AddressActivity;
+import com.shoppurscustomer.activities.Settings.SettingActivity;
 import com.shoppurscustomer.adapters.MyItemAdapter;
 import com.shoppurscustomer.models.HomeListItem;
-import com.shoppurscustomer.models.MyShop;
 import com.shoppurscustomer.utilities.DialogAndToast;
 
 import org.json.JSONArray;
@@ -30,6 +35,10 @@ import java.util.Map;
 public class MainActivity extends NetworkBaseActivity {
 
     private RecyclerView recyclerView;
+    private RelativeLayout relative_location;
+    private TextView tv_location;
+    private ImageView profile_image;
+    private LinearLayout linear_edit_address;
     private MyItemAdapter myItemAdapter;
     private List<Object> itemList;
     private TextView textViewError;
@@ -45,10 +54,31 @@ public class MainActivity extends NetworkBaseActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        relative_location = findViewById(R.id.relative_location);
+        relative_location.setBackgroundColor(colorTheme);
+        tv_location = findViewById(R.id.tv_location);
+        profile_image = findViewById(R.id.profile_image);
+        profile_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                    startActivity(intent);
+            }
+        });
+        linear_edit_address = findViewById(R.id.linear_edit_address);
+        linear_edit_address.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AddressActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //if(String.valueOf(tv_location.getText()).length()>100)
 
         itemList = new ArrayList<>();
         HomeListItem myItem = new HomeListItem();
-        myItem.setTitle("Sunday 16 December, 2018");
+        //smyItem.setTitle("Sunday 16 December, 2018");
         myItem.setDesc("Today");
         myItem.setType(0);
         itemList.add(myItem);

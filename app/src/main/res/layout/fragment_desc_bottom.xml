@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp">
+
+        <RelativeLayout
+            android:id="@+id/relative_search"
+            android:layout_alignParentTop="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/accent_color_3_solid_round_backgground">
+
+            <TextView
+                android:layout_toLeftOf="@+id/iv_clear"
+                android:id="@+id/tv_desc_label"
+                android:layout_marginLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Description"
+                android:textColorHint="@color/white"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:background="@null"/>
+
+            <ImageView
+                android:layout_alignParentRight="true"
+                android:id="@+id/iv_clear"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_margin="10dp"
+                android:tint="@color/white"
+                android:src="@drawable/clear" />
+
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/top_seperator"
+            android:layout_below="@+id/relative_search"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="?attr/separatorColor"/>
+
+        <ScrollView
+            android:scrollbars="none"
+            android:layout_below="@+id/top_seperator"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_desc"
+                android:layout_marginLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Description"
+                android:textColor="@color/primary_text_color"
+                android:textSize="15sp" />
+
+        </ScrollView>
+
+    </RelativeLayout>
+
+</RelativeLayout>

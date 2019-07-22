@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.shoppurscustomer">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:usesCleartextTraffic="true"
         android:name=".utilities.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -66,6 +68,14 @@
             android:label="@string/title_activity_personalinfo"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".activities.TransactionDetailsActivity"
+            android:label="@string/title_activity_transaction"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.InvoiceActivity"
+            android:label="@string/title_activity_invoice"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".activities.Settings.DisplayActivity"
             android:label="@string/title_activity_personalinfo"
             android:theme="@style/AppTheme.NoActionBar">
@@ -77,7 +87,13 @@
         <activity
             android:name=".activities.SearchActivity"
             android:label="@string/title_activity_search"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity
+            android:name=".activities.ForgotPasswordActivity"
+            android:label="@string/title_activity_search"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".activities.CartActivity"
             android:label="@string/title_activity_cart"
@@ -99,11 +115,51 @@
             android:label="BarCode Scanner"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity
+            android:name=".activities.Settings.AddressActivity"
+            android:label="Address"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".activities.Settings.BasicProfileActivity"
+            android:label="Basic Profile"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <service android:name=".services.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.shoppurs.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
+
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+
     </application>
 
 </manifest>

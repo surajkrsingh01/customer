@@ -67,7 +67,10 @@
         <item name="primaryTextColor">@color/white</item>
         <item name="secondaryTextColor">@color/secondary_text_color</item>
         <item name="separatorColor">@color/dark_separator_color</item>
-
+        <item name="secondarySeparatorColor">@color/grey800</item>
+        <item name="solidPrimaryStrokeBorderBackground">
+            @drawable/white_stroke_dark_round_background
+        </item>
         <item name="borderBottomSolidBackground">@drawable/dark_theme_grey_border_bottom_background</item>
     </style>
 
@@ -76,8 +79,11 @@
         <item name="primaryTextColor">@color/primary_text_color</item>
         <item name="secondaryTextColor">@color/secondary_text_color</item>
         <item name="separatorColor">@color/grey300</item>
-
+        <item name="secondarySeparatorColor">@color/grey200</item>
         <item name="borderBottomSolidBackground">@drawable/grey_border_bottom_background</item>
+        <item name="solidPrimaryStrokeBorderBackground">
+            @drawable/grey_border_small_round_background
+        </item>
     </style>
 
 </resources>

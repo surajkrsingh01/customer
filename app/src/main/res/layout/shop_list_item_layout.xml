@@ -5,74 +5,103 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <android.support.v7.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view"
-        card_view:cardElevation="0dp"
-        android:background="@color/white"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        card_view:cardCornerRadius="10dp">
+    <ImageView
+        android:id="@+id/image_menu"
+        android:tint="@color/secondary_text_color"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_more_vert_black_24dp"
+        android:padding="8dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp" />
 
-        <ImageView
-            android:id="@+id/image_view"
-            android:src="@drawable/thumb_12"
-            android:scaleType="centerCrop"
-            android:layout_width="@dimen/customer_list_image_width"
-            android:layout_height="@dimen/customer_list_image_height" />
-
-    </android.support.v7.widget.CardView>
-
-
-
-    <LinearLayout
-        android:id="@+id/linear_details"
-        android:orientation="vertical"
-        android:layout_toRightOf="@+id/card_view"
-        android:layout_marginLeft="12dp"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_toLeftOf="@+id/image_menu"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/text_customer_name"
-            android:textAllCaps="true"
-            android:textColor="?attr/secondaryTextColor"
-            android:textSize="@dimen/home_list_cat_name_text_size_type_4"
+        <RelativeLayout
+            android:id="@+id/relative_image_layout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/text_address"
-            android:textStyle="bold"
-            android:text="amount"
-            android:textColor="?attr/primaryTextColor"
-            android:textSize="@dimen/home_list_title_text_size_type_4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/image_view"
+                android:src="@drawable/thumb_12"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                android:layout_width="@dimen/shop_list_image_size"
+                android:layout_height="@dimen/shop_list_image_size" />
 
-        <TextView
-            android:id="@+id/text_shop_mobile"
-            android:textAllCaps="true"
-            android:textColor="?attr/secondaryTextColor"
-            android:textSize="@dimen/home_list_cat_name_text_size_type_4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tv_initial"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:background="@drawable/accent_solid_circle"
+                android:layout_width="@dimen/shop_list_image_size"
+                android:layout_height="@dimen/shop_list_image_size" />
 
-        <TextView
-            android:visibility="gone"
-            android:id="@+id/text_state_city"
-            android:textColor="?attr/secondaryTextColor"
-            android:textSize="@dimen/home_list_cat_name_text_size_type_4"
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_details"
+            android:orientation="vertical"
+            android:layout_alignTop="@+id/relative_image_layout"
+            android:layout_toRightOf="@+id/relative_image_layout"
+            android:layout_marginLeft="12dp"
+            android:gravity="center_vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/text_shop_name"
+                android:textAllCaps="false"
+                android:textColor="?attr/primaryTextColor"
+                android:textSize="@dimen/large_text_size"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/text_mobile"
+                android:layout_marginTop="@dimen/home_list_title_text_margin_type_2"
+                android:textColor="?attr/secondaryTextColor"
+                android:textSize="@dimen/home_list_cat_name_text_size_type_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/text_address"
+                android:visibility="gone"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/home_list_title_text_margin_type_2"
+                android:layout_marginBottom="@dimen/home_list_title_text_margin_type_2"
+                android:textColor="?attr/primaryTextColor"
+                android:textSize="@dimen/home_list_title_text_size_type_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/text_state_city"
+                android:visibility="gone"
+                android:textColor="?attr/secondaryTextColor"
+                android:textSize="@dimen/home_list_cat_name_text_size_type_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
 
     <View
         android:background="?attr/separatorColor"
         android:layout_marginTop="@dimen/separator_margin"
-        android:layout_below="@+id/linear_details"
-        android:layout_alignLeft="@+id/linear_details"
+        android:layout_below="@+id/container"
+        android:layout_alignLeft="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="1dp"/>
 

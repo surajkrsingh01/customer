@@ -2,13 +2,13 @@ package com.shoppurscustomer.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -26,7 +26,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
-import com.shoppurscustomer.activities.CartActivity;
 import com.shoppurscustomer.activities.ProductDetailActivity;
 import com.shoppurscustomer.activities.ProductListActivity;
 import com.shoppurscustomer.activities.ShopListActivity;
@@ -41,15 +40,12 @@ import com.shoppurscustomer.models.MyItem;
 import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.SubCategory;
 import com.shoppurscustomer.utilities.DialogAndToast;
-
-import org.w3c.dom.Text;
+import com.shoppurscustomer.utilities.Utility;
 
 import java.util.Date;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static com.shoppurscustomer.utilities.AppController.TAG;
 
 public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
@@ -58,6 +54,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private String type;
     private String shopCode;
     private DbHelper dbHelper;
+    private int colorTheme;
 
     private MyItemTouchListener myItemTouchListener;
 
@@ -76,6 +73,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.context=context;
         this.type = type;
         dbHelper = new DbHelper(context);
+    }
+
+    public void setColorTheme(int colorTheme){
+        this.colorTheme = colorTheme;
     }
 
     public class MyHomeHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -106,6 +107,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(itemView);
             textHeader=itemView.findViewById(R.id.text_title);
             btnSeeAll=itemView.findViewById(R.id.btn_see_all);
+            Utility.setColorFilter(btnSeeAll.getBackground(), colorTheme);
             recyclerView=itemView.findViewById(R.id.recycler_view);
 
             btnSeeAll.setOnClickListener(this);
@@ -403,7 +405,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 viewHolder = new MyHomeHeaderViewHolder(v0);
                 break;
             case 1: // categories header
-                View v1 = inflater.inflate(R.layout.header_item_type_grid_layout, parent, false);
+                View v1 = inflater.inflate(R.layout.list_item_type_11_layout, parent, false);
                 viewHolder = new MyListType31ViewHolder(v1);
                 break;
             case 2: // categories header 1
@@ -512,11 +514,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             //Log.d("title ",item.getDesc());
 
             myViewHolder.recyclerView.setHasFixedSize(true);
-            //RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false);
-
-            GridLayoutManager layoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
-
-
+            RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false);
             myViewHolder.recyclerView.setLayoutManager(layoutManager);
             myViewHolder.recyclerView.setItemAnimator(new DefaultItemAnimator());
             CategoryAdapter myItemAdapter = new CategoryAdapter(context,item.getItemList(),"catList");
@@ -534,8 +532,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             myViewHolder.recyclerView.setHasFixedSize(true);
             //RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false);
-            StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2,
-                    StaggeredGridLayoutManager.VERTICAL);
+            StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
             myViewHolder.recyclerView.setLayoutManager(staggeredGridLayoutManager);
             myViewHolder.recyclerView.setItemAnimator(new DefaultItemAnimator());
             CategoryAdapter myItemAdapter = new CategoryAdapter(context,item.getItemList(),"catList");
@@ -577,7 +574,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             Log.d("textTitle",item.getName() );
 
             RequestOptions requestOptions = new RequestOptions();
-            requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+            requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
             //requestOptions.dontTransform();
             // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
             // requestOptions.centerCrop();
@@ -610,7 +607,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             myViewHolder.textbarcode.setText(item.getCode());
             myViewHolder.textName.setText(item.getName());
             myViewHolder.textMrp.setText("MRP: Rs"+item.getMrp());
-            if(dbHelper.isProductInCart(item.getCode(), shopCode)){
+            if(dbHelper.checkProdExistInCart(item.getId(), shopCode)){
                 myViewHolder.btnAddCart.setVisibility(View.GONE);
                 myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
                 myViewHolder.tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(item.getCode(), shopCode)));

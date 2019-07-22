@@ -5,11 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.design.widget.AppBarLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.appbar.AppBarLayout;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.shoppurscustomer.R;
-import com.shoppurscustomer.activities.Settings.SettingActivity;
 import com.shoppurscustomer.database.DbHelper;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
@@ -193,7 +192,7 @@ public class BaseActivity extends AppCompatActivity {
                 if (context instanceof SearchActivity) {
                     //DialogAndToast.showToast("Profile clicked in profile",BaseActivity.this);
                 } else {
-                    DialogAndToast.showToast("Profile clicked in Search ",BaseActivity.this);
+                  //  DialogAndToast.showToast("Profile clicked in Search ",BaseActivity.this);
                     Intent intent = new Intent(BaseActivity.this, SearchActivity.class);
                     startActivity(intent);
                 }
@@ -203,12 +202,7 @@ public class BaseActivity extends AppCompatActivity {
         relativeLayoutFooter5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (context instanceof SettingActivity) {
-                    //DialogAndToast.showToast("Profile clicked in profile",BaseActivity.this);
-                } else {
-                    Intent intent = new Intent(BaseActivity.this, SettingActivity.class);
-                    startActivity(intent);
-                }
+              DialogAndToast.showDialog("Instant Pay", context);
             }
         });
 
@@ -242,7 +236,8 @@ public class BaseActivity extends AppCompatActivity {
 
     }
 
-    void showProgress(boolean show,String message){
+
+    public void showProgress(boolean show,String message){
         if(show){
             progressDialog.setMessage(message);
             progressDialog.show();
@@ -251,7 +246,7 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    void showProgress(boolean show){
+    public void showProgress(boolean show){
         if(show){
             progressDialog.show();
         }else{

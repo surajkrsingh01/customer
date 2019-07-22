@@ -72,8 +72,8 @@
 
     <!--Home List. -->
     <dimen name="home_list_image_size_1">400dp</dimen>
-    <dimen name="home_list_image_size_width">260dp</dimen>
-    <dimen name="home_list_image_size_height">360dp</dimen>
+    <dimen name="home_list_image_size_width">220dp</dimen>
+    <dimen name="home_list_image_size_height">300dp</dimen>
     <dimen name="home_list_image_size_2">300dp</dimen>
     <dimen name="home_list_image_width_4">130dp</dimen>
     <dimen name="home_list_image_height_4">110dp</dimen>
@@ -131,7 +131,7 @@
 
     <!-- Footer. -->
     <dimen name="bottom_nav_icon_size">24dp</dimen>
-    <dimen name="bottom_nav_text_size">10sp</dimen>
+    <dimen name="bottom_nav_text_size">8sp</dimen>
     <dimen name="bottom_nav_margin_horizontal">12dp</dimen>
     <dimen name="bottom_nav_margin_vertical">5dp</dimen>
     <dimen name="bottom_nav_text_vertical_margin">3dp</dimen>
@@ -140,6 +140,29 @@
 
     <dimen name="badge_count_textsize">15sp</dimen>
     <dimen name="qr_code_image_size">200dp</dimen>
+
+    <dimen name="shop_list_image_size">50dp</dimen>
+    <dimen name="profile_image_size">200dp</dimen>
+    <dimen name="footer_action_text_size">17sp</dimen>
+    <dimen name="address_map_size">250dp</dimen>
+    <dimen name="address_spinner_size">40dp</dimen>
+    <dimen name="profile_view_width">50dp</dimen>
+
+
+    <dimen name="cart_view_vertical_margin">20dp</dimen>
+    <dimen name="rupees_icon_size">12dp</dimen>
+    <dimen name="big_separator_size">5dp</dimen>
+    <dimen name="separator_size">1dp</dimen>
+    <dimen name="cart_list_image_width">80dp</dimen>
+    <dimen name="cart_list_image_height">90dp</dimen>
+    <dimen name="cart_action_size">36dp</dimen>
+
+    <dimen name="invoice_header_text_size">12sp</dimen>
+    <dimen name="invoice_sub_header_text_size">10sp</dimen>
+    <dimen name="invoice_right_view_width">40dp</dimen>
+    <dimen name="invoice_right_view_small_width">20dp</dimen>
+    <dimen name="invoice_hsn_view_width">50dp</dimen>
+
 
     <!-- Profile. -->
 

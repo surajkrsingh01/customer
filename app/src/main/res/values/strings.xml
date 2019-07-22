@@ -7,8 +7,11 @@
     <string name="root_url">http://api.shoppurs.in:8085/ShoppursApp/api/</string>
     <string name="url_offer">http://api.shoppurs.in4:8085/ShoppursApp/api/offers/</string>
     <string name="local_url">http://192.168.1.6:8888/api/customers</string>
+    <string name="base_image_url">http://www.shoppurs.in/images</string>
     <string name="sign_up">Sign Up</string>
     <string name="image_root">http://api.shoppurs.in:8085/</string>
+
+    <string name="google_maps_key">AIzaSyB-GKvcnqqzEBxT6OvmVPfNs7FBppblo-s</string>
 
     <!-- Error. -->
     <string name="no_internet">Internet connection is not available.</string>
@@ -29,7 +32,7 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="or_login_with">Or Login With</string>
-    <string name="forgot_your_password">Forgot Your Password?</string>
+    <string name="forgot_your_password">Forgot Password?</string>
     <string name="dont_have_account">Don\'t Have an Account?</string>
     <string name="register_now">Register Now</string>
 
@@ -48,6 +51,7 @@
     <string name="stores_near_by">Stores Nearby</string>
     <string name="search">Search</string>
     <string name="profile">Profile</string>
+    <string name="instant_pay">I Pay</string>
 
     <!-- Settings. -->
     <string name="dark_mode">Dark Mode</string>
@@ -71,6 +75,8 @@
     <string name="title_activity_product_list">Product List</string>
     <string name="title_activity_shop_list">My Shops</string>
     <string name="title_activity_personalinfo">Personal Info</string>
+    <string name="title_activity_transaction">Transaction Details</string>
+    <string name="title_activity_invoice">Invoice</string>
     <string name="title_activity_display">Display</string>
     <string name="title_activity_search">Search</string>
     <string name="title_activity_cart">My Cart</string>
@@ -86,4 +92,24 @@
 
     <string name="notifications_channel_name">notification</string>
     <string name="notifications_channel_description">noti</string>
+
+    <string name="service_not_available">Service is not available</string>
+    <string name="no_address_found">No locationAddress is found</string>
+    <string name="no_location_data_provided">No data is provided</string>
+    <string name="invalid_lat_long_used">Invalid latitude or longitude values</string>
+    <string name="address_required">Please enter your address.</string>
+    <string name="pincode_required">Please enter your pincode.</string>
+
+    <string name="enter_mobile">Enter Mobile Number</string>
+    <string name="call_icon">&#xe046;</string>
+    <string name="key_icon">&#xe08c;</string>
+    <string name="new_icon">&#xe060;</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="sign_register">Sign Up Registration</string>
+    <string name="agree">You agree with the Terms &amp; Conditions of Shoppurs </string>
+
+    <string name="facebook_app_id">469783973585783</string>
+    <string name="fb_login_protocol_scheme">fb469783973585783</string>
+
+
 </resources>

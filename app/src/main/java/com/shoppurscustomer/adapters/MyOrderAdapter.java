@@ -2,20 +2,16 @@ package com.shoppurscustomer.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.shoppurscustomer.R;
-import com.shoppurscustomer.activities.CartActivity;
 import com.shoppurscustomer.activities.MyOrderDetailsActivity;
-import com.shoppurscustomer.models.CartItem;
 import com.shoppurscustomer.models.MyOrder;
 import com.shoppurscustomer.utilities.DialogAndToast;
 

@@ -23,9 +23,14 @@ import java.util.Map;
 
 public class NetworkBaseActivity extends BaseActivity {
 
+    private String dbname,  dbuser, dbpassword;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dbname = sharedPreferences.getString(Constants.DB_NAME,"");
+        dbuser = sharedPreferences.getString(Constants.DB_USER_NAME,"");
+        dbpassword = sharedPreferences.getString(Constants.DB_PASSWORD,"");
     }
 
     protected void jsonArrayApiRequest(int method, String url, JSONObject jsonObject, final String apiName){
@@ -60,8 +65,15 @@ public class NetworkBaseActivity extends BaseActivity {
     }
 
     public void jsonObjectApiRequest(int method,String url, JSONObject jsonObject, final String apiName){
+        try {
+            jsonObject.put("dbUserName",dbuser);
+            jsonObject.put("dbPassword",dbpassword);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         Log.i(TAG,url);
         Log.i(TAG,jsonObject.toString());
+
         JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(method,url,jsonObject,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {

@@ -4,12 +4,12 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,7 +50,8 @@ public class ProductListActivity extends NetworkBaseActivity {
     private ProgressBar progressBar;
     private String callingClass, shopname, address,mobile, stateCity, subcatid,subcatname, dbname, dbuser, dbpassword;
     private String shopCode, custName, custCode;
-    private CartItem cartItem;
+   // private CartItem cartItem;
+    private MyProduct myProduct;
     private RelativeLayout rlfooterviewcart;
     private TextView cartItemCount, cartItemPrice, viewCart;
     private Menu menu;
@@ -65,8 +66,7 @@ public class ProductListActivity extends NetworkBaseActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
 
-        cartItem = new CartItem();
-        shopCode = sharedPreferences.getString(Constants.SHOP_INSIDE,"");
+        shopCode = sharedPreferences.getString(Constants.SHOP_INSIDE_CODE,"");
         dbname = sharedPreferences.getString(Constants.DB_NAME,"");
         dbuser = sharedPreferences.getString(Constants.DB_USER_NAME,"");
         dbpassword = sharedPreferences.getString(Constants.DB_PASSWORD,"");
@@ -85,7 +85,7 @@ public class ProductListActivity extends NetworkBaseActivity {
             //dbuser  = getIntent().getStringExtra("dbuser");
             //dbpassword = getIntent().getStringExtra("dbpassword");
             shopCode = getIntent().getStringExtra("shop_code");
-            editor.putString(Constants.SHOP_INSIDE,shopCode);
+            editor.putString(Constants.SHOP_INSIDE_CODE,shopCode);
             editor.putString(Constants.SHOP_INSIDE_NAME, shopname);
             editor.commit();
 
@@ -164,18 +164,14 @@ public class ProductListActivity extends NetworkBaseActivity {
     }
 
 
-    public void add_toCart(MyProduct myProduct){
-        cartItem = new CartItem();
-        cartItem.setShopCode(shopCode);
-        cartItem.setShopName(shopname);
-        cartItem.setQuantity(1);
-        cartItem.setProdCode(myProduct.getCode());
-        cartItem.setBarcode(myProduct.getBarCode());
-        cartItem.setItemName(myProduct.getName());
-        cartItem.setPrice(Float.parseFloat(myProduct.getSellingPrice()));
-        cartItem.setCustCode(custCode);
-        float subtotal = cartItem.getPrice() * cartItem.getQuantity();
-        cartItem.setTotalAmout(subtotal);
+    public void add_toCart(MyProduct product){
+        this.myProduct = myProduct;
+        myProduct.setShopCode(shopCode);
+        myProduct.setQuantity(1);
+        myProduct.setSellingPrice(myProduct.getSellingPrice());
+        myProduct.setCustCode(custCode);
+        float subtotal = myProduct.getSellingPrice() * myProduct.getQuantity();
+        myProduct.setTotalAmount(subtotal);
 
         Map<String,String> params=new HashMap<>();
         params.put("shopCode", shopCode);
@@ -192,12 +188,10 @@ public class ProductListActivity extends NetworkBaseActivity {
     }
 
     public void updateCart(MyProduct myProduct, int quantity){
-        cartItem = new CartItem();
-        cartItem.setShopCode(shopCode);
-        cartItem.setProdCode(myProduct.getCode());
-        cartItem.setQuantity(quantity);
-        cartItem.setPrice(Float.parseFloat(myProduct.getSellingPrice()));
-        cartItem.setTotalAmout(cartItem.getPrice() * cartItem.getQuantity());
+        this.myProduct = myProduct;
+        myProduct.setShopCode(shopCode);
+        myProduct.setQuantity(quantity);
+        myProduct.setTotalAmount(myProduct.getSellingPrice() * myProduct.getQuantity());
 
         Map<String,String> params=new HashMap<>();
         params.put("shopCode", shopCode);
@@ -213,11 +207,9 @@ public class ProductListActivity extends NetworkBaseActivity {
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updatCart");
     }
 
-    public void removeCart(MyProduct myProduct){
-        cartItem = new CartItem();
-        cartItem.setShopCode(shopCode);
-        cartItem.setProdCode(myProduct.getCode());
-
+    public void removeCart(MyProduct product){
+        this.myProduct = product;
+        myProduct.setShopCode(shopCode);
         Map<String,String> params=new HashMap<>();
         params.put("shopCode",shopCode);
         params.put("prodCode", myProduct.getCode());
@@ -286,8 +278,8 @@ public class ProductListActivity extends NetworkBaseActivity {
                         myProduct.setId(productJArray.getJSONObject(i).getString("prodId"));
                         myProduct.setName(productJArray.getJSONObject(i).getString("prodName"));
                         myProduct.setQuantity(productJArray.getJSONObject(i).getInt("prodQoh"));
-                        myProduct.setMrp(productJArray.getJSONObject(i).getString("prodMrp"));
-                        myProduct.setSellingPrice(productJArray.getJSONObject(i).getString("prodSp"));
+                        myProduct.setMrp(Float.parseFloat(productJArray.getJSONObject(i).getString("prodMrp")));
+                        myProduct.setSellingPrice(Float.parseFloat(productJArray.getJSONObject(i).getString("prodSp")));
                         myProduct.setCode(productJArray.getJSONObject(i).getString("prodCode"));
                         myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
                         myProduct.setDesc(productJArray.getJSONObject(i).getString("prodDesc"));
@@ -301,9 +293,9 @@ public class ProductListActivity extends NetworkBaseActivity {
                         myProduct.setProdMfgBy(productJArray.getJSONObject(i).getString("prodMfgBy"));
                         myProduct.setProdExpiryDate(productJArray.getJSONObject(i).getString("prodExpiryDate"));
                         myProduct.setOfferId(productJArray.getJSONObject(i).getString("offerId"));
-                        myProduct.setProdCgst(productJArray.getJSONObject(i).getString("prodCgst"));
-                        myProduct.setProdIgst(productJArray.getJSONObject(i).getString("prodIgst"));
-                        myProduct.setProdSgst(productJArray.getJSONObject(i).getString("prodSgst"));
+                        myProduct.setProdCgst(Float.parseFloat(productJArray.getJSONObject(i).getString("prodCgst")));
+                        myProduct.setProdIgst(Float.parseFloat(productJArray.getJSONObject(i).getString("prodIgst")));
+                        myProduct.setProdSgst(Float.parseFloat(productJArray.getJSONObject(i).getString("prodSgst")));
                         myProduct.setProdWarranty(productJArray.getJSONObject(i).getString("prodWarranty"));
                         myProduct.setSubCatName(subcatname);
                         itemList.add(myProduct);
@@ -319,7 +311,7 @@ public class ProductListActivity extends NetworkBaseActivity {
                 }
             }if(apiName.equals("addtocart")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.add_to_Cart(cartItem);
+                    dbHelper.addProductToCart(myProduct);
                     updateCartCount();
                     Log.d(TAG, "added o cart" );
                 }else {
@@ -327,7 +319,7 @@ public class ProductListActivity extends NetworkBaseActivity {
                 }
             }else if(apiName.equals("updatCart")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.updateCart(cartItem);
+                    dbHelper.updateCartData(myProduct);
                     updateCartCount();
                     Log.d(TAG, "updated cart" );
                 }else {
@@ -335,7 +327,7 @@ public class ProductListActivity extends NetworkBaseActivity {
                 }
             }else if(apiName.equals("removeCart")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.deleteCart(cartItem);
+                    dbHelper.removeProductFromCart(myProduct.getId());
                     updateCartCount();
                     Log.d(TAG, "Deleted cart" );
                 }else {
@@ -410,7 +402,7 @@ public class ProductListActivity extends NetworkBaseActivity {
             bundle.putString("shopAddress", address);
             bundle.putString("shopMobile", mobile);
             bottomSearchFragment.setArguments(bundle);
-            bottomSearchFragment.setCallingActivityName("ProductList");
+            bottomSearchFragment.setCallingActivityName("ProductListActivity", sharedPreferences, isDarkTheme);
             bottomSearchFragment.setSubCatName(subcatname);
             bottomSearchFragment.setSubcatId(subcatid);
             bottomSearchFragment.show(getSupportFragmentManager(), bottomSearchFragment.getTag());
@@ -435,11 +427,11 @@ public class ProductListActivity extends NetworkBaseActivity {
                     startActivity(new Intent(ProductListActivity.this, CartActivity.class));
                 }
             });
-            List<CartItem> cartItemList = new ArrayList<>();
-            cartItemList = dbHelper.getAllCartItems();
+            List<MyProduct> cartItemList = new ArrayList<>();
+            cartItemList = dbHelper.getCartProducts();
             float total_amount =0;
-            for (CartItem cartItem: cartItemList) {
-                total_amount = total_amount + cartItem.getTotalAmout();
+            for (MyProduct cartItem: cartItemList) {
+                total_amount = total_amount + cartItem.getTotalAmount();
             }
             cartItemPrice.setText("Amount "+String.valueOf(total_amount));
             cartItemCount.setText("Item "+String.valueOf(dbHelper.getCartCount()));

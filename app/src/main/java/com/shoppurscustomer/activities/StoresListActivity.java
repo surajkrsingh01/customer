@@ -2,24 +2,22 @@ package com.shoppurscustomer.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.shoppurscustomer.R;
-import com.shoppurscustomer.adapters.MyItemAdapter;
 import com.shoppurscustomer.adapters.StoreAdapter;
 import com.shoppurscustomer.models.CatListItem;
 import com.shoppurscustomer.models.Category;
 import com.shoppurscustomer.models.HomeListItem;
-import com.shoppurscustomer.models.SubCategory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -179,6 +177,7 @@ public class StoresListActivity extends BaseActivity {
         LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(this, resId);
         recyclerView.setLayoutAnimation(animation);*/
         myItemAdapter=new StoreAdapter(this,itemList,"catList");
+        myItemAdapter.setColorTheme(colorTheme);
         recyclerView.setAdapter(myItemAdapter);
 
         if(itemList.size() == 0){
@@ -222,9 +221,11 @@ public class StoresListActivity extends BaseActivity {
     }
 
     public void scanBarCode(){
-        Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-        startActivityForResult(intent, 0);
+        Intent intent = new Intent(this,ScannarActivity.class);
+        intent.putExtra("flag","scan");
+        intent.putExtra("type","addProduct");
+        // startActivity(intent);
+        startActivityForResult(intent,111);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {

@@ -5,6 +5,16 @@ public class SubCategory {
     private int localImage;
     private float width,height;
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    private boolean isSelected;
+
     public String getId() {
         return id;
     }

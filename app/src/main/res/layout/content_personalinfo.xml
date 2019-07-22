@@ -55,7 +55,7 @@
         android:layout_height="wrap_content" />
 
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:scrollbars="none"
         android:layout_above="@+id/linear_footer"
         android:layout_width="match_parent"
@@ -89,6 +89,7 @@
                     android:layout_height="@dimen/qr_code_image_size" />
 
                 <TextView
+                    android:visibility="gone"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
                     android:layout_below="@+id/image_qr_code"
                     android:id="@+id/text_shop_address"
@@ -116,13 +117,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"/>
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            </android.support.v7.widget.RecyclerView>
+            </androidx.recyclerview.widget.RecyclerView>
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 
     <include layout="@layout/footer_layout"/>

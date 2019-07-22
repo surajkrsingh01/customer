@@ -2,11 +2,11 @@ package com.shoppurscustomer.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.constraint.ConstraintSet;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.constraintlayout.widget.ConstraintSet;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +22,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
-import com.shoppurscustomer.interfaces.MyItemTouchListener;
+import com.shoppurscustomer.activities.Settings.SettingActivity;
 import com.shoppurscustomer.models.HomeListItem;
 import com.shoppurscustomer.models.MyItem;
 
@@ -37,14 +37,7 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private Context context;
     private String type;
 
-    private MyItemTouchListener myItemTouchListener;
-
-    public void setMyItemTouchListener(MyItemTouchListener myItemTouchListener) {
-        this.myItemTouchListener = myItemTouchListener;
-    }
-
     private ConstraintSet constraintSet = new ConstraintSet();
-
     public MyItemAdapter(Context context, List<Object> itemList,String type) {
         this.itemList = itemList;
         this.context=context;
@@ -55,16 +48,23 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         private TextView textHeader,textDesc;
         private RecyclerView recyclerView;
+        private ImageView profile_image;
 
         public MyHomeHeaderViewHolder(View itemView) {
             super(itemView);
             textHeader=itemView.findViewById(R.id.text_date_range);
             textDesc=itemView.findViewById(R.id.text_desc);
             recyclerView=itemView.findViewById(R.id.recycler_view);
+            profile_image = itemView.findViewById(R.id.profile_image);
+            profile_image.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
+            if(view == profile_image){
+                Intent intent = new Intent(context, SettingActivity.class);
+                context.startActivity(intent);
+            }
         }
     }
 
@@ -307,7 +307,6 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 viewHolder = new MyViewHolder(v);
                 break;
         }
-
         return viewHolder;
     }
 
@@ -349,7 +348,8 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
           }else if(holder instanceof MyHomeHeaderViewHolder){
               HomeListItem item = (HomeListItem) itemList.get(position);
               MyHomeHeaderViewHolder myViewHolder = (MyHomeHeaderViewHolder)holder;
-              myViewHolder.textHeader.setText(item.getTitle());
+              myViewHolder.textHeader.setVisibility(View.GONE);
+              //myViewHolder.textHeader.setText(item.getTitle());
               myViewHolder.textDesc.setText(item.getDesc());
 
               StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
@@ -445,8 +445,6 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                       .into(myViewHolder.imageView);
           }
     }
-
-
 
     @Override
     public int getItemCount() {

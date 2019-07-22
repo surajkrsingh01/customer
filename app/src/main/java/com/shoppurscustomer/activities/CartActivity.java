@@ -1,24 +1,43 @@
 package com.shoppurscustomer.activities;
 
-import android.graphics.PorterDuff;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.android.volley.Request;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.adapters.CartAdapter;
-import com.shoppurscustomer.models.CartItem;
+import com.shoppurscustomer.adapters.OfferDescAdapter;
+import com.shoppurscustomer.database.DbHelper;
+import com.shoppurscustomer.fragments.BottomSearchFragment;
+import com.shoppurscustomer.fragments.OfferDescriptionFragment;
+import com.shoppurscustomer.interfaces.MyItemClickListener;
+import com.shoppurscustomer.interfaces.MyItemTypeClickListener;
+import com.shoppurscustomer.models.Barcode;
+import com.shoppurscustomer.models.MyProduct;
+import com.shoppurscustomer.models.ProductDiscountOffer;
+import com.shoppurscustomer.models.ProductPriceDetails;
+import com.shoppurscustomer.models.ProductPriceOffer;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
 import com.shoppurscustomer.utilities.Utility;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,77 +48,471 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by suraj kumar singh on 20-03-2019.
- */
+public class CartActivity extends NetworkBaseActivity implements MyItemTypeClickListener, MyItemClickListener {
 
-public class CartActivity extends NetworkBaseActivity{
+    private RecyclerView recyclerView;
+    private CartAdapter myItemAdapter;
+    private List<MyProduct> itemList;
+    private MyProduct freeProdut;
 
-    private TextView tv_total,tv_totalItems;
-    private RecyclerView recycler_itemlist;
-    private CartAdapter cartAdapter;
-    private List<CartItem> cartItemList;
-    private TextView tv_placeorder, tvnoData;
-    private LinearLayout linear_details;
-    private String dbName, dbUserName, dbPassword,custCode,custName,custMobile;
-    private CartItem cartItem;
-    private RelativeLayout rlfooterviewcart;
-    private float total_amount;
-    private int total_quantity;
-    private String shopcode_prodcode_qty, transactionId;
+    private RelativeLayout relativeLayoutCartFooter;
+    private LinearLayout rlAddressBilling;
+    private TextView tvItemCount,tvItemPrice,tvCheckout,tvItemTotal,tvTotalTaxes,tvSgst,tvTotalDiscount,
+            tvDeliveryCharges,tvNetPayable,tvOfferName;
+    private RelativeLayout relativeLayoutPayOptionLayout,rlDiscount,rlDelivery,rl_offer_applied_layout,rlOfferLayout;
+    private TextView tvCash,tvCard,tvMPos,tvAndroidPos;
+
+    private ImageView imageViewScan,imageViewSearch,imageViewRemoveOffer;
+
+    private float totalPrice,totalTax,totDiscount,offerPer,offerMaxAmount,deliveryDistance,deliveryCharges;
+    private int offerId,deliveryTypeId;
+
+    private String offerName,paymentMode,orderNumber;
+    private String deviceType;
+
     private JSONArray shopArray;
+    List <MyProduct> cartItemList;
+
+    private TextView tv_mode, tv_self_status, tv_address_label, tv_address,tvApplyCoupon;
+    private View seperator_delivery_address;
+    private RadioGroup rg_delivery;
+    private RadioButton rb_home_delivery, rb_self_delivery;
+    private LinearLayout linearLayoutScanCenter;
+    private RelativeLayout rlOfferDesc;
+    private Button btnStoreOffers;
+    private int position, type, productDetailsType;
+
+    private FloatingActionButton fabScan;
+    private String shopCode, shopName;
+
+    private BottomSearchFragment bottomSearchFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
-        cartItem = new CartItem();
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
-        cartItemList = new ArrayList<>();
-        tv_total = findViewById(R.id.itemPrice);
-        tv_totalItems = findViewById(R.id.itemCount);
-        tv_placeorder = findViewById(R.id.viewCart);
-        linear_details = findViewById(R.id.linear_details);
-        rlfooterviewcart = findViewById(R.id.rlfooterviewcart);
-        tvnoData = findViewById(R.id.tvnoData);
 
-        recycler_itemlist = (RecyclerView) findViewById(R.id.recycler_cart);
-        recycler_itemlist.setHasFixedSize(true);
-        recycler_itemlist.setRecycledViewPool(new RecyclerView.RecycledViewPool());
-        recycler_itemlist.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        recycler_itemlist.getRecycledViewPool().setMaxRecycledViews(0, 0);
+        init();
+    }
 
-        dbName = sharedPreferences.getString(Constants.DB_NAME,"");
-        dbUserName = sharedPreferences.getString(Constants.DB_USER_NAME,"");
-        dbPassword = sharedPreferences.getString(Constants.DB_PASSWORD,"");
-        custCode =  sharedPreferences.getString(Constants.DB_NAME,""); //
-        custName =sharedPreferences.getString(Constants.FULL_NAME,"");
-        custMobile = sharedPreferences.getString(Constants.MOBILE_NO, "");
+    private void init(){
+       // dbHelper.deleteTable(DbHelper.CART_TABLE);
 
-        getCartData();
-        //cartItemList = dbHelper.getAllCartItems();
-        Log.d("cart Size ", " "+cartItemList.size());
-        cartAdapter = new CartAdapter(CartActivity.this, cartItemList);
-        recycler_itemlist.setAdapter(cartAdapter);
+        shopCode = sharedPreferences.getString(Constants.SHOP_INSIDE_CODE,"");
+        shopName = sharedPreferences.getString(Constants.SHOP_INSIDE_NAME,"");
 
-        tv_placeorder.setText("Place Order");
-        tv_placeorder.setOnClickListener(new View.OnClickListener() {
+        itemList = new ArrayList<>();
+        imageViewScan = findViewById(R.id.image_scan);
+        imageViewSearch = findViewById(R.id.image_search);
+        tvItemCount=findViewById(R.id.itemCount);
+        tvItemPrice=findViewById(R.id.itemPrice);
+        tvCheckout=findViewById(R.id.viewCart);
+        tvCard = findViewById(R.id.tv_pay_card);
+        tvCash = findViewById(R.id.tv_pay_cash);
+        tvMPos = findViewById(R.id.tv_mpos);
+        tvAndroidPos = findViewById(R.id.tv_android_pos);
+        linearLayoutScanCenter = findViewById(R.id.linear_action);
+
+        tvApplyCoupon = findViewById(R.id.tv_coupon_label);
+        tvItemTotal = findViewById(R.id.tv_item_total);
+        tvTotalTaxes = findViewById(R.id.tv_total_taxes);
+        tvSgst = findViewById(R.id.tv_sgst);
+        tvTotalDiscount = findViewById(R.id.tv_total_discount);
+        tvDeliveryCharges = findViewById(R.id.tv_delivery_charges);
+        tvNetPayable = findViewById(R.id.tv_net_pay);
+        tvOfferName = findViewById(R.id.tv_offer_name);
+        rlDelivery = findViewById(R.id.relative_delivery_layout);
+        rlDiscount = findViewById(R.id.relative_discount);
+        rl_offer_applied_layout = findViewById(R.id.rl_offer_applied_layout);
+        rlOfferDesc = findViewById(R.id.rl_offer_desc);
+        rlOfferLayout = findViewById(R.id.rl_offer_layout);
+        imageViewRemoveOffer = findViewById(R.id.image_remove_offer);
+        btnStoreOffers = findViewById(R.id.btn_store_offers);
+        fabScan = findViewById(R.id.fab);
+
+        Utility.setColorFilter(imageViewRemoveOffer.getDrawable(),colorTheme);
+        Utility.setColorFilter(btnStoreOffers.getBackground(),colorTheme);
+
+        relativeLayoutPayOptionLayout = findViewById(R.id.relative_pay_layout);
+        rlAddressBilling = findViewById(R.id.linear_billing);
+        relativeLayoutCartFooter=findViewById(R.id.rlfooterviewcart);
+        relativeLayoutCartFooter.setBackgroundColor(colorTheme);
+        recyclerView=findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        final RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        myItemAdapter=new CartAdapter(this,itemList);
+        myItemAdapter.setDarkTheme(isDarkTheme);
+        myItemAdapter.setMyItemTypeClickListener(this);
+        recyclerView.setAdapter(myItemAdapter);
+        recyclerView.setNestedScrollingEnabled(false);
+
+        tvCheckout.setText("Make Payment");
+
+
+        tvCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                //placeOrder();
-                generateJson();
-                DialogAndToast.showToast("Placing Order Wait", CartActivity.this);
+            public void onClick(View view) {
+                relativeLayoutPayOptionLayout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        tvCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*tvCard.setVisibility(View.GONE);
+                tvCash.setVisibility(View.GONE);
+                tvAndroidPos.setVisibility(View.VISIBLE);
+                tvMPos.setVisibility(View.VISIBLE);*/
+
+                paymentMode = "Credit/Debit Card";
+                deviceType = "ME30S";
+                generateJson(paymentMode);
+            }
+        });
+
+        tvCash.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                paymentMode = "Cash";
+                generateJson(paymentMode);
+                /*Intent intent = new Intent(CartActivity.this, MPayActivity.class);
+                intent.putExtra("totalAmount",String.format("%.02f",dbHelper.getTotalPriceCart()));
+                intent.putExtra("ordId",getIntent().getStringExtra("ordId"));
+                startActivity(intent);*/
+            }
+        });
+
+        tvMPos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                paymentMode = "Credit/Debit Card";
+                deviceType = "ME30S";
+                generateJson(paymentMode);
+            }
+        });
+
+        tvAndroidPos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                paymentMode = "Credit/Debit Card";
+                deviceType = "N910";
+                generateJson(paymentMode);
+            }
+        });
+
+        imageViewScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openScannar();
+            }
+        });
+
+        fabScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openScannar();
+            }
+        });
+
+
+        linearLayoutScanCenter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openScannar();
+            }
+        });
+
+        imageViewSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BottomSearchFragment bottomSearchFragment = new BottomSearchFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("shopCode", shopCode);
+                bundle.putString("shopName", shopName);
+                bundle.putString("shopAddress", "");
+                bundle.putString("shopMobile", "");
+                bottomSearchFragment.setArguments(bundle);
+                bottomSearchFragment.setCallingActivityName("CartActivity", sharedPreferences, isDarkTheme);
+                bottomSearchFragment.setSubCatName("");
+                bottomSearchFragment.setSubcatId("");
+                bottomSearchFragment.show(getSupportFragmentManager(), bottomSearchFragment.getTag());
+            }
+        });
+
+        boolean isDeliveryAvailable = sharedPreferences.getBoolean(Constants.IS_DELIVERY_AVAILABLE, false);
+        tv_mode = findViewById(R.id.tv_mode);
+        tv_self_status = findViewById(R.id.tv_self_status);
+        rg_delivery = findViewById(R.id.rg_delivery);
+        tv_address_label = findViewById(R.id.tv_address_label);
+        tv_address = findViewById(R.id.tv_address);
+       // seperator_delivery_address = findViewById(R.id.seperator_delivery_address);
+        rb_home_delivery = findViewById(R.id.rb_home_delivery);
+        rb_self_delivery = findViewById(R.id.rb_self_delivery);
+
+        rb_self_delivery.setChecked(true);
+
+        if(!isDeliveryAvailable){ // home delivery not available
+            tv_self_status.setText("Self Delivery");
+            rg_delivery.setVisibility(View.GONE);
+        } else {
+            rg_delivery.setVisibility(View.VISIBLE);
+            tv_self_status.setVisibility(View.GONE);
+        }
+
+        rg_delivery.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.rb_self_delivery){
+                    deliveryTypeId = checkedId;
+                    tv_self_status.setText("Self Delivery");
+                    //tv_self_status.setVisibility(View.VISIBLE);
+                    tv_address_label.setVisibility(View.GONE);
+                   // seperator_delivery_address.setVisibility(View.GONE);
+                    tv_address.setVisibility(View.GONE);
+                    tvDeliveryCharges.setText("0.00");
+                    deliveryDistance = 0;
+                    rlDelivery.setVisibility(View.GONE);
+                }else{
+                    if(totalPrice > sharedPreferences.getInt(Constants.MIN_DELIVERY_AMOUNT,0)){
+                        startActivityForResult(new Intent(CartActivity.this, DeliveryAddressActivity.class), 101);
+                        tv_self_status.setVisibility(View.GONE);
+                    }else{
+                        rb_self_delivery.setChecked(true);
+                        DialogAndToast.showDialog("Minimum amount should be more than Rs."
+                                +sharedPreferences.getInt(Constants.MIN_DELIVERY_AMOUNT,0)+" for home delivery.",CartActivity.this);
+                    }
+
+                }
+            }
+        });
+
+        tv_address.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(new Intent(CartActivity.this, DeliveryAddressActivity.class), 101);
+                tv_self_status.setVisibility(View.GONE);
+            }
+        });
+
+        tv_address_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(new Intent(CartActivity.this, DeliveryAddressActivity.class), 101);
+                tv_self_status.setVisibility(View.GONE);
+            }
+        });
+
+        tvApplyCoupon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*Intent intent = new Intent(CartActivity.this,CouponOffersActivity.class);
+                intent.putExtra("custCode",getIntent().getStringExtra("custCode"));
+                intent.putExtra("flag","coupons");
+                startActivityForResult(intent,5);*/
+            }
+        });
+
+        imageViewRemoveOffer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rl_offer_applied_layout.setVisibility(View.GONE);
+                tvApplyCoupon.setVisibility(View.VISIBLE);
+                offerId = 0;
+                offerMaxAmount = 0f;
+                offerPer = 0f;
+                offerName = "";
+                setFooterValues();
+            }
+        });
+
+        btnStoreOffers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(CartActivity.this, ApplyOffersActivity.class);
+                intent.putExtra("custCode",getIntent().getStringExtra("custCode"));
+                intent.putExtra("flag","offers");
+                startActivityForResult(intent,6);
             }
         });
     }
 
-    private void generateJson(){
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if(requestCode ==101 && intent!=null){
+            String address = intent.getStringExtra("address");
+            String country = intent.getStringExtra("country");
+            String state = intent.getStringExtra("state");
+            String city = intent.getStringExtra("city");
+            String zip = intent.getStringExtra("zip");
+            deliveryDistance = intent.getFloatExtra("distance",0f);
+            Log.d("addr ", address +country + state + city +zip+deliveryDistance);
+            tv_address_label.setVisibility(View.VISIBLE);
+            tv_address.setVisibility(View.VISIBLE);
+            tv_address.setText(address.concat(zip));
+            setFooterValues();
+           // seperator_delivery_address.setVisibility(View.VISIBLE);
+        }else if(requestCode == 5){
+            if(intent != null){
+                offerName = intent.getStringExtra("name");
+                offerId = intent.getIntExtra("id",0);
+                offerPer = intent.getFloatExtra("per",0f);
+                offerMaxAmount = intent.getFloatExtra("amount",0f);
+                rl_offer_applied_layout.setVisibility(View.VISIBLE);
+                tvOfferName.setText(offerName);
+                tvApplyCoupon.setVisibility(View.GONE);
+                setFooterValues();
+            }
+        }
+    }
+
+    private void openScannar(){
+        Intent intent = new Intent(this,ScannarActivity.class);
+        intent.putExtra("flag","scan");
+        intent.putExtra("type","addToCart");
+        startActivity(intent);
+
+      /* dbHelper.deleteTable(DbHelper.CART_TABLE);
+
+        MyProductItem myProductItem = dbHelper.getProductDetailsByBarCode("N7NL00824803");
+        myProductItem.setProdBarCode("N7NL00824803");
+        myProductItem.setQty(1);
+        myProductItem.setTotalAmount(myProductItem.getProdSp());
+        dbHelper.addProductToCart(myProductItem);
+
+        itemList.clear();
+        List<MyProductItem> cartList =  dbHelper.getCartProducts();
+        for(MyProductItem ob : cartList){
+            itemList.add(ob);
+        }
+
+        myItemAdapter.notifyDataSetChanged();
+
+        if(itemList.size() > 0){
+            setFooterValues();
+            relativeLayoutCartFooter.setVisibility(View.VISIBLE);
+            myItemAdapter.notifyDataSetChanged();
+        }else{
+            relativeLayoutCartFooter.setVisibility(View.GONE);
+        }*/
+
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        Log.i(TAG,"onResume called.");
+
+        if(itemList == null){
+            itemList = dbHelper.getCartProducts();
+        }else{
+            itemList.clear();
+            List<MyProduct> cartList =  dbHelper.getCartProducts();
+            for(MyProduct ob : cartList){
+//                if(ob.getSellingPrice() != 0f)
+//                setOffer(ob);
+                itemList.add(ob);
+            }
+        }
+
+        if(itemList.size() > 0){
+            setFooterValues();
+            relativeLayoutCartFooter.setVisibility(View.VISIBLE);
+            myItemAdapter.notifyDataSetChanged();
+        }else{
+            relativeLayoutCartFooter.setVisibility(View.GONE);
+            linearLayoutScanCenter.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void setFooterValues(){
+        recyclerView.setVisibility(View.VISIBLE);
+        linearLayoutScanCenter.setVisibility(View.GONE);
+        if(itemList.size() == 1){
+            tvItemCount.setText(itemList.size()+" item");
+        }else{
+            tvItemCount.setText(itemList.size()+" items");
+        }
+
+
+        tvItemTotal.setText(Utility.numberFormat(dbHelper.getTotalMrpPriceCart()));
+        totalTax = dbHelper.getTotalTaxesart();
+        tvTotalTaxes.setText(Utility.numberFormat(totalTax));
+        totalPrice = dbHelper.getTotalPriceCart() + totalTax;
+        totDiscount = dbHelper.getTotalMrpPriceCart() - dbHelper.getTotalPriceCart();
+        float dis = 0f;
+        if(offerPer > 0f){
+            dis = totalPrice * offerPer / 100;
+            totDiscount = totDiscount + dis ;
+        }
+
+        Log.i(TAG," Taxes "+dbHelper.getTotalTaxesart());
+        Log.i(TAG," MRP "+dbHelper.getTotalMrpPriceCart()
+                +" Price "+dbHelper.getTotalPriceCart());
+        Log.i(TAG," diff "+totDiscount+" offerPer "+offerPer+" totalPrice "+totalPrice);
+
+        if(totDiscount == 0f){
+            rlDiscount.setVisibility(View.GONE);
+        }else{
+            rlDiscount.setVisibility(View.VISIBLE);
+            tvTotalDiscount.setText(Utility.numberFormat(totDiscount));
+        }
+
+        totalPrice = totalPrice - dis;
+        if(deliveryTypeId == R.id.rb_self_delivery){
+            rlDelivery.setVisibility(View.GONE);
+        }else{
+            rlDelivery.setVisibility(View.VISIBLE);
+            Log.i(TAG,"Min Delivery Distance "+sharedPreferences.getInt(Constants.MIN_DELIVERY_DISTANCE,0));
+            Log.i(TAG,"Charges after Delivery Distance "+sharedPreferences.getInt(Constants.CHARGE_AFTER_MIN_DISTANCE,0));
+            Log.i(TAG,"Delivery Distance "+deliveryDistance);
+            if(deliveryDistance > sharedPreferences.getInt(Constants.MIN_DELIVERY_DISTANCE,0)){
+               float diffKms = deliveryDistance -  sharedPreferences.getInt(Constants.MIN_DELIVERY_DISTANCE,0);
+               int intKms = (int)diffKms;
+               float decimalKms = diffKms - intKms;
+
+                int chargesPerKm = sharedPreferences.getInt(Constants.CHARGE_AFTER_MIN_DISTANCE,0);
+                deliveryCharges = intKms * chargesPerKm + decimalKms * chargesPerKm;
+                tvDeliveryCharges.setText(Utility.numberFormat(deliveryCharges));
+            }else{
+                tvDeliveryCharges.setText("0.00");
+            }
+        }
+
+        totalPrice = totalPrice + deliveryCharges;
+        tvItemPrice.setText("Rs "+Utility.numberFormat(totalPrice));
+        tvNetPayable.setText("Rs "+Utility.numberFormat(totalPrice));
+
+        tvCheckout.setVisibility(View.VISIBLE);
+        rlAddressBilling.setVisibility(View.VISIBLE);
+
+    }
+
+    private void generateOrder(JSONArray shopArray){
+        Log.d(TAG, shopArray.toString());
+        String url=getResources().getString(R.string.root_url)+Constants.GENERATE_ORDER;
+        showProgress(true);
+        jsonArrayV2ApiRequest(Request.Method.POST,url, shopArray,"generate_order");
+    }
+
+    private void placeOrder(JSONArray shopArray, String orderId) throws JSONException {
+        shopArray.getJSONObject(0).put("orderId", orderId );
+        Log.d(TAG, shopArray.toString());
+        String url=getResources().getString(R.string.root_url)+Constants.PLACE_ORDER;
+        showProgress(true);
+        jsonArrayV2ApiRequest(Request.Method.POST,url, shopArray,"place_order");
+    }
+
+    private void generateJson(String paymentMode){
         try {
-            cartItemList = new ArrayList<>();
-            cartItemList = dbHelper.getAllCartItems();
+            cartItemList = dbHelper.getCartProducts();
 
             List<String> tempShopList = new ArrayList<>();
             shopArray = new JSONArray();
@@ -107,51 +520,144 @@ public class CartActivity extends NetworkBaseActivity{
             JSONArray productArray = new JSONArray();
             JSONObject productObject = new JSONObject();
 
-            for (CartItem cartItem : cartItemList) {
-                Log.d(TAG, cartItem.getBarcode()+"");
-                if (!tempShopList.contains(cartItem.getShopCode())) {
+            JSONArray tempbarcodeArray =null;
+            JSONObject tempbarcodeObject = null;
+
+
+            for (MyProduct cartItem : cartItemList) {
+                String shopCode = cartItem.getShopCode();
+                Log.d(TAG, cartItem.getBarCode()+"");
+                if (!tempShopList.contains(shopCode)) {
                     //Log.d("PRD list "+tempShopList.toString(), cartItem.getShopCode());
-                    tempShopList.add(cartItem.getShopCode());
+                    tempShopList.add(shopCode);
                     shopObject = new JSONObject();
                     productArray = new JSONArray();
                     productObject = new JSONObject();
 
-                    shopObject.put("shopCode", cartItem.getShopCode());
+                   /* if(cartItem.getIsBarcodeAvailable().equals("Y")){
+                        cartItem.setBarcodeList(dbHelper.getBarCodesForCart(cartItem.getId()));
+                        tempbarcodeArray = new JSONArray();
+                        for (int i=0;i<cartItem.getQty();i++){
+                            tempbarcodeObject = new JSONObject();
+                            tempbarcodeObject.put("barcode", cartItem.getBarcodeList().get(i).getBarcode());
+                            tempbarcodeArray.put(tempbarcodeObject);
+                        }
+                    }*/
+
+                    shopObject.put("shopCode", shopCode);
                     shopObject.put("orderDate", Utility.getTimeStamp());
                     shopObject.put("orderDeliveryNote","Note");
                     shopObject.put("orderDeliveryMode","Self");
-                    shopObject.put("paymentMode","Online");
-                    shopObject.put("deliveryAddress","Delhi");
-                    shopObject.put("pinCode","110091");
-                    shopObject.put("createdBy",custName);
-                    shopObject.put("updateBy",custName);
-                    shopObject.put("orderStatus","pending");
-                    shopObject.put("orderPaymentStatus", "pending");
-                    shopObject.put("custName", custName);
-                    shopObject.put("custCode",custCode);
-                    shopObject.put("mobileNo",custMobile);
-                    shopObject.put("orderImage","ShoppursImages/products/1/1/prod_1_1.jpg");
-                    shopObject.put("totalQuantity",String.valueOf(dbHelper.getTotalQuantity(cartItem.getShopCode())));
-                    shopObject.put("toalAmount",String.valueOf(dbHelper.getTotalAmount(cartItem.getShopCode())));
-                    shopObject.put("dbName",dbName);
-                    shopObject.put("dbUserName",dbUserName);
-                    shopObject.put("dbPassword",dbPassword);
-                    productObject.put("prodCode", cartItem.getProdCode());
-                    productObject.put("prodBarCode", cartItem.getBarcode());
+                    shopObject.put("paymentMode",paymentMode);
+                    shopObject.put("deliveryAddress","");
+                    shopObject.put("deliveryCountry","");
+                    shopObject.put("deliveryState","");
+                    shopObject.put("deliveryCity","");
+                    shopObject.put("pinCode","");
+                    shopObject.put("createdBy",sharedPreferences.getString(Constants.FULL_NAME,""));
+                    shopObject.put("updateBy",sharedPreferences.getString(Constants.FULL_NAME,""));
+                    if(paymentMode.equals("Cash")){
+                        shopObject.put("orderStatus","Delivered");
+                        shopObject.put("orderPaymentStatus", "Done");
+                    }else{
+                        shopObject.put("orderStatus","pending");
+                        shopObject.put("orderPaymentStatus", "pending");
+                    }
+                    shopObject.put("custName", sharedPreferences.getString(Constants.FULL_NAME, ""));
+                    shopObject.put("custCode",sharedPreferences.getString(Constants.USER_ID, ""));
+                    shopObject.put("mobileNo",sharedPreferences.getString(Constants.MOBILE_NO, ""));
+                    shopObject.put("orderImage","customer.png");
+                    shopObject.put("custUserCreateStatus","C");
+                    shopObject.put("totalQuantity",String.valueOf(dbHelper.getTotalQuantityCart()));
+                    shopObject.put("toalAmount",String.valueOf(totalPrice));
+                    shopObject.put("ordCouponId",String.valueOf(offerId));
+                    shopObject.put("totCgst",String.valueOf(dbHelper.getTaxesCart("cgst")));
+                    shopObject.put("totSgst",String.valueOf(dbHelper.getTaxesCart("sgst")));
+                    shopObject.put("totIgst",String.valueOf(dbHelper.getTaxesCart("igst")));
+                    shopObject.put("totTax",String.valueOf(totalTax));
+                    shopObject.put("deliveryCharges",String.valueOf(deliveryCharges));
+                    shopObject.put("totDiscount",String.valueOf(totDiscount));
+                    shopObject.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
+                    shopObject.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
+                    shopObject.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+
+                    productObject.put("prodCode", cartItem.getCode());
+                    productObject.put("prodHsnCode", cartItem.getProdHsnCode());
+                    productObject.put("prodId", cartItem.getId());
+
+                    if(cartItem.getComboProductIds() != null)
+                    productObject.put("comboProdIds", cartItem.getComboProductIds());
+
+                    /*if(cartItem.getIsBarcodeAvailable().equals("Y")){
+                        productObject.put("prodBarCode", cartItem.getBarcodeList().get(0).getBarcode());
+                        productObject.put("barcodeList",  tempbarcodeArray);
+                    }*/
+
                     productObject.put("qty", cartItem.getQuantity());
+                    productObject.put("prodName",cartItem.getName());
+                    productObject.put("prodUnit",cartItem.getUnit());
+                    productObject.put("prodSize",cartItem.getSize());
+                    productObject.put("prodColor",cartItem.getColor());
+                    productObject.put("prodDesc",cartItem.getDesc());
+                    productObject.put("prodMrp",cartItem.getMrp());
+                    productObject.put("prodSp", cartItem.getSellingPrice());
+                    productObject.put("prodCgst", cartItem.getProdCgst());
+                    productObject.put("prodSgst", cartItem.getProdSgst());
+                    productObject.put("prodIgst", cartItem.getProdIgst());
+                    productObject.put("prodImage1",cartItem.getProdImage1());
+                    productObject.put("prodImage2",cartItem.getProdImage2());
+                    productObject.put("prodImage3",cartItem.getProdImage3());
+                    productObject.put("isBarcodeAvailable",cartItem.getIsBarcodeAvailable());
+                    if(cartItem.getOfferItemCounter() > 0){
+                        productObject.put("offerId", cartItem.getOfferId());
+                        productObject.put("offerType", cartItem.getOfferType());
+                        productObject.put("freeItems", String.valueOf(cartItem.getOfferItemCounter()));
+                    }
                     productArray.put(productObject);
                     shopObject.put("myProductList", productArray);
                     shopArray.put(shopObject);
                 } else {
                     productObject = new JSONObject();
-
-                    productObject.put("prodCode", cartItem.getProdCode());
-                    productObject.put("prodBarCode", cartItem.getBarcode());
+                    if(cartItem.getComboProductIds() != null)
+                    productObject.put("comboProdIds", cartItem.getComboProductIds());
+                    productObject.put("prodCode", cartItem.getCode());
+                    productObject.put("prodHsnCode", cartItem.getProdHsnCode());
+                    productObject.put("prodId", cartItem.getId());
+                    /*if(cartItem.getIsBarcodeAvailable().equals("Y")){
+                        productObject.put("prodBarCode", cartItem.getBarcodeList().get(0).getBarcode());
+                        productObject.put("barcodeList",  tempbarcodeArray);
+                    }*/
                     productObject.put("qty", cartItem.getQuantity());
+                    productObject.put("prodName",cartItem.getName());
+                    productObject.put("prodUnit",cartItem.getUnit());
+                    productObject.put("prodSize",cartItem.getSize());
+                    productObject.put("prodColor",cartItem.getColor());
+                    productObject.put("prodDesc",cartItem.getDesc());
+                    productObject.put("prodMrp",cartItem.getMrp());
+                    productObject.put("prodSp", cartItem.getSellingPrice());
+                    productObject.put("prodCgst", cartItem.getProdCgst());
+                    productObject.put("prodSgst", cartItem.getProdSgst());
+                    productObject.put("prodIgst", cartItem.getProdIgst());
+                    productObject.put("prodImage1",cartItem.getProdImage1());
+                    productObject.put("prodImage2",cartItem.getProdImage2());
+                    productObject.put("prodImage3",cartItem.getProdImage3());
+                    productObject.put("isBarcodeAvailable",cartItem.getIsBarcodeAvailable());
+                    productObject.put("prodCgst", cartItem.getProdCgst());
+                    productObject.put("prodSgst", cartItem.getProdSgst());
+                    productObject.put("prodIgst", cartItem.getProdIgst());
+                    productObject.put("prodSp", cartItem.getSellingPrice());
+
+                    if(cartItem.getOfferItemCounter() > 0){
+                        productObject.put("offerId", cartItem.getOfferId());
+                        productObject.put("offerType", cartItem.getOfferType());
+                        productObject.put("freeItems", String.valueOf(cartItem.getOfferItemCounter()));
+                    }
+
                     productArray.put(productObject);
                     shopObject.put("myProductList", productArray);
                 }
             }
+
             generateOrder(shopArray);
             Log.d(TAG, shopArray.toString());
         }catch (Exception a){
@@ -159,84 +665,6 @@ public class CartActivity extends NetworkBaseActivity{
         }
     }
 
-    public void updateUi(){
-            cartItemList = new ArrayList<>();
-            cartItemList = dbHelper.getAllCartItems();
-
-            total_amount = 0;
-            total_quantity = 0;
-            shopcode_prodcode_qty = "";
-            for (CartItem cartItem : cartItemList) {
-                total_amount = total_amount + cartItem.getTotalAmout();
-                total_quantity = total_quantity + cartItem.getQuantity();
-            }
-            tv_total.setText("Amount " + String.valueOf(total_amount));
-            tv_totalItems.setText("Items(" + String.valueOf(cartItemList.size()) + ")");
-            cartAdapter.notifyDataSetChanged();
-    }
-
-    public void getCartData(){
-        Map<String,String> params=new HashMap<>();
-        params.put("dbName",dbName);
-        params.put("dbUserName",dbUserName);
-        params.put("dbPassword",dbPassword);
-        String url=getResources().getString(R.string.root_url)+"cart/getCartData";
-        showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"getCartData");
-    }
-
-    public void updateCart(CartItem cartItem){
-        this.cartItem = cartItem;
-        Map<String,String> params=new HashMap<>();
-        params.put("shopCode",cartItem.getShopCode());
-        params.put("prodCode", cartItem.getProdCode());
-        params.put("prodQty", String.valueOf(cartItem.getQuantity()));
-        params.put("dbName", dbName);
-        params.put("dbUserName", dbUserName);
-        params.put("dbPassword", dbPassword);
-        Log.d(TAG, params.toString());
-
-        String url=getResources().getString(R.string.root_url)+"cart/update";
-        showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updatCart");
-    }
-
-    public void removeCart(CartItem cartItem){
-        this.cartItem = cartItem;
-        Map<String,String> params=new HashMap<>();
-        params.put("shopCode",cartItem.getShopCode());
-        params.put("prodCode", cartItem.getProdCode());
-        params.put("dbName", dbName);
-        params.put("dbUserName", dbUserName);
-        params.put("dbPassword", dbPassword);
-        Log.d(TAG, params.toString());
-
-        String url=getResources().getString(R.string.root_url)+"cart/remove_product";
-        showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"removeCart");
-    }
-
-    private void generateOrder(JSONArray shopArray){
-         Log.d(TAG, shopArray.toString());
-        String url=getResources().getString(R.string.root_url)+"order/generate_order";
-        showProgress(true);
-        jsonArrayV2ApiRequest(Request.Method.POST,url, shopArray,"generate_order");
-    }
-
-
-
-    private void placeOrder(JSONArray shopArray, String orderId) throws JSONException {
-        transactionId = "trans12345";
-        shopArray.getJSONObject(0).put("orderId", orderId );
-       for(int i=0;i<shopArray.length();i++){
-            shopArray.getJSONObject(i).put("orderPaymentStatus", "Done");
-            shopArray.getJSONObject(i).put("transactionId", transactionId);
-        }
-        Log.d(TAG, shopArray.toString());
-        String url=getResources().getString(R.string.root_url)+"order/place_order";
-        showProgress(true);
-        jsonArrayV2ApiRequest(Request.Method.POST,url, shopArray,"place_order");
-    }
 
     @Override
     public void onJsonObjectResponse(JSONObject response, String apiName) {
@@ -244,123 +672,520 @@ public class CartActivity extends NetworkBaseActivity{
         try {
             // JSONObject jsonObject=response.getJSONObject("response");
             Log.d("response", response.toString());
-            if(apiName.equals("getCartData")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-
-                    JSONArray jsonArray = response.getJSONArray("result");
-                    for(int i=0;i<jsonArray.length();i++){
-                        JSONObject cartObject = jsonArray.getJSONObject(i).getJSONObject("myProduct");
-                        CartItem cartItem = new CartItem();
-                        cartItem.setShopCode(jsonArray.getJSONObject(i).getString("shopCode"));
-                        cartItem.setQuantity(Integer.parseInt(jsonArray.getJSONObject(i).getString("prodQty")));
-                        cartItem.setBarcode(cartObject.getString("prodBarCode"));
-                        cartItem.setProdCode(cartObject.getString("prodCode"));
-                        cartItem.setItemName(cartObject.getString("prodName"));
-                        cartItem.setShopName("Vipin Dhama Shop");
-                        cartItem.setPrice(Float.parseFloat(cartObject.getString("prodSp")));
-                        //cartItem.setSize(cartObject.getInt("prodId"));
-                        cartItem.setCustCode(custCode);
-                        //cartItem.setCustName(cartObject.getString("prodId"));
-                        float subtotal = cartItem.getPrice() * cartItem.getQuantity();
-                        cartItem.setTotalAmout(subtotal);
-                        cartItem.setProdCgst(Float.parseFloat(cartObject.getString("prodCgst")));
-                        cartItem.setProdIgst(Float.parseFloat(cartObject.getString("prodIgst")));
-                        cartItem.setProdSgst(Float.parseFloat(cartObject.getString("prodSgst")));
-                        //"": 5, "": 1, "": 2, "prodWarranty": 2,
-                        cartItemList.add(cartItem);
-                    }
-
-                    if(cartItemList.size()>0){
-                        dbHelper.deleteAllCart();
-                        dbHelper.add_to_Cart(cartItemList);
-                        cartAdapter.notifyDataSetChanged();
-                        updateUi();
-                    }else {
-                        showNoData(true);
-                    }
-
-                }else {
-                    DialogAndToast.showDialog(response.getString("message"),CartActivity.this);
-                }
-            }else if(apiName.equals("updatCart")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.updateCart(cartItem);
-                    updateUi();
-                    Log.d(TAG, "updated cart" );
-                }else {
-                    DialogAndToast.showToast(response.getString("message"),CartActivity.this);
-                }
-            }else if(apiName.equals("removeCart")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.deleteCart(cartItem);
-                    updateUi();
-                    Log.d(TAG, "Deleted cart" );
-                }else {
-                    DialogAndToast.showToast(response.getString("message"),CartActivity.this);
-                }
-            }else if (apiName.equals("generate_order")){
+             if (apiName.equals("generate_order")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                     Log.d(TAG, "Ordeer Generated" );
-                    String orderId = response.getJSONObject("result").getString("orderId");
-                    Log.d(TAG, "orderId "+orderId );
-                    placeOrder(shopArray, orderId);  // open payment option
+                    orderNumber = response.getJSONObject("result").getString("orderNumber");
+                    //totalPrice = dbHelper.getTotalPriceCart();
+                   // dbHelper.deleteTable(DbHelper.CART_TABLE);
+                    itemList.clear();
+                    myItemAdapter.notifyDataSetChanged();
+                    if(paymentMode.equals("Cash")){
+                        dbHelper.deleteTable(DbHelper.CART_TABLE);
+                        dbHelper.deleteTable(DbHelper.PRODUCT_UNIT_TABLE);
+                        dbHelper.deleteTable(DbHelper.PRODUCT_SIZE_TABLE);
+                        dbHelper.deleteTable(DbHelper.PRODUCT_COLOR_TABLE);
+                        dbHelper.deleteTable(DbHelper.PROD_FREE_OFFER_TABLE);
+                        dbHelper.deleteTable(DbHelper.PROD_PRICE_TABLE);
+                        dbHelper.deleteTable(DbHelper.PROD_PRICE_DETAIL_TABLE);
+                        dbHelper.deleteTable(DbHelper.PROD_COMBO_TABLE);
+                        dbHelper.deleteTable(DbHelper.PROD_COMBO_DETAIL_TABLE);
+                        dbHelper.deleteTable(DbHelper.COUPON_TABLE);
+                        /*for (MyProduct cartItem : cartItemList) {
+                           dbHelper.setQoh(cartItem.getProdId(),-cartItem.getQty());
+                            if(cartItem.getIsBarCodeAvailable().equals("Y")){
+                                for(Barcode barcode : cartItem.getBarcodeList()){
+                                    dbHelper.removeBarCode(barcode.getBarcode());
+                                }
+                            }
+                        }*/
+                        Intent intent = new Intent(CartActivity.this, TransactionDetailsActivity.class);
+                        intent.putExtra("orderNumber", orderNumber);
+                        startActivity(intent);
+                        finish();
+                    }else{
+                        // integrate ccAvenue..
+                    }
+
+                    //placeOrder(shopArray, orderId);
                 }else {
                     DialogAndToast.showToast(response.getString("message"),CartActivity.this);
                 }
             }else if(apiName.equals("place_order")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.deleteAllCart();
-                    cartItemList.clear();
-                    recycler_itemlist.setAdapter(null);
-                    cartAdapter.notifyDataSetChanged();
-                    updateCartCount();
+                    dbHelper.deleteTable(DbHelper.CART_TABLE);
+                    itemList.clear();
+                    myItemAdapter.notifyDataSetChanged();
+                    relativeLayoutCartFooter.setVisibility(View.GONE);
                     Log.d(TAG, "Ordeer Placed" );
                 }else {
                     DialogAndToast.showToast(response.getString("message"),CartActivity.this);
                 }
-            }
+            }else if(apiName.equals("productDetails")){
+                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
+                     JSONObject jsonObject = response.getJSONObject("result");
+                     if(productDetailsType == 1){
+                         MyProduct product = itemList.get(position);
+                         product.setQoh(jsonObject.getInt("prodQoh"));
+                         checkFreeProductOffer();
+                     }else {
+                         freeProdut = new MyProduct();
+                         freeProdut.setId(jsonObject.getString("prodId"));
+                         freeProdut.setCatId(jsonObject.getString("prodCatId"));
+                         freeProdut.setSubCatId(jsonObject.getString("prodSubCatId"));
+                         freeProdut.setName(jsonObject.getString("prodName"));
+                         freeProdut.setQoh(jsonObject.getInt("prodQoh"));
+                         freeProdut.setQuantity(1);
+                         freeProdut.setFreeProductPosition(position+1);
+                         freeProdut.setMrp(Float.parseFloat(jsonObject.getString("prodMrp")));
+                         freeProdut.setSellingPrice(0);
+                         freeProdut.setCode(jsonObject.getString("prodCode"));
+                         freeProdut.setIsBarcodeAvailable(jsonObject.getString("isBarcodeAvailable"));
+                         //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
+                         freeProdut.setDesc(jsonObject.getString("prodDesc"));
+                         freeProdut.setLocalImage(R.drawable.thumb_16);
+                         freeProdut.setProdImage1(jsonObject.getString("prodImage1"));
+                         freeProdut.setProdImage2(jsonObject.getString("prodImage2"));
+                         freeProdut.setProdImage3(jsonObject.getString("prodImage3"));
+                         freeProdut.setProdHsnCode(jsonObject.getString("prodHsnCode"));
+                         freeProdut.setProdMfgDate(jsonObject.getString("prodMfgDate"));
+                         freeProdut.setProdExpiryDate(jsonObject.getString("prodExpiryDate"));
+                         freeProdut.setProdMfgBy(jsonObject.getString("prodMfgBy"));
+                         freeProdut.setProdExpiryDate(jsonObject.getString("prodExpiryDate"));
+                         freeProdut.setOfferId(jsonObject.getString("offerId"));
+                         freeProdut.setProdCgst(Float.parseFloat(jsonObject.getString("prodCgst")));
+                         freeProdut.setProdIgst(Float.parseFloat(jsonObject.getString("prodIgst")));
+                         freeProdut.setProdSgst(Float.parseFloat(jsonObject.getString("prodSgst")));
+                         freeProdut.setProdWarranty(jsonObject.getString("prodWarranty"));
+                         //myProduct.setSubCatName(subcatname);
+                         onProductClicked(position, type);
+                     }
+
+                 }
+             }
         } catch (JSONException e) {
             e.printStackTrace();
             DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),CartActivity.this);
         }
     }
 
-    private void showNoData(boolean show){
-        if(show){
-            recycler_itemlist.setVisibility(View.GONE);
-            tvnoData.setVisibility(View.VISIBLE);
-        }else{
-            recycler_itemlist.setVisibility(View.VISIBLE);
-            tvnoData.setVisibility(View.GONE);
+    @Override
+    public void onDialogPositiveClicked(){
+      Intent intent = new Intent(CartActivity.this,InvoiceActivity.class);
+      intent.putExtra("orderNumber",orderNumber);
+      startActivity(intent);
+      finish();
+    }
+
+
+    @Override
+    public void onItemClicked(int position, int type) {
+        this.position = position;
+        this.type = type;
+        if(type==2){
+            productDetailsType = 1;
+            getProductDetails(itemList.get(position).getId());
+        }else onProductClicked(position, type);
+    }
+
+    private void checkFreeProductOffer(){
+        if(type ==2 && itemList.get(position).getProductDiscountOffer()!=null){
+            ProductDiscountOffer productDiscountOffer = itemList.get(position).getProductDiscountOffer();
+            if(productDiscountOffer.getProdBuyId()!= productDiscountOffer.getProdFreeId()){
+                productDetailsType = 2;
+                getProductDetails(String.valueOf(productDiscountOffer.getProdFreeId()));
+            }else onProductClicked(position, type);
+        }else {
+            onProductClicked(position, type);
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateCartCount();
+    private void getProductDetails(String prodId){
+        Map<String,String> params=new HashMap<>();
+        params.put("id", prodId); // as per user selected category from top horizontal categories list
+        params.put("code", shopCode);
+        params.put("dbName",shopCode);
+        Log.d(TAG, params.toString());
+        String url=getResources().getString(R.string.url)+"/products/ret_products_details";
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"productDetails");
     }
 
-    public void updateCartCount(){
-        if(dbHelper.getCartCount()>0){
-            rlfooterviewcart.setVisibility(View.VISIBLE);
-            List<CartItem> cartItemList = new ArrayList<>();
-            cartItemList = dbHelper.getAllCartItems();
-            float total_amount =0;
-            for (CartItem cartItem: cartItemList) {
-                total_amount = total_amount + cartItem.getTotalAmout();
+
+    private  void onProductClicked(int position, int type){
+        this.position = position;
+        Log.i(TAG,"onItemClicked "+position+" type "+type);
+        MyProduct item = (MyProduct) itemList.get(position);
+        if(type == 1){
+            if(itemList.size() == 1 && item.getQuantity() == 1){
+                itemList.clear();
+                //dbHelper.removeProductFromCart(item.getProdBarCode());
+                dbHelper.removeProductFromCart(item.getId());
+                relativeLayoutCartFooter.setVisibility(View.GONE);
+                rlAddressBilling.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
+                linearLayoutScanCenter.setVisibility(View.VISIBLE);
+                myItemAdapter.notifyDataSetChanged();
+                offerPer = 0f;
+                offerName = "";
+                offerMaxAmount = 0f;
+                offerId = 0;
+                deliveryDistance = 0;
+
+            }else{
+                int qty = item.getQuantity() - 1;
+                float netSellingPrice = getOfferAmount(item,type);
+                item.setQuantity(qty);
+                qty = item.getQuantity();
+                Log.i(TAG,"netSellingPrice "+netSellingPrice);
+                float amount = item.getTotalAmount() - netSellingPrice;
+                Log.i(TAG,"tot amount "+amount);
+                item.setTotalAmount(amount);
+                dbHelper.updateCartData(item);
+                setFooterValues();
+                if(qty == 0){
+                    itemList.remove(position);
+                }
+                myItemAdapter.notifyItemChanged(position);
             }
-            tv_total.setText("Amount "+String.valueOf(total_amount));
-            tv_totalItems.setText("Item "+String.valueOf(dbHelper.getCartCount()));
-        }else rlfooterviewcart.setVisibility(View.GONE);
+        }else if(type == 2){
+            if(item.getIsBarcodeAvailable().equals("Y")){
+               /* if(item.getQuantity() == item.getBarcodeList().size()){
+                    DialogAndToast.showDialog("There are no more stocks",this);
+                }else{*/
+                    int qty = item.getQuantity() + 1;
+                    item.setQuantity(qty);
+                    Log.i(TAG,"qty "+qty);
+                    float netSellingPrice = getOfferAmount(item,type);
+                    qty = item.getQuantity();
+                    Log.i(TAG,"netSellingPrice "+netSellingPrice);
+                    float amount = item.getTotalAmount() + netSellingPrice;
+                    Log.i(TAG,"tot amount "+amount);
+                    item.setTotalAmount(amount);
+                    dbHelper.updateCartData(item);
+                    if(itemList.size() == 1){
+                        relativeLayoutCartFooter.setVisibility(View.VISIBLE);
+                    }
+                    setFooterValues();
+                    myItemAdapter.notifyItemChanged(position);
+                //}
+
+            }else{
+                if(item.getQuantity() == item.getQoh()){
+                    DialogAndToast.showDialog("There are no more stocks",this);
+                }else{
+                    int qty = item.getQuantity() + 1;
+                    item.setQuantity(qty);
+                    float netSellingPrice = getOfferAmount(item,type);
+                    Log.i(TAG,"netSellingPrice "+netSellingPrice);
+                    float amount = item.getTotalAmount() + netSellingPrice;
+                    Log.i(TAG,"tot amount "+amount);
+                    item.setTotalAmount(amount);
+                    qty = item.getQuantity();
+                    Log.i(TAG,"qty "+qty);
+                    dbHelper.updateCartData(item);
+                    if(itemList.size() == 1){
+                        relativeLayoutCartFooter.setVisibility(View.VISIBLE);
+                    }
+                    setFooterValues();
+                    myItemAdapter.notifyItemChanged(position);
+                }
+            }
+
+        }else if(type == 3){
+            String offerName = null;
+            rlOfferDesc.setVisibility(View.VISIBLE);
+            ImageView iv_clear = findViewById(R.id.iv_clear);
+            TextView tvOfferName = findViewById(R.id.text_offer_name);
+            findViewById(R.id.relative_footer_action).setBackgroundColor(colorTheme);
+            TextView tv = findViewById(R.id.text_action);
+            tv.setText("OKAY! GOT IT");
+
+            iv_clear.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    rlOfferDesc.setVisibility(View.GONE);
+                }
+            });
+            findViewById(R.id.relative_footer_action).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    rlOfferDesc.setVisibility(View.GONE);
+                }
+            });
+
+            List<String> offerDescList = new ArrayList<>();
+            if(item.getProductOffer() instanceof ProductPriceOffer) {
+                ProductPriceOffer productPriceOffer = (ProductPriceOffer) item.getProductOffer();
+                offerName = productPriceOffer.getOfferName();
+                float totOfferAmt = 0f;
+                for(ProductPriceDetails productPriceDetails : productPriceOffer.getProductPriceDetails()){
+                    totOfferAmt = totOfferAmt + productPriceDetails.getPcodPrice();
+                    offerDescList.add("Buy "+productPriceDetails.getPcodProdQty()+" at Rs "+
+                            Utility.numberFormat(totOfferAmt));
+                }
+                offerDescList.add("Offer valid till "+Utility.parseDate(productPriceOffer.getEndDate(),"yyyy-MM-dd",
+                        "EEE dd MMMM, yyyy")+" 23:59 PM");
+            }else if(item.getProductOffer() instanceof ProductDiscountOffer) {
+                ProductDiscountOffer productDiscountOffer = (ProductDiscountOffer) item.getProductOffer();
+                offerName = productDiscountOffer.getOfferName();
+            }
+            tvOfferName.setText(offerName);
+
+            RecyclerView recyclerViewOfferDesc=findViewById(R.id.recycler_view_offer_desc);
+            recyclerViewOfferDesc.setHasFixedSize(true);
+            final RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
+            recyclerViewOfferDesc.setLayoutManager(layoutManager);
+            recyclerViewOfferDesc.setItemAnimator(new DefaultItemAnimator());
+            OfferDescAdapter offerDescAdapter =new OfferDescAdapter(this,offerDescList);
+            recyclerViewOfferDesc.setAdapter(offerDescAdapter);
+            recyclerViewOfferDesc.setNestedScrollingEnabled(false);
+        }else if(type == 4){
+
+        }
+    }
+
+    private float getOfferAmount(MyProduct item,int type){
+        Log.d("item "+item.getName(), " type "+type);
+        float amount = 0f;
+        int qty = item.getQuantity();
+        if(item.getProductPriceOffer()!=null){
+            ProductPriceOffer productPriceOffer = (ProductPriceOffer)item.getProductPriceOffer();
+            if(qty > 1){
+                int maxSize = productPriceOffer.getProductPriceDetails().size();
+                int mod = qty % maxSize;
+                Log.i(TAG,"mod "+mod);
+                if(mod == 0){
+                    mod = maxSize;
+                }
+                amount = getOfferPrice(mod,item.getSellingPrice(),productPriceOffer.getProductPriceDetails());
+            }else{
+                amount = item.getSellingPrice();
+            }
+
+            if(type == 1)
+            item.setQuantity(item.getQuantity() - 1);
+
+        }else if(item.getProductDiscountOffer()!=null){
+
+            ProductDiscountOffer productDiscountOffer = (ProductDiscountOffer)item.getProductDiscountOffer();
+            amount = item.getSellingPrice();
+            if(type == 1){
+                if(productDiscountOffer.getProdBuyId() == productDiscountOffer.getProdFreeId()){
+                    Log.i(TAG,"item qty "+item.getQuantity()+" offer buy qty"+productDiscountOffer.getProdBuyQty());
+                    Log.i(TAG,"minus mode "+(item.getQuantity() - item.getOfferItemCounter()-1)% productDiscountOffer.getProdBuyQty());
+                    if((item.getQuantity() - item.getOfferItemCounter() -1)% productDiscountOffer.getProdBuyQty() ==
+                            (productDiscountOffer.getProdBuyQty()-1)){
+                        item.setQuantity(item.getQuantity() - 2);
+                        item.setOfferItemCounter(item.getOfferItemCounter() - 1);
+                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()));
+
+                    }else{
+                        item.setQuantity(item.getQuantity() - 1);
+                    }
+                }else{
+                    item.setQuantity(item.getQuantity() - 1);
+                    Log.i(TAG,"minus mode "+item.getQuantity() % productDiscountOffer.getProdBuyQty());
+                    if(item.getQuantity() % productDiscountOffer.getProdBuyQty() == (productDiscountOffer.getProdBuyQty()-1)){
+                        item.setOfferItemCounter(item.getOfferItemCounter() - 1);
+                        if(item.getOfferItemCounter() == 0){
+                            dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId());
+                            itemList.remove(item.getFreeProductPosition());
+                          //  myItemAdapter.notifyItemRemoved(item.getFreeProductPosition());
+                            myItemAdapter.notifyDataSetChanged();
+                        }else{
+                            MyProduct item1 = itemList.get(item.getFreeProductPosition());
+                            item1.setQuantity(item.getOfferItemCounter());
+                            dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
+                            myItemAdapter.notifyItemChanged(item.getFreeProductPosition());
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                        }
+                    }
+
+                }
+            }else if(type == 2){
+                if(productDiscountOffer.getProdBuyId() == productDiscountOffer.getProdFreeId()){
+                    Log.i(TAG,"Same product");
+                    Log.i(TAG,"item qty "+item.getQuantity()+" offer buy qty"+productDiscountOffer.getProdBuyQty());
+                    Log.i(TAG,"plus mode "+(item.getQuantity() - item.getOfferItemCounter())% productDiscountOffer.getProdBuyQty());
+                    if((item.getQuantity() - item.getOfferItemCounter())% productDiscountOffer.getProdBuyQty() == 0){
+                        item.setQuantity(item.getQuantity() + 1);
+                        item.setOfferItemCounter(item.getOfferItemCounter() + 1);
+                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()));
+                    }else{
+
+                    }
+                }else{
+                    Log.i(TAG,"Different product");
+                   if(item.getQuantity() % productDiscountOffer.getProdBuyQty() == 0){
+
+
+                       item.setOfferItemCounter(item.getOfferItemCounter() + 1);
+                       MyProduct item1 = null;
+                       if(item.getOfferItemCounter() == 1){
+                          // item1 = dbHelper.getProductDetails(productDiscountOffer.getProdFreeId());
+                           // integrate Api
+                           item1 = freeProdut;
+                           item1.setShopCode(shopCode);
+                           item1.setSellingPrice(0f);
+                           item1.setQuantity(1);
+                           item1.setFreeProductPosition(position+1);
+                           dbHelper.addProductToCart(item1);
+                           itemList.add(position+1,item1);
+                           item.setFreeProductPosition(position+1);
+                           dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()));
+                           dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()));
+                           //myItemAdapter.notifyItemInserted(itemList.size()-1);
+                           myItemAdapter.notifyDataSetChanged();
+                           Log.i(TAG,"Different product added to cart");
+                       }else{
+                           item1 = itemList.get(item.getFreeProductPosition());
+                           item1.setQuantity(item.getOfferItemCounter());
+                           item1.setTotalAmount(0f);
+                           dbHelper.updateFreeCartData(Integer.parseInt(item1.getId()),item1.getQuantity(),0f);
+                           dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()));
+                           myItemAdapter.notifyItemChanged(item.getFreeProductPosition());
+                           Log.i(TAG,"Different product updated in cart");
+                       }
+                     //  myItemAdapter.notifyDataSetChanged();
+                   }
+
+                }
+
+            }else{
+                amount = item.getSellingPrice();
+            }
+
+        }else{
+            amount = item.getSellingPrice();
+            if(type == 1)
+                item.setQuantity(item.getQuantity() - 1);
+        }
+
+        return amount;
+    }
+
+    private float getOfferPrice(int qty,float sp,List<ProductPriceDetails> productPriceDetailsList){
+        float amount = 0f;
+        for(ProductPriceDetails productPriceDetails:productPriceDetailsList){
+            if(productPriceDetails.getPcodProdQty() == qty){
+                amount = productPriceDetails.getPcodPrice();
+                Log.i(TAG,"offer price "+amount);
+                break;
+            }else{
+                amount = sp;
+            }
+        }
+        Log.i(TAG,"final selling price "+amount);
+        return amount;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.cart_menu, menu);
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==android.R.id.home){
-            onBackPressed();
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_search) {
+            BottomSearchFragment bottomSearchFragment = new BottomSearchFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("shopCode", shopCode);
+            bundle.putString("shopName", shopName);
+            bundle.putString("shopAddress", "");
+            bundle.putString("shopMobile", "");
+            bottomSearchFragment.setArguments(bundle);
+            bottomSearchFragment.setCallingActivityName("CartActivity", sharedPreferences, isDarkTheme);
+            bottomSearchFragment.setSubCatName("");
+            bottomSearchFragment.setSubcatId("");
+            bottomSearchFragment.show(getSupportFragmentManager(), bottomSearchFragment.getTag());
+            return true;
+        }else if (id == R.id.action_scan) {
+            openScannar();
+            return true;
+        }else if (id == android.R.id.home) {
+            super.onBackPressed();
             return true;
         }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemClicked(int prodId) {
+
+      //  Log.i(TAG,"item clicked "+prodId+" "+dbHelper.getBarCodesForCart(prodId).size());
+     //   MyProduct item = dbHelper.getProductDetails(prodId);
+        MyProduct item = null;
+       // integrate Api
+       setOffer(item);
+       // item.setProductPriceOfferList(dbHelper.getProductPriceOffer(""+item.getProdId()));
+
+        if(item.getIsBarcodeAvailable().equals("Y")){
+          //  item.setBarcodeList(dbHelper.getBarCodesForCart(prodId));
+            if(item.getBarcodeList() != null && item.getBarcodeList().size() > 0){
+                item.setQuantity(1);
+                item.setTotalAmount(item.getSellingPrice());
+                dbHelper.addProductToCart(item);
+                itemList.add(item);
+                myItemAdapter.notifyDataSetChanged();
+                if(itemList.size() > 0){
+                    setFooterValues();
+                    relativeLayoutCartFooter.setVisibility(View.VISIBLE);
+                }
+            }else{
+                DialogAndToast.showDialog("Product is out of stock.",this);
+            }
+
+        }else{
+            if(item.getQoh() > 0){
+                item.setQuantity(1);
+                item.setTotalAmount(item.getSellingPrice());
+                dbHelper.addProductToCart(item);
+                itemList.add(item);
+                //myItemAdapter.notifyItemChanged(itemList.size() -1 );
+                myItemAdapter.notifyDataSetChanged();
+                if(itemList.size() > 0){
+                    setFooterValues();
+                    relativeLayoutCartFooter.setVisibility(View.VISIBLE);
+                }
+            }else{
+                DialogAndToast.showDialog("Product is out of stock.",this);
+            }
+        }
+
+
+    }
+
+    private void setOffer(MyProduct item){
+        List<ProductPriceOffer> productPriceOfferList = dbHelper.getProductPriceOffer(""+item.getId());
+        List<ProductDiscountOffer> productDiscountOfferList = dbHelper.getProductFreeOffer(""+item.getId());
+        Log.i(TAG,"comboOfferList size "+productPriceOfferList.size());
+        Log.i(TAG,"productDiscountOfferList size "+productDiscountOfferList.size());
+
+        if(productPriceOfferList.size() > 0){
+            item.setProductOffer(productPriceOfferList.get(0));
+            item.setOfferId(""+productPriceOfferList.get(0).getId());
+            item.setOfferType("price");
+        }else if(productDiscountOfferList.size() > 0){
+            item.setProductOffer(productDiscountOfferList.get(0));
+            item.setOfferId(""+productDiscountOfferList.get(0).getId());
+            item.setOfferType("free");
+        }
+    }
+
+    public void showOfferDescription(MyProduct item){
+        OfferDescriptionFragment offerDescriptionFragment = new OfferDescriptionFragment();
+        offerDescriptionFragment.setProduct(item);
+        offerDescriptionFragment.setColorTheme(colorTheme);
+        offerDescriptionFragment.show(getSupportFragmentManager(), "Offer Description Bottom Sheet");
     }
 }

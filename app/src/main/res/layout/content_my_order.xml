@@ -38,19 +38,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_below="@+id/text_my_order"
         android:layout_above="@+id/linear_footer"
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_marginTop="10dp"
         android:id="@+id/recycler_order"
         android:layout_height="match_parent"
         android:layout_width="match_parent">
-    </android.support.v7.widget.RecyclerView>
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.recyclerview.widget.RecyclerView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <include layout="@layout/footer_layout"/>
 
 </RelativeLayout>

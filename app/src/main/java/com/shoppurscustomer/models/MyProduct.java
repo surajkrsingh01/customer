@@ -1,13 +1,190 @@
 package com.shoppurscustomer.models;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class MyProduct implements Serializable {
-    private String id,name,code,barCode,prodHsnCode, prodMfgDate, prodExpiryDate, prodMfgBy, offerId,
-            prodCgst, prodIgst, prodSgst, prodWarranty, desc,mrp,sellingPrice,image,subCatName,
-            prodImage1, prodImage2, prodImage3;
-    private int localImage, quantity;
-    private float discount;
+    private String id, shopCode,catId, subCatId,name,code, unit, isBarcodeAvailable, comboProductIds, barCode,prodHsnCode, prodMfgDate, prodExpiryDate, prodMfgBy, offerId, offerType,
+            prodWarranty, desc,image,subCatName, prodImage1, prodImage2, prodImage3, size, color, custCode;
+    private int offerItemCounter, freeProductPosition, localImage, quantity, qoh;
+    private float discount, mrp, sellingPrice, prodCgst, prodIgst, prodSgst, totalAmount ;
+    private ProductDiscountOffer productDiscountOffer;
+    private ProductPriceOffer productPriceOffer;
+    private ProductComboOffer productComboOffer;
+    private List<ProductUnit> productUnitList;
+    private List<ProductSize> productSizeList;
+    private List<Barcode> barcodeList;
+    private Object productOffer;
+
+
+    public Object getProductOffer() {
+        return productOffer;
+    }
+
+    public void setProductOffer(Object productOffer) {
+        this.productOffer = productOffer;
+    }
+
+    public String getCustCode() {
+        return custCode;
+    }
+
+    public void setCustCode(String custCode) {
+        this.custCode = custCode;
+    }
+
+    public int getQoh() {
+        return qoh;
+    }
+
+    public void setQoh(int qoh) {
+        this.qoh = qoh;
+    }
+
+    public String getShopCode() {
+        return shopCode;
+    }
+
+    public void setShopCode(String shopCode) {
+        this.shopCode = shopCode;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    public int getOfferItemCounter() {
+        return offerItemCounter;
+    }
+
+    public void setOfferItemCounter(int offerItemCounter) {
+        this.offerItemCounter = offerItemCounter;
+    }
+
+    public int getFreeProductPosition() {
+        return freeProductPosition;
+    }
+
+    public void setFreeProductPosition(int freeProductPosition) {
+        this.freeProductPosition = freeProductPosition;
+    }
+
+    public float getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(float totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public String getCatId() {
+        return catId;
+    }
+
+    public void setCatId(String catId) {
+        this.catId = catId;
+    }
+
+    public String getSubCatId() {
+        return subCatId;
+    }
+
+    public void setSubCatId(String subCatId) {
+        this.subCatId = subCatId;
+    }
+
+    public String getIsBarcodeAvailable() {
+        return isBarcodeAvailable;
+    }
+
+    public void setIsBarcodeAvailable(String isBarcodeAvailable) {
+        this.isBarcodeAvailable = isBarcodeAvailable;
+    }
+
+    public String getComboProductIds() {
+        return comboProductIds;
+    }
+
+    public void setComboProductIds(String comboProductIds) {
+        this.comboProductIds = comboProductIds;
+    }
+
+    public ProductComboOffer getProductComboOffer() {
+        return productComboOffer;
+    }
+
+    public void setProductComboOffer(ProductComboOffer productComboOffer) {
+        this.productComboOffer = productComboOffer;
+    }
+
+    public String getOfferType() {
+        return offerType;
+    }
+
+    public void setOfferType(String offerType) {
+        this.offerType = offerType;
+    }
+
+    public List<ProductUnit> getProductUnitList() {
+        return productUnitList;
+    }
+
+    public void setProductUnitList(List<ProductUnit> productUnitList) {
+        this.productUnitList = productUnitList;
+    }
+
+    public List<ProductSize> getProductSizeList() {
+        return productSizeList;
+    }
+
+    public void setProductSizeList(List<ProductSize> productSizeList) {
+        this.productSizeList = productSizeList;
+    }
+
+    public ProductDiscountOffer getProductDiscountOffer() {
+        return productDiscountOffer;
+    }
+
+    public void setProductDiscountOffer(ProductDiscountOffer productDiscountOffer) {
+        this.productDiscountOffer = productDiscountOffer;
+    }
+
+    public ProductPriceOffer getProductPriceOffer() {
+        return productPriceOffer;
+    }
+
+    public void setProductPriceOffer(ProductPriceOffer productPriceOffer) {
+        this.productPriceOffer = productPriceOffer;
+    }
+
+    public List<Barcode> getBarcodeList() {
+        return barcodeList;
+    }
+
+    public void setBarcodeList(List<Barcode> barcodeList) {
+        this.barcodeList = barcodeList;
+    }
+
 
     public String getBarCode() {
         return barCode;
@@ -81,27 +258,27 @@ public class MyProduct implements Serializable {
         this.offerId = offerId;
     }
 
-    public String getProdCgst() {
+    public float getProdCgst() {
         return prodCgst;
     }
 
-    public void setProdCgst(String prodCgst) {
+    public void setProdCgst(float prodCgst) {
         this.prodCgst = prodCgst;
     }
 
-    public String getProdIgst() {
+    public float getProdIgst() {
         return prodIgst;
     }
 
-    public void setProdIgst(String prodIgst) {
+    public void setProdIgst(float prodIgst) {
         this.prodIgst = prodIgst;
     }
 
-    public String getProdSgst() {
+    public float getProdSgst() {
         return prodSgst;
     }
 
-    public void setProdSgst(String prodSgst) {
+    public void setProdSgst(float prodSgst) {
         this.prodSgst = prodSgst;
     }
 
@@ -145,19 +322,19 @@ public class MyProduct implements Serializable {
         this.desc = desc;
     }
 
-    public String getMrp() {
+    public float getMrp() {
         return mrp;
     }
 
-    public void setMrp(String mrp) {
+    public void setMrp(float mrp) {
         this.mrp = mrp;
     }
 
-    public String getSellingPrice() {
+    public float getSellingPrice() {
         return sellingPrice;
     }
 
-    public void setSellingPrice(String sellingPrice) {
+    public void setSellingPrice(float sellingPrice) {
         this.sellingPrice = sellingPrice;
     }
 

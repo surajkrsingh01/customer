@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/relative_footer_action"
+    android:layout_alignParentBottom="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/text_action"
+        android:text="Update"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:textSize="@dimen/footer_action_text_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/image_close"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/clear"
+        android:tint="@color/red_500"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp" />
+
+    <RelativeLayout
+        android:layout_below="@+id/image_close"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingBottom="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/text_header"
+            android:text="UPLOAD PHOTO"
+            android:textAllCaps="true"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <Button
+            android:id="@+id/btn_gallery"
+            android:layout_below="@+id/text_header"
+            android:text="BROWSE FOLDER"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:background="@drawable/accent_1_solid_round_corner_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/text_or"
+            android:layout_below="@+id/btn_gallery"
+            android:text="OR"
+            android:textAllCaps="true"
+            android:textSize="16sp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_camera"
+            android:layout_below="@+id/text_or"
+            android:text="SCAN FROM CAMERA"
+            android:textColor="@color/white"
+            android:background="@drawable/accent_color_3_solid_round_backgground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

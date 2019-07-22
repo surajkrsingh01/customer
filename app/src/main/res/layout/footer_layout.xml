@@ -189,7 +189,7 @@
         <ImageView
             android:id="@+id/image_footer_5"
             android:layout_below="@+id/separator_footer_5"
-            android:src="@drawable/ic_person_black_24dp"
+            android:src="@drawable/payment_icon"
             android:tint="@color/bottom_nav_fore_color"
             android:layout_centerHorizontal="true"
             android:layout_width="@dimen/bottom_nav_icon_size"
@@ -197,7 +197,7 @@
 
         <TextView
             android:id="@+id/text_footer_5"
-            android:text="@string/profile"
+            android:text="@string/instant_pay"
             android:textSize="@dimen/bottom_nav_text_size"
             android:layout_below="@+id/image_footer_5"
             android:layout_marginTop="@dimen/bottom_nav_text_vertical_margin"

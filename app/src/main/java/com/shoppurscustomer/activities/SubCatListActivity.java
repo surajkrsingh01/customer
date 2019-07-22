@@ -2,12 +2,12 @@ package com.shoppurscustomer.activities;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -18,10 +18,9 @@ import android.widget.TextView;
 import com.android.volley.Request;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.adapters.CategoryAdapter;
-import com.shoppurscustomer.models.CatListItem;
-import com.shoppurscustomer.models.Category;
 import com.shoppurscustomer.models.HomeListItem;
 import com.shoppurscustomer.models.SubCategory;
+import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
 
 import org.json.JSONArray;
@@ -173,11 +172,12 @@ public class SubCatListActivity extends NetworkBaseActivity {
         }*/
 
         Map<String,String> params=new HashMap<>();
-        //params.put("catId",catId);
+        params.put("id",catId);
+        params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
 
-        String url=getResources().getString(R.string.url)+"/subcategories?catId="+catId;
+        String url=getResources().getString(R.string.url)+"/subcategories";
         showProgress(true);
-        jsonObjectApiRequest(Request.Method.GET,url,new JSONObject(params),"subcategories");
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"subcategories");
     }
 
     @Override

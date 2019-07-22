@@ -8,16 +8,12 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.util.Log;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.shoppurscustomer.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by ARIEON-7 on 30-06-2017.

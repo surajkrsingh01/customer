@@ -13,6 +13,7 @@
     <color name="colorPrimary900">@color/grey900</color>
     <color name="colorPrimaryDark">@color/grey300</color>
     <color name="colorAccent">@color/accent_blue_A_400</color>
+    <color name="transparent_back">#80212121</color>
 
 
     <color name="dark_color">@color/grey900</color>
@@ -38,7 +39,7 @@
     <color name="end_color">#46000000</color>
 	
 	<color name="teal_50">#e0f2f1</color>
-    <color name="teal_100">#b2dfdb</color>
+    <color name="teal_100">#FAB2DFDB</color>
     <color name="teal_200">#80cbc4</color>
     <color name="teal_300">#4db6ac</color>
     <color name="teal_400">#26a69a</color>
@@ -321,6 +322,8 @@
     <color name="brown800">#4E342E</color>
     <color name="brown900">#3E2723</color>
     <color name="transparent_light_grey">#ECEFF1</color>
+
+
 
 
 </resources>

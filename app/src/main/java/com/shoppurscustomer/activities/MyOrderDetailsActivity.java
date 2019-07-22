@@ -1,9 +1,9 @@
 package com.shoppurscustomer.activities;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,9 +11,7 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.shoppurscustomer.R;
-import com.shoppurscustomer.adapters.MyOrderAdapter;
 import com.shoppurscustomer.adapters.MyOrderDetailsAdapter;
-import com.shoppurscustomer.models.MyOrder;
 import com.shoppurscustomer.models.MyOrderDetail;
 import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.utilities.Constants;

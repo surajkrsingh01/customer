@@ -2,13 +2,14 @@ package com.shoppurscustomer.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -24,8 +25,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
-import com.shoppurscustomer.activities.ProductDetailActivity;
-import com.shoppurscustomer.activities.ProductListActivity;
+import com.shoppurscustomer.activities.Settings.SettingActivity;
 import com.shoppurscustomer.activities.StoresListActivity;
 import com.shoppurscustomer.activities.SubCatListActivity;
 import com.shoppurscustomer.interfaces.MyItemTouchListener;
@@ -34,8 +34,8 @@ import com.shoppurscustomer.models.Category;
 import com.shoppurscustomer.models.HomeListItem;
 import com.shoppurscustomer.models.MyHeader;
 import com.shoppurscustomer.models.MyItem;
-import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.SubCategory;
+import com.shoppurscustomer.utilities.Utility;
 
 import java.util.Date;
 import java.util.List;
@@ -47,11 +47,16 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private List<Object> itemList;
     private Context context;
     private String type;
+    private int colorTheme;
 
     private MyItemTouchListener myItemTouchListener;
 
     public void setMyItemTouchListener(MyItemTouchListener myItemTouchListener) {
         this.myItemTouchListener = myItemTouchListener;
+    }
+
+    public void setColorTheme(int colorTheme){
+        this.colorTheme = colorTheme;
     }
 
     private ConstraintSet constraintSet = new ConstraintSet();
@@ -67,16 +72,23 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
         private TextView textHeader,textDesc;
         private RecyclerView recyclerView;
+        private ImageView profile_image;
 
         public MyHomeHeaderViewHolder(View itemView) {
             super(itemView);
             textHeader=itemView.findViewById(R.id.text_date_range);
             textDesc=itemView.findViewById(R.id.text_desc);
             recyclerView=itemView.findViewById(R.id.recycler_view);
+            profile_image = itemView.findViewById(R.id.profile_image);
+            profile_image.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
+            if(view == profile_image){
+                    Intent intent = new Intent(context, SettingActivity.class);
+                    context.startActivity(intent);
+            }
         }
     }
 
@@ -90,6 +102,7 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             super(itemView);
             textHeader=itemView.findViewById(R.id.text_title);
             btnSeeAll=itemView.findViewById(R.id.btn_see_all);
+            Utility.setColorFilter(btnSeeAll.getBackground(), colorTheme);
             recyclerView=itemView.findViewById(R.id.recycler_view);
 
          //   btnSeeAll.setOnClickListener(this);

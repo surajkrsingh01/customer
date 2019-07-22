@@ -9,13 +9,28 @@ public class Constants {
 
     public static String MYPREFERENCEKEY="com."+APP_NAME+".MyPrefs";
     public static String USER_ID="userID";
+    public static String FIRST_NAME = "firstName";
+    public static String USER_CODE="userCode";
     public static String USER_TYPE_ID="user_type_id";
     public static String EMAIL="email";
     public static String PASSWORD="password";
     public static String MOBILE_NO="mobileNo";
+    public static String ADDRESS="address";
+    public static String COUNTRY="country";
+    public static String STATE="state";
+    public static String USER_LAT="lat";
+    public static String USER_LONG="long";
+    public static String ZIP = "zip";
+    public static String CITY = "city";
     public static String DB_NAME="db_name";
     public static String DB_USER_NAME="db_user_name";
+    public static String SHOP_DB_USER_NAME="shop_db_user_name";
+    public static String SHOP_DBNAME = "shop_db_name";
     public static String DB_PASSWORD="db_password";
+    public static String SHOP_DB_PASSWORD="shop_db_password";
+    public static String PROFILE_PIC = "profile_pic";
+    public static String GST_NO = "gst_no";
+
 
    // public static String DOB="dob";
     public static String LOCATION="location";
@@ -52,6 +67,25 @@ public class Constants {
     public static final String STATUS = PACKAGE_NAME +
             ".STATUS";
 
-    public static final String SHOP_INSIDE = "shop_code";
+    public static final String SHOP_INSIDE_CODE = "shop_code";
     public static final String SHOP_INSIDE_NAME = "shop_name";
+
+
+    //apis
+    public static String UPDATE_BASIC_PROFILE="profile/update_basic_details";
+    public static String UPDATE_ADDRESS="profile/update_address";
+    public static String GENERATE_ORDER="order/generate_order";
+    public static String PLACE_ORDER="order/place_order";
+    public static String ADD_TRANS_DATA="trans/add_trans_data";
+    public static String ADD_INVOICE_DATA="trans/generate_invoice";
+    public static String GET_COUNTRIES="countries";
+    public static String GET_STATES="states?countryId=";
+    public static String GET_CITIES="cities?stateId=";
+    public static String GET_INVOICE="trans/get_invoice";
+
+    public static String IS_DELIVERY_AVAILABLE="isDeliveryAvailable";
+    public static String MIN_DELIVERY_DISTANCE="minDeliveryDistance";
+    public static String MIN_DELIVERY_AMOUNT="minDeliveryAmount";
+    public static String DELIVERY_EST_TIME="deliveryEstTime";
+    public static String CHARGE_AFTER_MIN_DISTANCE="chargeAfterMinDistance";
 }

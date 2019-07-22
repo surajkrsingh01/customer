@@ -4,26 +4,47 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
+import com.facebook.login.Login;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.utilities.ConnectionDetector;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
+import com.shoppurscustomer.utilities.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,18 +52,42 @@ import java.util.Map;
 public class LoginActivity extends NetworkBaseActivity{
 
     private EditText editTextMobileNumber,editTextPassword;
-    private TextView textForgotPassword;
-    private Button btnLogin,btnSignUp;
-    private String mobile,password;
+    private TextView textForgotPassword, text_mobile_icon, text_password_icon, text_sign_up_icon, text_forgot_password_icon;
+    private Button btnLogin;
+    private TextView text_sign_up;
+    private String mobile,password, email;
+    private ImageView  image_twitter, image_facebook, image_google;
+    private com.google.android.gms.common.SignInButton loginGoogleButton;
+    private int RC_SIGN_IN = 111;
+
+    private CallbackManager callbackManager;
+    private LoginButton loginFacebookButton;
+    private AccessToken accessToken;
+    private ProfileTracker profileTracker;
+    private String facebookUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        initGoogleLogin();
+
         editTextMobileNumber=(EditText)findViewById(R.id.edit_mobile);
         editTextPassword=(EditText)findViewById(R.id.edit_password);
         textForgotPassword=(TextView)findViewById(R.id.text_forgot_password);
+        text_mobile_icon = findViewById(R.id.text_mobile_icon);
+        text_mobile_icon.setTypeface(Utility.getSimpleLineIconsFont(this));
+        text_password_icon = findViewById(R.id.text_password_icon);
+        text_password_icon.setTypeface(Utility.getSimpleLineIconsFont(this));
+        text_sign_up_icon =findViewById(R.id.text_sign_up_icon);
+        text_sign_up_icon.setTypeface(Utility.getSimpleLineIconsFont(this));
+        text_forgot_password_icon =findViewById(R.id.text_forgot_password_icon);
+        text_forgot_password_icon.setTypeface(Utility.getSimpleLineIconsFont(this));
+        loginFacebookButton =  findViewById(R.id.login_button);
+        image_twitter =  findViewById(R.id.image_twitter);
+        image_google =  findViewById(R.id.image_google);
+        image_facebook = findViewById(R.id.image_facebook);
         progressDialog.setMessage(getResources().getString(R.string.logging_user));
 
         textForgotPassword.setOnClickListener(new View.OnClickListener() {
@@ -70,8 +115,8 @@ public class LoginActivity extends NetworkBaseActivity{
             }
         });
 
-        btnSignUp=(Button)findViewById(R.id.btn_register);
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
+        text_sign_up= findViewById(R.id.text_sign_up);
+        text_sign_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(LoginActivity.this,RegisterActivity.class);
@@ -90,6 +135,85 @@ public class LoginActivity extends NetworkBaseActivity{
                 drawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.accent_color_1), PorterDuff.Mode.SRC_IN));
             }
         }
+
+
+        loginFacebookButton.setReadPermissions(Arrays.asList("email","public_profile"));
+        callbackManager = CallbackManager.Factory.create();
+        loginFacebookButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                accessToken= loginResult.getAccessToken();
+                facebookUserId =accessToken.getUserId();
+                Log.i("Login","Permissions: "+accessToken.getPermissions().toString());
+                if(Profile.getCurrentProfile() == null) {
+                    profileTracker = new ProfileTracker() {
+                        @Override
+                        protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
+                            int dimensionPixelSize = getResources().getDimensionPixelSize(R.dimen.com_facebook_profilepictureview_preset_size_large);
+                            Uri profilePictureUri= profile2.getProfilePictureUri(dimensionPixelSize , dimensionPixelSize);
+                            editor.putString(Constants.USER_ID,profile2.getId());
+                            editor.putString(Constants.FIRST_NAME,profile2.getFirstName());
+                            editor.putString(Constants.LAST_NAME,profile2.getLastName());
+                            editor.putString(Constants.USERNAME,profile2.getFirstName()+" "+profile2.getLastName());
+                            editor.putString(Constants.PROFILE_PIC,profilePictureUri.toString());
+                            editor.putBoolean(Constants.IS_LOGGED_IN,true);
+                            editor.commit();
+                            Log.d("Profile", profile2.getFirstName());
+                            makeGraphRequest();
+                            profileTracker.stopTracking();
+                        }
+                    };
+                    // no need to call startTracking() on mProfileTracker
+                    // because it is called by its constructor, internally.
+                }
+                else {
+                    Profile profile = Profile.getCurrentProfile();
+                    int dimensionPixelSize = getResources().getDimensionPixelSize(R.dimen.com_facebook_profilepictureview_preset_size_large);
+                    Uri profilePictureUri= profile.getProfilePictureUri(dimensionPixelSize , dimensionPixelSize);
+                    editor.putString(Constants.USER_ID,profile.getId());
+                    editor.putString(Constants.FIRST_NAME,profile.getFirstName());
+                    editor.putString(Constants.LAST_NAME,profile.getLastName());
+                    editor.putString(Constants.USERNAME,profile.getFirstName()+" "+profile.getLastName());
+                    editor.putString(Constants.PROFILE_PIC,profilePictureUri.toString());
+                    editor.putBoolean(Constants.IS_LOGGED_IN,true);
+                    editor.commit();
+                    Log.d("Profile", profile.getFirstName());
+                    makeGraphRequest();
+                }
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.i("Login","Error "+error.toString());
+            }
+        });
+
+        image_twitter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        image_google.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gogleLogin();
+            }
+        });
+
+        image_facebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginFacebookButton.performClick();
+            }
+        });
 
     }
 
@@ -122,7 +246,7 @@ public class LoginActivity extends NetworkBaseActivity{
             if(ConnectionDetector.isNetworkAvailable(this)) {
                 progressDialog.setMessage(getResources().getString(R.string.logging_user));
                 showProgress(true);
-                volleyRequest();
+                loginRequest();
             }else {
                 DialogAndToast.showDialog(getResources().getString(R.string.no_internet),this);
             }
@@ -130,13 +254,30 @@ public class LoginActivity extends NetworkBaseActivity{
         }
     }
 
-    private void volleyRequest(){
+    private void loginRequest(){
         Map<String,String> params=new HashMap<>();
         params.put("mobile",mobile);
         params.put("password",password);
         String url=getResources().getString(R.string.url)+"/loginCustomer";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"loginCustomer");
+    }
+
+    public void registerRequest(String email, String fullName, String photoUrl, String password){
+        Map<String,String> params=new HashMap<>();
+        params.put("username",fullName);
+        params.put("mobile",mobile);
+        // params.put("username",email.split("@")[0]);
+        params.put("user_email",email);
+        params.put("mpassword",password);
+        params.put("photo", photoUrl);
+        params.put("user_type","Customer");
+        // params.put("address", "");
+        params.put("created_by",fullName);
+        params.put("updated_by",fullName);
+        params.put("action","1");
+        String url=getResources().getString(R.string.url)+"/registerCustomer";
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"registerCustomer");
     }
 
     private void getFavoriteStore(){
@@ -157,48 +298,173 @@ public class LoginActivity extends NetworkBaseActivity{
         try {
             // JSONObject jsonObject=response.getJSONObject("response");
             Log.d("response", response.toString());
-            if(apiName.equals("loginCustomer")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    JSONObject dataObject=response.getJSONObject("result");
+            if (apiName.equals("loginCustomer")) {
+                if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
+                    JSONObject dataObject = response.getJSONObject("result");
 
-                    editor.putString(Constants.FULL_NAME,dataObject.getString("username"));
-                    editor.putString(Constants.USER_ID,dataObject.getString("userid"));
-                    editor.putString(Constants.EMAIL,dataObject.getString("user_email"));
-                    editor.putString(Constants.MOBILE_NO,dataObject.getString("mobile"));
-                    editor.putString(Constants.DB_NAME,dataObject.getString("dbname"));
-                    editor.putString(Constants.DB_USER_NAME,dataObject.getString("dbusername"));
-                    editor.putString(Constants.DB_PASSWORD,dataObject.getString("dbpassword"));
-                    editor.putBoolean(Constants.IS_LOGGED_IN,true);
+                    editor.putString(Constants.FULL_NAME, dataObject.getString("username"));
+                    editor.putString(Constants.USER_ID, dataObject.getString("dbname"));
+                    editor.putString(Constants.EMAIL, dataObject.getString("user_email"));
+                    editor.putString(Constants.MOBILE_NO, dataObject.getString("mobile"));
+                    editor.putString(Constants.ADDRESS, dataObject.getString("address"));
+                    editor.putString(Constants.DB_NAME, dataObject.getString("dbname"));
+                    editor.putString(Constants.DB_USER_NAME, dataObject.getString("dbusername"));
+                    editor.putString(Constants.DB_PASSWORD, dataObject.getString("dbpassword"));
+                    //editor.putBoolean(Constants.IS_LOGGED_IN, true);
                     editor.commit();
                     //DialogAndToast.showToast("Logged In",LoginActivity.this);
                     getFavoriteStore();
-                }else {
-                    DialogAndToast.showDialog(response.getString("message"),LoginActivity.this);
+                } else {
+                    DialogAndToast.showDialog(response.getString("message"), LoginActivity.this);
                 }
-            }else if(apiName.equals("getfavoriteshop")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
+            } else if (apiName.equals("getfavoriteshop")) {
+                if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
                     Log.d(TAG, response.toString());
                     List<String> mFavoriteList = new ArrayList();
+
+                    if(!response.getString("result").equals("null")){
                     JSONArray jsonArray = response.getJSONArray("result");
-                    for (int i= 0;i< jsonArray.length();i++){
-                    mFavoriteList.add(jsonArray.getJSONObject(i).getString(""+i));
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        mFavoriteList.add(jsonArray.getJSONObject(i).getString("" + i));
                     }
-                    if(mFavoriteList.size()>0){
+                    if (mFavoriteList.size() > 0) {
                         dbHelper.deleteAllFavorite();
                         dbHelper.add_to_Favorite(mFavoriteList);
                     }
+                }
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                     editor.putBoolean(Constants.IS_LOGGED_IN, true);
                     editor.commit();
                 }
-            }
+            } else if (apiName.equals("registerCustomer")) {
+                Log.d("response ", response.toString());
+                if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
+                    JSONObject dataObject = response.getJSONObject("result");
 
-        } catch (JSONException e) {
+                    editor.putString(Constants.FULL_NAME, dataObject.getString("username"));
+                    editor.putString(Constants.USER_ID, dataObject.getString("userid"));
+                    editor.putString(Constants.EMAIL, dataObject.getString("user_email"));
+                    editor.putString(Constants.MOBILE_NO, dataObject.getString("mobile"));
+                    editor.putString(Constants.DB_NAME, dataObject.getString("dbname"));
+                    editor.putString(Constants.DB_USER_NAME, dataObject.getString("dbusername"));
+                    editor.putString(Constants.DB_PASSWORD, dataObject.getString("dbpassword"));
+                    editor.putBoolean(Constants.IS_LOGGED_IN, true);
+                    editor.commit();
+                    editor.putBoolean(Constants.IS_LOGGED_IN, true);
+                    editor.commit();
+                    DialogAndToast.showToast("Account created", LoginActivity.this);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                    editor.putBoolean(Constants.IS_LOGGED_IN, true);
+                    editor.commit();
+                    DialogAndToast.showToast("Account created", LoginActivity.this);
+                } else {
+
+                    DialogAndToast.showDialog(response.getString("message"), LoginActivity.this);
+                }
+
+            }
+        }catch (JSONException e) {
             e.printStackTrace();
             DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),LoginActivity.this);
         }
     }
 
+
+    GoogleSignInClient mGoogleSignInClient;
+    private void initGoogleLogin(){
+        // Configure sign-in to request the user's ID, email address, and basic
+// profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Check for existing Google Sign In account, if the user is already signed in
+// the GoogleSignInAccount will be non-null.
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        updateUI(account);
+    }
+
+    private void gogleLogin() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }else{
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            updateUI(account);
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.d(TAG, "signInResult:failed code=" + e.getStatusCode());
+            updateUI(null);
+        }
+    }
+
+    private void updateUI(GoogleSignInAccount account){
+        Log.d("account ", account+"");
+        if(account!=null) {
+            registerRequest(account.getEmail(), account.getDisplayName(), account.getPhotoUrl().toString(), "123456");
+            Log.d("account ", account.getDisplayName() + " " + account.getEmail() + " " + account.getPhotoUrl());
+            // startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        }
+    }
+
+
+    private void makeGraphRequest(){
+        GraphRequest request = GraphRequest.newMeRequest(
+                accessToken,
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(
+                            JSONObject object,
+                            GraphResponse response) {
+                        // Application code
+                        try {
+                            email = object.getString("email");
+                            password = "123456";
+                            String fullname = sharedPreferences.getString(Constants.USERNAME, "");
+                            String photoUrl = sharedPreferences.getString(Constants.PROFILE_PIC, "");
+                            registerRequest(email, fullname, photoUrl, password);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.i("Registration","Login "+object.toString());
+
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "email");
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
 }

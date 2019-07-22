@@ -1,12 +1,14 @@
 package com.shoppurscustomer.activities.Settings;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.design.widget.AppBarLayout;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.appbar.AppBarLayout;
+import androidx.appcompat.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -21,36 +23,43 @@ import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.BaseActivity;
 import com.shoppurscustomer.utilities.Constants;
 
+
 public class DisplayActivity extends BaseActivity implements View.OnClickListener {
 
     private ImageView imageViewRed,imageViewGreen,imageViewBlue,imageViewPink,imageViewYellow,imageViewAmber,
-            imageViewWhite,imageViewGrey,imageViewBlack,imageViewTemp;
+            imageViewTeal,imageViewGrey,imageViewPurple,imageViewTemp;
     private RelativeLayout relativeLayoutRed,relativeLayoutGreen,relativeLayoutBlue,relativeLayoutPink,
-            relativeLayoutYellow,relativeLayoutAmber, relativeLayoutContainer, relativeLayoutSetting1,
-            relativeLayoutWhite,relativeLayoutGrey,relativeLayoutBlack;
-    private TextView textViewDarkLabel,textViewEnableDarkLabel,textViewColorLabel, text_display;
-    private LinearLayout linearLayoutSetting2;
+            relativeLayoutYellow,relativeLayoutAmber,
+            relativeLayoutTeal,relativeLayoutGrey,relativeLayoutPurple;
+
+    private TextView textViewDarkLabel,textViewEnableDarkLabel,textViewColorLabel, text_second_label;
+
     private Switch themeSwitch;
+
+    private RelativeLayout relativeLayoutContainer,relativeLayoutSetting1;
+    private LinearLayout linearLayoutSetting2;
     private Toolbar toolbar;
     private AppBarLayout appBarLayout;
+    private TextView tv_top_parent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display);
-        toolbar = findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         appBarLayout = findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
-        initFooter(this,4);
-        initViews();
+
+        init();
+        initFooter(this,0);
     }
 
-    private void initViews(){
+    private void init(){
         themeSwitch = findViewById(R.id.switch_theme);
         textViewDarkLabel = findViewById(R.id.text_dark_label);
-        text_display = findViewById(R.id.text_display);
+        text_second_label = findViewById(R.id.text_second_label);
         textViewEnableDarkLabel = findViewById(R.id.text_enable_dark_label);
         textViewColorLabel = findViewById(R.id.text_color_label);
         relativeLayoutContainer = findViewById(R.id.container);
@@ -63,9 +72,10 @@ public class DisplayActivity extends BaseActivity implements View.OnClickListene
         relativeLayoutPink = findViewById(R.id.relative_pink);
         relativeLayoutYellow = findViewById(R.id.relative_yellow);
         relativeLayoutAmber = findViewById(R.id.relative_amber);
-        relativeLayoutWhite = findViewById(R.id.relative_white);
+        relativeLayoutTeal = findViewById(R.id.relative_teal);
         relativeLayoutGrey = findViewById(R.id.relative_grey);
-        relativeLayoutBlack = findViewById(R.id.relative_black);
+        relativeLayoutPurple = findViewById(R.id.relative_purple);
+
 
         imageViewRed = findViewById(R.id.image_color_red);
         imageViewBlue= findViewById(R.id.image_color_blue);
@@ -73,9 +83,10 @@ public class DisplayActivity extends BaseActivity implements View.OnClickListene
         imageViewPink = findViewById(R.id.image_color_pink);
         imageViewYellow = findViewById(R.id.image_color_yellow);
         imageViewAmber = findViewById(R.id.image_color_amber);
-        imageViewWhite = findViewById(R.id.image_color_white);
+        imageViewTeal = findViewById(R.id.image_color_teal);
         imageViewGrey = findViewById(R.id.image_color_grey);
-        imageViewBlack = findViewById(R.id.image_color_black);
+        imageViewPurple = findViewById(R.id.image_color_purple);
+
         changeColor(imageViewRed.getBackground(),getResources().getColor(R.color.red_500));
         changeColor(imageViewBlue.getBackground(),getResources().getColor(R.color.blue500));
         changeColor(imageViewGreen.getBackground(),getResources().getColor(R.color.green500));
@@ -89,6 +100,7 @@ public class DisplayActivity extends BaseActivity implements View.OnClickListene
         }else{
             themeSwitch.setChecked(false);
         }
+
 
         themeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -104,7 +116,7 @@ public class DisplayActivity extends BaseActivity implements View.OnClickListene
             }
         });
 
-        setColorTheme();
+        setFooterColorTheme();
 
         relativeLayoutRed.setOnClickListener(this);
         relativeLayoutBlue.setOnClickListener(this);
@@ -112,10 +124,21 @@ public class DisplayActivity extends BaseActivity implements View.OnClickListene
         relativeLayoutPink.setOnClickListener(this);
         relativeLayoutYellow.setOnClickListener(this);
         relativeLayoutAmber.setOnClickListener(this);
-        relativeLayoutWhite.setOnClickListener(this);
+        relativeLayoutPurple.setOnClickListener(this);
         relativeLayoutGrey.setOnClickListener(this);
-        relativeLayoutBlack.setOnClickListener(this);
+        relativeLayoutTeal.setOnClickListener(this);
+
+        tv_top_parent = findViewById(R.id.text_left_label);
+        tv_top_parent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(DisplayActivity.this, SettingActivity.class));
+                finish();
+            }
+        });
+
     }
+
 
     private void changeTheme(boolean isDark){
         int backColor=0,textColor = 0;
@@ -134,7 +157,7 @@ public class DisplayActivity extends BaseActivity implements View.OnClickListene
 
         relativeLayoutContainer.setBackgroundColor(backColor);
         textViewDarkLabel.setTextColor(textColor);
-        text_display.setTextColor(textColor);
+        text_second_label.setTextColor(textColor);
         textViewEnableDarkLabel.setTextColor(textColor);
         textViewColorLabel.setTextColor(textColor);
         appBarLayout.setBackgroundColor(backColor);
@@ -160,7 +183,8 @@ public class DisplayActivity extends BaseActivity implements View.OnClickListene
         drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
     }
 
-    private void setColorTheme(){
+
+    public void setFooterColorTheme(){
         if(colorTheme == getResources().getColor(R.color.red_500)){
             imageViewTemp = imageViewRed;
             imageViewRed.setImageResource(R.drawable.ic_check_black_24dp);
@@ -176,18 +200,18 @@ public class DisplayActivity extends BaseActivity implements View.OnClickListene
         }else if(colorTheme == getResources().getColor(R.color.yellow500)){
             imageViewTemp = imageViewYellow;
             imageViewYellow.setImageResource(R.drawable.ic_check_black_24dp);
-        }else if(colorTheme == getResources().getColor(R.color.amber500)){
+        }else if(colorTheme == getResources().getColor(R.color.amber600)){
             imageViewTemp = imageViewAmber;
             imageViewAmber.setImageResource(R.drawable.ic_check_black_24dp);
-        }else if(colorTheme == getResources().getColor(R.color.grey500)){
+        }else if(colorTheme == getResources().getColor(R.color.grey600)){
             imageViewTemp = imageViewGrey;
             imageViewGrey.setImageResource(R.drawable.ic_check_black_24dp);
-        }else if(colorTheme == getResources().getColor(R.color.white)){
-            imageViewTemp = imageViewWhite;
-            imageViewWhite.setImageResource(R.drawable.ic_check_black_24dp);
-        }else if(colorTheme == getResources().getColor(R.color.black)){
-            imageViewTemp = imageViewBlack;
-            imageViewBlack.setImageResource(R.drawable.ic_check_black_24dp);
+        }else if(colorTheme == getResources().getColor(R.color.teal_500)){
+            imageViewTemp = imageViewTeal;
+            imageViewTeal.setImageResource(R.drawable.ic_check_black_24dp);
+        }else if(colorTheme == getResources().getColor(R.color.purple500)){
+            imageViewTemp = imageViewPurple;
+            imageViewPurple.setImageResource(R.drawable.ic_check_black_24dp);
         }
     }
 
@@ -223,21 +247,21 @@ public class DisplayActivity extends BaseActivity implements View.OnClickListene
             imageViewAmber.setImageResource(R.drawable.ic_check_black_24dp);
             imageViewTemp.setImageResource(0);
             imageViewTemp  = imageViewAmber;
-        }else if(view == relativeLayoutWhite){
-            editor.putInt(Constants.COLOR_THEME,getResources().getColor(R.color.white));
-            imageViewWhite.setImageResource(R.drawable.ic_check_black_24dp);
+        }else if(view == relativeLayoutTeal){
+            editor.putInt(Constants.COLOR_THEME,getResources().getColor(R.color.teal_500));
+            imageViewTeal.setImageResource(R.drawable.ic_check_black_24dp);
             imageViewTemp.setImageResource(0);
-            imageViewTemp  = imageViewWhite;
+            imageViewTemp  = imageViewTeal;
         }else if(view == relativeLayoutGrey){
             editor.putInt(Constants.COLOR_THEME,getResources().getColor(R.color.grey600));
             imageViewGrey.setImageResource(R.drawable.ic_check_black_24dp);
             imageViewTemp.setImageResource(0);
             imageViewTemp  = imageViewGrey;
-        }else if(view == relativeLayoutBlack){
-            editor.putInt(Constants.COLOR_THEME,getResources().getColor(R.color.black));
-            imageViewBlack.setImageResource(R.drawable.ic_check_black_24dp);
+        }else if(view == relativeLayoutPurple){
+            editor.putInt(Constants.COLOR_THEME,getResources().getColor(R.color.purple500));
+            imageViewPurple.setImageResource(R.drawable.ic_check_black_24dp);
             imageViewTemp.setImageResource(0);
-            imageViewTemp  = imageViewBlack;
+            imageViewTemp  = imageViewPurple;
         }
 
         editor.commit();
@@ -248,5 +272,23 @@ public class DisplayActivity extends BaseActivity implements View.OnClickListene
         imageViewFooter5.setColorFilter(colorTheme);
         textViewFooter5.setTextColor(colorTheme);
         view5.setBackgroundColor(colorTheme);
+
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == android.R.id.home) {
+            super.onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 }

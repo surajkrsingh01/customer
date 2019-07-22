@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activities.TransactionDetailsActivity"
+    tools:showIn="@layout/activity_transaction_details">
+
+    <TextView
+        android:id="@+id/text_header"
+        android:textColor="?attr/secondaryTextColor"
+        android:text="Payment"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/view_horizontal_margin"
+        android:paddingRight="@dimen/view_horizontal_margin"
+        android:textSize="@dimen/home_list_header_text_size"
+        android:textAllCaps="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/text_sub_header"
+        android:layout_marginTop="@dimen/view_vertical_margin"
+        android:paddingLeft="@dimen/view_horizontal_margin"
+        android:paddingRight="@dimen/view_horizontal_margin"
+        android:layout_below="@+id/text_header"
+        android:textColor="?attr/primaryTextColor"
+        android:text="Transaction Details"
+        android:textStyle="bold"
+        android:textSize="@dimen/product_list_very_large_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <ScrollView
+        android:layout_below="@+id/text_sub_header"
+        android:layout_above="@+id/relative_footer_action"
+        android:scrollbars="none"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:visibility="gone"
+                android:background="@color/grey200"
+                android:layout_width="match_parent"
+                android:layout_height="16dp"/>
+
+            <LinearLayout
+                android:visibility="visible"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/image_status_success"
+                    android:background="@drawable/white_solid_green_stroke_circle_background"
+                    android:layout_marginTop="30dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
+                    android:tint="@color/green700"
+                    android:src="@drawable/ic_check_black_24dp"
+                    android:padding="6dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
+
+                <ImageView
+                    android:id="@+id/image_status_failure"
+                    android:background="@drawable/white_solid_red_stroke_circle_background"
+                    android:layout_marginTop="30dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
+                    android:tint="@color/red_500"
+                    android:src="@drawable/ic_clear_red_24dp"
+                    android:padding="6dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
+
+                <TextView
+                    android:id="@+id/tv_status_header"
+                    android:text=""
+                    android:textColor="?attr/primaryTextColor"
+                    android:textStyle="bold"
+                    android:layout_marginTop="10dp"
+                    android:textSize="@dimen/very_large_text_size"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/text_status_message"
+                    android:textColor="?attr/primaryTextColor"
+                    android:text=""
+                    android:textSize="16sp"
+                    android:layout_marginBottom="30dp"
+                    android:layout_below="@+id/tv_status_header"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <View
+                    android:background="@color/grey200"
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"/>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:background="@color/white"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/transaction_id_label"
+                            android:text="Transaction Id"
+                            android:textSize="16sp"
+                            android:textColor="?attr/primaryTextColor"
+                            android:background="@color/white"
+                            android:padding="12dp"
+                            android:layout_toLeftOf="@+id/transaction_id"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/transaction_id"
+                            android:text=""
+                            android:textSize="16sp"
+                            android:textColor="?attr/primaryTextColor"
+                            android:background="@color/white"
+                            android:padding="12dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:background="@color/grey200"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"/>
+
+                    <RelativeLayout
+                        android:id="@+id/rlrrn"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/tv_rrn_id_label"
+                            android:text="RRN"
+                            android:textSize="16sp"
+                            android:textColor="?attr/primaryTextColor"
+                            android:background="@color/white"
+                            android:padding="12dp"
+                            android:layout_toLeftOf="@+id/tv_rrn"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/tv_rrn"
+                            android:text=""
+                            android:textSize="16sp"
+                            android:textColor="?attr/primaryTextColor"
+                            android:background="@color/white"
+                            android:padding="12dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:background="@color/grey200"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"/>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/tv_amount_label"
+                            android:text="Total amount"
+                            android:textSize="16sp"
+                            android:textColor="?attr/primaryTextColor"
+                            android:background="@color/white"
+                            android:padding="12dp"
+                            android:layout_toLeftOf="@+id/tv_amount"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/tv_amount"
+                            android:text=""
+                            android:textSize="16sp"
+                            android:textColor="?attr/primaryTextColor"
+                            android:background="@color/white"
+                            android:padding="12dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:background="@color/grey200"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"/>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/tv_payment_method_label"
+                            android:text="Payment Method"
+                            android:textSize="16sp"
+                            android:textColor="?attr/primaryTextColor"
+                            android:background="@color/white"
+                            android:padding="12dp"
+                            android:layout_toLeftOf="@+id/tv_payment_method"
+                            android:layout_marginRight="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/tv_payment_method"
+                            android:text=""
+                            android:textSize="16sp"
+                            android:textColor="?attr/primaryTextColor"
+                            android:background="@color/white"
+                            android:padding="12dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+   <include layout="@layout/footer_action_layout"/>
+
+</RelativeLayout>

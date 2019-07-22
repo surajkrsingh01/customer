@@ -2,19 +2,17 @@ package com.shoppurscustomer.activities;
 
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.android.volley.Request;
 import com.shoppurscustomer.R;
-import com.shoppurscustomer.adapters.CartAdapter;
 import com.shoppurscustomer.adapters.MyOrderAdapter;
-import com.shoppurscustomer.models.CartItem;
 import com.shoppurscustomer.models.MyOrder;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
@@ -40,6 +38,7 @@ public class MyOrderActivity extends NetworkBaseActivity{
     private String dbName, dbUserName, dbPassword,custId;
     private final String TAG = "MyOrderActivity";
     private SwipeRefreshLayout swipe_refresh;
+    private String callingActivity, orderNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +68,7 @@ public class MyOrderActivity extends NetworkBaseActivity{
         recycler_order = (RecyclerView) findViewById(R.id.recycler_order);
         recycler_order.setHasFixedSize(true);
         recycler_order.setRecycledViewPool(new RecyclerView.RecycledViewPool());
-        recycler_order.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recycler_order.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         recycler_order.getRecycledViewPool().setMaxRecycledViews(0, 0);
         myOrderAdapter = new MyOrderAdapter(MyOrderActivity.this, myOrderList);
         recycler_order.setAdapter(myOrderAdapter);
