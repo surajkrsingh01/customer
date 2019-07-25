@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.ShopListActivity;
 import com.shoppurscustomer.activities.ShopProductListActivity;
 import com.shoppurscustomer.models.MyHeader;
 import com.shoppurscustomer.models.MyShop;
@@ -120,18 +121,10 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                     public boolean onMenuItemClick(MenuItem item) {
                         //Toast.makeText(getBaseContext(), "You selected the action : " + item.getTitle()+" position "+position, Toast.LENGTH_SHORT).show();
                         if(item.getTitle().equals("Call")){
-                           /* if(shop.getIsFav().equals("Y")){
-                                myItemClickListener.onItemClicked(getAdapterPosition(),1);
-                            }else{
-                                myItemClickListener.onItemClicked(getAdapterPosition(),3);
-                            }*/
+                            ((ShopListActivity)(context)).makeCall(shop.getMobile());
                             Log.i("Adapter","Call Customer"+shop.getName());
                         }else if(item.getTitle().equals("Message")){
-                            /*if(customer.getIsFav().equals("Y")){
-                                myItemClickListener.onItemClicked(getAdapterPosition(),2);
-                            }else{
-                                myItemClickListener.onItemClicked(getAdapterPosition(),4);
-                            }*/
+                            ((ShopListActivity)(context)).openWhatsApp(shop.getMobile());
                             Log.i("Adapter","Message Customer"+shop.getName());
                         }
                         return true;

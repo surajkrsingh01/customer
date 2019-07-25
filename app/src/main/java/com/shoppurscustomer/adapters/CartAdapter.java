@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.CartActivity;
 import com.shoppurscustomer.interfaces.MyItemTypeClickListener;
 import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.ProductComboOffer;
@@ -91,7 +92,8 @@ public class CartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             if(view == imageViewAdd){
                 myItemTypeClickListener.onItemClicked(getAdapterPosition(),2);
             }else if(view == rlOffer){
-                myItemTypeClickListener.onItemClicked(getAdapterPosition(),3);
+                ((CartActivity)context).showOfferDescription(itemList.get(getAdapterPosition()));
+                //myItemTypeClickListener.onItemClicked(getAdapterPosition(),3);
             }else{
                 myItemTypeClickListener.onItemClicked(getAdapterPosition(),1);
             }

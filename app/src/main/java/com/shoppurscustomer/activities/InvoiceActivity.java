@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -173,6 +174,7 @@ public class InvoiceActivity extends NetworkBaseActivity {
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
         String url=getResources().getString(R.string.root_url)+Constants.GET_INVOICE;
+        Log.d(TAG, params.toString());
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"orders");
     }

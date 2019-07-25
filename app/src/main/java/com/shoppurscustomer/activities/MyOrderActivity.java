@@ -14,6 +14,7 @@ import com.android.volley.Request;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.adapters.MyOrderAdapter;
 import com.shoppurscustomer.models.MyOrder;
+import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
 
@@ -38,7 +39,8 @@ public class MyOrderActivity extends NetworkBaseActivity{
     private String dbName, dbUserName, dbPassword,custId;
     private final String TAG = "MyOrderActivity";
     private SwipeRefreshLayout swipe_refresh;
-    private String callingActivity, orderNumber;
+    private String callingActivity;
+    private String []orderNumberList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,28 @@ public class MyOrderActivity extends NetworkBaseActivity{
         recycler_order.getRecycledViewPool().setMaxRecycledViews(0, 0);
         myOrderAdapter = new MyOrderAdapter(MyOrderActivity.this, myOrderList);
         recycler_order.setAdapter(myOrderAdapter);
+
+        callingActivity = getIntent().getStringExtra("callingActivity");
+        //Log.d("callingActivity ", callingActivity);
+        if(callingActivity!=null && callingActivity.equals("TransactionDetailsActivity")){
+            orderNumberList = getIntent().getStringExtra("orderNumber").split(",");
+            Log.d("orderNumberList ", orderNumberList.length+"");
+        }
+
+
+        /*if(callingActivity!=null && callingActivity.equals("TransactionDetailsActivity")){
+            List<MyProduct> myShopOrderList = (List<MyProduct>) getIntent().getSerializableExtra("shopOrderList");
+            MyOrder myOrder;
+            for(MyProduct myShopOrder: myShopOrderList){
+                myOrder = new MyOrder();
+                myOrder.setShopId(Integer.parseInt(myShopOrder.getShopCode()));
+                myOrder.setTotalQuantity(myShopOrder.getQuantity());
+                myOrder.setToalAmount(myShopOrder.getTotalAmount());
+                myOrderList.add(myOrder);
+            }
+            if(myOrderList.size()>0)
+                myOrderAdapter.notifyDataSetChanged();
+        }*/
         getOrders();
         initFooter(this,4);
     }
@@ -104,6 +128,7 @@ public class MyOrderActivity extends NetworkBaseActivity{
                     for(int i=0;i<jsonArray.length();i++){
                         MyOrder myOrder = new MyOrder();
                         myOrder.setOrderNumber(jsonArray.getJSONObject(i).getString("orderNumber"));
+                        myOrder.setShopName(jsonArray.getJSONObject(i).getString("shopName"));
                         myOrder.setOrderDate(jsonArray.getJSONObject(i).getString("orderDate"));
                         myOrder.setOrderDeliveryNote(jsonArray.getJSONObject(i).getString("orderDeliveryNote"));
                         myOrder.setOrderDeliveryMode(jsonArray.getJSONObject(i).getString("orderDeliveryMode"));
@@ -112,11 +137,18 @@ public class MyOrderActivity extends NetworkBaseActivity{
                         myOrder.setDeliveryAddress(jsonArray.getJSONObject(i).getString("deliveryAddress"));
                         myOrder.setOrderStatus(jsonArray.getJSONObject(i).getString("orderStatus"));
                         myOrder.setOrderImage(jsonArray.getJSONObject(i).getString("orderImage"));
-                        myOrder.setPinCode(jsonArray.getJSONObject(i).getInt("pinCode"));
+                        //myOrder.setPinCode(jsonArray.getJSONObject(i).getInt("pinCode"));
                         myOrder.setMobileNo(jsonArray.getJSONObject(i).getInt("mobileNo"));
                         myOrder.setOrderId(jsonArray.getJSONObject(i).getInt("orderId"));
                         myOrder.setTotalQuantity(jsonArray.getJSONObject(i).getInt("totalQuantity"));
                         myOrder.setToalAmount(jsonArray.getJSONObject(i).getDouble("toalAmount"));
+                        if(callingActivity!=null && callingActivity.equals("TransactionDetailsActivity")){
+                            for(String orderNo: orderNumberList){
+                                Log.d("orderNo "+orderNo, myOrder.getOrderNumber());
+                                if(myOrder.getOrderNumber().equals(orderNo))
+                                    myOrderList.add(myOrder);
+                            }
+                        }else
                         myOrderList.add(myOrder);
                     }
                     if(myOrderList.size()>0){

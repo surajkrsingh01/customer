@@ -3,6 +3,7 @@
     <!-- Common. -->
     <string name="app_name">Shoppurs</string>
     <string name="action_settings">Settings</string>
+    <string name="url_web">http://api.shoppurs.in:8085/ShoppursApp</string>
     <string name="url">http://api.shoppurs.in:8085/ShoppursApp/api/customers</string>
     <string name="root_url">http://api.shoppurs.in:8085/ShoppursApp/api/</string>
     <string name="url_offer">http://api.shoppurs.in4:8085/ShoppursApp/api/offers/</string>
@@ -77,6 +78,9 @@
     <string name="title_activity_personalinfo">Personal Info</string>
     <string name="title_activity_transaction">Transaction Details</string>
     <string name="title_activity_invoice">Invoice</string>
+    <string name="title_activity_apply_offer">Apply Offer</string>
+    <string name="title_activity_apply_coupons">Apply Coupon</string>
+    <string name="title_activity_ccAvenue">CCAvenue</string>
     <string name="title_activity_display">Display</string>
     <string name="title_activity_search">Search</string>
     <string name="title_activity_cart">My Cart</string>

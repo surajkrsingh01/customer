@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -14,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.android.volley.Request;
+import com.google.gson.JsonObject;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.adapters.ApplyOfferAdapter;
 import com.shoppurscustomer.adapters.OfferDescAdapter;
@@ -22,14 +25,22 @@ import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.ProductComboDetails;
 import com.shoppurscustomer.models.ProductComboOffer;
 import com.shoppurscustomer.models.ProductDiscountOffer;
+import com.shoppurscustomer.models.ProductPriceDetails;
 import com.shoppurscustomer.models.ProductPriceOffer;
+import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
 import com.shoppurscustomer.utilities.Utility;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class ApplyOffersActivity extends BaseActivity implements MyItemTypeClickListener {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class ApplyOffersActivity extends NetworkBaseActivity implements MyItemTypeClickListener {
 
     private List<Object> itemList;
     private RecyclerView recyclerView;
@@ -40,6 +51,7 @@ public class ApplyOffersActivity extends BaseActivity implements MyItemTypeClick
     private String flag;
     private int position;
     private int counter;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +63,34 @@ public class ApplyOffersActivity extends BaseActivity implements MyItemTypeClick
         init();
     }
 
-    private void init(){
+    private void init() {
         flag = getIntent().getStringExtra("flag");
         rlOfferDesc = findViewById(R.id.rl_offer_desc);
         itemList = new ArrayList<>();
+        progressBar = findViewById(R.id.progress_bar);
+        textViewError = findViewById(R.id.text_error);
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        myItemAdapter = new ApplyOfferAdapter(this, itemList);
+        myItemAdapter.setMyItemTypeClickListener(this);
+        myItemAdapter.setColorTheme(colorTheme);
+        recyclerView.setAdapter(myItemAdapter);
+        getActiveOfferList();
+    }
+
+    private void getActiveOfferList(){
+        Map<String,String> params=new HashMap<>();
+        params.put("dbName",sharedPreferences.getString(Constants.SHOP_DBNAME,""));
+        Log.d(TAG, params.toString());
+        String url=getResources().getString(R.string.root_url)+"offers/get_active_offer_list";
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"activeOfferList");
+    }
+
+    private void setActiveOfferList(){
         List<ProductComboOffer> comboOffer = dbHelper.getProductComboOffer();
         Log.i(TAG,"combo offer  "+comboOffer.size());
         List<ProductPriceOffer> priceOffer = dbHelper.getProductPriceOffer();
@@ -62,22 +98,6 @@ public class ApplyOffersActivity extends BaseActivity implements MyItemTypeClick
         MyProduct myProductItem = null;
         ProductDiscountOffer productDiscountOffer = null;
 
-        for(ProductPriceOffer productPriceOffer : priceOffer){
-       //     myProductItem = dbHelper.getProductDetails(productPriceOffer.getProdId());
-            myProductItem.setProductOffer(productPriceOffer);
-            myProductItem.setOfferId(""+productPriceOffer.getId());
-            myProductItem.setOfferType("price");
-            itemList.add(myProductItem);
-        }
-
-        for(Object ob : freeOffer){
-            productDiscountOffer = (ProductDiscountOffer)ob;
-       //     myProductItem = dbHelper.getProductDetails(productDiscountOffer.getProdBuyId());
-            myProductItem.setProductOffer(productDiscountOffer);
-            myProductItem.setOfferId(""+productDiscountOffer.getId());
-            myProductItem.setOfferType("free");
-            itemList.add(myProductItem);
-        }
 
         String comboName = "";
         String comboIds = "";
@@ -90,7 +110,7 @@ public class ApplyOffersActivity extends BaseActivity implements MyItemTypeClick
         for(ProductComboOffer productComboOffer : comboOffer){
             myProductItem = new MyProduct();
             for(ProductComboDetails productComboDetails : productComboOffer.getProductComboOfferDetails()){
-      //          comboProductItem = dbHelper.getProductDetails(productComboDetails.getPcodProdId());
+                //          comboProductItem = dbHelper.getProductDetails(productComboDetails.getPcodProdId());
                 totAmt = totAmt + (productComboDetails.getPcodPrice() * productComboDetails.getPcodProdQty());
                 totMrp = totMrp + (comboProductItem.getMrp() * productComboDetails.getPcodProdQty());
                 totCgst = totCgst + (productComboDetails.getPcodPrice() *
@@ -114,7 +134,7 @@ public class ApplyOffersActivity extends BaseActivity implements MyItemTypeClick
             myProductItem.setName(comboName);
             myProductItem.setComboProductIds(comboIds);
             myProductItem.setSellingPrice(totAmt);
-           // myProductItem.setTotalAmount(totAmt);
+            // myProductItem.setTotalAmount(totAmt);
             myProductItem.setMrp(totMrp);
             myProductItem.setProdSgst(totSgst);
             myProductItem.setProdCgst(totCgst);
@@ -141,18 +161,156 @@ public class ApplyOffersActivity extends BaseActivity implements MyItemTypeClick
                 }
             }
         }
+    }
 
-        textViewError = findViewById(R.id.text_error);
-        recyclerView=findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        myItemAdapter=new ApplyOfferAdapter(this,itemList);
-        myItemAdapter.setMyItemTypeClickListener(this);
-        myItemAdapter.setColorTheme(colorTheme);
-        recyclerView.setAdapter(myItemAdapter);
+    @Override
+    public void onJsonObjectResponse(JSONObject response, String apiName) {
+        showProgress(false);
+        try {
+            if(!response.getString("result").equals("null")) {
+                JSONObject offerJsonObject = response.getJSONObject("result");
+                JSONObject dataObject;
+                Log.d("offerJsonObject size", ""+offerJsonObject.length());
+                    int innerLen = 0;
+                    int len = 0;
+                    MyProduct myProduct = new MyProduct();
 
+                    if (!offerJsonObject.getString("freeOfferList").equals("null")) {
+                        JSONArray freeArray = offerJsonObject.getJSONArray("freeOfferList");
+                        len = freeArray.length();
+                        Log.d("freeArray size", ""+freeArray.length());
+                        ProductDiscountOffer productDiscountOffer = null;
+                        for (int k = 0; k < len; k++) {
+                            dataObject = freeArray.getJSONObject(k);
+                            Log.d("index ", "" + len);
+                            productDiscountOffer = new ProductDiscountOffer();
+                            productDiscountOffer.setId(dataObject.getInt("id"));
+                            productDiscountOffer.setOfferName(dataObject.getString("offerName"));
+                            productDiscountOffer.setProdBuyId(dataObject.getInt("prodBuyId"));
+                            productDiscountOffer.setProdFreeId(dataObject.getInt("prodFreeId"));
+                            productDiscountOffer.setProdBuyQty(dataObject.getInt("prodBuyQty"));
+                            productDiscountOffer.setProdFreeQty(dataObject.getInt("prodFreeQty"));
+                            productDiscountOffer.setStatus(dataObject.getString("status"));
+                            productDiscountOffer.setStartDate(dataObject.getString("startDate"));
+                            productDiscountOffer.setEndDate(dataObject.getString("endDate"));
+
+                            //myProduct.setproductoffer //complete health insurance
+                            myProduct.setOfferId(String.valueOf(productDiscountOffer.getId()));
+                            myProduct.setOfferType("free");
+                            myProduct.setProductOffer(productDiscountOffer);
+
+                            //  dbHelper.addProductFreeOffer(productDiscountOffer, Utility.getTimeStamp(),Utility.getTimeStamp());
+                            myProduct.setProductDiscountOffer(productDiscountOffer);
+                            itemList.add(myProduct);
+                        }
+
+                    }
+
+
+                    if (!offerJsonObject.getString("comboOfferList").equals("null")) {
+                        JSONArray comboArray = offerJsonObject.getJSONArray("comboOfferList");
+                        len = comboArray.length();
+                        JSONArray productComboArray = null;
+                        ProductComboOffer productComboOffer = null;
+                        ProductComboDetails productComboDetails;
+                        List<ProductComboDetails> productComboDetailsList = null;
+                        for (int l = 0; l < len; l++) {
+                            dataObject = comboArray.getJSONObject(l);
+                            productComboOffer = new ProductComboOffer();
+                            productComboOffer.setId(dataObject.getInt("id"));
+                            productComboOffer.setProdId(dataObject.getInt("prodId"));
+                            productComboOffer.setOfferName(dataObject.getString("offerName"));
+                            productComboOffer.setStatus(dataObject.getString("status"));
+                            productComboOffer.setStartDate(dataObject.getString("startDate"));
+                            productComboOffer.setEndDate(dataObject.getString("endDate"));
+                            productComboArray = dataObject.getJSONArray("productComboOfferDetails");
+
+                            myProduct.setOfferId(String.valueOf(productComboOffer.getId()));
+                            myProduct.setOfferType("price");
+                            myProduct.setProductOffer(productComboOffer);
+
+
+                            productComboDetailsList = new ArrayList<>();
+                            innerLen = productComboArray.length();
+                            for (int k = 0; k < innerLen; k++) {
+                                dataObject = productComboArray.getJSONObject(k);
+                                productComboDetails = new ProductComboDetails();
+                                productComboDetails.setId(dataObject.getInt("id"));
+                                productComboDetails.setPcodPcoId(dataObject.getInt("pcodPcoId"));
+                                productComboDetails.setPcodProdQty(dataObject.getInt("pcodProdQty"));
+                                productComboDetails.setPcodPrice((float) dataObject.getDouble("pcodPrice"));
+                                productComboDetails.setStatus(dataObject.getString("status"));
+                                productComboDetailsList.add(productComboDetails);
+                            }
+                            productComboOffer.setProductComboOfferDetails(productComboDetailsList);
+                            myProduct.setProductComboOffer(productComboOffer);
+                            itemList.add(myProduct);
+                        }
+                    }
+
+                    if (!offerJsonObject.getString("priceOfferList").equals("null")) {
+                        JSONArray priceArray = offerJsonObject.getJSONArray("priceOfferList");
+                        len = priceArray.length();
+                        JSONArray productPriceArray = null;
+                        ProductPriceOffer productPriceOffer = null;
+                        ProductPriceDetails productPriceDetails;
+                        List<ProductPriceDetails> productPriceOfferDetails = null;
+                        for (int l = 0; l < len; l++) {
+                            dataObject = priceArray.getJSONObject(l);
+                            productPriceOffer = new ProductPriceOffer();
+                            productPriceOffer.setId(dataObject.getInt("id"));
+                            productPriceOffer.setProdId(dataObject.getInt("prodId"));
+                            productPriceOffer.setOfferName(dataObject.getString("offerName"));
+                            productPriceOffer.setStatus(dataObject.getString("status"));
+                            productPriceOffer.setStartDate(dataObject.getString("startDate"));
+                            productPriceOffer.setEndDate(dataObject.getString("endDate"));
+                            productPriceArray = dataObject.getJSONArray("productComboOfferDetails");
+
+                            myProduct.setOfferId(String.valueOf(productPriceOffer.getId()));
+                            myProduct.setOfferType("price");
+                            myProduct.setProductOffer(productPriceOffer);
+
+
+                            productPriceOfferDetails = new ArrayList<>();
+                            innerLen = productPriceArray.length();
+                            for (int k = 0; k < innerLen; k++) {
+                                dataObject = productPriceArray.getJSONObject(k);
+                                productPriceDetails = new ProductPriceDetails();
+                                productPriceDetails.setId(dataObject.getInt("id"));
+                                productPriceDetails.setPcodPcoId(dataObject.getInt("pcodPcoId"));
+                                productPriceDetails.setPcodProdQty(dataObject.getInt("pcodProdQty"));
+                                productPriceDetails.setPcodPrice((float) dataObject.getDouble("pcodPrice"));
+                                productPriceDetails.setStatus(dataObject.getString("status"));
+                                productPriceOfferDetails.add(productPriceDetails);
+                            }
+                            productPriceOffer.setProductPriceDetails(productPriceOfferDetails);
+                            myProduct.setProductPriceOffer(productPriceOffer);
+                            itemList.add(myProduct);
+                        }
+
+                }
+                Log.d("itemList Size ", ""+ itemList.size());
+            } if(itemList.size()>0){
+                myItemAdapter.notifyDataSetChanged();
+            }
+
+
+
+        }catch (JSONException a){
+
+        }
+    }
+
+    private void showProgressBar(boolean show){
+        if(show){
+            recyclerView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+            textViewError.setVisibility(View.GONE);
+        }else{
+            recyclerView.setVisibility(View.VISIBLE);
+            textViewError.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override

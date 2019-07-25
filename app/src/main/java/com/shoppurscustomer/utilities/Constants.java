@@ -82,6 +82,7 @@ public class Constants {
     public static String GET_STATES="states?countryId=";
     public static String GET_CITIES="cities?stateId=";
     public static String GET_INVOICE="trans/get_invoice";
+    public static String GET_COUPON_OFFER="offers/get_coupon_offer";
 
     public static String IS_DELIVERY_AVAILABLE="isDeliveryAvailable";
     public static String MIN_DELIVERY_DISTANCE="minDeliveryDistance";

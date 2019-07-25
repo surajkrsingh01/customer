@@ -563,7 +563,7 @@
         <TextView
             android:id="@+id/tv_pay_card"
             android:layout_below="@id/tv_pay_cash"
-            android:text="Card"
+            android:text="Online"
             android:clickable="true"
             android:textColor="?attr/primaryTextColor"
             android:padding="12dp"

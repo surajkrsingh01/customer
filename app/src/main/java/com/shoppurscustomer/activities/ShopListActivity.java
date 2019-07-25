@@ -1,8 +1,11 @@
 package com.shoppurscustomer.activities;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,6 +26,7 @@ import com.shoppurscustomer.fragments.BottomSearchFragment;
 import com.shoppurscustomer.models.MyShop;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
+import com.shoppurscustomer.utilities.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -265,5 +269,27 @@ public class ShopListActivity extends NetworkBaseActivity {
             bottomSearchFragment.show(getSupportFragmentManager(), bottomSearchFragment.getTag());
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void makeCall(String mobile){
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:"+mobile));
+        if(Utility.verifyCallPhonePermissions(this))
+            startActivity(callIntent);
+    }
+
+    public void openWhatsApp(String mobile){
+        try {
+            mobile = "91"+mobile;
+            String text = "This is a test";// Replace with your message.
+            //   String toNumber = "xxxxxxxxxx"; // Replace with mobile phone number without +Sign or leading zeros, but with country code
+            //Suppose your country is India and your phone number is “xxxxxxxxxx”, then you need to send “91xxxxxxxxxx”.
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("http://api.whatsapp.com/send?phone="+mobile +"&text="));
+            startActivity(intent);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

@@ -5,11 +5,19 @@ package com.shoppurscustomer.models;
  */
 
 public class MyOrder {
-    private String orderNumber, orderDate, orderDeliveryNote, orderDeliveryMode, paymentMode,
+    private String orderNumber, shopName, orderDate, orderDeliveryNote, orderDeliveryMode, paymentMode,
     custName, deliveryAddress, createdBy, updateBy, createdDate, updatedDate,
     orderStatus, prodIds, orderImage;
     private int pinCode, mobileNo, action, orderId, shopId, custId, totalQuantity;
     private double toalAmount;
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
 
     public String getOrderNumber() {
         return orderNumber;

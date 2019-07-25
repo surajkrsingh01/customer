@@ -2,14 +2,21 @@ package com.shoppurscustomer.adapters;
 
 import android.app.Activity;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.models.MyOrderDetail;
 import com.shoppurscustomer.models.MyProduct;
+import com.shoppurscustomer.utilities.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,19 +42,41 @@ public class MyOrderDetailsAdapter extends RecyclerView.Adapter<MyOrderDetailsAd
     }
 
     @Override
-    public void onBindViewHolder(final MyOrderDetailsAdapter.MyViewHolder holder, final int position) {
+    public void onBindViewHolder(final MyOrderDetailsAdapter.MyViewHolder myViewHolder, final int position) {
         final MyOrderDetail myOrderDetail = myOrderDetailslist.get(position);
-        MyProduct myProduct = myOrderDetail.getMyProduct();
+        MyProduct item = myOrderDetail.getMyProduct();
 
-        //holder.orderRating;
-        holder.tv_shopname.setText(String.valueOf(myOrderDetail.getShopName())+" Shop");
-        holder.tv_prodname.setText("Product - "+myProduct.getName());
-        if(myOrderDetail.getStatus()!=null /*&& myOrder.getOrderStatus().equals("pending")*/) {
-            holder.tv_status.setVisibility(View.VISIBLE);
-            holder.tv_status.setText("Status - "+ myOrderDetail.getStatus());
+        myViewHolder.textName.setText(item.getName());
+        //myViewHolder.textAmount.setText("Rs. "+String.format("%.02f",item.getMrp()));
+        myViewHolder.textSp.setText(Utility.numberFormat(item.getSellingPrice()));
+        myViewHolder.textMrp.setText(Utility.numberFormat(item.getMrp()));
+        myViewHolder.textMrp.setPaintFlags(myViewHolder.textMrp.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+
+        float diff = item.getMrp() - item.getSellingPrice();
+        if(diff > 0f){
+            float percentage = diff * 100 /item.getMrp();
+            myViewHolder.textOffPer.setText(String.format("%.02f",percentage)+"% off");
+            myViewHolder.textMrp.setVisibility(View.VISIBLE);
+            myViewHolder.textOffPer.setVisibility(View.VISIBLE);
+        }else{
+            myViewHolder.textMrp.setVisibility(View.GONE);
+            myViewHolder.textOffPer.setVisibility(View.GONE);
         }
-        else holder.tv_status.setVisibility(View.GONE);
-        holder.tv_qty.setText("Quantity - "+String.valueOf(myProduct.getQuantity()));
+        myViewHolder.textQty.setText("Qty: "+item.getQuantity());
+
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+        // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
+        requestOptions.centerCrop();
+        requestOptions.skipMemoryCache(false);
+
+        Glide.with(context)
+                .load(item.getProdImage1())
+                .apply(requestOptions)
+                .error(R.drawable.ic_photo_black_192dp)
+                .into(myViewHolder.imageView);
+
+
     }
 
     @Override
@@ -59,15 +88,19 @@ public class MyOrderDetailsAdapter extends RecyclerView.Adapter<MyOrderDetailsAd
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView tv_status, tv_qty, tv_prodname, tv_shopname;
+        private TextView textName,textSp,textMrp,textOffPer,textQty;
+        private ImageView imageView;
+        private View rootView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            tv_status = (TextView) itemView.findViewById(R.id.tv_status);
-            tv_qty = (TextView) itemView.findViewById(R.id.tv_qty);
-            tv_prodname = (TextView) itemView.findViewById(R.id.tv_prodname);
-            tv_shopname = (TextView) itemView.findViewById(R.id.tv_shopname);
-
+            rootView = itemView;
+            textName=itemView.findViewById(R.id.text_name);
+            textSp=itemView.findViewById(R.id.text_sp);
+            textMrp=itemView.findViewById(R.id.text_mrp);
+            textOffPer=itemView.findViewById(R.id.text_off_percentage);
+            textQty=itemView.findViewById(R.id.text_qty);
+            imageView=itemView.findViewById(R.id.image_view);
         }
     }
 }

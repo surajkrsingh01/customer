@@ -8,7 +8,42 @@
     android:background="?attr/backgroundColor"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_my_order_details">
+
+    <TextView
+        android:id="@+id/text_left_label"
+        android:text="Settings"
+        android:textColor="?attr/secondaryTextColor"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_toRightOf="@+id/text_left_label"
+        android:id="@+id/text_right_label"
+        android:text="My Orders"
+        android:textColor="?attr/secondaryTextColor"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_below="@+id/text_left_label"
+        android:id="@+id/text_second_label"
+        android:text="Order Details"
+        android:textColor="?attr/primaryTextColor"
+        android:textStyle="bold"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="5dp"
+        android:textSize="@dimen/list_very_large_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <LinearLayout
+        android:layout_below="@+id/text_second_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/linear_details"
@@ -16,10 +51,19 @@
         android:padding="15dp">
 
         <TextView
+            android:id="@+id/tv_shopName"
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="@dimen/home_list_cat_name_text_size_type_4"
+            android:text="Shop Name - "
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
             android:id="@+id/tv_order_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Order Id: 15"
+            android:text="Order Number: 15"
             android:textColor="@color/primary_text_color"
             android:textSize="15sp"/>
 
@@ -31,13 +75,6 @@
             android:textColor="@color/primary_text_color"
             android:textSize="15sp"/>
 
-        <TextView
-            android:id="@+id/tv_amount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Total Amount :Rs 580"
-            android:textColor="@color/primary_text_color"
-            android:textSize="15sp"/>
         <View
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
@@ -243,13 +280,73 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_above="@+id/linear_footer"
+        android:layout_above="@+id/relative_amount_footer"
         android:layout_below="@+id/linear_details"
         android:layout_marginTop="5dp"
         android:id="@+id/recycler_order"
         android:layout_height="match_parent"
         android:layout_width="match_parent">
     </androidx.recyclerview.widget.RecyclerView>
-    <include layout="@layout/footer_layout"/>
+
+    <RelativeLayout
+        android:id="@+id/relative_amount_footer"
+        android:layout_above="@+id/relative_footer_action"
+        android:layout_gravity="center"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/text_total_amount_label"
+            android:text="Total Amount"
+            android:textStyle="bold"
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="@dimen/large_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
+            android:id="@+id/rl_amount"
+            android:layout_toRightOf="@+id/text_total_amount_label"
+            android:layout_marginLeft="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp">
+
+            <ImageView
+                android:layout_alignParentBottom="true"
+                android:id="@+id/iv_rupees"
+                android:src="@drawable/rupee"
+                android:tint="@color/accent_color_2"
+                android:layout_width="16dp"
+                android:layout_height="16dp" />
+
+            <TextView
+                android:id="@+id/text_total_amount"
+                android:layout_toRightOf="@+id/iv_rupees"
+                android:layout_marginLeft="6dp"
+                android:textStyle="bold"
+                android:textColor="@color/accent_color_2"
+                android:textSize="@dimen/large_text_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+        <TextView
+            android:id="@+id/text_order_status"
+            android:layout_below="@+id/rl_amount"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text=""
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/green500"
+            android:textSize="@dimen/large_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+
+    <include layout="@layout/footer_action_layout"/>
 
 </RelativeLayout>

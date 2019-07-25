@@ -13,14 +13,18 @@ import androidx.appcompat.widget.Toolbar;
 import com.android.volley.Request;
 import com.google.gson.JsonObject;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
+import com.shoppurscustomer.utilities.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TransactionDetailsActivity extends NetworkBaseActivity {
@@ -30,8 +34,11 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
     private RelativeLayout rlFooter;
     private TextView tvFooter;
     private boolean isDelivered;
+    private List<MyProduct> myShopOrderList;
 
     private String custCode,orderNumber,paymentStatus;
+    private float totalAmount;
+    private RelativeLayout relative_footer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +62,13 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
         imageViewStatusFailure = findViewById(R.id.image_status_failure);
         rlFooter = findViewById(R.id.relative_footer_action);
         tvFooter = findViewById(R.id.text_action);
+        relative_footer = findViewById(R.id.relative_footer_action);
+        relative_footer.setBackgroundColor(colorTheme);
         tvFooter.setText("Track Your Order");
         orderNumber = getIntent().getStringExtra("orderNumber");
+        totalAmount = getIntent().getFloatExtra("totalAmount", 0);
+       // myShopOrderList = (List<MyProduct>) getIntent().getSerializableExtra("shopOrderList");
+        //Log.d("shopOrderList ", myShopOrderList.size() +"");
         getorderDetails();
 
         rlFooter.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +78,7 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
                 Intent intent = new Intent(TransactionDetailsActivity.this, MyOrderActivity.class);
                 intent.putExtra("callingActivity", "TransactionDetailsActivity");
                 intent.putExtra("orderNumber", orderNumber);
+                intent.putExtra("shopOrderList", (Serializable) myShopOrderList);
                 startActivity(intent);
             }
         });
@@ -91,7 +104,8 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
 
     private void getorderDetails(){
         Map<String,String> params=new HashMap<>();
-        params.put("number", orderNumber);
+        String[] orderlist = orderNumber.split(",");
+        params.put("number", orderlist[0]);
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
@@ -115,18 +129,21 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
             Log.d("response", response.toString());
             if (apiName.equals("orderDetails")) {
                 if (response.getBoolean("status")) {
-                    JSONObject dataObject = response.getJSONObject("result");
-                    tvTransactionId.setText(dataObject.getString("transactionId"));
-                    tvRrn.setText(dataObject.getString("orderRefNo"));
-                    tvPaymentMethod.setText(dataObject.getString("paymentMethod"));
-                    tvAmount.setText(dataObject.getString("amount"));
-                    paymentStatus = dataObject.getString("paymentStatus");
+                    JSONArray jsonArray = response.getJSONArray("result");
 
-                    if(dataObject.getString("paymentMethod").equals("cash")){
+                    for(int i=0;i<jsonArray.length();i++) {
+                        tvTransactionId.setText(jsonArray.getJSONObject(i).getString("transactionId"));
+                        tvRrn.setText(jsonArray.getJSONObject(i).getString("orderRefNo"));
+                        tvPaymentMethod.setText(jsonArray.getJSONObject(i).getString("paymentMethod"));
+                        tvAmount.setText(Utility.numberFormat(totalAmount));
+                        paymentStatus = jsonArray.getJSONObject(i).getString("paymentStatus");
+                    }
+
+                    if(tvPaymentMethod!=null && tvPaymentMethod.equals("cash")){
                         findViewById(R.id.rlrrn).setVisibility(View.GONE);
                     }
 
-                    if(paymentStatus.equals("Success") || paymentStatus.equals("SUCCESS")){
+                    if(paymentStatus!=null && paymentStatus.equals("Success") || paymentStatus!=null && paymentStatus.equals("SUCCESS")){
                         // placeOrder();
                         setStatusLayout(true);
                     }else{

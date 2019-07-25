@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.Request;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.payment.ccavenue.activities.CCAvenueWebViewActivity;
+import com.shoppurscustomer.activities.payment.ccavenue.utility.AvenuesParams;
 import com.shoppurscustomer.adapters.CartAdapter;
 import com.shoppurscustomer.adapters.OfferDescAdapter;
 import com.shoppurscustomer.database.DbHelper;
@@ -43,6 +45,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -165,14 +168,8 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         tvCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*tvCard.setVisibility(View.GONE);
-                tvCash.setVisibility(View.GONE);
-                tvAndroidPos.setVisibility(View.VISIBLE);
-                tvMPos.setVisibility(View.VISIBLE);*/
-
-                paymentMode = "Credit/Debit Card";
-                deviceType = "ME30S";
-                generateJson(paymentMode);
+              /* paymentMode = "Online";
+               generateJson(paymentMode);*/
             }
         });
 
@@ -311,10 +308,10 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         tvApplyCoupon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Intent intent = new Intent(CartActivity.this,CouponOffersActivity.class);
+                Intent intent = new Intent(CartActivity.this,CouponOffersActivity.class);
                 intent.putExtra("custCode",getIntent().getStringExtra("custCode"));
                 intent.putExtra("flag","coupons");
-                startActivityForResult(intent,5);*/
+                startActivityForResult(intent,5);
             }
         });
 
@@ -568,15 +565,15 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     shopObject.put("mobileNo",sharedPreferences.getString(Constants.MOBILE_NO, ""));
                     shopObject.put("orderImage","customer.png");
                     shopObject.put("custUserCreateStatus","C");
-                    shopObject.put("totalQuantity",String.valueOf(dbHelper.getTotalQuantityCart()));
-                    shopObject.put("toalAmount",String.valueOf(totalPrice));
+                    shopObject.put("totalQuantity",String.valueOf(dbHelper.getTotalQuantity(shopCode)));
+                    shopObject.put("toalAmount",String.valueOf(getTotalAmount(shopCode)));
                     shopObject.put("ordCouponId",String.valueOf(offerId));
-                    shopObject.put("totCgst",String.valueOf(dbHelper.getTaxesCart("cgst")));
-                    shopObject.put("totSgst",String.valueOf(dbHelper.getTaxesCart("sgst")));
-                    shopObject.put("totIgst",String.valueOf(dbHelper.getTaxesCart("igst")));
-                    shopObject.put("totTax",String.valueOf(totalTax));
+                    shopObject.put("totCgst",String.valueOf(dbHelper.getTaxesCart("cgst", shopCode)));
+                    shopObject.put("totSgst",String.valueOf(dbHelper.getTaxesCart("sgst", shopCode)));
+                    shopObject.put("totIgst",String.valueOf(dbHelper.getTaxesCart("igst", shopCode)));
+                    shopObject.put("totTax",String.valueOf(dbHelper.getTotalTaxesart(shopCode)));
                     shopObject.put("deliveryCharges",String.valueOf(deliveryCharges));
-                    shopObject.put("totDiscount",String.valueOf(totDiscount));
+                    shopObject.put("totDiscount",String.valueOf(dbHelper.getTotalDisValue(shopCode)));
                     shopObject.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
                     shopObject.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
                     shopObject.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
@@ -665,6 +662,40 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         }
     }
 
+    public float getTotalAmount(String shopCode) {
+        totalTax = dbHelper.getTotalTaxesart(shopCode);
+        totalPrice = dbHelper.getTotalPriceCart(shopCode) + totalTax;
+        totDiscount = dbHelper.getTotalMrpPriceCart(shopCode) - dbHelper.getTotalPriceCart(shopCode);
+        float dis = 0f;
+        if (offerPer > 0f) {
+            dis = totalPrice * offerPer / 100;
+            totDiscount = totDiscount + dis;
+        }
+
+        Log.i(TAG, " Taxes " + dbHelper.getTotalTaxesart(shopCode));
+
+        totalPrice = totalPrice - dis;
+        if (deliveryTypeId == R.id.rb_self_delivery) {
+            rlDelivery.setVisibility(View.GONE);
+        } else {
+            rlDelivery.setVisibility(View.VISIBLE);
+            Log.i(TAG, "Min Delivery Distance " + sharedPreferences.getInt(Constants.MIN_DELIVERY_DISTANCE, 0));
+            Log.i(TAG, "Charges after Delivery Distance " + sharedPreferences.getInt(Constants.CHARGE_AFTER_MIN_DISTANCE, 0));
+            Log.i(TAG, "Delivery Distance " + deliveryDistance);
+            if (deliveryDistance > sharedPreferences.getInt(Constants.MIN_DELIVERY_DISTANCE, 0)) {
+                float diffKms = deliveryDistance - sharedPreferences.getInt(Constants.MIN_DELIVERY_DISTANCE, 0);
+                int intKms = (int) diffKms;
+                float decimalKms = diffKms - intKms;
+
+                int chargesPerKm = sharedPreferences.getInt(Constants.CHARGE_AFTER_MIN_DISTANCE, 0);
+                deliveryCharges = intKms * chargesPerKm + decimalKms * chargesPerKm;
+            }
+        }
+
+        totalPrice = totalPrice + deliveryCharges;
+        return  totalPrice;
+    }
+
 
     @Override
     public void onJsonObjectResponse(JSONObject response, String apiName) {
@@ -676,8 +707,27 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                     Log.d(TAG, "Ordeer Generated" );
                     orderNumber = response.getJSONObject("result").getString("orderNumber");
-                    //totalPrice = dbHelper.getTotalPriceCart();
-                   // dbHelper.deleteTable(DbHelper.CART_TABLE);
+                    List<MyProduct> myProductList = new ArrayList<>();
+                    List<String> shopCodeList = new ArrayList<>();
+                    float totalCartAmout=0;
+                    for(MyProduct myProduct: cartItemList){
+                        if(!shopCodeList.contains(myProduct.getShopCode())){
+                            shopCodeList.add(myProduct.getShopCode());
+                            float totalAmount = dbHelper.getTotalAmount(myProduct.getShopCode());
+                            totalCartAmout = totalAmount + totalCartAmout;
+                            int totalItem = dbHelper.getTotalQuantity(myProduct.getShopCode());
+                            myProduct.setTotalAmount(totalAmount);
+                            myProduct.setQuantity(totalItem);
+                            myProductList.add(myProduct);
+                        }
+                    }
+                    for(MyProduct myProduct: myProductList){
+                        Log.d("shopCode ", myProduct.getShopCode());
+                        Log.d("TotalAmount ", ""+myProduct.getTotalAmount());
+                        Log.d("TotalQuantity ", ""+myProduct.getQuantity());
+
+                    }
+
                     itemList.clear();
                     myItemAdapter.notifyDataSetChanged();
                     if(paymentMode.equals("Cash")){
@@ -699,12 +749,25 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                                 }
                             }
                         }*/
+
+
                         Intent intent = new Intent(CartActivity.this, TransactionDetailsActivity.class);
                         intent.putExtra("orderNumber", orderNumber);
+                        intent.putExtra("totalAmount", Float.parseFloat(tvNetPayable.getText().toString().split(" ")[1]));
+                        intent.putExtra("shopOrderList", (Serializable) myProductList);
                         startActivity(intent);
                         finish();
                     }else{
                         // integrate ccAvenue..
+                        Intent intent = new Intent(CartActivity.this, CCAvenueWebViewActivity.class);
+                        intent.putExtra("flag", "wallet");
+                        intent.putExtra(AvenuesParams.AMOUNT, String.format("%.02f",Float.parseFloat(tvNetPayable.getText().toString().split(" ")[1])));
+                        intent.putExtra(AvenuesParams.ORDER_ID, orderNumber);
+                        intent.putExtra(AvenuesParams.CURRENCY, "INR");
+                        intent.putExtra("flag", "addPaymentDevice");
+                        intent.putExtra("shopArray",shopArray.toString());
+                        startActivity(intent);
+                        finish();
                     }
 
                     //placeOrder(shopArray, orderId);

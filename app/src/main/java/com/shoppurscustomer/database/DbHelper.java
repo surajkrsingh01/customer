@@ -638,7 +638,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public int getTotalQuantity(String shpcode){
         int totalQty=0;
-        String countQuery = "SELECT  sum(itemQty) as totalQty FROM " +  CART_TABLE +" where SHOP_CODE = ?";
+        String countQuery = "SELECT  sum("+ TOTAL_QTY +") as totalQty FROM " +  CART_TABLE +" where SHOP_CODE = ?";
         Log.d("countQuery ", countQuery);
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, new String[]{ shpcode });
@@ -916,10 +916,42 @@ public class DbHelper extends SQLiteOpenHelper {
         return exist;
     }
 
+    public float getTotalPriceCart(String shopCode){
+        SQLiteDatabase db = this.getReadableDatabase();
+        final String query="select sum("+TOTAL_AMOUNT+") as totalAmount from "+CART_TABLE +" where SHOP_CODE = ?";
+        Cursor res =  db.rawQuery(query, new String[]{ shopCode });
+        float amount = 0f;
+        if(res.moveToFirst()){
+            do{
+                amount = amount + res.getFloat(res.getColumnIndex(TOTAL_AMOUNT));
+            }while (res.moveToNext());
+
+        }
+
+        return amount;
+    }
+
     public float getTotalPriceCart(){
         SQLiteDatabase db = this.getReadableDatabase();
         final String query="select sum("+TOTAL_AMOUNT+") as totalAmount from "+CART_TABLE;
         Cursor res =  db.rawQuery(query, null);
+        float amount = 0f;
+        if(res.moveToFirst()){
+            do{
+                amount = amount + res.getFloat(res.getColumnIndex(TOTAL_AMOUNT));
+            }while (res.moveToNext());
+
+        }
+
+        return amount;
+    }
+
+
+
+    public float getTotalMrpPriceCart(String shopCode){
+        SQLiteDatabase db = this.getReadableDatabase();
+        final String query="select sum("+PROD_MRP+" * "+TOTAL_QTY+") as totalAmount from "+CART_TABLE +" where SHOP_CODE = ?";
+        Cursor res =  db.rawQuery(query, new String[]{shopCode});
         float amount = 0f;
         if(res.moveToFirst()){
             do{
@@ -961,6 +993,21 @@ public class DbHelper extends SQLiteOpenHelper {
         return amount;
     }
 
+    public float getTotalTaxesart(String shopCode){
+        SQLiteDatabase db = this.getReadableDatabase();
+        final String query="select sum(("+PROD_CGST+" + "+PROD_SGST+")*"+TOTAL_QTY+") as totalAmount from "+CART_TABLE  +" where SHOP_CODE = ?";
+        Cursor res =  db.rawQuery(query, new String[]{ shopCode });
+        float amount = 0f;
+        if(res.moveToFirst()){
+            do{
+                amount = amount + res.getFloat(res.getColumnIndex(TOTAL_AMOUNT));
+            }while (res.moveToNext());
+
+        }
+
+        return amount;
+    }
+
     public float getTaxesCart(String taxType){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "";
@@ -972,6 +1019,28 @@ public class DbHelper extends SQLiteOpenHelper {
             query="select sum("+PROD_IGST+"*"+TOTAL_QTY+") as totalAmount from "+CART_TABLE;
         }
         Cursor res =  db.rawQuery(query, null);
+        float amount = 0f;
+        if(res.moveToFirst()){
+            do{
+                amount = amount + res.getFloat(res.getColumnIndex(TOTAL_AMOUNT));
+            }while (res.moveToNext());
+
+        }
+
+        return amount;
+    }
+
+    public float getTaxesCart(String taxType, String shopCode){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "";
+        if(taxType.equals("cgst")){
+            query="select sum("+PROD_CGST+"*"+TOTAL_QTY+") as totalAmount from "+CART_TABLE +" where SHOP_CODE = ?";
+        }else if(taxType.equals("sgst")){
+            query="select sum("+PROD_SGST+"*"+TOTAL_QTY+") as totalAmount from "+CART_TABLE  +" where SHOP_CODE = ?";
+        }else{
+            query="select sum("+PROD_IGST+"*"+TOTAL_QTY+") as totalAmount from "+CART_TABLE +" where SHOP_CODE = ?";
+        }
+        Cursor res =  db.rawQuery(query, new String[]{shopCode});
         float amount = 0f;
         if(res.moveToFirst()){
             do{
@@ -1011,6 +1080,21 @@ public class DbHelper extends SQLiteOpenHelper {
         }
 
         return tax;
+    }
+
+    public float getTotalDisValue(String shopCode){
+        SQLiteDatabase db = this.getReadableDatabase();
+        final String query="select sum("+PROD_MRP+" - "+PROD_SP+") as totalDis from "+CART_TABLE  +" where SHOP_CODE = ?";
+        Cursor res =  db.rawQuery(query,  new String[]{ shopCode });
+        float dis = 0f;
+        if(res.moveToFirst()){
+            do{
+                dis = dis + res.getFloat(res.getColumnIndex("totalDis"));
+            }while (res.moveToNext());
+
+        }
+
+        return dis;
     }
 
     public float getTotalDisValue(){

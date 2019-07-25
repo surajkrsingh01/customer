@@ -1,5 +1,6 @@
 package com.shoppurscustomer.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -7,6 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -38,10 +40,11 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
     private List<MyOrderDetail> myOrderDetailslist;
     private String dbName, dbUserName, dbPassword,custId;
     private final String TAG = "MyOrderDetailsActivity";
-    private int orderId;
-    private String orderDate, orderStatus;
+    private String orderNumber,orderId;
+    private String orderDate, orderStatus, shopName;
     private double orderAmount;
-    private TextView tv_order_id, tv_date, tv_amount, textView2, textView4;
+    private TextView tv_shopName, tv_footer, tv_order_id, tv_date, tv_amount, textView2, textView4;
+    private RelativeLayout rl_footer_action;
     private ImageView imageView2,imageView4;
     private View view1, view2;
 
@@ -53,7 +56,9 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
         setSupportActionBar(toolbar);
 
         orderStatus = getIntent().getStringExtra("orderStatus");
-        orderId = getIntent().getIntExtra("orderId",0);
+        shopName = getIntent().getStringExtra("shopName");
+        orderNumber = getIntent().getStringExtra("orderNumber");
+        orderId = getIntent().getStringExtra("orderId" );
         orderDate = getIntent().getStringExtra("orderDate");
         orderAmount = getIntent().getDoubleExtra("orderAmount", 0.0d);
         dbName = sharedPreferences.getString(Constants.DB_NAME,"");
@@ -61,9 +66,10 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
         dbPassword = sharedPreferences.getString(Constants.DB_PASSWORD,"");
         custId = sharedPreferences.getString(Constants.USER_ID,"");
 
+        tv_shopName = findViewById(R.id.tv_shopName);
          tv_order_id = findViewById(R.id.tv_order_id);
          tv_date = findViewById(R.id.tv_date);
-         tv_amount = findViewById(R.id.tv_amount);
+         tv_amount = findViewById(R.id.text_total_amount);
          imageView2 = findViewById(R.id.image_2);
          imageView4 = findViewById(R.id.image_4);
          textView2  = findViewById(R.id.text_2);
@@ -71,21 +77,34 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
          view1 = findViewById(R.id.view_status_1);
          view2 = findViewById(R.id.view_status_2);
 
-        tv_order_id.setText("Order Id - " +String.valueOf(orderId));
+        tv_shopName.setText(shopName);
+        tv_order_id.setText("Order Number - " +String.valueOf(orderNumber));
         tv_date.setText(orderDate);
-        tv_amount.setText("Total Amount "+String.valueOf(orderAmount));
+        tv_amount.setText(""+String.valueOf(orderAmount));
 
         myOrderDetailslist = new ArrayList<>();
         recycler_order = (RecyclerView) findViewById(R.id.recycler_order);
         recycler_order.setHasFixedSize(true);
         recycler_order.setRecycledViewPool(new RecyclerView.RecycledViewPool());
-        recycler_order.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recycler_order.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         recycler_order.getRecycledViewPool().setMaxRecycledViews(0, 0);
         myOrderDetailsAdapter = new MyOrderDetailsAdapter(MyOrderDetailsActivity.this,myOrderDetailslist );
         recycler_order.setAdapter(myOrderDetailsAdapter);
         setTrackStatus(orderStatus);
         getOrderDetails();
-        initFooter(this, 4);
+
+        tv_footer = findViewById(R.id.text_action);
+        tv_footer.setText("View Invoice");
+        rl_footer_action = findViewById(R.id.relative_footer_action);
+        rl_footer_action.setBackgroundColor(colorTheme);
+        rl_footer_action.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyOrderDetailsActivity.this,InvoiceActivity.class);
+                intent.putExtra("orderNumber",orderNumber);
+                startActivity(intent);
+            }
+        });
     }
 
     public void getOrderDetails(){
@@ -110,13 +129,21 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
                     JSONArray jsonArray = response.getJSONArray("result");
                     for(int i=0;i<jsonArray.length();i++){
                         MyOrderDetail myOrderDetail = new MyOrderDetail();
-                        MyProduct myProduct = new MyProduct();
-                        myOrderDetail.setShopName(jsonArray.getJSONObject(i).getString("shopName"));
+                        MyProduct productItem = new MyProduct();
+                       // myOrderDetail.setShopName(jsonArray.getJSONObject(i).getString("shopName"));
+                        myOrderDetail.setShopName("My Shop");
                         myOrderDetail.setStatus(jsonArray.getJSONObject(i).getString("status"));
                         //myOrderDetail.setStatus("Pending");
-                        myProduct.setName(jsonArray.getJSONObject(i).getString("prodName"));
-                        myProduct.setQuantity(jsonArray.getJSONObject(i).getInt("qty"));
-                        myOrderDetail.setMyProduct(myProduct);
+                        productItem.setName(jsonArray.getJSONObject(i).getString("prodName"));
+                        productItem.setQuantity(jsonArray.getJSONObject(i).getInt("qty"));
+
+                        productItem.setProdImage1(jsonArray.getJSONObject(i).getString("prodImage1"));
+                        productItem.setProdImage2(jsonArray.getJSONObject(i).getString("prodImage2"));
+                        productItem.setProdImage3(jsonArray.getJSONObject(i).getString("prodImage3"));
+                        productItem.setMrp(Float.parseFloat(jsonArray.getJSONObject(i).getString("prodMrp")));
+                        productItem.setSellingPrice(Float.parseFloat(jsonArray.getJSONObject(i).getString("prodSp")));
+
+                        myOrderDetail.setMyProduct(productItem);
                         myOrderDetailslist.add(myOrderDetail);
                     }
                     if(myOrderDetailslist.size()>0){
