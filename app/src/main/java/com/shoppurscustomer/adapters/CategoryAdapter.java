@@ -549,11 +549,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             myViewHolder.textTitle.setText(item.getName());
 
             RequestOptions requestOptions = new RequestOptions();
-            requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+            requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
             requestOptions.dontTransform();
             // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
             // requestOptions.centerCrop();
-            requestOptions.skipMemoryCache(true);
+            requestOptions.skipMemoryCache(false);
 
             Glide.with(context)
                     .load(item.getImage())
@@ -578,7 +578,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             //requestOptions.dontTransform();
             // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
             // requestOptions.centerCrop();
-            requestOptions.skipMemoryCache(true);
+            requestOptions.skipMemoryCache(false);
 
             Glide.with(context)
                     .load(item.getImage())

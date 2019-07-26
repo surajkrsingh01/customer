@@ -368,10 +368,10 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
               myViewHolder.textName.setText(item.getName());
 
               RequestOptions requestOptions = new RequestOptions();
-              requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+              requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
              // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
               requestOptions.centerCrop();
-              requestOptions.skipMemoryCache(true);
+              requestOptions.skipMemoryCache(false);
 
               Glide.with(context)
                       .load(item.getLocalImage())
@@ -391,10 +391,10 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
               myViewHolder.textDesc.setText(item.getDesc());
 
               RequestOptions requestOptions = new RequestOptions();
-              requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+              requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
               // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
               requestOptions.centerCrop();
-              requestOptions.skipMemoryCache(true);
+              requestOptions.skipMemoryCache(false);
 
               Glide.with(context)
                       .load(item.getLocalImage())
@@ -411,11 +411,11 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
               myViewHolder.textTitle.setText(item.getTitle());
 
               RequestOptions requestOptions = new RequestOptions();
-              requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+              requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
               requestOptions.dontTransform();
               // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
              // requestOptions.centerCrop();
-              requestOptions.skipMemoryCache(true);
+              requestOptions.skipMemoryCache(false);
 
               Glide.with(context)
                       .load(item.getLocalImage())
@@ -433,11 +433,11 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
               myViewHolder.textTitle.setText(item.getName());
 
               RequestOptions requestOptions = new RequestOptions();
-              requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+              requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
               //requestOptions.dontTransform();
               // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
               // requestOptions.centerCrop();
-              requestOptions.skipMemoryCache(true);
+              requestOptions.skipMemoryCache(false);
 
               Glide.with(context)
                       .load(item.getLocalImage())

@@ -54,7 +54,7 @@ public class LoginActivity extends NetworkBaseActivity{
     private EditText editTextMobileNumber,editTextPassword;
     private TextView textForgotPassword, text_mobile_icon, text_password_icon, text_sign_up_icon, text_forgot_password_icon;
     private Button btnLogin;
-    private TextView text_sign_up;
+    private TextView text_sign_up, forgot_password;
     private String mobile,password, email;
     private ImageView  image_twitter, image_facebook, image_google;
     private com.google.android.gms.common.SignInButton loginGoogleButton;
@@ -120,6 +120,15 @@ public class LoginActivity extends NetworkBaseActivity{
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(LoginActivity.this,RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        forgot_password = findViewById(R.id.text_forgot_password);
+        forgot_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(LoginActivity.this,ForgotPasswordActivity.class);
                 startActivity(intent);
             }
         });
@@ -315,7 +324,7 @@ public class LoginActivity extends NetworkBaseActivity{
                     //DialogAndToast.showToast("Logged In",LoginActivity.this);
                     getFavoriteStore();
                 } else {
-                    DialogAndToast.showDialog(response.getString("message"), LoginActivity.this);
+                   // DialogAndToast.showDialog(response.getString("message"), LoginActivity.this);
                 }
             } else if (apiName.equals("getfavoriteshop")) {
                 if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
@@ -364,7 +373,7 @@ public class LoginActivity extends NetworkBaseActivity{
                     DialogAndToast.showToast("Account created", LoginActivity.this);
                 } else {
 
-                    DialogAndToast.showDialog(response.getString("message"), LoginActivity.this);
+                   // DialogAndToast.showDialog(response.getString("message"), LoginActivity.this);
                 }
 
             }

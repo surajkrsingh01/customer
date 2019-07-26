@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.shoppurscustomer.models.CartItem;
 import com.shoppurscustomer.models.Coupon;
+import com.shoppurscustomer.models.DeliveryAddress;
 import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.ProductColor;
 import com.shoppurscustomer.models.ProductComboDetails;
@@ -36,6 +37,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private static final String FAVORITE_TABLE = "MyFavotie";
     public static final String PRODUCT_UNIT_TABLE = "PRODUCT_UNIT_TABLE";
+    public static final String DELIVERY_ADDRESS_TABLE = "DELIVERY_ADDRESS_TABLE";
     public static final String PRODUCT_SIZE_TABLE = "PRODUCT_SIZE_TABLE";
     public static final String PRODUCT_COLOR_TABLE = "PRODUCT_COLOR_TABLE";
     public static final String CART_TABLE = "CART_TABLE";
@@ -85,6 +87,11 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COUPON_NAME = "couponName";
     public static final String COUPON_PER = "couponPer";
     public static final String COUPON_MAX_AMOUNT = "couponMaxAmount";
+    public static final String DELIVERY_HOUSE_NO = "deliveryHouse";
+    public static final String DELIVERY_LANDMARK = "deliveryLandmark";
+    public static final String DELIVERY_CUSTOMER_NAME = "deliveryCustomerName";
+    public static final String DELIVERY_CUSTOMER_CODE = "deliveryCustomerCode";
+    public static final String DELIVERY_CUSTOMER_MOBILE= "deliveryMobile";
     public static final String DELIVERY_ADDRESS = "deliveryAddress";
     public static final String DELIVERY_PIN = "deliveryPin";
     public static final String DELIVERY_STATE = "deliveryState";
@@ -259,9 +266,23 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String CREATE_FAVORITE_SHOP = "create table "+FAVORITE_TABLE +
             "("+SHOP_CODE+" TEXT NOT NULL)";
 
+    public static final String CREATE_DELIVERY_ADDRESS = "create table "+DELIVERY_ADDRESS_TABLE +
+            "("+DELIVERY_CUSTOMER_CODE+" TEXT NOT NULL, " +
+            " "+DELIVERY_CUSTOMER_NAME+" TEXT NOT NULL, " +
+            " "+DELIVERY_CUSTOMER_MOBILE+" TEXT NOT NULL, " +
+            " "+DELIVERY_HOUSE_NO+" TEXT, " +
+            " "+DELIVERY_ADDRESS+" TEXT, " +
+            " "+DELIVERY_LANDMARK+" TEXT, " +
+            " "+DELIVERY_CITY+" TEXT, " +
+            " "+DELIVERY_STATE+" TEXT, " +
+            " "+DELIVERY_COUNTRY+" TEXT, " +
+            " "+DELIVERY_PIN+" TEXT)";
+
+
+
     public DbHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, 5);
+        super(context, DATABASE_NAME, null, 6);
         this.context=context;
     }
 
@@ -269,6 +290,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_CART_TABLE);
         db.execSQL(CREATE_FAVORITE_SHOP);
+        db.execSQL(CREATE_DELIVERY_ADDRESS);
         db.execSQL(CREATE_PRODUCT_UNIT_TABLE);
         db.execSQL(CREATE_PRODUCT_SIZE_TABLE);
         db.execSQL(CREATE_PRODUCT_COLOR_TABLE);
@@ -304,6 +326,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_PRODUCT_UNIT_TABLE);
         db.execSQL(CREATE_PRODUCT_SIZE_TABLE);
         db.execSQL(CREATE_PRODUCT_COLOR_TABLE);
+        db.execSQL(CREATE_DELIVERY_ADDRESS);
     }
 
     public boolean addProductToCart(MyProduct item){
@@ -659,6 +682,9 @@ public class DbHelper extends SQLiteOpenHelper {
         Log.d(TAG, val+" ");
         db.close(); // Closing database connection
     }
+
+
+
     public void add_to_Favorite(List<String> mList) {
         SQLiteDatabase db = this.getWritableDatabase();
         for (int i =0;i<mList.size();i++) {
@@ -689,6 +715,46 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("delete from "+ FAVORITE_TABLE);
         db.close();
+    }
+
+    public boolean addDeliveryAddress(DeliveryAddress item, String custCode){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DELIVERY_CUSTOMER_NAME, item.getName());
+        contentValues.put(DELIVERY_CUSTOMER_MOBILE, item.getMobile());
+        contentValues.put(DELIVERY_CUSTOMER_CODE, custCode);
+        contentValues.put(DELIVERY_HOUSE_NO, item.getHouseNo());
+        contentValues.put(DELIVERY_ADDRESS, item.getAddress());
+        contentValues.put(DELIVERY_LANDMARK, item.getLandmark());
+        contentValues.put(DELIVERY_CITY, item.getCity());
+        contentValues.put(DELIVERY_STATE, item.getState());
+        contentValues.put(DELIVERY_PIN, item.getPinCode());
+        db.insert(DELIVERY_ADDRESS_TABLE, null, contentValues);
+        Log.i("DbHelper","Delivery Address is added");
+        return true;
+    }
+
+    public List<DeliveryAddress> getallDeliveryAddress(String custCode){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String unitSql="select * from "+DELIVERY_ADDRESS_TABLE+" WHERE "+DELIVERY_CUSTOMER_CODE+" = ?";
+        Cursor res =  db.rawQuery(unitSql, new String[]{String.valueOf(custCode)});
+        ArrayList<DeliveryAddress> itemList=new ArrayList<>();
+        DeliveryAddress item = null;
+        if(res.moveToFirst()){
+            do{
+                item=new DeliveryAddress();
+                item.setName(res.getString(res.getColumnIndex(DELIVERY_CUSTOMER_NAME)));
+                item.setMobile(res.getString(res.getColumnIndex(DELIVERY_CUSTOMER_MOBILE)));
+                item.setHouseNo(res.getString(res.getColumnIndex(DELIVERY_HOUSE_NO)));
+                item.setAddress(res.getString(res.getColumnIndex(DELIVERY_ADDRESS)));
+                item.setLandmark(res.getString(res.getColumnIndex(DELIVERY_LANDMARK)));
+                item.setCity(res.getString(res.getColumnIndex(DELIVERY_CITY)));
+                item.setState(res.getString(res.getColumnIndex(DELIVERY_STATE)));
+                item.setPinCode(res.getString(res.getColumnIndex(DELIVERY_PIN)));
+                itemList.add(item);
+            }while (res.moveToNext());
+        }
+        return itemList;
     }
 
 
@@ -1502,6 +1568,7 @@ public class DbHelper extends SQLiteOpenHelper {
         deleteTable(DbHelper.PROD_PRICE_DETAIL_TABLE);
         deleteTable(DbHelper.PROD_FREE_OFFER_TABLE);
         deleteTable(DbHelper.COUPON_TABLE);
+
     }
 
 }

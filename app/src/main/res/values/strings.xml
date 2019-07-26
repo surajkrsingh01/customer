@@ -80,7 +80,9 @@
     <string name="title_activity_invoice">Invoice</string>
     <string name="title_activity_apply_offer">Apply Offer</string>
     <string name="title_activity_apply_coupons">Apply Coupon</string>
+    <string name="title_activity_add_delivery__address">Add Delivery Address</string>
     <string name="title_activity_ccAvenue">CCAvenue</string>
+    <string name="title_activity_delivery_address">DeliveryAddress</string>
     <string name="title_activity_display">Display</string>
     <string name="title_activity_search">Search</string>
     <string name="title_activity_cart">My Cart</string>

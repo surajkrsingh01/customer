@@ -168,8 +168,8 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         tvCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              /* paymentMode = "Online";
-               generateJson(paymentMode);*/
+               paymentMode = "Online";
+               generateJson(paymentMode);
             }
         });
 

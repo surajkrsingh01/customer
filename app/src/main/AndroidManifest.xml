@@ -89,8 +89,16 @@
             android:label="@string/title_activity_apply_coupons"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".activities.Settings.AddDeliveryAddressActivity"
+            android:label="@string/title_activity_add_delivery__address"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".activities.payment.ccavenue.activities.CCAvenueWebViewActivity"
             android:label="@string/title_activity_ccAvenue"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.Settings.DeliveryAddressListActivity"
+            android:label="@string/title_activity_delivery_address"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.Settings.DisplayActivity"

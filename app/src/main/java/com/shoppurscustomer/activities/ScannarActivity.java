@@ -71,6 +71,8 @@ public class ScannarActivity extends BaseActivity {
         try {
             if(type.equals("addProduct") || type.equals("addProductBarcode")){
                 DialogAndToast.showDialog("Barcode "+rawValue, this );
+                DialogAndToast.showToast("Product is not exist in database.",this);
+                finish();
                /* Intent intent = new Intent();
                 intent.putExtra("barCode",rawValue);
                 setResult(-1,intent);

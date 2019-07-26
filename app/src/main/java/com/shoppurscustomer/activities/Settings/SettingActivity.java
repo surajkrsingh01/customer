@@ -22,7 +22,7 @@ import com.shoppurscustomer.utilities.CountDrawable;
 
 public class SettingActivity extends BaseActivity implements View.OnClickListener {
 
-    private RelativeLayout relative_personalInfo, relative_my_cart, relative_display, relative_my_order, relative_saved_cards, relative_invite, relative_change_password, relative_logout;
+    private RelativeLayout relative_personalInfo, relative_my_cart, relative_display, relative_my_order, relative_delivery_address, relative_invite, relative_change_password, relative_logout;
     private Toolbar toolbar;
     private Menu myMenu;
     private int cartCount;
@@ -87,7 +87,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         relative_my_cart = findViewById(R.id.relative_my_cart);
         relative_display = findViewById(R.id.relative_display);
         relative_my_order = findViewById(R.id.relative_my_order);
-        relative_saved_cards = findViewById(R.id.relative_saved_card);
+        relative_delivery_address = findViewById(R.id.relative_delivery_address);
         relative_invite = findViewById(R.id.relative_invite);
         relative_change_password = findViewById(R.id.relative_change_password);
         relative_logout = findViewById(R.id.relative_logout);
@@ -96,7 +96,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         relative_my_cart.setOnClickListener(this);
         relative_display.setOnClickListener(this);
         relative_my_order.setOnClickListener(this);
-        relative_saved_cards.setOnClickListener(this);
+        relative_delivery_address.setOnClickListener(this);
         relative_invite.setOnClickListener(this);
         relative_change_password.setOnClickListener(this);
         relative_logout.setOnClickListener(this);
@@ -110,8 +110,8 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
             startActivity(new Intent( SettingActivity.this, DisplayActivity.class));
         }else if(view == relative_my_order){
             startActivity(new Intent( SettingActivity.this, MyOrderActivity.class));
-        }else if(view == relative_saved_cards){
-
+        }else if(view == relative_delivery_address){
+            startActivity(new Intent( SettingActivity.this, DeliveryAddressListActivity.class));
         }else if(view == relative_invite){
             referToFriend();
         }else if(view == relative_change_password){

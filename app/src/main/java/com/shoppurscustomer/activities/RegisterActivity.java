@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.shoppurscustomer.R;
@@ -25,8 +27,10 @@ public class RegisterActivity extends NetworkBaseActivity{
 
     private EditText editFullName,editEmail,editMobile,editPassword,editConfPassword;
     private CheckBox checkBoxTerms;
-    private Button btnRegister;
     private String fullName,email,mobile,password,confPassword;
+    private RelativeLayout relative_footer_action;
+    private TextView tv_action;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +57,12 @@ public class RegisterActivity extends NetworkBaseActivity{
             finish();
         }
 
-        btnRegister=(Button)findViewById(R.id.btn_register);
+        tv_action = findViewById(R.id.text_action);
+        relative_footer_action = findViewById(R.id.relative_footer_action);
+        tv_action.setText("Register Now");
+        relative_footer_action.setBackgroundColor(getResources().getColor(R.color.green700));
 
-        btnRegister.setOnClickListener(new View.OnClickListener() {
+        relative_footer_action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptRegister();

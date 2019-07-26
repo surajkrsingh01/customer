@@ -24,6 +24,7 @@ import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.ProductComboOffer;
 import com.shoppurscustomer.models.ProductDiscountOffer;
 import com.shoppurscustomer.models.ProductUnit;
+import com.shoppurscustomer.utilities.DialogAndToast;
 import com.shoppurscustomer.utilities.Utility;
 
 import java.util.ArrayList;
@@ -226,11 +227,13 @@ public class ApplyOfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         @Override
         public void onClick(View view) {
             if(view == imageViewAdd){
-                myItemTypeClickListener.onItemClicked(getAdapterPosition(),2);
+                DialogAndToast.showDialog("Cannot Add this product ", context);
+            //    myItemTypeClickListener.onItemClicked(getAdapterPosition(),2);
             }else if(view == rlOffer){
-                myItemTypeClickListener.onItemClicked(getAdapterPosition(),3);
+            //    myItemTypeClickListener.onItemClicked(getAdapterPosition(),3);
             }else{
-                myItemTypeClickListener.onItemClicked(getAdapterPosition(),1);
+               // DialogAndToast.showDialog("Cannot Add this product ", context);
+             //   myItemTypeClickListener.onItemClicked(getAdapterPosition(),1);
             }
         }
     }
