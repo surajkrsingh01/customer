@@ -22,6 +22,7 @@
         android:layout_height="wrap_content" />
 
     <ImageView
+        android:visibility="gone"
         android:id="@+id/image_search"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
@@ -606,6 +607,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/image_scan_big"
             android:layout_gravity="center_horizontal"
             android:tint="?attr/primaryTextColor"
@@ -620,7 +622,7 @@
             android:paddingRight="@dimen/view_horizontal_margin"
             android:textColor="?attr/primaryTextColor"
             android:layout_gravity="center_horizontal"
-            android:text="Scan the product to buy or search the product to buy"
+            android:text="No Products in cart."
             android:textSize="@dimen/large_text_size"
             android:gravity="center_horizontal"
             android:layout_width="wrap_content"
@@ -638,7 +640,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include layout="@layout/fragment_offer_desciption"/>
+      <!--  <include layout="@layout/fragment_offer_desciption"/>-->
 
     </RelativeLayout>
 

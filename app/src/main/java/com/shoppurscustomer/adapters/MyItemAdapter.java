@@ -1,8 +1,10 @@
 package com.shoppurscustomer.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -10,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +26,14 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.Settings.SettingActivity;
+import com.shoppurscustomer.activities.ShopProductListActivity;
+import com.shoppurscustomer.activities.StoresListActivity;
+import com.shoppurscustomer.models.CatListItem;
 import com.shoppurscustomer.models.HomeListItem;
 import com.shoppurscustomer.models.MyItem;
+import com.shoppurscustomer.models.MyShop;
+import com.shoppurscustomer.utilities.Constants;
+import com.shoppurscustomer.utilities.DialogAndToast;
 
 import java.util.Date;
 import java.util.List;
@@ -149,6 +158,73 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     break;
                 case MotionEvent.ACTION_CANCEL:
                     Log.i("Adapter","onPressCancel");
+                    zoomAnimation(false,rootView);
+                    break;
+            }
+            return true;
+        }
+    }
+
+    public class MyStoreListType1ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener {
+
+        private TextView textName,textAddress,textMobile;
+        private ImageView imageView,imageMenu;
+        private View rootView;
+
+        public MyStoreListType1ViewHolder(View itemView) {
+            super(itemView);
+            rootView = itemView;
+            textName = itemView.findViewById(R.id.text_name);
+            textAddress=itemView.findViewById(R.id.text_address);
+            textMobile=itemView.findViewById(R.id.text_mobile);
+            imageView=itemView.findViewById(R.id.image_view);
+            imageMenu=itemView.findViewById(R.id.image_menu);
+            rootView.setOnTouchListener(this);
+            //imageMenu.setVisibility(View.GONE);
+           // imageMenu.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if(view == imageMenu){
+                final MyShop shop = (MyShop) itemList.get(getAdapterPosition());
+                PopupMenu popupMenu = new PopupMenu(view.getContext(), imageMenu);
+
+                ((Activity)context).getMenuInflater().inflate(R.menu.shop_popup_menu, popupMenu.getMenu());
+
+                popupMenu.show();
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        //Toast.makeText(getBaseContext(), "You selected the action : " + item.getTitle()+" position "+position, Toast.LENGTH_SHORT).show();
+                        if(item.getTitle().equals("Call")){
+                            ((StoresListActivity)(context)).makeCall(shop.getMobile());
+                            Log.i("Adapter","Call Customer"+shop.getName());
+                        }else if(item.getTitle().equals("Message")){
+                            ((StoresListActivity)(context)).openWhatsApp(shop.getMobile());
+                            Log.i("Adapter","Message Customer"+shop.getName());
+                        }
+                        return true;
+                    }
+                });
+
+            }
+        }
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    zoomAnimation(true,rootView);
+                    break;
+
+                case MotionEvent.ACTION_UP:
+                    HomeListItem shop = (HomeListItem) itemList.get(getAdapterPosition());
+                     //DialogAndToast.showDialog("item Name "+shop.getDesc(), context );
+                    zoomAnimation(false,rootView);
+                    break;
+                case MotionEvent.ACTION_CANCEL:
                     zoomAnimation(false,rootView);
                     break;
             }
@@ -296,7 +372,7 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 break;
             case 4:
                 View v4 = inflater.inflate(R.layout.list_item_type_4_layout, parent, false);
-                viewHolder = new MyListType2ViewHolder(v4);
+                viewHolder = new MyStoreListType1ViewHolder(v4);
                 break;
             case 5:
                 View v5 = inflater.inflate(R.layout.list_item_type_3_1_layout, parent, false);
@@ -405,6 +481,31 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
               layoutParams.setFullSpan(true);
 
 
+          }else if(holder instanceof MyStoreListType1ViewHolder){
+              HomeListItem item = (HomeListItem) itemList.get(position);
+              MyStoreListType1ViewHolder myViewHolder = (MyStoreListType1ViewHolder)holder;
+              if(itemList.get(position) instanceof CatListItem) {
+                  CatListItem mcatitem = (CatListItem) itemList.get(position);
+                  if (mcatitem.getTitle() != null && mcatitem.getTitle().equals("My Favourite Stores")){
+                      Log.d("Title", mcatitem.getTitle());
+                      // myViewHolder.image_icon.setVisibility(View.GONE);
+                  }//else myViewHolder.image_icon.setVisibility(View.VISIBLE);
+              }
+              myViewHolder.textName.setText(item.getDesc());
+              myViewHolder.textAddress.setText(item.getTitle());
+              myViewHolder.textMobile.setText(item.getCategory());
+              RequestOptions requestOptions = new RequestOptions();
+              requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+              requestOptions.centerCrop();
+              requestOptions.skipMemoryCache(false);
+              Glide.with(context)
+                      .load(item.getLocalImage())
+                      .apply(requestOptions)
+                      .error(R.drawable.ic_photo_black_192dp)
+                      .into(myViewHolder.imageView);
+
+              StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
+              layoutParams.setFullSpan(true);
           }else if(holder instanceof MyListType3ViewHolder){
               HomeListItem item = (HomeListItem) itemList.get(position);
               MyListType3ViewHolder myViewHolder = (MyListType3ViewHolder)holder;

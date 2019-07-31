@@ -97,7 +97,7 @@ public class MyOrderActivity extends NetworkBaseActivity{
                 myOrderAdapter.notifyDataSetChanged();
         }*/
         getOrders();
-        initFooter(this,4);
+        initFooter(this,2);
     }
 
     private void getItemList(){

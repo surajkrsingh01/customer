@@ -18,21 +18,23 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
     <TextView
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
         android:layout_toLeftOf="@+id/iv_options"
         android:id="@+id/tv_Category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="15sp"
-        android:textColor="@color/primary_text_color"
+        android:textColor="@color/white"
         android:text="My Category"/>
     <ImageView
         android:layout_alignParentRight="true"
         android:visibility="visible"
         android:id="@+id/iv_options"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:src="@drawable/arrow_right"
-        android:tint="?attr/secondaryTextColor"/>
+        android:tint="@color/white"/>
     </RelativeLayout>
 </RelativeLayout>

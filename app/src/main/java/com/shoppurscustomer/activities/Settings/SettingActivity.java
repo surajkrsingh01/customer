@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.BaseActivity;
 import com.shoppurscustomer.activities.CartActivity;
+import com.shoppurscustomer.activities.ChangePasswordActivity;
 import com.shoppurscustomer.activities.ForgotPasswordActivity;
 import com.shoppurscustomer.activities.LoginActivity;
 import com.shoppurscustomer.activities.MyOrderActivity;
@@ -34,7 +35,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         init();
-        initFooter(this,0);
+        initFooter(this,2);
         cartCount = dbHelper.getCartCount();
     }
 
@@ -115,7 +116,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         }else if(view == relative_invite){
             referToFriend();
         }else if(view == relative_change_password){
-            startActivity(new Intent( SettingActivity.this, ForgotPasswordActivity.class));
+            startActivity(new Intent( SettingActivity.this, ChangePasswordActivity.class));
         }else if(view == relative_my_cart){
             startActivity(new Intent( SettingActivity.this, CartActivity.class));
         }else if(view == relative_logout){

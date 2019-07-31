@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.appcompat.widget.Toolbar;
+
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,11 +18,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.signature.ObjectKey;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.Settings.AddressActivity;
 import com.shoppurscustomer.activities.Settings.SettingActivity;
 import com.shoppurscustomer.adapters.MyItemAdapter;
 import com.shoppurscustomer.models.HomeListItem;
+import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
 
 import org.json.JSONArray;
@@ -32,13 +39,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MainActivity extends NetworkBaseActivity {
 
     private RecyclerView recyclerView;
-    private RelativeLayout relative_location;
-    private TextView tv_location;
-    private ImageView profile_image;
-    private LinearLayout linear_edit_address;
+
     private MyItemAdapter myItemAdapter;
     private List<Object> itemList;
     private TextView textViewError;
@@ -47,6 +53,8 @@ public class MainActivity extends NetworkBaseActivity {
     private StaggeredGridLayoutManager staggeredGridLayoutManager;
 
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
+    private TextView text_customer_address;
+    private CircleImageView customer_profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,25 +62,40 @@ public class MainActivity extends NetworkBaseActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        relative_location = findViewById(R.id.relative_location);
-        relative_location.setBackgroundColor(colorTheme);
-        tv_location = findViewById(R.id.tv_location);
-        profile_image = findViewById(R.id.profile_image);
-        profile_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                    Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-                    startActivity(intent);
-            }
-        });
-        linear_edit_address = findViewById(R.id.linear_edit_address);
-        linear_edit_address.setOnClickListener(new View.OnClickListener() {
+
+        text_customer_address = findViewById(R.id.text_customer_address);
+        if(TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_ADDRESS, "")))
+            text_customer_address.setText("Update Your Location");
+        else
+            text_customer_address.setText(sharedPreferences.getString(Constants.CUST_ADDRESS, ""));
+        text_customer_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, AddressActivity.class);
                 startActivity(intent);
             }
         });
+        customer_profile= findViewById(R.id.profile_image);
+        customer_profile.setCircleBackgroundColor(colorTheme);
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+        // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
+        requestOptions.centerCrop();
+        requestOptions.skipMemoryCache(false);
+        requestOptions.signature(new ObjectKey(sharedPreferences.getString("profile_image_signature","")));
+        Glide.with(this)
+                .load(sharedPreferences.getString(Constants.PROFILE_PIC, ""))
+                .apply(requestOptions)
+                .error(R.drawable.ic_photo_black_192dp)
+                .into(customer_profile);
+        customer_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         //if(String.valueOf(tv_location.getText()).length()>100)
 

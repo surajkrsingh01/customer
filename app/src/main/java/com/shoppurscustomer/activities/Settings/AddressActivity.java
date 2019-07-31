@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -42,6 +44,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AddressComponent;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
@@ -62,15 +65,17 @@ import com.shoppurscustomer.utilities.Utility;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCallback, OnLocationReceivedListener {
-
     private final float ZOOM = 15f;
     private final int SEARCH_LOCATION = 3;
 
@@ -78,16 +83,14 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
     private Marker marker;
     private LatLng shopLatLng;
 
-    private EditText editAddress,editPincode;
-    private Spinner spinnerCountry, spinnerState, spinnerCity;
-    List<SpinnerItem> stateListObject, cityListObject, countryListObject;
-    List<String> stateList, cityList, countryList;
-    private ArrayAdapter<String> stateAdapter, cityAdapter, countryAdapter;
+    private EditText editAddress, editLocality, editCountry,editState,editCity,editPincode;
+    private String country,state,city,pin;
     private TextView tv_parent, tv_top_parent;
     private ImageView ivSearch;
 
     private Button btnGetLocation;
     private boolean isFirstTime = true;
+    private String flag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,17 +101,25 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         init();
-        //initFooterAction(this);
     }
 
     private void init(){
 
+        flag = getIntent().getStringExtra("flag");
+
         // Initialize Places.
         Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key));
 
+        double latitude = 0, longitude = 0;
+        String cl = sharedPreferences.getString(Constants.CUST_LAT,"0.0");
+        Log.d("c1 ", cl);
+        if(TextUtils.isEmpty(cl) || cl.equals("null")){
 
-        double latitude = Double.parseDouble(sharedPreferences.getString(Constants.USER_LAT,"0.0"));
-        double longitude = Double.parseDouble(sharedPreferences.getString(Constants.USER_LONG,"0.0"));
+        }else {
+            latitude = Double.parseDouble(sharedPreferences.getString(Constants.CUST_LAT,"0.0"));
+            longitude = Double.parseDouble(sharedPreferences.getString(Constants.CUST_LONG,"0.0"));
+        }
+
 
         Log.i(TAG,"lat "+latitude+" long "+longitude);
 
@@ -128,11 +139,17 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
 
         ivSearch = findViewById(R.id.image_search);
         editAddress = findViewById(R.id.edit_address);
+        editLocality = findViewById(R.id.edit_locality);
+        editCountry = findViewById(R.id.edit_country);
+        editState = findViewById(R.id.edit_state);
+        editCity = findViewById(R.id.edit_city);
         editPincode = findViewById(R.id.edit_pincode);
-        editAddress.setText(sharedPreferences.getString(Constants.ADDRESS,""));
-        editPincode.setText(sharedPreferences.getString(Constants.ZIP,""));
-        initSpinners();
-
+        editAddress.setText(sharedPreferences.getString(Constants.CUST_ADDRESS,""));
+        editLocality.setText(sharedPreferences.getString(Constants.CUST_LOCALITY, ""));
+        editCountry.setText(sharedPreferences.getString(Constants.CUST_COUNTRY,""));
+        editState.setText(sharedPreferences.getString(Constants.CUST_STATE,""));
+        editCity.setText(sharedPreferences.getString(Constants.CUST_CITY,""));
+        editPincode.setText(sharedPreferences.getString(Constants.CUST_PINCODE,""));
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -155,10 +172,22 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
 
         tv_top_parent = findViewById(R.id.text_left_label);
         tv_parent = findViewById(R.id.text_right_label);
+
+        if(flag != null){
+            tv_top_parent.setText("Back");
+            TextView tv = findViewById(R.id.text_action);
+            tv.setText("Continue");
+            tv_parent.setVisibility(View.GONE);
+        }
+
         tv_top_parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(AddressActivity.this, SettingActivity.class));
+                if(flag != null){
+
+                }else{
+                    startActivity(new Intent(AddressActivity.this, SettingActivity.class));
+                }
                 finish();
             }
         });
@@ -173,227 +202,11 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
         ivSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    searchPlaces();
+                searchPlaces();
             }
         });
     }
 
-
-    private void initSpinners(){
-        spinnerCountry = findViewById(R.id.spinner_country);
-        spinnerState = findViewById(R.id.spinner_state);
-        spinnerCity = findViewById(R.id.spinner_city);
-        countryListObject = new ArrayList<>();
-        countryList = new ArrayList<>();
-        stateListObject = new ArrayList<>();
-        stateList = new ArrayList<>();
-        cityListObject = new ArrayList<>();
-        cityList = new ArrayList<>();
-
-        countryAdapter = new ArrayAdapter<String>(this, R.layout.simple_dropdown_list_item, countryList) {
-            @Override
-            public boolean isEnabled(int position) {
-                if (position == 0) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView tv = (TextView) view;
-                if (position == 0) {
-                    // Set the hint text color gray
-                    tv.setTextColor(getResources().getColor(R.color.grey500));
-                } else {
-                    if(isDarkTheme){
-                        tv.setTextColor(getResources().getColor(R.color.white));
-                    }else{
-                        tv.setTextColor(getResources().getColor(R.color.primary_text_color));
-                    }
-
-                }
-                return view;
-            }
-
-            @Override
-            public View getDropDownView(int position, View convertView,
-                                        ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                TextView tv = (TextView) view;
-                if(isDarkTheme){
-                    view.setBackgroundColor(getResources().getColor(R.color.dark_color));
-                }else{
-                    view.setBackgroundColor(getResources().getColor(R.color.white));
-                }
-                if (position == 0) {
-                    // Set the hint text color gray
-                    tv.setTextColor(getResources().getColor(R.color.grey500));
-                } else {
-                    if(isDarkTheme){
-                        tv.setTextColor(getResources().getColor(R.color.white));
-                    }else{
-                        tv.setTextColor(getResources().getColor(R.color.primary_text_color));
-                    }
-                }
-                tv.setPadding(20, 20, 20, 20);
-                return view;
-            }
-        };
-
-        spinnerCountry.setAdapter(countryAdapter);
-
-        // stateList.add(0,"Select State");
-        //  stateList.add("Delhi");
-        //stateList.add("New Delhi");
-        stateAdapter = new ArrayAdapter<String>(this, R.layout.simple_dropdown_list_item, stateList) {
-            @Override
-            public boolean isEnabled(int position) {
-                if (position == 0) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView tv = (TextView) view;
-                if (position == 0) {
-                    // Set the hint text color gray
-                    tv.setTextColor(getResources().getColor(R.color.grey500));
-                } else {
-                    if(isDarkTheme){
-                        tv.setTextColor(getResources().getColor(R.color.white));
-                    }else{
-                        tv.setTextColor(getResources().getColor(R.color.primary_text_color));
-                    }
-                }
-                return view;
-            }
-
-            @Override
-            public View getDropDownView(int position, View convertView,
-                                        ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                if(isDarkTheme){
-                    view.setBackgroundColor(getResources().getColor(R.color.dark_color));
-                }else{
-                    view.setBackgroundColor(getResources().getColor(R.color.white));
-                }
-                TextView tv = (TextView) view;
-                if (position == 0) {
-                    // Set the hint text color gray
-                    tv.setTextColor(getResources().getColor(R.color.grey400));
-                } else {
-                    if(isDarkTheme){
-                        tv.setTextColor(getResources().getColor(R.color.white));
-                    }else{
-                        tv.setTextColor(getResources().getColor(R.color.primary_text_color));
-                    }
-                }
-                tv.setPadding(20, 20, 20, 20);
-                return view;
-            }
-        };
-
-        spinnerState.setAdapter(stateAdapter);
-
-        cityList.add(0, "Select City");
-        // cityList.add("Delhi");
-        //stateList.add("New Delhi");
-        cityAdapter = new ArrayAdapter<String>(this, R.layout.simple_dropdown_list_item, cityList) {
-            @Override
-            public boolean isEnabled(int position) {
-                if (position == 0) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView tv = (TextView) view;
-                if (position == 0) {
-                    // Set the hint text color gray
-                    tv.setTextColor(getResources().getColor(R.color.grey500));
-                } else {
-                    if(isDarkTheme){
-                        tv.setTextColor(getResources().getColor(R.color.white));
-                    }else{
-                        tv.setTextColor(getResources().getColor(R.color.primary_text_color));
-                    }
-                }
-                return view;
-            }
-
-            @Override
-            public View getDropDownView(int position, View convertView,
-                                        ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                if(isDarkTheme){
-                    view.setBackgroundColor(getResources().getColor(R.color.dark_color));
-                }else{
-                    view.setBackgroundColor(getResources().getColor(R.color.white));
-                }
-                TextView tv = (TextView) view;
-                if (position == 0) {
-                    // Set the hint text color gray
-                    tv.setTextColor(getResources().getColor(R.color.grey400));
-                } else {
-                    if(isDarkTheme){
-                        tv.setTextColor(getResources().getColor(R.color.white));
-                    }else{
-                        tv.setTextColor(getResources().getColor(R.color.primary_text_color));
-                    }
-                }
-                tv.setPadding(20, 20, 20, 20);
-                return view;
-            }
-        };
-
-        spinnerCity.setAdapter(cityAdapter);
-
-        spinnerCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i > 0) {
-                    getStates(countryListObject.get(i).getId());
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        spinnerState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i > 0) {
-                    getCities(stateListObject.get(i).getId());
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        if (ConnectionDetector.isNetworkAvailable(this)) {
-            getCountries();
-        }
-    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -421,7 +234,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-               // openDialog();
+                // openDialog();
             }
         });
     }
@@ -513,6 +326,27 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 Log.i(TAG, "Place: " + place.getName()
                         + ", " + place.getId()+ ", " + place.getAddress());
+                List<AddressComponent> componentList = place.getAddressComponents().asList();
+                for(AddressComponent component : componentList){
+                    Log.i(TAG,"component "+component.getName());
+                    List<String> typeList = component.getTypes();
+                    for(String type : typeList){
+                        Log.i(TAG,"type "+type);
+                        if(type.equals("country")){
+                            country = component.getName();
+                            editCountry.setText(country);
+                        }else if(type.equals("administrative_area_level_1")){
+                            state = component.getName();
+                            editState.setText(state);
+                        }else if(type.equals("locality")|| type.equals("neighborhood")){
+                            city = component.getName();
+                            editCity.setText(city);
+                        }else if(type.equals("postal_code")){
+                            pin = component.getName();
+                            editPincode.setText(pin);
+                        }
+                    }
+                }
                 editAddress.setText(place.getAddress());
                 shopLatLng = place.getLatLng();
                 updateMarker(shopLatLng);
@@ -529,10 +363,44 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
 
     @Override
     public void onLocationReceived(Location location) {
-            // Add a marker in Sydney and move the camera
-         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-         shopLatLng = latLng;
-         updateMarker(latLng);
+        Log.i(TAG,"Location is received.");
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        shopLatLng = latLng;
+        setLocationComponents();
+        updateMarker(latLng);
+    }
+
+    private void setLocationComponents(){
+        Log.i(TAG,"Getting address components...");
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        List<Address> addresses = null;
+
+        try {
+            addresses = geocoder.getFromLocation(shopLatLng.latitude, shopLatLng.longitude, 1);
+        } catch (IOException ioException) {
+            Log.e(TAG, ioException.getMessage());
+        } catch (IllegalArgumentException illegalArgumentException) {
+            Log.e(TAG, illegalArgumentException.getMessage());
+        }
+
+        if(addresses.size() > 0){
+            Address address = addresses.get(0);
+            ArrayList<String> addressFragments = new ArrayList<String>();
+            for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
+                addressFragments.add(address.getAddressLine(i));
+            }
+            editAddress.setText(address.getAddressLine(0));
+            if(address.getCountryName() != null)
+                editCountry.setText(address.getCountryName());
+            if(address.getAdminArea() != null)
+                editState.setText(address.getAdminArea());
+            if(address.getLocality() != null)
+                editCity.setText(address.getLocality());
+            if(address.getPostalCode() != null)
+                editPincode.setText(address.getPostalCode());
+        }else{
+            Log.e(TAG, "There is some problem in fetching address.");
+        }
     }
 
     private void updateMarker(LatLng latLng){
@@ -570,7 +438,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
         PlacesClient placesClient = Places.createClient(this);
 // Set the fields to specify which types of place data to return.
         List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.ADDRESS,
-                Place.Field.LAT_LNG);
+                Place.Field.LAT_LNG,Place.Field.ADDRESS_COMPONENTS);
 
 
         Intent intent =
@@ -581,81 +449,102 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
     }
 
     private void getCountries() {
-        String url = getResources().getString(R.string.root_url) + Constants.GET_COUNTRIES;
+        String url = getResources().getString(R.string.url) + Constants.GET_COUNTRIES;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url, new JSONObject(), "countries");
     }
 
     private void getStates(String countryId) {
-        String url = getResources().getString(R.string.root_url) + Constants.GET_STATES + countryId;
+        String url = getResources().getString(R.string.url) + Constants.GET_STATES + countryId;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url, new JSONObject(), "states");
     }
 
     private void getCities(String stateId) {
-        String url = getResources().getString(R.string.root_url) + Constants.GET_CITIES + stateId;
+        String url = getResources().getString(R.string.url) + Constants.GET_CITIES + stateId;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url, new JSONObject(), "cities");
     }
 
     private void updateAddress(){
         String address = editAddress.getText().toString();
-        String pincode = editPincode.getText().toString();
-        String country = countryList.get(spinnerCountry.getSelectedItemPosition());
-        String state = stateList.get(spinnerState.getSelectedItemPosition());
-        String city = cityList.get(spinnerCity.getSelectedItemPosition());
+        String locality = editLocality.getText().toString();
+        pin = editPincode.getText().toString();
+        country = editCountry.getText().toString();
+        state = editState.getText().toString();
+        city = editCity.getText().toString();
+
 
         if (TextUtils.isEmpty(address)) {
             DialogAndToast.showDialog(getResources().getString(R.string.address_required),this);
             return;
         }
+        if(TextUtils.isEmpty(locality)){
+            DialogAndToast.showDialog("Please Enter Locality",this);
+            return;
+        }
 
-        if (TextUtils.isEmpty(pincode)) {
+        if (TextUtils.isEmpty(pin)) {
             DialogAndToast.showDialog(getResources().getString(R.string.pincode_required),this);
             return;
         }
 
-        if (state.equals("Select State")) {
-            DialogAndToast.showDialog("Please select your state", this);
+        if (TextUtils.isEmpty(state)) {
+            DialogAndToast.showDialog("Please enter your state", this);
             return;
         }
-        if (state.equals("Select City")) {
-            DialogAndToast.showDialog("Please select your city", this);
+        if (TextUtils.isEmpty(city)) {
+            DialogAndToast.showDialog("Please enter your city", this);
             return;
         }
 
-        Map<String,String> params=new HashMap<>();
-        params.put("address",address);
-        params.put("country",country);
-        params.put("state",state);
-        params.put("city",city);
-        params.put("pinCode",pincode);
-        if(shopLatLng == null){
-            params.put("latitude","0.0");
-            params.put("longitude","0.0");
+        if(flag != null){
+
+            Intent intent = new Intent();
+            intent.putExtra("address",address);
+            intent.putExtra("country",country);
+            intent.putExtra("state",state);
+            intent.putExtra("city",city);
+            intent.putExtra("pin",pin);
+            intent.putExtra("latitude",shopLatLng.latitude);
+            intent.putExtra("longitude",shopLatLng.longitude);
+            setResult(-1,intent);
+            finish();
+
         }else{
-            params.put("latitude",""+shopLatLng.latitude);
-            params.put("longitude",""+shopLatLng.longitude);
-        }
+            Map<String,String> params=new HashMap<>();
+            params.put("address",address);
+            params.put("locality", locality);
+            params.put("country",country);
+            params.put("state",state);
+            params.put("city",city);
+            params.put("pinCode",pin);
+            if(shopLatLng == null){
+                params.put("latitude","0.0");
+                params.put("longitude","0.0");
+            }else{
+                params.put("latitude",""+shopLatLng.latitude);
+                params.put("longitude",""+shopLatLng.longitude);
+            }
 
-        params.put("id",sharedPreferences.getString(Constants.USER_ID,""));
-        params.put("mobile",sharedPreferences.getString(Constants.MOBILE_NO,""));
-        params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
-        params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
-        params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        JSONArray dataArray = new JSONArray();
-        JSONObject dataObject = new JSONObject(params);
-        dataArray.put(dataObject);
-        String url=getResources().getString(R.string.url)+Constants.UPDATE_ADDRESS;
-        showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updateAddress");
+            params.put("id","0");
+            params.put("mobile",sharedPreferences.getString(Constants.MOBILE_NO,""));
+            params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
+            params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
+            params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+            JSONArray dataArray = new JSONArray();
+            JSONObject dataObject = new JSONObject(params);
+            dataArray.put(dataObject);
+            String url=getResources().getString(R.string.url)+Constants.UPDATE_ADDRESS;
+            showProgress(true);
+            jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updateAddress");
+        }
     }
 
     @Override
     public void onJsonObjectResponse(JSONObject response, String apiName) {
 
         try {
-            Log.d(TAG, response.toString());
             if (apiName.equals("countries")) {
 
                 if (response.getBoolean("status")) {
@@ -663,7 +552,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
                     JSONObject jsonObject = null;
                     SpinnerItem item = null;
                     int len = dataArray.length();
-                    countryListObject.clear();
+                   /* countryListObject.clear();
                     countryList.clear();
 
                     for (int i = 0; i < len; i++) {
@@ -680,7 +569,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
 
                     if (countryList.size() == 2) {
                         spinnerCountry.setSelection(1);
-                    }
+                    }*/
 
                 } else {
                     DialogAndToast.showDialog(response.getString("message"), this);
@@ -692,7 +581,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
                     JSONObject jsonObject = null;
                     SpinnerItem item = null;
                     int len = dataArray.length();
-                    stateListObject.clear();
+                   /* stateListObject.clear();
                     stateList.clear();
 
                     for (int i = 0; i < len; i++) {
@@ -709,7 +598,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
 
                     if(isFirstTime){
                         setStateValue();
-                    }
+                    }*/
 
                 } else {
                     DialogAndToast.showDialog(response.getString("message"), this);
@@ -721,7 +610,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
                     JSONObject jsonObject = null;
                     SpinnerItem item = null;
                     int len = dataArray.length();
-                    cityListObject.clear();
+                  /*  cityListObject.clear();
                     cityList.clear();
 
                     for (int i = 0; i < len; i++) {
@@ -738,21 +627,22 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
 
                     if(isFirstTime){
                         setCityValue();
-                    }
+                    }*/
 
                 } else {
                     DialogAndToast.showDialog(response.getString("message"), this);
                 }
             }else {
                 if(response.getBoolean("status")){
-                    editor.putString(Constants.ADDRESS,editAddress.getText().toString());
-                    editor.putString(Constants.ZIP,editPincode.getText().toString());
-                    editor.putString(Constants.COUNTRY,countryList.get(spinnerCountry.getSelectedItemPosition()));
-                    editor.putString(Constants.STATE,stateList.get(spinnerState.getSelectedItemPosition()));
-                    editor.putString(Constants.CITY,cityList.get(spinnerCity.getSelectedItemPosition()));
+                    editor.putString(Constants.CUST_ADDRESS,editAddress.getText().toString());
+                    editor.putString(Constants.CUST_PINCODE,editPincode.getText().toString());
+                    editor.putString(Constants.CUST_COUNTRY,editCountry.getText().toString());
+                    editor.putString(Constants.CUST_STATE,editState.getText().toString());
+                    editor.putString(Constants.CUST_CITY,editCity.getText().toString());
+                    editor.putString(Constants.CUST_LOCALITY,editLocality.getText().toString());
                     if(shopLatLng != null){
-                        editor.putLong(Constants.USER_LAT,(long) shopLatLng.latitude);
-                        editor.putLong(Constants.USER_LONG,(long)shopLatLng.longitude);
+                        editor.putString(Constants.CUST_LAT,""+shopLatLng.latitude);
+                        editor.putString(Constants.CUST_LONG,""+shopLatLng.longitude);
                     }
                     editor.commit();
                     DialogAndToast.showToast(response.getString("message"),this);
@@ -765,31 +655,9 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
         }
     }
 
-    private void setStateValue(){
-        int i = 0;
-        for(String state: stateList){
-            if(state.equals(sharedPreferences.getString(Constants.STATE,""))){
-                spinnerState.setSelection(i);
-                break;
-            }
-            i++;
-        }
-    }
-
-    private void setCityValue(){
-        int i = 0;
-        for(String state: cityList){
-            if(state.equals(sharedPreferences.getString(Constants.CITY,""))){
-                spinnerCity.setSelection(i);
-                break;
-            }
-            i++;
-        }
-        isFirstTime = false;
-    }
-
     private void openDialog(){
         DialogAndToast.showDialog("Get location",this);
     }
+
 
 }

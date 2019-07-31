@@ -6,12 +6,14 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
@@ -38,7 +40,7 @@ public class PersonalProfileActivity extends NetworkBaseActivity implements MyIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personalinfo);
         initViews();
-        initFooter(this,0);
+        initFooter(this,2);
         initViews();
     }
 
@@ -49,14 +51,14 @@ public class PersonalProfileActivity extends NetworkBaseActivity implements MyIt
         imageQrCode = findViewById(R.id.image_qr_code);
 
         tvName.setText(sharedPreferences.getString(Constants.FULL_NAME,""));
-        String addr = sharedPreferences.getString(Constants.ADDRESS,"");
+        String addr = sharedPreferences.getString(Constants.CUST_ADDRESS,"");
         Log.d("addr ", addr);
-        /*if(TextUtils.isEmpty(addr)){
+        if(TextUtils.isEmpty(addr)){
             tvAddress.setVisibility(View.GONE);
         }else {
             tvAddress.setVisibility(View.VISIBLE);
             tvAddress.setText(addr);
-        }*/
+        }
 
         tvMobile.setText(sharedPreferences.getString(Constants.MOBILE_NO,""));
 
@@ -66,12 +68,15 @@ public class PersonalProfileActivity extends NetworkBaseActivity implements MyIt
         requestOptions.centerCrop();
         requestOptions.skipMemoryCache(false);
 
+        Log.d("CustCode ", sharedPreferences.getString(Constants.USER_ID,""));
 
-/*Glide.with(this)
+        Glide.with(this)
                 .load(getResources().getString(R.string.base_image_url)+"/customers/"+
                         sharedPreferences.getString(Constants.USER_ID,"")+"/qrcode.PNG")
                 .apply(requestOptions)
-                .into(imageQrCode);*/
+                .error(R.drawable.qr_code_default)
+                .into(imageQrCode);
+
         itemList = new ArrayList<>();
         itemList.add("Customer Details");
         itemList.add("Address");

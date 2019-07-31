@@ -53,7 +53,7 @@ public class DisplayActivity extends BaseActivity implements View.OnClickListene
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         init();
-        initFooter(this,0);
+        initFooter(this,2);
     }
 
     private void init(){

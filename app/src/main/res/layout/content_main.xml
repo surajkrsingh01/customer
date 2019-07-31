@@ -10,67 +10,51 @@
     tools:showIn="@layout/activity_main">
 
     <RelativeLayout
-        android:background="?attr/primaryTextColor"
-        android:id="@+id/relative_location"
+        android:id="@+id/relatvive_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <TextView
+            android:maxLines="1"
+            android:drawableRight="@drawable/edit"
+            android:drawableTint="?attr/secondaryTextColor"
+            android:drawablePadding="10dp"
+            android:text="AB 7 Safdarjan Enclave Behind Kamal Cinema"
+            android:id="@+id/text_customer_address"
+            android:textColor="?attr/secondaryTextColor"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/view_horizontal_margin"
+            android:paddingRight="@dimen/view_horizontal_margin"
+            android:textSize="@dimen/home_list_header_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="@dimen/view_horizontal_margin"
-        android:layout_marginLeft="@dimen/view_horizontal_margin"
-        android:layout_alignParentRight="true"
-        android:id="@+id/profile_image"
-        android:src="@drawable/thumb_2"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:tint="@color/white"/>
-
-    <RelativeLayout
-        android:layout_toLeftOf="@+id/profile_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:id="@+id/linear_edit_address"
+        <TextView
+            android:layout_toLeftOf="@+id/profile_image"
+            android:text="Today"
+            android:id="@+id/text_desc"
+            android:layout_marginTop="@dimen/view_vertical_margin"
+            android:paddingLeft="@dimen/view_horizontal_margin"
+            android:paddingRight="@dimen/view_horizontal_margin"
+            android:layout_below="@+id/text_customer_address"
+            android:textColor="?attr/primaryTextColor"
+            android:textStyle="bold"
+            android:textSize="@dimen/product_list_very_large_text_size"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:drawableRight="@drawable/edit"
-                android:drawableTint="@color/white"
-                android:drawablePadding="10dp"
-                android:id="@+id/tv_location_label"
-                android:padding="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/small_text_size"
-                android:textColor="@color/white"
-                android:text="Your Location"
-                android:textStyle="bold"
-                android:layout_gravity="center" />
+            android:layout_height="wrap_content" />
 
-            <TextView
-                android:maxLines="1"
-                android:id="@+id/tv_location"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:paddingBottom="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/small_text_size"
-                android:textColor="@color/white"
-                android:text="AB 7 Safdarjan Enclave Behind Kamal Cinema Green Park New Delhi"
-                android:gravity="center" />
-        </LinearLayout>
-
-    </RelativeLayout>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_marginRight="@dimen/view_horizontal_margin"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/text_desc"
+            android:id="@+id/profile_image"
+            android:src="@drawable/thumb_2"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:tint="@color/white"/>
     </RelativeLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:layout_marginTop="5dp"
-        android:layout_below="@+id/relative_location"
+        android:layout_below="@+id/relatvive_header"
         android:id="@+id/swipe_refresh"
         android:layout_above="@+id/linear_footer"
         android:layout_width="match_parent"
@@ -78,7 +62,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
-            android:scrollbars="vertical"
+            android:scrollbars="none"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:layout_width="match_parent"

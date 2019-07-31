@@ -1,4 +1,4 @@
-package com.shoppurscustomer.activities.Settings;
+package com.shoppurscustomer.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,18 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.shoppurscustomer.R;
-import com.shoppurscustomer.activities.NetworkBaseActivity;
-import com.shoppurscustomer.adapters.CouponOfferAdapter;
+import com.shoppurscustomer.activities.Settings.AddDeliveryAddressActivity;
 import com.shoppurscustomer.adapters.DeliveryAddressListAdapter;
 import com.shoppurscustomer.interfaces.MyItemClickListener;
-import com.shoppurscustomer.models.Coupon;
 import com.shoppurscustomer.models.DeliveryAddress;
 import com.shoppurscustomer.utilities.ConnectionDetector;
 import com.shoppurscustomer.utilities.Constants;
-import com.shoppurscustomer.utilities.Utility;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -32,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DeliveryAddressListActivity extends NetworkBaseActivity implements MyItemClickListener {
+public class CartShopListActivity extends NetworkBaseActivity implements MyItemClickListener {
 
     private List<DeliveryAddress> itemList;
     private RecyclerView recyclerView;
@@ -60,7 +55,7 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
         rl_new_DeliveryAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(DeliveryAddressListActivity.this, AddDeliveryAddressActivity.class));
+                startActivity(new Intent(CartShopListActivity.this, AddDeliveryAddressActivity.class));
             }
         });
 

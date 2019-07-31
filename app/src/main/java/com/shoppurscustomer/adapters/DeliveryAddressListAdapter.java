@@ -1,6 +1,7 @@
 package com.shoppurscustomer.adapters;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,9 +58,15 @@ public class DeliveryAddressListAdapter extends RecyclerView.Adapter<DeliveryAdd
             DeliveryAddress deliveryAddress = (DeliveryAddress) myItemList.get(position);
             myViewHolder.text_name.setText(deliveryAddress.getName());
             myViewHolder.text_mobile.setText("Mobile:"+deliveryAddress.getMobile());
-            myViewHolder.text_house.setText(deliveryAddress.getHouseNo());
+           // myViewHolder.text_house.setText(deliveryAddress.getHouseNo());
             myViewHolder.text_address.setText(deliveryAddress.getAddress());
-            myViewHolder.text_landmark.setText(deliveryAddress.getLandmark());
+            if(TextUtils.isEmpty(deliveryAddress.getLandmark())) {
+                myViewHolder.text_landmark.setVisibility(View.GONE);
+            }
+            else {
+                myViewHolder.text_landmark.setVisibility(View.VISIBLE);
+                myViewHolder.text_landmark.setText("Near " + deliveryAddress.getLandmark());
+            }
             myViewHolder.text_city_state_pin.setText(deliveryAddress.getCity() +", "+deliveryAddress.getState()+", " +deliveryAddress.getPinCode());
         }
     }
@@ -80,7 +87,7 @@ public class DeliveryAddressListAdapter extends RecyclerView.Adapter<DeliveryAdd
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            text_name = itemView.findViewById(R.id.text_name);
+            text_name = itemView.findViewById(R.id.text_cust_name);
             text_house = itemView.findViewById(R.id.text_house);
             text_address = itemView.findViewById(R.id.text_address);
             text_landmark = itemView.findViewById(R.id.text_landmark);

@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.SearchActivity;
 import com.shoppurscustomer.activities.ShopListActivity;
 import com.shoppurscustomer.activities.ShopProductListActivity;
 import com.shoppurscustomer.models.MyHeader;
@@ -44,10 +45,11 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private Context context;
     private List<Object> mShopList;
     private String type;
-    private String catId, subcatid, subcatname;
+    private String catId, subcatid, subcatname, flag;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private int counter;
+
 
     public ShopAdapter(Context context, List<Object> mShopList, String type,String catId, String subcatid, String subcatname){
         this.context = context;
@@ -58,6 +60,10 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         this.subcatname = subcatname;
         sharedPreferences= context.getSharedPreferences(Constants.MYPREFERENCEKEY,MODE_PRIVATE);
         editor=sharedPreferences.edit();
+    }
+
+    public void setFlag(String flag){
+        this.flag = flag;
     }
 
     public class MyShopHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -88,18 +94,16 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     }
 
     public class MyShopListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnTouchListener{
-        private TextView textInitial, textShopName,text_shop_mobile, textAddress, textStateCity;
+        private TextView textShopName,text_shop_mobile, textAddress;
         private ImageView imageView, imageMenu;
         private View rootView;
 
         public MyShopListViewHolder(View itemView){
             super(itemView);
             rootView = itemView;
-            textInitial=itemView.findViewById(R.id.tv_initial);
-            textShopName=itemView.findViewById(R.id.text_shop_name);
+            textShopName=itemView.findViewById(R.id.text_name);
             text_shop_mobile = itemView.findViewById(R.id.text_mobile);
             textAddress=itemView.findViewById(R.id.text_address);
-            textStateCity=itemView.findViewById(R.id.text_state_city);
             imageView=itemView.findViewById(R.id.image_view);
             imageMenu=itemView.findViewById(R.id.image_menu);
             imageMenu.setOnClickListener(this);
@@ -120,12 +124,22 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         //Toast.makeText(getBaseContext(), "You selected the action : " + item.getTitle()+" position "+position, Toast.LENGTH_SHORT).show();
-                        if(item.getTitle().equals("Call")){
-                            ((ShopListActivity)(context)).makeCall(shop.getMobile());
-                            Log.i("Adapter","Call Customer"+shop.getName());
-                        }else if(item.getTitle().equals("Message")){
-                            ((ShopListActivity)(context)).openWhatsApp(shop.getMobile());
-                            Log.i("Adapter","Message Customer"+shop.getName());
+                        if(flag!=null && flag.equals("SearchActivity")){
+                            if (item.getTitle().equals("Call")) {
+                                ((SearchActivity) (context)).makeCall(shop.getMobile());
+                                Log.i("Adapter", "Call Customer" + shop.getName());
+                            } else if (item.getTitle().equals("Message")) {
+                                ((SearchActivity) (context)).openWhatsApp(shop.getMobile());
+                                Log.i("Adapter", "Message Customer" + shop.getName());
+                            }
+                        }else {
+                            if (item.getTitle().equals("Call")) {
+                                ((ShopListActivity) (context)).makeCall(shop.getMobile());
+                                Log.i("Adapter", "Call Customer" + shop.getName());
+                            } else if (item.getTitle().equals("Message")) {
+                                ((ShopListActivity) (context)).openWhatsApp(shop.getMobile());
+                                Log.i("Adapter", "Message Customer" + shop.getName());
+                            }
                         }
                         return true;
                     }
@@ -195,7 +209,7 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 viewHolder = new MyShopTitleViewHolder(v1);
                 break;
             case 2:
-                View v2 = inflater.inflate(R.layout.shop_list_item_layout, parent, false);
+                View v2 = inflater.inflate(R.layout.list_item_type_4_layout, parent, false);
                 viewHolder = new MyShopListViewHolder(v2);
                 break;
             default:
@@ -256,44 +270,9 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 if(TextUtils.isEmpty(item.getAddress()) || item.getAddress().equals("null")){
                     myViewHolder.textAddress.setVisibility(View.GONE);
                 }else{
-                    myViewHolder.textAddress.setVisibility(View.GONE);
+                    myViewHolder.textAddress.setVisibility(View.VISIBLE);
                     myViewHolder.textAddress.setText(item.getAddress());
                 }
-
-                if(TextUtils.isEmpty(item.getState()) || item.getState().equals("null")){
-                    myViewHolder.textStateCity.setVisibility(View.GONE);
-                }else{
-                    myViewHolder.textStateCity.setVisibility(View.VISIBLE);
-                    myViewHolder.textStateCity.setText(item.getState()+", "+item.getCity());
-                }
-
-                String initials = "";
-                if(item.getName().contains(" ")){
-                    String[] name = item.getName().split(" ");
-                    initials = name[0].substring(0,1);
-                }else{
-                    initials = item.getName().substring(0,1);
-                }
-
-                myViewHolder.textInitial.setText(initials);
-
-                if(item.getShopimage() != null && item.getShopimage().contains("http")){
-                    myViewHolder.textInitial.setVisibility(View.GONE);
-                    myViewHolder.imageView.setVisibility(View.VISIBLE);
-                }else{
-                    myViewHolder.textInitial.setVisibility(View.VISIBLE);
-                    myViewHolder.imageView.setVisibility(View.GONE);
-                    //  myViewHolder.textInitial.setBackgroundColor(getTvColor(counter));
-                    Utility.setColorFilter(myViewHolder.textInitial.getBackground(),getTvColor(counter));
-
-                    counter++;
-                    if(counter == 12){
-                        counter = 0;
-                    }
-                }
-
-                // myViewHolder.textAddress.setText(item.getAddress());
-                //  myViewHolder.textStateCity.setText(item.getState()+", "+item.getCity());
 
                 RequestOptions requestOptions = new RequestOptions();
                 requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
@@ -303,10 +282,10 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 requestOptions.skipMemoryCache(false);
 
                 Glide.with(context)
-                        .load(item.getImage())
+                        .load(item.getShopimage())
                         .apply(requestOptions)
+                        .error(R.drawable.ic_photo_black_192dp)
                         .into(myViewHolder.imageView);
-
             }
     }
 

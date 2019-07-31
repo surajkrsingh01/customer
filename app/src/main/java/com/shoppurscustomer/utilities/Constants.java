@@ -30,6 +30,14 @@ public class Constants {
     public static String SHOP_DB_PASSWORD="shop_db_password";
     public static String PROFILE_PIC = "profile_pic";
     public static String GST_NO = "gst_no";
+    public static String CUST_ADDRESS="CUST_ADDRESS";
+    public static String CUST_LAT="CUST_LAT";
+    public static String CUST_LONG="CUST_LONG";
+    public static String CUST_LOCALITY="CUST_LOCALITY";
+    public static String CUST_CITY="CUST_CITY";
+    public static String CUST_STATE="CUST_STATE";
+    public static String CUST_COUNTRY="CUST_COUNTRY";
+    public static String CUST_PINCODE="CUST_PINCODE";
 
 
    // public static String DOB="dob";
@@ -72,8 +80,8 @@ public class Constants {
 
 
     //apis
-    public static String UPDATE_BASIC_PROFILE="profile/update_basic_details";
-    public static String UPDATE_ADDRESS="profile/update_address";
+    public static String UPDATE_BASIC_PROFILE="/profile/update_basic_details";
+    public static String UPDATE_ADDRESS="/profile/update_address";
     public static String GENERATE_ORDER="order/generate_order";
     public static String PLACE_ORDER="order/place_order";
     public static String ADD_TRANS_DATA="trans/add_trans_data";

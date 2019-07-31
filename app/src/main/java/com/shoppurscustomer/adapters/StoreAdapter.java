@@ -1,17 +1,22 @@
 package com.shoppurscustomer.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +31,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.Settings.SettingActivity;
+import com.shoppurscustomer.activities.ShopListActivity;
+import com.shoppurscustomer.activities.ShopProductListActivity;
 import com.shoppurscustomer.activities.StoresListActivity;
 import com.shoppurscustomer.activities.SubCatListActivity;
 import com.shoppurscustomer.interfaces.MyItemTouchListener;
@@ -34,7 +41,11 @@ import com.shoppurscustomer.models.Category;
 import com.shoppurscustomer.models.HomeListItem;
 import com.shoppurscustomer.models.MyHeader;
 import com.shoppurscustomer.models.MyItem;
+import com.shoppurscustomer.models.MyProduct;
+import com.shoppurscustomer.models.MyShop;
 import com.shoppurscustomer.models.SubCategory;
+import com.shoppurscustomer.utilities.Constants;
+import com.shoppurscustomer.utilities.DialogAndToast;
 import com.shoppurscustomer.utilities.Utility;
 
 import java.util.Date;
@@ -42,39 +53,36 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private List<Object> itemList;
     private Context context;
     private String type;
     private int colorTheme;
-
-    private MyItemTouchListener myItemTouchListener;
-
-    public void setMyItemTouchListener(MyItemTouchListener myItemTouchListener) {
-        this.myItemTouchListener = myItemTouchListener;
-    }
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     public void setColorTheme(int colorTheme){
         this.colorTheme = colorTheme;
     }
 
-    private ConstraintSet constraintSet = new ConstraintSet();
-
     public StoreAdapter(Context context, List<Object> itemList, String type) {
         this.itemList = itemList;
         this.context=context;
         this.type = type;
-
+        sharedPreferences= context.getSharedPreferences(Constants.MYPREFERENCEKEY,MODE_PRIVATE);
+        editor=sharedPreferences.edit();
     }
 
-    public class MyHomeHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class MyCategoryHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView textHeader,textDesc;
         private RecyclerView recyclerView;
         private ImageView profile_image;
 
-        public MyHomeHeaderViewHolder(View itemView) {
+        public MyCategoryHeaderViewHolder(View itemView) {
             super(itemView);
             textHeader=itemView.findViewById(R.id.text_date_range);
             textDesc=itemView.findViewById(R.id.text_desc);
@@ -92,48 +100,45 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         }
     }
 
-    public class MyHomeHeader1ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class MyStoreHeader1ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView textHeader;
         private Button btnSeeAll;
         private RecyclerView recyclerView;
 
-        public MyHomeHeader1ViewHolder(View itemView) {
+        public MyStoreHeader1ViewHolder(View itemView) {
             super(itemView);
             textHeader=itemView.findViewById(R.id.text_title);
             btnSeeAll=itemView.findViewById(R.id.btn_see_all);
             Utility.setColorFilter(btnSeeAll.getBackground(), colorTheme);
             recyclerView=itemView.findViewById(R.id.recycler_view);
 
-         //   btnSeeAll.setOnClickListener(this);
+            btnSeeAll.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             if(view == btnSeeAll){
-                CatListItem myItem = (CatListItem) itemList.get(getAdapterPosition());
+                /*CatListItem myItem = (CatListItem) itemList.get(getAdapterPosition());
                 Intent intent = new Intent(context,SubCatListActivity.class);
                 intent.putExtra("catName",myItem.getTitle());
-                context.startActivity(intent);
+                context.startActivity(intent);*/
             }
         }
     }
 
 
-    public class MyListType31ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener {
+    public class MyCategoryAllViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener {
 
         private TextView textTitle;
         private ImageView imageView;
-       // private ConstraintLayout constraintLayout;
         private View rootView;
-        private long downTime,upTime;
 
-        public MyListType31ViewHolder(View itemView) {
+        public MyCategoryAllViewHolder(View itemView) {
             super(itemView);
             rootView = itemView;
             textTitle=itemView.findViewById(R.id.text_title);
             imageView=itemView.findViewById(R.id.image_view);
-            //constraintLayout=itemView.findViewById(R.id.parentContsraint);
             rootView.setOnTouchListener(this);
         }
 
@@ -145,29 +150,20 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         public boolean onTouch(View view, MotionEvent motionEvent) {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    //Log.i("Adapter","onPressDown");
                     zoomAnimation(true,rootView);
-                    downTime = new Date().getTime();
-                    //myItemTouchListener.onPressDown(getAdapterPosition());
                     break;
-                // break;
 
                 case MotionEvent.ACTION_UP:
-                    // Log.i("Adapter","onPressUp");
                     zoomAnimation(false,rootView);
-                    upTime = new Date().getTime();
-                    long diff = upTime - downTime;
-                    if(getAdapterPosition() == 0){
-
-                    }/*else{
-                        Category myItem = (Category) itemList.get(getAdapterPosition());
-                        Intent intent = new Intent(context,SubCatListActivity.class);
-                        intent.putExtra("catName",myItem.getName());
-                        context.startActivity(intent);
-                    }*/
+                    Category item = (Category) itemList.get(getAdapterPosition());
+                    //DialogAndToast.showDialog("item Name "+item.getName(), context );
+                    Intent intent = new Intent(context,SubCatListActivity.class);
+                    intent.putExtra("catName",item.getName());
+                    Log.d("catName called", item.getName());
+                    intent.putExtra("catId",item.getId());
+                    context.startActivity(intent);
                     break;
                 case MotionEvent.ACTION_CANCEL:
-                    Log.i("Adapter","onPressCancel");
                     zoomAnimation(false,rootView);
                     break;
             }
@@ -175,20 +171,17 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         }
     }
 
-    public class MyListScanViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener {
+    public class MyCategoryScanViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener {
 
         private TextView textTitle;
         private ImageView imageView;
-        // private ConstraintLayout constraintLayout;
         private View rootView;
 
-        public MyListScanViewHolder(View itemView) {
+        public MyCategoryScanViewHolder(View itemView) {
             super(itemView);
             rootView = itemView;
             textTitle=itemView.findViewById(R.id.text_title);
             imageView=itemView.findViewById(R.id.image_view);
-
-            //constraintLayout=itemView.findViewById(R.id.parentContsraint);
             rootView.setOnTouchListener(this);
         }
 
@@ -200,19 +193,14 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         public boolean onTouch(View view, MotionEvent motionEvent) {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    //Log.i("Adapter","onPressDown");
                     zoomAnimation(true,rootView);
-                    //myItemTouchListener.onPressDown(getAdapterPosition());
                     break;
-                // break;
 
                 case MotionEvent.ACTION_UP:
-                    // Log.i("Adapter","onPressUp");
                     zoomAnimation(false,rootView);
                     ((StoresListActivity)(context)).scanBarCode();
                     break;
                 case MotionEvent.ACTION_CANCEL:
-                    Log.i("Adapter","onPressCancel");
                     zoomAnimation(false,rootView);
                     break;
             }
@@ -220,116 +208,87 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         }
     }
 
-    public class MyListType3ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener {
 
-        private TextView textTitle;
-        private ImageView imageView;
-        private ConstraintLayout constraintLayout;
+    public class MyStoreListType1ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener {
+
+        private TextView textName,textAddress,textMobile;
+        private ImageView imageView,imageMenu;
         private View rootView;
 
-        public MyListType3ViewHolder(View itemView) {
+        public MyStoreListType1ViewHolder(View itemView) {
             super(itemView);
             rootView = itemView;
-            textTitle=itemView.findViewById(R.id.text_title);
+            textName = itemView.findViewById(R.id.text_name);
+            textAddress=itemView.findViewById(R.id.text_address);
+            textMobile=itemView.findViewById(R.id.text_mobile);
             imageView=itemView.findViewById(R.id.image_view);
-            constraintLayout=itemView.findViewById(R.id.parentContsraint);
-           rootView.setOnTouchListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-        }
-
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    //Log.i("Adapter","onPressDown");
-                    zoomAnimation(true,rootView);
-                    //myItemTouchListener.onPressDown(getAdapterPosition());
-                    break;
-                // break;
-
-                case MotionEvent.ACTION_UP:
-                    // Log.i("Adapter","onPressUp");
-                    zoomAnimation(false,rootView);
-                    /*SubCategory myItem = (SubCategory) itemList.get(getAdapterPosition());
-                    Intent intent = new Intent(context,ProductListActivity.class);
-                    intent.putExtra("subCatName",myItem.getName());
-                    context.startActivity(intent);*/
-                    break;
-                case MotionEvent.ACTION_CANCEL:
-                    Log.i("Adapter","onPressCancel");
-                    zoomAnimation(false,rootView);
-                    break;
-            }
-            return true;
-        }
-    }
-
-    public class MySubHomeHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
-        private TextView textHeader,textDesc;
-
-
-        public MySubHomeHeaderViewHolder(View itemView) {
-            super(itemView);
-            textHeader=itemView.findViewById(R.id.text_date_range);
-            textDesc=itemView.findViewById(R.id.text_desc);
-        }
-
-        @Override
-        public void onClick(View view) {
-        }
-    }
-
-    public class MyProductListType1ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener {
-
-        private TextView textTitle,textDesc,textCat;
-        private ImageView imageView, image_icon;
-        private View rootView;
-
-        public MyProductListType1ViewHolder(View itemView) {
-            super(itemView);
-            rootView = itemView;
-            image_icon = itemView.findViewById(R.id.image_icon);
-            textTitle=itemView.findViewById(R.id.text_title);
-            textDesc=itemView.findViewById(R.id.text_desc);
-            textCat=itemView.findViewById(R.id.text_category);
-            imageView=itemView.findViewById(R.id.image_view);
+            imageMenu=itemView.findViewById(R.id.image_menu);
             rootView.setOnTouchListener(this);
+            imageMenu.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
+            if(view == imageMenu){
+                final MyShop shop = (MyShop) itemList.get(getAdapterPosition());
+                PopupMenu popupMenu = new PopupMenu(view.getContext(), imageMenu);
+
+                ((Activity)context).getMenuInflater().inflate(R.menu.shop_popup_menu, popupMenu.getMenu());
+
+                popupMenu.show();
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        //Toast.makeText(getBaseContext(), "You selected the action : " + item.getTitle()+" position "+position, Toast.LENGTH_SHORT).show();
+                        if(item.getTitle().equals("Call")){
+                            ((StoresListActivity)(context)).makeCall(shop.getMobile());
+                            Log.i("Adapter","Call Customer"+shop.getName());
+                        }else if(item.getTitle().equals("Message")){
+                            ((StoresListActivity)(context)).openWhatsApp(shop.getMobile());
+                            Log.i("Adapter","Message Customer"+shop.getName());
+                        }
+                        return true;
+                    }
+                });
+
+            }
         }
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    //Log.i("Adapter","onPressDown");
                     zoomAnimation(true,rootView);
-                    //myItemTouchListener.onPressDown(getAdapterPosition());
                     break;
-                // break;
 
                 case MotionEvent.ACTION_UP:
-                    // Log.i("Adapter","onPressUp");
-                   /* MyProduct item = (MyProduct) itemList.get(getAdapterPosition());
-                    Intent intent = new Intent(context,ProductDetailActivity.class);
-                    intent.putExtra("id",item.getId());
-                    intent.putExtra("subCatName",item.getSubCatName());
-                    intent.putExtra("productName",item.getName());
-                    intent.putExtra("productDesc",item.getDesc());
-                    intent.putExtra("productCode",item.getCode());
-                    intent.putExtra("productDesc",item.getDesc());
-                    intent.putExtra("productLocalImage",item.getLocalImage());
-                    context.startActivity(intent);*/
+                    MyShop shop = (MyShop) itemList.get(getAdapterPosition());
+                   // DialogAndToast.showDialog("item Name "+item.getName(), context );
+                    Intent intent = new Intent(context, ShopProductListActivity.class);
+                    intent.putExtra("callingClass","SearchShopListActivity");
+                    intent.putExtra("name",shop.getName());
+                    intent.putExtra("photo",shop.getShopimage());
+                    intent.putExtra("address",shop.getAddress());
+                    intent.putExtra("mobile", shop.getMobile());
+                    intent.putExtra("stateCity",shop.getState()+", "+shop.getCity());
+                    //intent.putExtra("catId", catId);
+                    //intent.putExtra("subcatid",subcatid);
+                    // intent.putExtra("subcatname",subcatname);
+                    intent.putExtra("dbname",shop.getDbname());
+                    intent.putExtra("dbuser",shop.getDbusername());
+                    intent.putExtra("dbpassword",shop.getDbpassword());
+                    intent.putExtra("shop_code",shop.getId());
+                    editor.putString(Constants.SHOP_INSIDE_CODE,shop.getId());
+                    editor.putString(Constants.SHOP_INSIDE_NAME, shop.getName());
+                    editor.putString(Constants.SHOP_DBNAME,shop.getDbname());
+                    editor.putString(Constants.SHOP_DB_USER_NAME,shop.getDbusername());
+                    editor.putString(Constants.SHOP_DB_PASSWORD,shop.getDbpassword());
+                    editor.commit();
+                    context.startActivity(intent);
                     zoomAnimation(false,rootView);
                     break;
                 case MotionEvent.ACTION_CANCEL:
-                    Log.i("Adapter","onPressCancel");
                     zoomAnimation(false,rootView);
                     break;
             }
@@ -356,23 +315,6 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         }
     }
 
-    public class MyHomeHeader2ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
-        private TextView textHeader;
-        private Button buttonAdd;
-
-        public MyHomeHeader2ViewHolder(View itemView) {
-            super(itemView);
-            textHeader=itemView.findViewById(R.id.text_title);
-            buttonAdd=itemView.findViewById(R.id.btn_see_all);
-            buttonAdd.setText("Add Product");
-        }
-
-        @Override
-        public void onClick(View view) {
-        }
-    }
-
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -380,47 +322,32 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         switch (viewType){
-            case 0:
+
+            case 0:  //categories header
                 View v0 = inflater.inflate(R.layout.store_list_header_item_layout, parent, false);
-                viewHolder = new MyHomeHeaderViewHolder(v0);
+                viewHolder = new MyCategoryHeaderViewHolder(v0);
+                break;
+            case 2:  //product header
+                View v2 = inflater.inflate(R.layout.header_list_item_type_1_layout, parent, false);
+                viewHolder = new MyStoreHeader1ViewHolder(v2);
+                break;
+
+
+            case 4:
+                View v4 = inflater.inflate(R.layout.list_store_scan_layout, parent, false);
+                viewHolder = new MyCategoryScanViewHolder(v4);
                 break;
             case 1:
                // View v1 = inflater.inflate(R.layout.list_item_type_3_1_layout, parent, false);
                 View v1 = inflater.inflate(R.layout.list_item_type_11_layout, parent, false);
-                viewHolder = new MyListType31ViewHolder(v1);
+                viewHolder = new MyCategoryAllViewHolder(v1);
                 break;
-            case 2:
-                View v2 = inflater.inflate(R.layout.header_list_item_type_1_layout, parent, false);
-                viewHolder = new MyHomeHeader1ViewHolder(v2);
-                break;
-            case 3:
-                View v3 = inflater.inflate(R.layout.list_item_type_3_layout, parent, false);
-                viewHolder = new MyListType3ViewHolder(v3);
-                break;
-            case 4:
-                View v4 = inflater.inflate(R.layout.list_store_scan_layout, parent, false);
-                viewHolder = new MyListScanViewHolder(v4);
-                break;
-            case 5:
-                View v5 = inflater.inflate(R.layout.home_list_header_item_layout, parent, false);
-                viewHolder = new MySubHomeHeaderViewHolder(v5);
-                break;
-            case 6:
-                View v6 = inflater.inflate(R.layout.list_item_type_3_layout, parent, false);
-                viewHolder = new MyListType3ViewHolder(v6);
-                break;
-            case 7:
-                View v7 = inflater.inflate(R.layout.home_list_header_item_layout, parent, false);
-                viewHolder = new MySubHomeHeaderViewHolder(v7);
-                break;
+
             case 8:
                 View v8 = inflater.inflate(R.layout.list_item_type_4_layout, parent, false);
-                viewHolder = new MyProductListType1ViewHolder(v8);
+                viewHolder = new MyStoreListType1ViewHolder(v8);
                 break;
-            case 9:
-                View v9 = inflater.inflate(R.layout.header_item_type_2_layout, parent, false);
-                viewHolder = new MyHomeHeader2ViewHolder(v9);
-                break;
+
             default:
                 View v = inflater.inflate(R.layout.list_item_layout, parent, false);
                 viewHolder = new MyViewHolder(v);
@@ -432,9 +359,8 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     @Override
     public int getItemViewType(int position) {
-        if(type.equals("catList")){
             Object item = itemList.get(position);
-            if(item instanceof CatListItem){
+            if(item instanceof CatListItem){ //used for headers
                 CatListItem myItem = (CatListItem) item;
                 if(myItem.getType() == 0){
                     return 0;
@@ -442,50 +368,33 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                     return 2;
                 }
 
-            }else if(item instanceof Category){
+            }else if(item instanceof Category){ //used for top categories
+                Log.d("type ", "Category");
                 if(position == 0){
                     return 4;
                 }else{
                     return 1;
                 }
 
-            }else if(item instanceof HomeListItem){   //if(item instanceof HomeListItem)
+            }else if(item instanceof MyShop){ //used for products
+                Log.d("type ", "myShop");
                 return 8;
             }else {
-                return 3;   //if(item instanceof SubCategory)
+                return 8;   //if(item instanceof SubCategory)
             }
-        }else if(type.equals("subCatList")){
-            Object item = itemList.get(position);
-            if(position == 0){
-                return 5;
-            }else{
-                return 6;
-            }
-        }else if(type.equals("productList")){
-            Object item = itemList.get(position);
-            if(position == 0){
-                return 7;
-            }else if(position == 1){
-                return 9;
-            }else{
-                return 8;
-            }
-        } else{
-            return 10;
-        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if(holder instanceof MyViewHolder){
+        if(holder instanceof MyViewHolder){ //not used
             MyItem item = (MyItem) itemList.get(position);
             MyViewHolder myViewHolder = (MyViewHolder)holder;
             myViewHolder.textHeader.setText(item.getHeader());
             myViewHolder.textDesc.setText(item.getDesc());
-        }else if(holder instanceof MyHomeHeaderViewHolder){
+        }else if(holder instanceof MyCategoryHeaderViewHolder){
 
             CatListItem item = (CatListItem) itemList.get(position);
-            MyHomeHeaderViewHolder myViewHolder = (MyHomeHeaderViewHolder)holder;
+            MyCategoryHeaderViewHolder myViewHolder = (MyCategoryHeaderViewHolder)holder;
             myViewHolder.textHeader.setText(item.getTitle());
             myViewHolder.textDesc.setText(item.getDesc());
 
@@ -496,129 +405,59 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             StoreAdapter myItemAdapter = new StoreAdapter(context,item.getItemList(),"catList");
             myViewHolder.recyclerView.setAdapter(myItemAdapter);
 
-          //  StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
-          //  layoutParams.setFullSpan(true);
-
-
-        }else if(holder instanceof MyHomeHeader1ViewHolder){
+        }else if(holder instanceof MyStoreHeader1ViewHolder){
 
             CatListItem item = (CatListItem) itemList.get(position);
-            MyHomeHeader1ViewHolder myViewHolder = (MyHomeHeader1ViewHolder)holder;
+            MyStoreHeader1ViewHolder myViewHolder = (MyStoreHeader1ViewHolder)holder;
             myViewHolder.textHeader.setText(item.getTitle());
-
             myViewHolder.recyclerView.setHasFixedSize(true);
-
-            if(item.getItemList().get(0) instanceof  HomeListItem) { //call catList section type 8 layout
+            if(item.getItemList().get(0) instanceof  MyShop) { //call catList section type 8 layout
                 Log.d("itemType 8",""+item.getType());
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
                 myViewHolder.recyclerView.setLayoutManager(layoutManager);
             }
-            else {    //call catList section type 3 layout
-                Log.d("itemType not defined",""+item.getType());
-                StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2,
-                        StaggeredGridLayoutManager.VERTICAL);
-                myViewHolder.recyclerView.setLayoutManager(layoutManager);
-            }
-
             myViewHolder.recyclerView.setItemAnimator(new DefaultItemAnimator());
             StoreAdapter myItemAdapter = new StoreAdapter(context,item.getItemList(),"catList");
             myViewHolder.recyclerView.setAdapter(myItemAdapter);
 
-          //  StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
-         //   layoutParams.setFullSpan(true);
-
-
-        }else if(holder instanceof MyListType3ViewHolder){
-
-            SubCategory item = (SubCategory) itemList.get(position);
-            MyListType3ViewHolder myViewHolder = (MyListType3ViewHolder)holder;
-            myViewHolder.textTitle.setText(item.getName());
-
-            RequestOptions requestOptions = new RequestOptions();
-            requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
-            requestOptions.dontTransform();
-            // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
-            // requestOptions.centerCrop();
-            requestOptions.skipMemoryCache(true);
-
-            Glide.with(context)
-                    .load(item.getLocalImage())
-                    .apply(requestOptions)
-                    .into(myViewHolder.imageView);
-
-            String ratio = String.format("%d:%d", (int)item.getWidth(),(int)item.getHeight());
-
-            constraintSet.clone(myViewHolder.constraintLayout);
-            constraintSet.setDimensionRatio(myViewHolder.imageView.getId(), ratio);
-            constraintSet.applyTo(myViewHolder.constraintLayout);
-
-        }else if(holder instanceof MyListType31ViewHolder){
+        }else if(holder instanceof MyCategoryScanViewHolder){
             Category item = (Category) itemList.get(position);
-            MyListType31ViewHolder myViewHolder = (MyListType31ViewHolder)holder;
+            MyCategoryScanViewHolder myViewHolder = (MyCategoryScanViewHolder)holder;
             myViewHolder.textTitle.setText(item.getName());
-
+        }
+        else if(holder instanceof MyCategoryAllViewHolder){
+            Category item = (Category) itemList.get(position);
+            MyCategoryAllViewHolder myViewHolder = (MyCategoryAllViewHolder)holder;
+            myViewHolder.textTitle.setText(item.getName());
             RequestOptions requestOptions = new RequestOptions();
-            requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
-            //requestOptions.dontTransform();
-            // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
-            // requestOptions.centerCrop();
-            requestOptions.skipMemoryCache(true);
-
+            requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+            requestOptions.skipMemoryCache(false);
             Glide.with(context)
-                    .load(item.getLocalImage())
+                    .load(item.getImage())
                     .apply(requestOptions)
                     .into(myViewHolder.imageView);
-        }else if(holder instanceof MySubHomeHeaderViewHolder){
-
-            HomeListItem item = (HomeListItem) itemList.get(position);
-            MySubHomeHeaderViewHolder myViewHolder = (MySubHomeHeaderViewHolder)holder;
-            myViewHolder.textHeader.setText(item.getTitle());
-            myViewHolder.textDesc.setText(item.getDesc());
-
-            if(!type.equals("productList")){
-                StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
-                layoutParams.setFullSpan(true);
-            }
-
-
-        }else if(holder instanceof MyProductListType1ViewHolder){
-            HomeListItem item = (HomeListItem) itemList.get(position);
-            MyProductListType1ViewHolder myViewHolder = (MyProductListType1ViewHolder)holder;
-
-
+        }else if(holder instanceof MyStoreListType1ViewHolder){
+            MyShop item = (MyShop) itemList.get(position);
+            MyStoreListType1ViewHolder myViewHolder = (MyStoreListType1ViewHolder)holder;
             if(itemList.get(position) instanceof CatListItem) {
                 CatListItem mcatitem = (CatListItem) itemList.get(position);
                 if (mcatitem.getTitle() != null && mcatitem.getTitle().equals("My Favourite Stores")){
                     Log.d("Title", mcatitem.getTitle());
-                    myViewHolder.image_icon.setVisibility(View.GONE);
-                }else myViewHolder.image_icon.setVisibility(View.VISIBLE);
+                   // myViewHolder.image_icon.setVisibility(View.GONE);
+                }//else myViewHolder.image_icon.setVisibility(View.VISIBLE);
             }
-
-
-            myViewHolder.textCat.setText(item.getCategory());
-            myViewHolder.textTitle.setText(item.getTitle());
-            myViewHolder.textDesc.setText(item.getDesc());
-
+            myViewHolder.textName.setText(item.getName());
+            myViewHolder.textAddress.setText(item.getAddress());
+            myViewHolder.textMobile.setText(item.getMobile());
             RequestOptions requestOptions = new RequestOptions();
-            requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
-            // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
+            requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
             requestOptions.centerCrop();
-            requestOptions.skipMemoryCache(true);
-
+            requestOptions.skipMemoryCache(false);
             Glide.with(context)
-                    .load(item.getLocalImage())
+                    .load(item.getShopimage())
                     .apply(requestOptions)
+                    .error(R.drawable.ic_photo_black_192dp)
                     .into(myViewHolder.imageView);
-
-            //StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
-            //layoutParams.setFullSpan(true);
-        }else if(holder instanceof MyHomeHeader2ViewHolder){
-
-            MyHeader item = (MyHeader) itemList.get(position);
-            MyHomeHeader2ViewHolder myViewHolder = (MyHomeHeader2ViewHolder)holder;
-            myViewHolder.textHeader.setText(item.getTitle());
-
-
         }
     }
 

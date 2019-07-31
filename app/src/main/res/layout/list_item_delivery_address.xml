@@ -2,8 +2,8 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/grey200"
     app:cardCornerRadius="5dp"
+    app:cardBackgroundColor="?attr/backgroundColor"
     android:padding="5dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/text_name"
+                android:id="@+id/text_cust_name"
                 android:textSize="@dimen/list_header_text_size"
                 android:text="Suraj Kumar"
                 android:singleLine="true"
@@ -78,6 +78,7 @@
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:visibility="gone"
                 android:id="@+id/text_house"
                 android:textSize="@dimen/list_desc_text_size"
                 android:text="F 50 "
@@ -101,6 +102,17 @@
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:id="@+id/text_landmark"
+                android:textSize="@dimen/list_desc_text_size"
+                android:text="Near Shiv Mandir"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="?attr/secondaryTextColor"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
                 android:id="@+id/text_city_state_pin"
                 android:textSize="@dimen/list_desc_text_size"
                 android:text="Khanpur, New Delhi 110062"
@@ -111,16 +123,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/text_landmark"
-                android:textSize="@dimen/list_desc_text_size"
-                android:text="Near Shiv Mandir"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:textColor="?attr/secondaryTextColor"
-                android:layout_marginTop="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
             <TextView
                 android:id="@+id/text_mobile"

@@ -56,7 +56,7 @@ public class PopulatCategoriesAdapter extends RecyclerView.Adapter<PopulatCatego
                 myViewHolder.tvCategoryName.setTextColor(context.getResources().getColor(R.color.white));
             }else {
                 ((GradientDrawable)myViewHolder.relative_category.getBackground()).setColor(themeColor);
-                myViewHolder.tvCategoryName.setTextColor(context.getResources().getColor(R.color.primary_text_color));
+                myViewHolder.tvCategoryName.setTextColor(context.getResources().getColor(R.color.white));
             }
         }
     }
@@ -87,7 +87,7 @@ public class PopulatCategoriesAdapter extends RecyclerView.Adapter<PopulatCatego
         public void onClick(View v) {
             if(v == relative_category){
                 Category item = categoryList.get(getAdapterPosition());
-                ((SearchActivity) (context)).setEt_search(String.valueOf(item.getName()));
+                ((SearchActivity) (context)).setEt_search(String.valueOf(item.getName()), item.getId());
             }
         }
     }

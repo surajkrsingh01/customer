@@ -3,9 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
-    android:layout_marginTop="@dimen/container_view_vertical_margin"
-    android:layout_marginLeft="5dp"
-    android:layout_marginRight="5dp"
+    android:layout_margin="5dp"
     card_view:cardElevation="5dp"
     android:background="@color/white"
     android:layout_width="@dimen/home_list_image_size_width"
@@ -40,31 +38,6 @@
                 android:textSize="@dimen/home_list_title_text_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-
-            <RelativeLayout
-                android:layout_below="@+id/text_title"
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/image_icon"
-                    android:src="@drawable/icon_1"
-                    android:layout_centerVertical="true"
-                    android:layout_width="@dimen/home_list_icon_size"
-                    android:layout_height="@dimen/home_list_icon_size" />
-
-                <TextView
-                    android:id="@+id/text_name"
-                    android:layout_toRightOf="@+id/image_icon"
-                    android:layout_marginLeft="10dp"
-                    android:textColor="@color/white"
-                    android:layout_centerVertical="true"
-                    android:textSize="@dimen/home_list_name_text_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-            </RelativeLayout>
 
         </RelativeLayout>
 

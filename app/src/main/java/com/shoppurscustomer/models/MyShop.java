@@ -6,7 +6,15 @@ package com.shoppurscustomer.models;
 
 public class MyShop {
     private String id,name,code,desc,subCatName,address,mobile, state, city, shopimage, dbname, dbusername, dbpassword;
-    private int image;
+    private int image, type;
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
     public String getDbname() {
         return dbname;

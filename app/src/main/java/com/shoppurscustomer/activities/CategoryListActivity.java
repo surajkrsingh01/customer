@@ -1,5 +1,6 @@
 package com.shoppurscustomer.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -7,13 +8,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.appcompat.widget.Toolbar;
+
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.Request;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.signature.ObjectKey;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.Settings.AddressActivity;
+import com.shoppurscustomer.activities.Settings.SettingActivity;
 import com.shoppurscustomer.adapters.CategoryAdapter;
 import com.shoppurscustomer.models.CatListItem;
 import com.shoppurscustomer.models.Category;
@@ -30,6 +39,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class CategoryListActivity extends NetworkBaseActivity {
 
     private RecyclerView recyclerView;
@@ -42,6 +53,8 @@ public class CategoryListActivity extends NetworkBaseActivity {
     private boolean isCategoriesLoaded, isSubcategoriesLoaded;
     private String dbname;
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
+    private TextView text_customer_address;
+    private CircleImageView customer_profile;
 
 
     @Override
@@ -55,118 +68,6 @@ public class CategoryListActivity extends NetworkBaseActivity {
         itemList = new ArrayList<>();
         dbname = sharedPreferences.getString(Constants.DB_NAME,"");
 
-        /*
-        CatListItem myItem = new CatListItem();
-        myItem.setTitle("Products");
-        myItem.setDesc("Categories");
-        myItem.setType(0);
-        List<Object> catList = new ArrayList<>();
-
-        Category category = new Category();
-        category.setLocalImage(R.drawable.thumb_17);
-        category.setName("Grocery");
-        catList.add(category);
-
-        category = new Category();
-        category.setLocalImage(R.drawable.thumb_13);
-        category.setName("Jewellery");
-        catList.add(category);
-
-        category = new Category();
-        category.setLocalImage(R.drawable.thumb_16);
-        category.setName("Restaurants");
-        catList.add(category);
-
-        category = new Category();
-        category.setName("Electronics");
-        category.setLocalImage(R.drawable.thumb_11);
-        catList.add(category);
-
-        category = new Category();
-        category.setName("Fashion");
-        category.setLocalImage(R.drawable.thumb_14);
-        catList.add(category);
-
-        category = new Category();
-        category.setName("Stationary");
-        category.setLocalImage(R.drawable.thumb_15);
-        catList.add(category);
-        myItem.setItemList(catList);
-        itemList.add(myItem);
-
-        myItem = new CatListItem();
-        myItem.setTitle("Grocery");
-        myItem.setType(1);
-        List<Object> prodList = new ArrayList<>();
-        SubCategory subCategory = new SubCategory();
-        subCategory.setName("Breakfast & Dairy");
-        subCategory.setLocalImage(R.drawable.thumb_16);
-        subCategory.setWidth(MIN_WIDTH);
-        subCategory.setHeight(MIN_HEIGHT);
-        prodList.add(subCategory);
-        subCategory = new SubCategory();
-        subCategory.setName("Masala & Spices");
-        subCategory.setLocalImage(R.drawable.thumb_17);
-        subCategory.setWidth(MAX_WIDTH);
-        subCategory.setHeight(MAX_HEIGHT);
-        prodList.add(subCategory);
-        subCategory = new SubCategory();
-        subCategory.setName("Personal Care");
-        subCategory.setLocalImage(R.drawable.thumb_18);
-        subCategory.setWidth(MAX_WIDTH);
-        subCategory.setHeight(MAX_HEIGHT);
-        prodList.add(subCategory);
-        subCategory = new SubCategory();
-        subCategory.setName("Beverages");
-        subCategory.setLocalImage(R.drawable.thumb_19);
-        subCategory.setWidth(MIN_WIDTH);
-        subCategory.setHeight(MIN_HEIGHT);
-        prodList.add(subCategory);
-        myItem.setItemList(prodList);
-        itemList.add(myItem);
-
-        myItem = new CatListItem();
-        myItem.setTitle("Stationary");
-        myItem.setType(1);
-        prodList = new ArrayList<>();
-        subCategory = new SubCategory();
-        subCategory.setName("Pen & Pen Sets");
-        subCategory.setLocalImage(R.drawable.thumb_20);
-        subCategory.setWidth(MIN_WIDTH);
-        subCategory.setHeight(MIN_HEIGHT);
-        prodList.add(subCategory);
-        subCategory = new SubCategory();
-        subCategory.setName("Notebooks");
-        subCategory.setLocalImage(R.drawable.thumb_21);
-        subCategory.setWidth(MAX_WIDTH);
-        subCategory.setHeight(MAX_HEIGHT);
-        prodList.add(subCategory);
-        subCategory = new SubCategory();
-        subCategory.setName("Papers");
-        subCategory.setLocalImage(R.drawable.thumb_22);
-        subCategory.setWidth(MAX_WIDTH);
-        subCategory.setHeight(MAX_HEIGHT);
-        prodList.add(subCategory);
-        subCategory = new SubCategory();
-        subCategory.setName("Color & Paints");
-        subCategory.setLocalImage(R.drawable.thumb_23);
-        subCategory.setWidth(MAX_WIDTH);
-        subCategory.setHeight(MAX_HEIGHT);
-        prodList.add(subCategory);
-        subCategory = new SubCategory();
-        subCategory.setName("Desk Organizer");
-        subCategory.setLocalImage(R.drawable.thumb_24);
-        subCategory.setWidth(MAX_WIDTH);
-        subCategory.setHeight(MAX_HEIGHT);
-        prodList.add(subCategory);
-        subCategory = new SubCategory();
-        subCategory.setName("Markers");
-        subCategory.setLocalImage(R.drawable.thumb_25);
-        subCategory.setWidth(MIN_WIDTH);
-        subCategory.setHeight(MIN_HEIGHT);
-        prodList.add(subCategory);
-        myItem.setItemList(prodList);
-        itemList.add(myItem);*/
 
         swipeRefreshLayout=findViewById(R.id.swipe_refresh);
         progressBar=findViewById(R.id.progress_bar);
@@ -200,6 +101,39 @@ public class CategoryListActivity extends NetworkBaseActivity {
         }*/
 
         initFooter(this,1);
+
+        text_customer_address = findViewById(R.id.text_customer_address);
+        if(TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_ADDRESS, "")))
+            text_customer_address.setText("Update Your Location");
+        else
+        text_customer_address.setText(sharedPreferences.getString(Constants.CUST_ADDRESS, ""));
+        text_customer_address.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CategoryListActivity.this, AddressActivity.class);
+                startActivity(intent);
+            }
+        });
+        customer_profile= findViewById(R.id.profile_image);
+        customer_profile.setCircleBackgroundColor(colorTheme);
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+        // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
+        requestOptions.centerCrop();
+        requestOptions.skipMemoryCache(false);
+        requestOptions.signature(new ObjectKey(sharedPreferences.getString("profile_image_signature","")));
+        Glide.with(this)
+                .load(sharedPreferences.getString(Constants.PROFILE_PIC, ""))
+                .apply(requestOptions)
+                .error(R.drawable.ic_photo_black_192dp)
+                .into(customer_profile);
+        customer_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CategoryListActivity.this, SettingActivity.class);
+                startActivity(intent);
+            }
+        });
 
         volleyRequest();
     }
@@ -278,24 +212,29 @@ public class CategoryListActivity extends NetworkBaseActivity {
                         List<Object> subcatList = new ArrayList<>();
                         for (int j=0; j<subcatJArray.length();j++) {
                             if (subcatJArray.getJSONObject(j).getString("catId").equals(mcatid)) {
-                                SubCategory subCategory = new SubCategory();
-                                subCategory.setSubcatid(subcatJArray.getJSONObject(j).getString("subCatId"));
-                                subCategory.setId(subcatJArray.getJSONObject(j).getString("catId"));
-                                Log.d("mCATID",subCategory.getId());
-                                subCategory.setName(subcatJArray.getJSONObject(j).getString("subCatName"));
-                                subCategory.setImage(subcatJArray.getJSONObject(j).getString("subCatImage"));
+                                if (subcatList.size() < 4) {
+                                    SubCategory subCategory = new SubCategory();
+                                    subCategory.setSubcatid(subcatJArray.getJSONObject(j).getString("subCatId"));
+                                    subCategory.setId(subcatJArray.getJSONObject(j).getString("catId"));
+                                    Log.d("mCATID", subCategory.getId());
+                                    subCategory.setName(subcatJArray.getJSONObject(j).getString("subCatName"));
+                                    subCategory.setImage(subcatJArray.getJSONObject(j).getString("subCatImage"));
 
-                                subCategory.setWidth(MAX_WIDTH);
-                                subCategory.setHeight(MAX_HEIGHT);
-                                subcatList.add(subCategory);
-                                myItem.setItemList(subcatList);
-                                Log.d(TAG, subcatList.size() + "");
+                                    if(subcatJArray.length()==2){
+                                        subCategory.setWidth(MIN_WIDTH);
+                                        subCategory.setHeight(MIN_WIDTH);
+                                    } else if (subcatJArray.length()>3 && j==0 || subcatJArray.length()>3 && j == 3) {
+                                        subCategory.setWidth(MIN_WIDTH);
+                                        subCategory.setHeight(MIN_WIDTH);
+                                    }else {
+                                        subCategory.setWidth(MAX_WIDTH);
+                                        subCategory.setHeight(MAX_HEIGHT);
+                                    }
+                                    subcatList.add(subCategory);
+                                    myItem.setItemList(subcatList);
+                                    Log.d(TAG, subcatList.size() + "");
 
-                                if (j == subcatJArray.length() - 1) {
-                                    ((SubCategory) subcatList.get(0)).setWidth(MIN_WIDTH);
-                                    ((SubCategory) subcatList.get(0)).setHeight(MIN_HEIGHT);
-                                    ((SubCategory) subcatList.get(subcatList.size() - 1)).setWidth(MIN_WIDTH);
-                                    ((SubCategory) subcatList.get(subcatList.size() - 1)).setHeight(MIN_HEIGHT);
+
                                 }
                             }
                         }

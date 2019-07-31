@@ -156,7 +156,7 @@ public class BaseActivity extends AppCompatActivity {
                 if (context instanceof MainActivity) {
                     //DialogAndToast.showToast("Profile clicked in profile",BaseActivity.this);
                 } else {
-                    DialogAndToast.showToast("clicked in Offer ",BaseActivity.this);
+                    //DialogAndToast.showToast("clicked in Offer ",BaseActivity.this);
                     Intent intent = new Intent(BaseActivity.this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
@@ -202,7 +202,11 @@ public class BaseActivity extends AppCompatActivity {
         relativeLayoutFooter5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              DialogAndToast.showDialog("Instant Pay", context);
+              //DialogAndToast.showDialog("Instant Pay", context);
+                Intent intent = new Intent(BaseActivity.this,ScannarActivity.class);
+                intent.putExtra("flag","scan");
+                intent.putExtra("type","addToCart");
+                startActivity(intent);
             }
         });
 

@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.Request;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.Settings.DeliveryAddressListActivity;
 import com.shoppurscustomer.activities.payment.ccavenue.activities.CCAvenueWebViewActivity;
 import com.shoppurscustomer.activities.payment.ccavenue.utility.AvenuesParams;
 import com.shoppurscustomer.adapters.CartAdapter;
@@ -277,7 +278,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     rlDelivery.setVisibility(View.GONE);
                 }else{
                     if(totalPrice > sharedPreferences.getInt(Constants.MIN_DELIVERY_AMOUNT,0)){
-                        startActivityForResult(new Intent(CartActivity.this, DeliveryAddressActivity.class), 101);
+                        startActivityForResult(new Intent(CartActivity.this, DeliveryAddressListActivity.class), 101);
                         tv_self_status.setVisibility(View.GONE);
                     }else{
                         rb_self_delivery.setChecked(true);
@@ -292,7 +293,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         tv_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(CartActivity.this, DeliveryAddressActivity.class), 101);
+                startActivityForResult(new Intent(CartActivity.this, DeliveryAddressListActivity.class), 101);
                 tv_self_status.setVisibility(View.GONE);
             }
         });
@@ -300,7 +301,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         tv_address_label.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(CartActivity.this, DeliveryAddressActivity.class), 101);
+                startActivityForResult(new Intent(CartActivity.this, DeliveryAddressListActivity.class), 101);
                 tv_self_status.setVisibility(View.GONE);
             }
         });

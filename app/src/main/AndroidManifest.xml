@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:usesCleartextTraffic="true"
@@ -72,6 +74,11 @@
             android:name=".activities.Settings.PersonalProfileActivity"
             android:label="@string/title_activity_personalinfo"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.ChangePasswordActivity"
+            android:label="@string/title_activity_changepasswordo"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".activities.TransactionDetailsActivity"
             android:label="@string/title_activity_transaction"
@@ -169,7 +176,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.shoppurs.provider"
+            android:authorities="com.shoppurscustomer.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

@@ -119,6 +119,7 @@
             android:layout_height="wrap_content" />
 
         <RelativeLayout
+            android:visibility="gone"
             android:id="@+id/relative_or_layout"
             android:layout_below="@+id/btn_login"
             android:layout_marginTop="@dimen/or_layout_margin"
@@ -154,6 +155,7 @@
         </RelativeLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:orientation="horizontal"
             android:id="@+id/relative_social_login"
             android:layout_below="@+id/relative_or_layout"
@@ -214,7 +216,7 @@
 
         <RelativeLayout
             android:id="@+id/relative_sign_up"
-            android:layout_below="@+id/relative_social_login"
+            android:layout_below="@+id/btn_login"
             android:layout_marginTop="@dimen/login_view_vertical_margin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">

@@ -28,35 +28,35 @@
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin">
 
-    <TextView
-        android:id="@+id/text_left_label"
-        android:text="Settings"
-        android:textColor="?attr/secondaryTextColor"
-        android:textSize="@dimen/small_text_size"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/text_left_label"
+            android:text="Settings"
+            android:textColor="?attr/secondaryTextColor"
+            android:textSize="@dimen/small_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-    <View
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:id="@+id/view_seperator"
-        android:layout_width="2dp"
-        android:layout_height="20dp"
-        android:background="?attr/separatorColor"/>
+        <View
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:id="@+id/view_seperator"
+            android:layout_width="2dp"
+            android:layout_height="20dp"
+            android:background="?attr/separatorColor"/>
 
-    <TextView
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:id="@+id/text_right_label"
-        android:text="Profile"
-        android:textColor="?attr/secondaryTextColor"
-        android:textSize="@dimen/small_text_size"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:id="@+id/text_right_label"
+            android:text="Profile"
+            android:textColor="?attr/secondaryTextColor"
+            android:textSize="@dimen/small_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <TextView
         android:layout_below="@+id/relative_top"
         android:id="@+id/text_second_label"
-        android:text="Customer Address"
+        android:text="Store Address"
         android:textColor="?attr/primaryTextColor"
         android:textStyle="bold"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
@@ -98,10 +98,64 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:visibility="gone"
+                android:id="@+id/text_input_name"
+                android:textColorHint="?attr/secondaryTextColor"
+                android:layout_marginTop="@dimen/edit_text_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:textColorHint="?attr/secondaryTextColor"
+                    android:textColor="?attr/primaryTextColor"
+                    android:id="@+id/edit_customer_name"
+                    android:hint="Name"
+                    android:textSize="@dimen/edit_text_small_text_size"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:imeOptions="actionNext"
+                    android:layout_marginTop="@dimen/edit_text_margin"
+                    android:paddingBottom="@dimen/edit_text_small_vertical_padding"
+                    android:paddingTop="@dimen/edit_text_small_vertical_padding"
+                    android:paddingLeft="@dimen/edit_text_horizontal_padding"
+                    android:paddingRight="@dimen/edit_text_horizontal_padding"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:visibility="gone"
+                android:id="@+id/text_input_mobile"
+                android:textColorHint="?attr/secondaryTextColor"
+                android:layout_marginTop="@dimen/edit_text_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:textColorHint="?attr/secondaryTextColor"
+                    android:textColor="?attr/primaryTextColor"
+                    android:id="@+id/edit_customer_mobile"
+                    android:hint="Mobile"
+                    android:textSize="@dimen/edit_text_small_text_size"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:imeOptions="actionNext"
+                    android:layout_marginTop="@dimen/edit_text_margin"
+                    android:paddingBottom="@dimen/edit_text_small_vertical_padding"
+                    android:paddingTop="@dimen/edit_text_small_vertical_padding"
+                    android:paddingLeft="@dimen/edit_text_horizontal_padding"
+                    android:paddingRight="@dimen/edit_text_horizontal_padding"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <com.google.android.material.textfield.TextInputLayout
                 android:textColorHint="?attr/secondaryTextColor"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/edit_text_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -124,128 +178,114 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <RelativeLayout
-                android:id="@+id/relative_country"
-                android:layout_below="@+id/edit_address"
+            <com.google.android.material.textfield.TextInputLayout
+                android:textColorHint="?attr/secondaryTextColor"
                 android:layout_marginTop="@dimen/edit_text_margin"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/borderBottomSolidBackground"
-                android:padding="0dp">
+                android:layout_height="wrap_content">
 
-                <Spinner
-                    android:id="@+id/spinner_country"
+                <EditText
+                    android:textColorHint="?attr/secondaryTextColor"
+                    android:textColor="?attr/primaryTextColor"
+                    android:id="@+id/edit_locality"
+                    android:hint="Locality"
+                    android:textSize="@dimen/edit_text_small_text_size"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:imeOptions="actionNext"
+                    android:layout_marginTop="@dimen/edit_text_margin"
+                    android:paddingBottom="@dimen/edit_text_small_vertical_padding"
+                    android:paddingTop="@dimen/edit_text_small_vertical_padding"
+                    android:paddingLeft="@dimen/edit_text_horizontal_padding"
+                    android:paddingRight="@dimen/edit_text_horizontal_padding"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/address_spinner_size"
-                    android:layout_toLeftOf="@+id/image_spinner_1"
-                    android:background="@null">
+                    android:layout_height="wrap_content" />
 
-                </Spinner>
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <ImageView
-                    android:id="@+id/image_spinner_1"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:padding="2dp"
-                    android:src="@drawable/ic_arrow_down"
-                    android:tint="@color/primary_text_color" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:textColorHint="?attr/secondaryTextColor"
+                android:layout_marginTop="@dimen/edit_text_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            </RelativeLayout>
+                <EditText
+                    android:textColorHint="?attr/secondaryTextColor"
+                    android:textColor="?attr/primaryTextColor"
+                    android:id="@+id/edit_country"
+                    android:hint="Country"
+                    android:textSize="@dimen/edit_text_small_text_size"
+                    android:gravity="top"
+                    android:inputType="text"
+                    android:imeOptions="actionNext"
+                    android:paddingBottom="@dimen/edit_text_small_vertical_padding"
+                    android:paddingTop="@dimen/edit_text_small_vertical_padding"
+                    android:paddingLeft="@dimen/edit_text_horizontal_padding"
+                    android:paddingRight="@dimen/edit_text_horizontal_padding"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:id="@+id/linear_state"
                 android:weightSum="2"
                 android:layout_below="@+id/relative_country"
                 android:layout_marginTop="@dimen/edit_text_margin"
-                android:paddingTop="@dimen/edit_text_small_vertical_padding"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <RelativeLayout
-                    android:id="@+id/relative_state"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:textColorHint="?attr/secondaryTextColor"
                     android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/borderBottomSolidBackground"
-                    android:padding="0dp">
+                    android:layout_height="wrap_content">
 
-                    <Spinner
-                        android:id="@+id/spinner_state"
+                    <EditText
+                        android:textColorHint="?attr/secondaryTextColor"
+                        android:textColor="?attr/primaryTextColor"
+                        android:id="@+id/edit_state"
+                        android:hint="State"
+                        android:textSize="@dimen/edit_text_small_text_size"
+                        android:gravity="top"
+                        android:inputType="text"
+                        android:imeOptions="actionNext"
+                        android:paddingBottom="@dimen/edit_text_small_vertical_padding"
+                        android:paddingTop="@dimen/edit_text_small_vertical_padding"
+                        android:paddingLeft="@dimen/edit_text_horizontal_padding"
+                        android:paddingRight="@dimen/edit_text_horizontal_padding"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/address_spinner_size"
-                        android:layout_toLeftOf="@+id/image_spinner_2"
-                        android:background="@null">
+                        android:layout_height="wrap_content" />
 
-                    </Spinner>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                    <ImageView
-                        android:id="@+id/image_spinner_2"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_alignParentRight="true"
-                        android:padding="2dp"
-                        android:src="@drawable/ic_arrow_down"
-                        android:tint="?attr/primaryTextColor" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/relative_city"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_marginLeft="10dp"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/borderBottomSolidBackground"
-                    android:padding="0dp">
+                    android:textColorHint="?attr/secondaryTextColor"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
 
-                    <Spinner
-                        android:id="@+id/spinner_city"
+                    <EditText
+                        android:textColorHint="?attr/secondaryTextColor"
+                        android:textColor="?attr/primaryTextColor"
+                        android:id="@+id/edit_city"
+                        android:hint="City"
+                        android:textSize="@dimen/edit_text_small_text_size"
+                        android:gravity="top"
+                        android:inputType="text"
+                        android:imeOptions="actionNext"
+                        android:paddingBottom="@dimen/edit_text_small_vertical_padding"
+                        android:paddingTop="@dimen/edit_text_small_vertical_padding"
+                        android:paddingLeft="@dimen/edit_text_horizontal_padding"
+                        android:paddingRight="@dimen/edit_text_horizontal_padding"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/address_spinner_size"
-                        android:layout_toLeftOf="@+id/image_spinner_3"
-                        android:background="@null">
+                        android:layout_height="wrap_content" />
 
-                    </Spinner>
-
-                    <ImageView
-                        android:id="@+id/image_spinner_3"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_alignParentRight="true"
-                        android:padding="2dp"
-                        android:src="@drawable/ic_arrow_down"
-                        android:tint="?attr/primaryTextColor" />
-
-                </RelativeLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_marginTop="@dimen/edit_text_margin"
-                android:textColorHint="?attr/secondaryTextColor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <EditText
-                android:textColorHint="?attr/secondaryTextColor"
-                android:textColor="?attr/primaryTextColor"
-                android:id="@+id/edit_locality"
-                android:hint="Locality"
-                android:textSize="@dimen/edit_text_small_text_size"
-                android:gravity="center_vertical"
-                android:inputType="text"
-                android:imeOptions="actionNext"
-                android:paddingBottom="@dimen/edit_text_small_vertical_padding"
-                android:paddingTop="@dimen/edit_text_small_vertical_padding"
-                android:paddingLeft="@dimen/edit_text_horizontal_padding"
-                android:paddingRight="@dimen/edit_text_horizontal_padding"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_marginTop="@dimen/edit_text_margin"
@@ -259,7 +299,7 @@
                     android:id="@+id/edit_pincode"
                     android:hint="Pincode"
                     android:textSize="@dimen/edit_text_small_text_size"
-                    android:layout_below="@+id/edit_locality"
+                    android:layout_below="@+id/linear_state"
                     android:gravity="center_vertical"
                     android:inputType="text"
                     android:imeOptions="actionNext"
@@ -269,6 +309,7 @@
                     android:paddingRight="@dimen/edit_text_horizontal_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
@@ -276,5 +317,4 @@
     </ScrollView>
 
     <include layout="@layout/footer_action_layout"/>
-
 </RelativeLayout>

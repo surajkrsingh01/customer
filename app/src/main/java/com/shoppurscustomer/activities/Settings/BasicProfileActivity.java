@@ -5,6 +5,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -14,10 +15,15 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.signature.ObjectKey;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.BaseImageActivity;
+import com.shoppurscustomer.activities.StoresListActivity;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
+import com.shoppurscustomer.utilities.Utility;
 
 
 import org.json.JSONArray;
@@ -70,11 +76,17 @@ public class BasicProfileActivity extends BaseImageActivity {
         etMobile.setText(sharedPreferences.getString(Constants.MOBILE_NO,""));
         etEmail.setText(sharedPreferences.getString(Constants.EMAIL,""));
 
-
-        /*Glide.with(this)
-                .load(sharedPreferences.getString(Constants.PROFILE_PIC,""))
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+        // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
+        requestOptions.centerCrop();
+        requestOptions.skipMemoryCache(false);
+        requestOptions.signature(new ObjectKey(sharedPreferences.getString("profile_image_signature","")));
+        Glide.with(this)
+                .load(sharedPreferences.getString(Constants.PROFILE_PIC, ""))
                 .apply(requestOptions)
-                .into(profileImage);*/
+                .error(R.drawable.ic_photo_black_192dp)
+                .into(profileImage);
 
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,18 +133,17 @@ public class BasicProfileActivity extends BaseImageActivity {
         }
 
 
-        if(TextUtils.isEmpty(gstNo)){
+        /*if(TextUtils.isEmpty(gstNo)){
             DialogAndToast.showDialog("Please enter GST No",this);
             return;
-        }
-
-        if(TextUtils.isEmpty(mobile)){
+        }*/
+        /*if(TextUtils.isEmpty(mobile)){
             DialogAndToast.showDialog("Please enter mobile number",this);
             return;
         }else  if(mobile.length() != 10){
             DialogAndToast.showDialog("Please enter valid mobile number",this);
             return;
-        }
+        }*/
 
         if(TextUtils.isEmpty(email)){
             DialogAndToast.showDialog("Please enter email",this);
@@ -140,16 +151,16 @@ public class BasicProfileActivity extends BaseImageActivity {
         }
 
         Map<String,String> params=new HashMap<>();
-        params.put("retName",username);
-        params.put("gstNo",gstNo);
+        params.put("name",username);
         params.put("email",email);
         params.put("mobile",sharedPreferences.getString(Constants.MOBILE_NO,""));
         params.put("profileImage",imageBase64);
-        params.put("id",sharedPreferences.getString(Constants.USER_ID,""));
-        params.put("shopCode",sharedPreferences.getString(Constants.USER_CODE,""));
+        params.put("id","0");
+        params.put("code",sharedPreferences.getString(Constants.USER_ID,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+        Log.d(TAG, params.toString());
         JSONArray dataArray = new JSONArray();
         JSONObject dataObject = new JSONObject(params);
         dataArray.put(dataObject);
@@ -165,14 +176,17 @@ public class BasicProfileActivity extends BaseImageActivity {
            try{
                if(response.getBoolean("status")){
                    editor.putString(Constants.FULL_NAME,etUsername.getText().toString());
-                  // editor.putString(Constants.SHOP_NAME,etShopName.getText().toString());
                    editor.putString(Constants.MOBILE_NO,etMobile.getText().toString());
                    editor.putString(Constants.EMAIL,etEmail.getText().toString());
-                   editor.putString(Constants.GST_NO,etGstNo.getText().toString());
-                   if(!imageBase64.equals("no"))
-                   editor.putString(Constants.PROFILE_PIC,getResources().getString(R.string.base_image_url)+
-                           "/shops/"+sharedPreferences.getString(Constants.USER_CODE,"")+"/photo.jpg");
-                   editor.commit();
+                   if(!imageBase64.equals("no")) {
+                       String timestamp = Utility.getTimeStamp();
+                       requestOptions.signature(new ObjectKey(timestamp));
+                       editor.putString(Constants.PROFILE_PIC, getResources().getString(R.string.base_image_url) +
+                               "/customers/" + sharedPreferences.getString(Constants.USER_ID, "") + "/photo.jpg");
+                       editor.putString("profile_image_signature",timestamp);
+                       editor.commit();
+
+                   }
                    DialogAndToast.showToast(response.getString("message"),this);
                }else{
                    DialogAndToast.showDialog(response.getString("message"),this);

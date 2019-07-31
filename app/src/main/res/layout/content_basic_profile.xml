@@ -116,6 +116,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:visibility="gone"
                 android:textColorHint="?attr/secondaryTextColor"
                 android:layout_marginTop="@dimen/register_container_margin_top"
                 android:layout_width="match_parent"

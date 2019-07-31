@@ -76,10 +76,10 @@ public class ShopProductListActivity extends NetworkBaseActivity {
    // private CartItem cartItem;
     private MyProduct myProduct, freeProdut;
     private DbHelper dbHelper;
-    private ImageView image_view_shop, image_fav, image_search;
+    private ImageView image_view_shop, image_fav, image_search, image_scan;
     private String shopCode, shopName, shopImage, shopMobile, address, statecity, catId, selectdSubCatId, selectedSubCatName, custCode, shopdbname, custdbname, dbuser, dbpassword;
 
-    private int position, type, productDetailsType;
+    private int position, type, productDetailsType, selectdSubCatPosition;
     private int counter;
 
     @Override
@@ -140,6 +140,18 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                 bottomSearchFragment.setSubCatName(selectedSubCatName);
                 bottomSearchFragment.setSubcatId(selectdSubCatId);
                 bottomSearchFragment.show(getSupportFragmentManager(), bottomSearchFragment.getTag());
+            }
+        });
+
+        image_scan = findViewById(R.id.image_scan);
+        image_scan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ShopProductListActivity.this,ScannarActivity.class);
+                intent.putExtra("flag","scan");
+                intent.putExtra("type","scanProducts");
+                // startActivity(intent);
+                startActivityForResult(intent,112);
             }
         });
 
@@ -641,9 +653,13 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                     if(subCategoryList.size()>0) {
 
                         if(!TextUtils.isEmpty(selectdSubCatId)) {
+                            selectdSubCatPosition = 0;
                             for (SubCategory subCategory : subCategoryList) {
-                                if (subCategory.getSubcatid().equals(selectdSubCatId))
+                                if (subCategory.getSubcatid().equals(selectdSubCatId)) {
                                     subCategory.setSelected(true);
+                                    selectdSubCatPosition = subCategoryList.indexOf(subCategory);
+                                    break;
+                                }
                             }
                         }else {
                             subCategoryList.get(0).setSelected(true);
@@ -651,6 +667,8 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                         }
 
                         categoriesAdapter.notifyDataSetChanged();
+                        Log.d("selectdSubCatPosition", ""+selectdSubCatPosition);
+                        recyclerViewCategory.scrollToPosition(selectdSubCatPosition);
                         getProducts(selectdSubCatId, "");
                     }
                 }else {

@@ -235,6 +235,9 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
                     intent.putExtra("shop_code",shop.getId());
                     editor.putString(Constants.SHOP_INSIDE_CODE,shop.getId());
                     editor.putString(Constants.SHOP_INSIDE_NAME, shop.getName());
+                    editor.putString(Constants.SHOP_DBNAME,shop.getDbname());
+                    editor.putString(Constants.SHOP_DB_USER_NAME,shop.getDbusername());
+                    editor.putString(Constants.SHOP_DB_PASSWORD,shop.getDbpassword());
                     editor.commit();
                     context.startActivity(intent);
               //      Toast.makeText(context, "shop dbname "+shop.getDbname() +" subcatname "+subcatname, Toast.LENGTH_SHORT).show();

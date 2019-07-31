@@ -312,10 +312,17 @@ public class LoginActivity extends NetworkBaseActivity{
                     JSONObject dataObject = response.getJSONObject("result");
 
                     editor.putString(Constants.FULL_NAME, dataObject.getString("username"));
-                    editor.putString(Constants.USER_ID, dataObject.getString("dbname"));
+                    editor.putString(Constants.USER_ID, dataObject.getString("userCode"));
+                    editor.putString(Constants.PROFILE_PIC, dataObject.getString("photo"));
+                    editor.putString(Constants.CUST_ADDRESS, dataObject.getString("address"));
+                    editor.putString(Constants.CUST_ADDRESS, dataObject.getString("address"));
+                    editor.putString(Constants.CUST_CITY, dataObject.getString("city"));
+                    editor.putString(Constants.CUST_STATE, dataObject.getString("province"));
+                    editor.putString(Constants.CUST_COUNTRY, dataObject.getString("country"));
+                    editor.putString(Constants.CUST_LAT, dataObject.getString("userLat"));
+                    editor.putString(Constants.CUST_LONG, dataObject.getString("userLong"));
                     editor.putString(Constants.EMAIL, dataObject.getString("user_email"));
                     editor.putString(Constants.MOBILE_NO, dataObject.getString("mobile"));
-                    editor.putString(Constants.ADDRESS, dataObject.getString("address"));
                     editor.putString(Constants.DB_NAME, dataObject.getString("dbname"));
                     editor.putString(Constants.DB_USER_NAME, dataObject.getString("dbusername"));
                     editor.putString(Constants.DB_PASSWORD, dataObject.getString("dbpassword"));
@@ -324,7 +331,7 @@ public class LoginActivity extends NetworkBaseActivity{
                     //DialogAndToast.showToast("Logged In",LoginActivity.this);
                     getFavoriteStore();
                 } else {
-                   // DialogAndToast.showDialog(response.getString("message"), LoginActivity.this);
+                    DialogAndToast.showDialog(response.getString("message"), LoginActivity.this);
                 }
             } else if (apiName.equals("getfavoriteshop")) {
                 if (response.getString("status").equals("true") || response.getString("status").equals(true)) {

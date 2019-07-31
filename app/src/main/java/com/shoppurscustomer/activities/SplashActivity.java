@@ -21,7 +21,7 @@ public class SplashActivity extends AppCompatActivity {
         sharedPreferences=getSharedPreferences(Constants.MYPREFERENCEKEY,MODE_PRIVATE);
 
         if(sharedPreferences.getBoolean(Constants.IS_LOGGED_IN,false)){
-            intent=new Intent(SplashActivity.this,MainActivity.class);
+            intent=new Intent(SplashActivity.this,StoresListActivity.class);
         }else {
             intent=new Intent(SplashActivity.this,LoginActivity.class);
         }
