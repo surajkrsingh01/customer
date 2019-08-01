@@ -24,6 +24,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.ApplyOffersActivity;
+import com.shoppurscustomer.activities.CouponOffersActivity;
 import com.shoppurscustomer.activities.ShopProductListActivity;
 import com.shoppurscustomer.models.MyShop;
 import com.shoppurscustomer.utilities.Constants;
@@ -42,8 +44,16 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
     private List<MyShop> mShopList;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
-    private String subCatid, subCatName;
-    private int counter;
+    private String subCatid, subCatName, flag;
+    private int counter, colorTheme;
+
+    public void setFlag(String flag){
+        this.flag = flag;
+    }
+
+    public void setColorTheme(int colorTheme){
+        this.colorTheme = colorTheme;
+    }
 
     public String getSubCatid() {
         return subCatid;
@@ -86,45 +96,16 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
             if(TextUtils.isEmpty(item.getAddress()) || item.getAddress().equals("null")){
                 myViewHolder.textAddress.setVisibility(View.GONE);
             }else{
-                myViewHolder.textAddress.setVisibility(View.GONE);
+                myViewHolder.textAddress.setVisibility(View.VISIBLE);
                 myViewHolder.textAddress.setText(item.getAddress());
             }
 
-            if(TextUtils.isEmpty(item.getState()) || item.getState().equals("null")){
+           /* if(TextUtils.isEmpty(item.getState()) || item.getState().equals("null")){
                 myViewHolder.textStateCity.setVisibility(View.GONE);
             }else{
                 myViewHolder.textStateCity.setVisibility(View.VISIBLE);
                 myViewHolder.textStateCity.setText(item.getState()+", "+item.getCity());
-            }
-
-            String initials = "";
-            if(item.getName().contains(" ")){
-                String[] name = item.getName().split(" ");
-                initials = name[0].substring(0,1);
-            }else{
-                initials = item.getName().substring(0,1);
-            }
-
-            myViewHolder.textInitial.setText(initials);
-
-            if(item.getShopimage() != null && item.getShopimage().contains("http")){
-                myViewHolder.textInitial.setVisibility(View.GONE);
-                myViewHolder.imageView.setVisibility(View.VISIBLE);
-            }else{
-                myViewHolder.textInitial.setVisibility(View.VISIBLE);
-                myViewHolder.imageView.setVisibility(View.GONE);
-                //  myViewHolder.textInitial.setBackgroundColor(getTvColor(counter));
-                Utility.setColorFilter(myViewHolder.textInitial.getBackground(),getTvColor(counter));
-
-                counter++;
-                if(counter == 12){
-                    counter = 0;
-                }
-            }
-
-            // myViewHolder.textAddress.setText(item.getAddress());
-            //  myViewHolder.textStateCity.setText(item.getState()+", "+item.getCity());
-
+            }*/
             RequestOptions requestOptions = new RequestOptions();
             requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
             requestOptions.dontTransform();
@@ -133,7 +114,7 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
             requestOptions.skipMemoryCache(false);
 
             Glide.with(context)
-                    .load(item.getImage())
+                    .load(item.getShopimage())
                     .apply(requestOptions)
                     .into(myViewHolder.imageView);
 
@@ -160,7 +141,7 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
             rootView = itemView;
             rootView = itemView;
             textInitial=itemView.findViewById(R.id.tv_initial);
-            textShopName=itemView.findViewById(R.id.text_shop_name);
+            textShopName=itemView.findViewById(R.id.text_name);
             text_shop_mobile = itemView.findViewById(R.id.text_mobile);
             textAddress=itemView.findViewById(R.id.text_address);
             textStateCity=itemView.findViewById(R.id.text_state_city);
@@ -217,29 +198,59 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
                 // break;
 
                 case MotionEvent.ACTION_UP:
-                    // Log.i("Adapter","onPressUp");
-                    MyShop shop = (MyShop) mShopList.get(getAdapterPosition());
-                    Intent intent = new Intent(context, ShopProductListActivity.class);
-                    intent.putExtra("callingClass","SearchShopListActivity");
-                    intent.putExtra("name",shop.getName());
-                    intent.putExtra("photo",shop.getShopimage());
-                    intent.putExtra("address",shop.getAddress());
-                    intent.putExtra("mobile", shop.getMobile());
-                    intent.putExtra("stateCity",shop.getState()+", "+shop.getCity());
-                    //intent.putExtra("catId", catId);
-                    //intent.putExtra("subcatid",subcatid);
-                   // intent.putExtra("subcatname",subcatname);
-                    intent.putExtra("dbname",shop.getDbname());
-                    intent.putExtra("dbuser",shop.getDbusername());
-                    intent.putExtra("dbpassword",shop.getDbpassword());
-                    intent.putExtra("shop_code",shop.getId());
-                    editor.putString(Constants.SHOP_INSIDE_CODE,shop.getId());
-                    editor.putString(Constants.SHOP_INSIDE_NAME, shop.getName());
-                    editor.putString(Constants.SHOP_DBNAME,shop.getDbname());
-                    editor.putString(Constants.SHOP_DB_USER_NAME,shop.getDbusername());
-                    editor.putString(Constants.SHOP_DB_PASSWORD,shop.getDbpassword());
-                    editor.commit();
-                    context.startActivity(intent);
+                    if(flag!=null && flag.equals("CartShopOffers") || flag!=null && flag.equals("CartShopCoupons")){
+                        MyShop shop = (MyShop) mShopList.get(getAdapterPosition());
+                        Intent intent = new Intent();
+                        if(flag.equals("CartShopOffers"))
+                            intent =new Intent(context, ApplyOffersActivity.class);
+                            else
+                            intent =new Intent(context, CouponOffersActivity.class);
+                        intent.putExtra("flag",flag);
+                        intent.putExtra("shopCode",shop.getCode());
+                        Log.d("shopCode", shop.getCode());
+                        intent.putExtra("photo",shop.getShopimage());
+                        intent.putExtra("address",shop.getAddress());
+                        intent.putExtra("mobile", shop.getMobile());
+                        intent.putExtra("stateCity",shop.getState()+", "+shop.getCity());
+                        //intent.putExtra("catId", catId);
+                        //intent.putExtra("subcatid",subcatid);
+                        // intent.putExtra("subcatname",subcatname);
+                        intent.putExtra("dbname",shop.getDbname());
+                        intent.putExtra("dbuser",shop.getDbusername());
+                        intent.putExtra("dbpassword",shop.getDbpassword());
+                        intent.putExtra("shop_code",shop.getId());
+                        editor.putString(Constants.SHOP_INSIDE_CODE,shop.getId());
+                        editor.putString(Constants.SHOP_INSIDE_NAME, shop.getName());
+                        editor.putString(Constants.SHOP_DBNAME,shop.getDbname());
+                        editor.putString(Constants.SHOP_DB_USER_NAME,shop.getDbusername());
+                        editor.putString(Constants.SHOP_DB_PASSWORD,shop.getDbpassword());
+                        editor.commit();
+                        context.startActivity(intent);
+                    }else {
+                        MyShop shop = (MyShop) mShopList.get(getAdapterPosition());
+                        Intent intent = new Intent(context, ShopProductListActivity.class);
+                        intent.putExtra("callingClass","SearchShopListActivity");
+                        intent.putExtra("name",shop.getName());
+                        intent.putExtra("photo",shop.getShopimage());
+                        intent.putExtra("address",shop.getAddress());
+                        intent.putExtra("mobile", shop.getMobile());
+                        intent.putExtra("stateCity",shop.getState()+", "+shop.getCity());
+                        //intent.putExtra("catId", catId);
+                        //intent.putExtra("subcatid",subcatid);
+                        // intent.putExtra("subcatname",subcatname);
+                        intent.putExtra("dbname",shop.getDbname());
+                        intent.putExtra("dbuser",shop.getDbusername());
+                        intent.putExtra("dbpassword",shop.getDbpassword());
+                        intent.putExtra("shop_code",shop.getId());
+                        editor.putString(Constants.SHOP_INSIDE_CODE,shop.getId());
+                        editor.putString(Constants.SHOP_INSIDE_NAME, shop.getName());
+                        editor.putString(Constants.SHOP_DBNAME,shop.getDbname());
+                        editor.putString(Constants.SHOP_DB_USER_NAME,shop.getDbusername());
+                        editor.putString(Constants.SHOP_DB_PASSWORD,shop.getDbpassword());
+                        editor.commit();
+                        context.startActivity(intent);
+                    }
+
               //      Toast.makeText(context, "shop dbname "+shop.getDbname() +" subcatname "+subcatname, Toast.LENGTH_SHORT).show();
                     zoomAnimation(false,rootView);
                     break;

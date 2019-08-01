@@ -72,7 +72,6 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
     public void onBindViewHolder(final ShopProductListAdapter.MyViewHolder myViewHolder, final int position) {
         {
             final MyProduct item = (MyProduct) myProductsList.get(position);
-
             myViewHolder.textbarcode.setText(item.getBarCode());
             myViewHolder.textName.setText(item.getName());
             //myViewHolder.textAmount.setText("Rs. "+String.format("%.02f",item.getMrp()));
@@ -90,23 +89,6 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
                 myViewHolder.textMrp.setVisibility(View.GONE);
                 myViewHolder.textOffPer.setVisibility(View.GONE);
             }
-
-          /*  if(item.getIsBarCodeAvailable().equals("Y")){
-                if(item.getBarcodeList() != null && item.getBarcodeList().size() > 0){
-                    myViewHolder.textStatus.setVisibility(View.GONE);
-                }else{
-                    myViewHolder.textStatus.setText("Out of stock");
-                    myViewHolder.textStatus.setVisibility(View.GONE);
-
-                }
-            }else{
-                if(item.getProdQoh() == 0){
-                    myViewHolder.textStatus.setText("Out of stock");
-                    myViewHolder.textStatus.setVisibility(View.GONE);
-                }else{
-                    myViewHolder.textStatus.setVisibility(View.GONE);
-                }
-            }*/
 
             if(dbHelper.checkProdExistInCart(item.getId(), shopCode)){
                 myViewHolder.btnAddCart.setVisibility(View.GONE);

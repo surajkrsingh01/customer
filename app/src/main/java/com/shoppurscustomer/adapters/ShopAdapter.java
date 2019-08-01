@@ -182,7 +182,7 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                     editor.putString(Constants.SHOP_INSIDE_NAME, shop.getName());
                     editor.commit();
                     context.startActivity(intent);
-                    Toast.makeText(context, "shop dbname "+shop.getDbname() +" subcatname "+subcatname, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "shop dbname "+shop.getDbname() +" subcatname "+subcatname, Toast.LENGTH_SHORT).show();
                     zoomAnimation(false,rootView);
                     break;
                 case MotionEvent.ACTION_CANCEL:

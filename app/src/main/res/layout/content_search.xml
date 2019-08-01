@@ -187,6 +187,7 @@
         android:id="@+id/text_error"
         android:visibility="gone"
         android:text="No data available..."
+        android:textColor="?attr/primaryTextColor"
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

@@ -150,6 +150,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                 Intent intent = new Intent(ShopProductListActivity.this,ScannarActivity.class);
                 intent.putExtra("flag","scan");
                 intent.putExtra("type","scanProducts");
+                intent.putExtra("shopCode",shopCode);
                 // startActivity(intent);
                 startActivityForResult(intent,112);
             }

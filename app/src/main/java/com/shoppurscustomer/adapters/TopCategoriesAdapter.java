@@ -92,7 +92,7 @@ public class TopCategoriesAdapter extends RecyclerView.Adapter<TopCategoriesAdap
                     SubCategory item = categoryList.get(getAdapterPosition());
                     item.setSelected(true);
                     selectedIndex = getAdapterPosition();
-                    DialogAndToast.showToast(item.getName(), context);
+                   // DialogAndToast.showToast(item.getName(), context);
                     ((ShopProductListActivity) (context)).getProducts(String.valueOf(item.getSubcatid()), "onSubCategorySelected");
                     notifyDataSetChanged();
                 }

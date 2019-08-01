@@ -63,6 +63,7 @@ public class SearchActivity extends NetworkBaseActivity{
     private CircleImageView customer_profile;
     private ProgressBar progress_bar;
     String searchCatId;
+    private boolean isCategorySearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +78,7 @@ public class SearchActivity extends NetworkBaseActivity{
     }
 
     private void init(){
+        shopList = new ArrayList<>();
         et_search = findViewById(R.id.et_search);
         ((GradientDrawable)et_search.getBackground()).setColor(colorTheme);
         cancel = findViewById(R.id.cancel);
@@ -137,7 +139,13 @@ public class SearchActivity extends NetworkBaseActivity{
                 if(!TextUtils.isEmpty(s)){
                     cancel.setVisibility(View.VISIBLE);
                     showShopListRecycleView(true);
-                    searchShops(searchCatId);
+                    if(isCategorySearch) {
+                        isCategorySearch = false;
+                        searchShopsbyCategory(searchCatId);
+                    }
+                    else{
+                        searchShopbyQuery(s.toString());
+                    }
                 }else {
                     cancel.setVisibility(View.GONE);
                     showShopListRecycleView(false);
@@ -179,10 +187,10 @@ public class SearchActivity extends NetworkBaseActivity{
         });
     }
 
-    private void searchShops(String catId){
+    private void searchShopsbyCategory(String catId){
         String subCatId = "1";
         String subCatName = "";
-        shopList = new ArrayList<>();
+        shopList.clear();
         recyclerView_shops.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
         recyclerView_shops.setLayoutManager(layoutManager);
@@ -192,9 +200,34 @@ public class SearchActivity extends NetworkBaseActivity{
         recyclerView_shops.setAdapter(shopAdapter);
 
         Map<String,String> params=new HashMap<>();
-        params.put("subcatid",subCatId);
+        params.put("id",catId);
+        params.put("limit","10");
+        params.put("offset","0");
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.url)+"/shoplist";
+        String url=getResources().getString(R.string.root_url)+"/search/cat/shops";
+        showProgressBar(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
+    }
+
+    private void searchShopbyQuery(String query){
+        shopList.clear();
+        showNoData(false);
+        recyclerView_shops.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
+        recyclerView_shops.setLayoutManager(layoutManager);
+        recyclerView_shops.setItemAnimator(new DefaultItemAnimator());
+        shopAdapter=new ShopAdapter(this,shopList,"shopList", "", "", "");
+        shopAdapter.setFlag("SearchActivity");
+        recyclerView_shops.setAdapter(shopAdapter);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("query",query);
+        params.put("limit", "10");
+        params.put("offset", ""+shopList.size());
+        params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
+        params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
+        params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+        String url=getResources().getString(R.string.root_url)+"/search/shops";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }
@@ -211,6 +244,7 @@ public class SearchActivity extends NetworkBaseActivity{
             showProgressBar(true);
         }else {
             text_shops.setVisibility(View.GONE);
+            text_error.setVisibility(View.GONE);
             recyclerView_shops.setVisibility(View.GONE);
 
             text_popular_tags.setVisibility(View.VISIBLE);
@@ -311,6 +345,7 @@ public class SearchActivity extends NetworkBaseActivity{
 
 
     public void setEt_search(String search_value, String catID){
+         isCategorySearch = true;
         searchCatId = catID;
         et_search.setText(search_value);
     }
@@ -324,9 +359,9 @@ public class SearchActivity extends NetworkBaseActivity{
             if(apiName.equals("NormalShops")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
 
-                    JSONObject jsonObject = response.getJSONObject("result");
-                    JSONArray shopJArray = jsonObject.getJSONArray("shoplist");
-
+                    //JSONObject jsonObject = response.getJSONObject("result");
+                    JSONArray shopJArray = response.getJSONArray("result");
+                    shopList.clear();
                     for(int i=0;i<shopJArray.length();i++){
                         MyShop myShop = new MyShop();
                         String shop_code = shopJArray.getJSONObject(i).getString("retcode");

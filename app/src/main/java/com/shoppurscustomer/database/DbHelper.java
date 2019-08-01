@@ -968,6 +968,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }*/
 
     public boolean checkProdExistInCart(String prodId, String shopCode){
+        Log.d("prodId "+prodId, "shopCode "+shopCode);
         SQLiteDatabase db = this.getReadableDatabase();
         final String query="select * from "+CART_TABLE+" WHERE "+ID+" = ?" + " AND " + SHOP_CODE + "=?"  + " AND " + PROD_SP + "!=? ";
         Cursor res =  db.rawQuery(query, new String[]{ prodId, shopCode, String.valueOf(0f)});

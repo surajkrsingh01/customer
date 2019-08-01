@@ -133,6 +133,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         rlDiscount = findViewById(R.id.relative_discount);
         rl_offer_applied_layout = findViewById(R.id.rl_offer_applied_layout);
         rlOfferDesc = findViewById(R.id.rl_offer_desc);
+        rlOfferDesc.setVisibility(View.GONE);
         rlOfferLayout = findViewById(R.id.rl_offer_layout);
         imageViewRemoveOffer = findViewById(R.id.image_remove_offer);
         btnStoreOffers = findViewById(R.id.btn_store_offers);
@@ -309,10 +310,12 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         tvApplyCoupon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(CartActivity.this,CouponOffersActivity.class);
+
+                Intent intent = new Intent(CartActivity.this, CartShopListActivity.class);
                 intent.putExtra("custCode",getIntent().getStringExtra("custCode"));
                 intent.putExtra("flag","coupons");
-                startActivityForResult(intent,5);
+                startActivity(intent);
+                //startActivityForResult(intent,5);
             }
         });
 
@@ -332,11 +335,11 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         btnStoreOffers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Intent intent = new Intent(CartActivity.this, ApplyOffersActivity.class);
+                Intent intent = new Intent(CartActivity.this, CartShopListActivity.class);
                 intent.putExtra("custCode",getIntent().getStringExtra("custCode"));
                 intent.putExtra("flag","offers");
-                startActivityForResult(intent,6);
+                startActivity(intent);
+                //startActivityForResult(intent,6);
             }
         });
     }
@@ -400,34 +403,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             relativeLayoutCartFooter.setVisibility(View.GONE);
         }*/
 
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-
-        Log.i(TAG,"onResume called.");
-
-        if(itemList == null){
-            itemList = dbHelper.getCartProducts();
-        }else{
-            itemList.clear();
-            List<MyProduct> cartList =  dbHelper.getCartProducts();
-            for(MyProduct ob : cartList){
-//                if(ob.getSellingPrice() != 0f)
-//                setOffer(ob);
-                itemList.add(ob);
-            }
-        }
-
-        if(itemList.size() > 0){
-            setFooterValues();
-            relativeLayoutCartFooter.setVisibility(View.VISIBLE);
-            myItemAdapter.notifyDataSetChanged();
-        }else{
-            relativeLayoutCartFooter.setVisibility(View.GONE);
-            linearLayoutScanCenter.setVisibility(View.VISIBLE);
-        }
     }
 
     public void setFooterValues(){
@@ -762,10 +737,12 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                         // integrate ccAvenue..
                         Intent intent = new Intent(CartActivity.this, CCAvenueWebViewActivity.class);
                         intent.putExtra("flag", "wallet");
-                        intent.putExtra(AvenuesParams.AMOUNT, String.format("%.02f",Float.parseFloat(tvNetPayable.getText().toString().split(" ")[1])));
+                        String ta = tvNetPayable.getText().toString().split(" ")[1];
+                        ta = ta.replaceAll(",", "");
+                        intent.putExtra(AvenuesParams.AMOUNT, String.format("%.02f", Float.parseFloat(ta)));
                         intent.putExtra(AvenuesParams.ORDER_ID, orderNumber);
                         intent.putExtra(AvenuesParams.CURRENCY, "INR");
-                        intent.putExtra("flag", "addPaymentDevice");
+                        intent.putExtra("flag", "online_shoping");
                         intent.putExtra("shopArray",shopArray.toString());
                         startActivity(intent);
                         finish();
@@ -957,54 +934,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             }
 
         }else if(type == 3){
-            String offerName = null;
-            rlOfferDesc.setVisibility(View.VISIBLE);
-            ImageView iv_clear = findViewById(R.id.iv_clear);
-            TextView tvOfferName = findViewById(R.id.text_offer_name);
-            findViewById(R.id.relative_footer_action).setBackgroundColor(colorTheme);
-            TextView tv = findViewById(R.id.text_action);
-            tv.setText("OKAY! GOT IT");
-
-            iv_clear.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    rlOfferDesc.setVisibility(View.GONE);
-                }
-            });
-            findViewById(R.id.relative_footer_action).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    rlOfferDesc.setVisibility(View.GONE);
-                }
-            });
-
-            List<String> offerDescList = new ArrayList<>();
-            if(item.getProductOffer() instanceof ProductPriceOffer) {
-                ProductPriceOffer productPriceOffer = (ProductPriceOffer) item.getProductOffer();
-                offerName = productPriceOffer.getOfferName();
-                float totOfferAmt = 0f;
-                for(ProductPriceDetails productPriceDetails : productPriceOffer.getProductPriceDetails()){
-                    totOfferAmt = totOfferAmt + productPriceDetails.getPcodPrice();
-                    offerDescList.add("Buy "+productPriceDetails.getPcodProdQty()+" at Rs "+
-                            Utility.numberFormat(totOfferAmt));
-                }
-                offerDescList.add("Offer valid till "+Utility.parseDate(productPriceOffer.getEndDate(),"yyyy-MM-dd",
-                        "EEE dd MMMM, yyyy")+" 23:59 PM");
-            }else if(item.getProductOffer() instanceof ProductDiscountOffer) {
-                ProductDiscountOffer productDiscountOffer = (ProductDiscountOffer) item.getProductOffer();
-                offerName = productDiscountOffer.getOfferName();
-            }
-            tvOfferName.setText(offerName);
-
-            RecyclerView recyclerViewOfferDesc=findViewById(R.id.recycler_view_offer_desc);
-            recyclerViewOfferDesc.setHasFixedSize(true);
-            final RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
-            recyclerViewOfferDesc.setLayoutManager(layoutManager);
-            recyclerViewOfferDesc.setItemAnimator(new DefaultItemAnimator());
-            OfferDescAdapter offerDescAdapter =new OfferDescAdapter(this,offerDescList);
-            recyclerViewOfferDesc.setAdapter(offerDescAdapter);
-            recyclerViewOfferDesc.setNestedScrollingEnabled(false);
-        }else if(type == 4){
 
         }
     }
@@ -1251,5 +1180,30 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         offerDescriptionFragment.setProduct(item);
         offerDescriptionFragment.setColorTheme(colorTheme);
         offerDescriptionFragment.show(getSupportFragmentManager(), "Offer Description Bottom Sheet");
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        Log.i(TAG,"onResume called.");
+        if(itemList == null){
+            itemList = dbHelper.getCartProducts();
+        }else{
+            itemList.clear();
+            List<MyProduct> cartList =  dbHelper.getCartProducts();
+            for(MyProduct ob : cartList){
+//                if(ob.getSellingPrice() != 0f)
+//                setOffer(ob);
+                itemList.add(ob);
+            }
+        }
+        if(itemList.size() > 0){
+            setFooterValues();
+            relativeLayoutCartFooter.setVisibility(View.VISIBLE);
+            myItemAdapter.notifyDataSetChanged();
+        }else{
+            relativeLayoutCartFooter.setVisibility(View.GONE);
+            linearLayoutScanCenter.setVisibility(View.VISIBLE);
+        }
     }
 }

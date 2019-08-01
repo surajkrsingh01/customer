@@ -78,6 +78,11 @@
             android:name=".activities.ChangePasswordActivity"
             android:label="@string/title_activity_changepasswordo"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.CartShopListActivity"
+            android:label="@string/title_activity_cart_shop"
+            android:theme="@style/AppTheme.NoActionBar" />
+
 
         <activity
             android:name=".activities.TransactionDetailsActivity"

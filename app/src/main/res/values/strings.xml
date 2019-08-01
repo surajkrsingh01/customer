@@ -77,6 +77,7 @@
     <string name="title_activity_shop_list">My Shops</string>
     <string name="title_activity_personalinfo">Personal Info</string>
     <string name="title_activity_changepasswordo">Change Password</string>
+    <string name="title_activity_cart_shop">Cart Shops</string>
     <string name="title_activity_transaction">Transaction Details</string>
     <string name="title_activity_invoice">Invoice</string>
     <string name="title_activity_apply_offer">Apply Offer</string>

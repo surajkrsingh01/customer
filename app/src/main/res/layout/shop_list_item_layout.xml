@@ -2,6 +2,7 @@
 <RelativeLayout
     android:layout_marginTop="@dimen/container_view_vertical_margin"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -15,58 +16,40 @@
         android:layout_height="36dp" />
 
     <RelativeLayout
-        android:id="@+id/container"
         android:layout_toLeftOf="@+id/image_menu"
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <RelativeLayout
-            android:id="@+id/relative_image_layout"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_view"
+            card_view:cardElevation="0dp"
+            card_view:cardBackgroundColor="@color/green700"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            card_view:cardCornerRadius="10dp">
 
-            <de.hdodenhof.circleimageview.CircleImageView
+            <ImageView
                 android:id="@+id/image_view"
                 android:src="@drawable/thumb_12"
                 android:scaleType="centerCrop"
-                android:visibility="gone"
-                android:layout_width="@dimen/shop_list_image_size"
-                android:layout_height="@dimen/shop_list_image_size" />
+                android:layout_width="@dimen/home_list_image_width_4"
+                android:layout_height="@dimen/home_list_image_height_4" />
 
-            <TextView
-                android:id="@+id/tv_initial"
-                android:textSize="18sp"
-                android:gravity="center"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:background="@drawable/accent_solid_circle"
-                android:layout_width="@dimen/shop_list_image_size"
-                android:layout_height="@dimen/shop_list_image_size" />
+        </androidx.cardview.widget.CardView>
 
-        </RelativeLayout>
+
 
         <LinearLayout
             android:id="@+id/linear_details"
             android:orientation="vertical"
-            android:layout_alignTop="@+id/relative_image_layout"
-            android:layout_toRightOf="@+id/relative_image_layout"
+            android:layout_toRightOf="@+id/card_view"
             android:layout_marginLeft="12dp"
-            android:gravity="center_vertical"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/text_shop_name"
-                android:textAllCaps="false"
-                android:textColor="?attr/primaryTextColor"
-                android:textSize="@dimen/large_text_size"
-                android:textStyle="bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/text_mobile"
-                android:layout_marginTop="@dimen/home_list_title_text_margin_type_2"
+                android:id="@+id/text_name"
+                android:textAllCaps="true"
                 android:textColor="?attr/secondaryTextColor"
                 android:textSize="@dimen/home_list_cat_name_text_size_type_4"
                 android:layout_width="wrap_content"
@@ -74,7 +57,6 @@
 
             <TextView
                 android:id="@+id/text_address"
-                android:visibility="gone"
                 android:textStyle="bold"
                 android:layout_marginTop="@dimen/home_list_title_text_margin_type_2"
                 android:layout_marginBottom="@dimen/home_list_title_text_margin_type_2"
@@ -84,19 +66,27 @@
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/text_state_city"
-                android:visibility="gone"
+                android:id="@+id/text_mobile"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/home_list_title_text_margin_type_2"
+                android:layout_marginBottom="@dimen/home_list_title_text_margin_type_2"
                 android:textColor="?attr/secondaryTextColor"
                 android:textSize="@dimen/home_list_cat_name_text_size_type_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/text_state_city"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/home_list_title_text_margin_type_2"
+                android:layout_marginBottom="@dimen/home_list_title_text_margin_type_2"
+                android:textColor="?attr/secondaryTextColor"
+                android:textSize="@dimen/home_list_cat_name_text_size_type_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </LinearLayout>
-
     </RelativeLayout>
-
-
-
     <View
         android:background="?attr/separatorColor"
         android:layout_marginTop="@dimen/separator_margin"
@@ -104,5 +94,4 @@
         android:layout_alignLeft="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="1dp"/>
-
 </RelativeLayout>

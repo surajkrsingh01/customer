@@ -36,7 +36,7 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
     private CouponOfferAdapter myItemAdapter;
     private TextView textApply,textViewError;
 
-    private String flag;
+    private String flag, shopDbName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +51,7 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
 
     private void init(){
         flag = getIntent().getStringExtra("flag");
+        shopDbName = getIntent().getStringExtra("dbname");
         itemList = new ArrayList<>();
         textViewError = findViewById(R.id.text_error);
         textApply = findViewById(R.id.btn_apply);
@@ -74,7 +75,7 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
 
     private void getCouponOffers(){
         Map<String,String> params=new HashMap<>();
-        params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
+        params.put("dbName",shopDbName);
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
         String url=getResources().getString(R.string.root_url)+Constants.GET_COUPON_OFFER;
