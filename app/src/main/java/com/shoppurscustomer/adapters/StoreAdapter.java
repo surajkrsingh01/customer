@@ -31,6 +31,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.Settings.SettingActivity;
+import com.shoppurscustomer.activities.ShopAddressActivity;
 import com.shoppurscustomer.activities.ShopListActivity;
 import com.shoppurscustomer.activities.ShopProductListActivity;
 import com.shoppurscustomer.activities.StoresListActivity;
@@ -247,6 +248,21 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                         }else if(item.getTitle().equals("Message")){
                             ((StoresListActivity)(context)).openWhatsApp(shop.getMobile());
                             Log.i("Adapter","Message Customer"+shop.getName());
+                        }else if (item.getTitle().equals("Location")) {
+                            if(shop.getLatitude()!=0) {
+                                Intent intent = new Intent(context, ShopAddressActivity.class);
+                                intent.putExtra("flag", "shopAddress");
+                                intent.putExtra("lat", shop.getLatitude());
+                                intent.putExtra("long", shop.getLongitude());
+                                context.startActivity(intent);
+                            }else {
+                                Intent intent = new Intent(context, ShopAddressActivity.class);
+                                intent.putExtra("flag", "shopAddress");
+                                intent.putExtra("lat", 30.651100);
+                                intent.putExtra("long", 76.821000);
+                                context.startActivity(intent);
+                                //DialogAndToast.showDialog("Location Not Available", context);
+                            }
                         }
                         return true;
                     }

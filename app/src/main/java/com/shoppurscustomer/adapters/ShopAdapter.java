@@ -25,11 +25,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.SearchActivity;
+import com.shoppurscustomer.activities.ShopAddressActivity;
 import com.shoppurscustomer.activities.ShopListActivity;
 import com.shoppurscustomer.activities.ShopProductListActivity;
 import com.shoppurscustomer.models.MyHeader;
 import com.shoppurscustomer.models.MyShop;
 import com.shoppurscustomer.utilities.Constants;
+import com.shoppurscustomer.utilities.DialogAndToast;
 import com.shoppurscustomer.utilities.Utility;
 
 import java.util.List;
@@ -131,6 +133,16 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                             } else if (item.getTitle().equals("Message")) {
                                 ((SearchActivity) (context)).openWhatsApp(shop.getMobile());
                                 Log.i("Adapter", "Message Customer" + shop.getName());
+                            }else if (item.getTitle().equals("Location")) {
+                                if(shop.getLatitude()!=0) {
+                                    Intent intent = new Intent(context, ShopAddressActivity.class);
+                                    intent.putExtra("flag", "shopAddress");
+                                    intent.putExtra("lat", shop.getLatitude());
+                                    intent.putExtra("long", shop.getLongitude());
+                                    context.startActivity(intent);
+                                }else {
+                                    DialogAndToast.showDialog("Location Not Available", context);
+                                }
                             }
                         }else {
                             if (item.getTitle().equals("Call")) {
@@ -139,6 +151,16 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                             } else if (item.getTitle().equals("Message")) {
                                 ((ShopListActivity) (context)).openWhatsApp(shop.getMobile());
                                 Log.i("Adapter", "Message Customer" + shop.getName());
+                            }else if (item.getTitle().equals("Location")) {
+                                if(shop.getLatitude()!=0) {
+                                    Intent intent = new Intent(context, ShopAddressActivity.class);
+                                    intent.putExtra("flag", "shopAddress");
+                                    intent.putExtra("lat", shop.getLatitude());
+                                    intent.putExtra("long", shop.getLongitude());
+                                    context.startActivity(intent);
+                                }else {
+                                    DialogAndToast.showDialog("Location Not Available", context);
+                                }
                             }
                         }
                         return true;

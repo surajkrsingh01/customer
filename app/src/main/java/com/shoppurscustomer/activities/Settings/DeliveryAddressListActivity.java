@@ -1,10 +1,14 @@
 package com.shoppurscustomer.activities.Settings;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -154,10 +158,56 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
         finish();*/
     }
 
+
+    public void showAlert(String title, String msg, final String action, final DeliveryAddress deliveryAddress){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(msg)
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if(action.equals("delete")){
+                            dbHelper.remove_delivery_address(deliveryAddress.getId());
+                            updateList();
+
+                        }else if(action.equals("set_default")){
+                            deliveryAddress.setIsDefaultAddress("Yes");
+                            dbHelper.updateDeliveryAddress(deliveryAddress, sharedPreferences.getString(Constants.USER_ID,""));
+                            setDefaultAddressChecked(deliveryAddress.getId());
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        updateList();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.setTitle(title);
+        alert.show();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        itemList = dbHelper.getallDeliveryAddress(sharedPreferences.getString(Constants.USER_ID,""));
+        updateList();
+    }
+
+    public void setDefaultAddressChecked(String id){
+        for(DeliveryAddress address: itemList){
+            if(!address.getId().equals(id))
+                address.setIsDefaultAddress("No");
+               dbHelper.updateDeliveryAddress(address, sharedPreferences.getString(Constants.USER_ID,""));
+        }
+        updateList();
+    }
+
+    public void updateList(){
+        List<DeliveryAddress> addressList = dbHelper.getallDeliveryAddress(sharedPreferences.getString(Constants.USER_ID,""));
+        itemList.clear();
+        itemList.addAll(addressList);
+        Log.d("itemList size "+itemList.size(), "addressList size "+addressList.size());
+        Log.d("myItemAdapter ", ""+myItemAdapter);
         if(myItemAdapter!=null)
             myItemAdapter.notifyDataSetChanged();
     }

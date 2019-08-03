@@ -29,6 +29,7 @@ import com.shoppurscustomer.adapters.MyItemAdapter;
 import com.shoppurscustomer.models.HomeListItem;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
+import com.shoppurscustomer.utilities.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,17 +65,8 @@ public class MainActivity extends NetworkBaseActivity {
         setSupportActionBar(toolbar);
 
         text_customer_address = findViewById(R.id.text_customer_address);
-        if(TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_ADDRESS, "")))
-            text_customer_address.setText("Update Your Location");
-        else
-            text_customer_address.setText(sharedPreferences.getString(Constants.CUST_ADDRESS, ""));
-        text_customer_address.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddressActivity.class);
-                startActivity(intent);
-            }
-        });
+        text_customer_address.setText(Utility.getTimeStamp("EEE dd MMM, YYYY"));
+
         customer_profile= findViewById(R.id.profile_image);
         customer_profile.setCircleBackgroundColor(colorTheme);
         RequestOptions requestOptions = new RequestOptions();

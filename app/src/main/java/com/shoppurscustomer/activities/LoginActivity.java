@@ -14,8 +14,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -34,6 +38,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.utilities.AppController;
 import com.shoppurscustomer.utilities.ConnectionDetector;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
@@ -294,9 +299,40 @@ public class LoginActivity extends NetworkBaseActivity{
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+
         String url=getResources().getString(R.string.url)+"/shop/favourite_shops";
+        Log.i(TAG,params.toString());
         showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"getfavoriteshop");
+        jsonObjectFavShopApiRequest(Request.Method.POST,url,new JSONObject(params),"getfavoriteshop");
+    }
+
+    public void jsonObjectFavShopApiRequest(int method,String url, JSONObject jsonObject, final String apiName){
+        JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(method,url,jsonObject,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                AppController.getInstance().getRequestQueue().getCache().clear();
+                Log.i(TAG,response.toString());
+                showProgress(false);
+                onJsonObjectResponse(response,apiName);
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // TODO Auto-generated method stub
+                AppController.getInstance().getRequestQueue().getCache().clear();
+                Log.i(TAG,"Json Error "+error.toString());
+                showProgress(false);
+                onServerErrorResponse(error,apiName);
+                // DialogAndToast.showDialog(getResources().getString(R.string.connection_error),BaseActivity.this);
+            }
+        });
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 
 
@@ -342,11 +378,12 @@ public class LoginActivity extends NetworkBaseActivity{
                     JSONArray jsonArray = response.getJSONArray("result");
                     for (int i = 0; i < jsonArray.length(); i++) {
                         mFavoriteList.add(jsonArray.getJSONObject(i).getString("" + i));
+                        dbHelper.add_to_Favorite(jsonArray.getJSONObject(i).getString("" + i));
                     }
-                    if (mFavoriteList.size() > 0) {
+                    /*if (mFavoriteList.size() > 0) {
                         dbHelper.deleteAllFavorite();
                         dbHelper.add_to_Favorite(mFavoriteList);
-                    }
+                    }*/
                 }
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);

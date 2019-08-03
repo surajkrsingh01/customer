@@ -61,7 +61,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
     String encVal;
     String vResponse;
     private String flag;
-    private String name,address,mobileNo,email,zip,responseData;
+    private String name,address,mobileNo,email,zip,city, state,country,responseData;
     private JSONObject dataObject;
     private WebView webview;
 
@@ -75,10 +75,13 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
         webview.getSettings().setJavaScriptEnabled(true);
 
         name= sharedPreferences.getString(com.shoppurscustomer.utilities.Constants.FULL_NAME,"");
-        address= sharedPreferences.getString(com.shoppurscustomer.utilities.Constants.ADDRESS,"");
+        address= sharedPreferences.getString(com.shoppurscustomer.utilities.Constants.CUST_ADDRESS,"");
         email= sharedPreferences.getString(com.shoppurscustomer.utilities.Constants.EMAIL,"");
         mobileNo= sharedPreferences.getString(com.shoppurscustomer.utilities.Constants.MOBILE_NO,"");
-        zip= sharedPreferences.getString(com.shoppurscustomer.utilities.Constants.ZIP,"");
+        zip= sharedPreferences.getString(com.shoppurscustomer.utilities.Constants.CUST_PINCODE,"");
+        city = sharedPreferences.getString(com.shoppurscustomer.utilities.Constants.CUST_CITY,"");
+        state = sharedPreferences.getString(com.shoppurscustomer.utilities.Constants.CUST_STATE,"");
+        country = sharedPreferences.getString(com.shoppurscustomer.utilities.Constants.CUST_COUNTRY,"");
 
         if(name.equals("null") || name.equals("Not Available")){
             name = "";
@@ -230,12 +233,17 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                         + "&" + AvenuesParams.ENC_VAL + "=" + URLEncoder.encode(encVal, "UTF-8")
                         + "&" + "billing_name" + "=" + URLEncoder.encode(name, "UTF-8")
                         + "&" + "billing_address" + "=" + URLEncoder.encode(address, "UTF-8")
+                        + "&" + "billing_address" + "=" + URLEncoder.encode(address, "UTF-8")
+                        + "&" + "billing_address" + "=" + URLEncoder.encode(address, "UTF-8")
                         + "&" + "billing_zip" + "=" + URLEncoder.encode(zip, "UTF-8")
+                        + "&" + "billing_city" + "=" + URLEncoder.encode(city, "UTF-8")
+                        + "&" + "billing_state" + "=" + URLEncoder.encode(state, "UTF-8")
+                        + "&" + "billing_country" + "=" + URLEncoder.encode(country, "UTF-8")
                         + "&" + "billing_tel" + "=" + URLEncoder.encode(mobileNo, "UTF-8")
                         + "&" + "billing_email" + "=" + URLEncoder.encode(email, "UTF-8")
                         + "&" + "delivery_name" + "=" + URLEncoder.encode(name, "UTF-8")
                         + "&" + "delivery_address" + "=" + URLEncoder.encode(address, "UTF-8")
-                        // + "&" + "billing_zip" + "=" + URLEncoder.encode("Vipin Dhama", "UTF-8")
+                         //+ "&" + "billing_zip" + "=" + URLEncoder.encode("Vipin Dhama", "UTF-8")
                         + "&" + "delivery_tel" + "=" + URLEncoder.encode(mobileNo, "UTF-8")
                         + "&" + "delivery_email" + "=" + URLEncoder.encode(email, "UTF-8")
                         + "&" + "merchant_param3" + "=" + URLEncoder.encode(sharedPreferences.getString(com.shoppurscustomer.utilities.Constants.USER_ID,""), "UTF-8");

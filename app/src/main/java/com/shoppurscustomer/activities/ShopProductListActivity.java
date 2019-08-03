@@ -112,6 +112,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
         text_address = findViewById(R.id.text_address);
         text_state_city = findViewById(R.id.text_state_city);
         image_fav = findViewById(R.id.image_fav);
+        Log.d("isShopFavourite ", ""+dbHelper.isShopFavorited(shopCode));
         if(dbHelper.isShopFavorited(shopCode))
             image_fav.setImageDrawable(ContextCompat.getDrawable(ShopProductListActivity.this,R.drawable.favroite_selected));
         else image_fav.setImageDrawable(ContextCompat.getDrawable(ShopProductListActivity.this, R.drawable.favrorite_select));

@@ -92,9 +92,9 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
     private String country,state,city,pin;
     private TextView tv_parent, tv_top_parent;
     private ImageView ivSearch;
+    private DeliveryAddress deliveryAddress;
 
     private Button btnGetLocation;
-    private boolean isFirstTime = true;
     private String flag;
 
     @Override
@@ -111,13 +111,22 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
     private void init(){
 
         flag = getIntent().getStringExtra("flag");
+        deliveryAddress = (DeliveryAddress) getIntent().getSerializableExtra("object");
+
 
         // Initialize Places.
         Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key));
 
 
-        double latitude = Double.parseDouble(sharedPreferences.getString(Constants.USER_LAT,"0.0"));
-        double longitude = Double.parseDouble(sharedPreferences.getString(Constants.USER_LONG,"0.0"));
+        double latitude = 0, longitude =0;
+        if(flag!=null && flag.equals("edit")){
+            latitude = Double.parseDouble(deliveryAddress.getDelivery_lat());
+            longitude = Double.parseDouble(deliveryAddress.getDelivery_long());
+        }else {
+            latitude = Double.parseDouble(sharedPreferences.getString(Constants.CUST_LAT,""));
+            longitude = Double.parseDouble(sharedPreferences.getString(Constants.CUST_LONG,""));
+        }
+
 
         Log.i(TAG,"lat "+latitude+" long "+longitude);
 
@@ -129,7 +138,6 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
         //int colorTheme = sharedPreferences.getInt(Constants.COLOR_THEME,0);
         RelativeLayout btnUpdate = findViewById(R.id.relative_footer_action);
         TextView textViewaction = findViewById(R.id.text_action);
-        textViewaction.setText("Add Address");
         TextInputLayout text_input_mobile = findViewById(R.id.text_input_mobile);
         text_input_mobile.setVisibility(View.VISIBLE);
         TextInputLayout text_input_name = findViewById(R.id.text_input_name);
@@ -142,7 +150,6 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
         btnGetLocation.setBackgroundColor(colorTheme);
 
         TextView text_second_label = findViewById(R.id.text_second_label);
-        text_second_label.setText("Add Delivery Address");
         ivSearch = findViewById(R.id.image_search);
         editAddress = findViewById(R.id.edit_address);
         edit_customer_mobile = findViewById(R.id.edit_customer_mobile);
@@ -158,14 +165,22 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
         editState = findViewById(R.id.edit_state);
         editCity = findViewById(R.id.edit_city);
         editPincode = findViewById(R.id.edit_pincode);
-       /* edit_customer_name.setText(sharedPreferences.getString(Constants.USERNAME, ""));
-        edit_customer_mobile.setText(sharedPreferences.getString(Constants.MOBILE_NO, ""));
-        editAddress.setText(sharedPreferences.getString(Constants.CUST_ADDRESS,""));
-        editLocality.setText(sharedPreferences.getString(Constants.CUST_LOCALITY, ""));
-        editCountry.setText(sharedPreferences.getString(Constants.CUST_COUNTRY,""));
-        editState.setText(sharedPreferences.getString(Constants.CUST_STATE,""));
-        editCity.setText(sharedPreferences.getString(Constants.CUST_CITY,""));
-        editPincode.setText(sharedPreferences.getString(Constants.CUST_PINCODE,""));*/
+
+        if(flag!=null && flag.equals("edit")){
+            textViewaction.setText("Update Address");
+            text_second_label.setText("Update Delivery Address");
+            edit_customer_name.setText(deliveryAddress.getName());
+            edit_customer_mobile.setText(deliveryAddress.getMobile());
+            editAddress.setText(deliveryAddress.getAddress());
+            editLocality.setText(deliveryAddress.getLandmark());
+            editCountry.setText(deliveryAddress.getCountry());
+            editState.setText(deliveryAddress.getState());
+            editCity.setText(deliveryAddress.getCity());
+            editPincode.setText(deliveryAddress.getPinCode());
+        }else {
+            textViewaction.setText("Add Address");
+            text_second_label.setText("Add Delivery Address");
+        }
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -190,13 +205,6 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
 
         tv_top_parent = findViewById(R.id.text_left_label);
         tv_parent = findViewById(R.id.text_right_label);
-
-        if(flag != null){
-            tv_top_parent.setText("Back");
-            TextView tv = findViewById(R.id.text_action);
-            tv.setText("Continue");
-            tv_parent.setVisibility(View.GONE);
-        }
 
         tv_top_parent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -529,13 +537,21 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
         deliveryAddress.setName(name);
         deliveryAddress.setMobile(mobile);
         deliveryAddress.setAddress(address);
+        deliveryAddress.setDelivery_lat(String.valueOf(shopLatLng.latitude));
+        deliveryAddress.setDelivery_long(String.valueOf(shopLatLng.longitude));
         deliveryAddress.setLandmark(locality);
         deliveryAddress.setCity(city);
         deliveryAddress.setState(state);
         deliveryAddress.setCountry(country);
         deliveryAddress.setPinCode(pincode);
 
-        dbHelper.addDeliveryAddress(deliveryAddress, sharedPreferences.getString(Constants.USER_ID, ""));
+        if(flag!=null && flag.equals("edit")) {
+            deliveryAddress.setId(this.deliveryAddress.getId());
+            deliveryAddress.setIsDefaultAddress(this.deliveryAddress.getIsDefaultAddress());
+            dbHelper.updateDeliveryAddress(deliveryAddress, sharedPreferences.getString(Constants.USER_ID, ""));
+        }
+        else
+            dbHelper.addDeliveryAddress(deliveryAddress, sharedPreferences.getString(Constants.USER_ID, ""));
         finish();
 
         /*if(flag != null){

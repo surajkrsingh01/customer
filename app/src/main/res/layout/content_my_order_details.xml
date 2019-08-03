@@ -64,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Order Number: 15"
-            android:textColor="@color/primary_text_color"
+            android:textColor="?attr/secondaryTextColor"
             android:textSize="15sp"/>
 
         <TextView
@@ -72,7 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Mon, Apr 04 2019"
-            android:textColor="@color/primary_text_color"
+            android:textColor="?attr/secondaryTextColor"
             android:textSize="15sp"/>
 
         <View

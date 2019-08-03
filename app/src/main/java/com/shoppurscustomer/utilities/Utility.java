@@ -200,6 +200,12 @@ public class Utility {
         return timeStamp;
     }
 
+    public static String getTimeStamp(String format){
+        Calendar calendar = Calendar.getInstance(Locale.getDefault());
+        String timeStamp=new SimpleDateFormat(format).format(calendar.getTime());
+        return timeStamp;
+    }
+
     public static Typeface getSimpleLineIconsFont(Context context){
         Typeface custom_font = Typeface.createFromAsset(context.getAssets(), "fonts/Simple-Line-Icons.ttf");
         return custom_font;

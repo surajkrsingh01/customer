@@ -209,7 +209,7 @@ public class SubCatListActivity extends NetworkBaseActivity {
 
                     if(itemList.size()>0){
                         myItemAdapter.notifyDataSetChanged();
-                    }
+                    }else showNoData(true);
 
                 }else {
                     DialogAndToast.showDialog(response.getString("message"),SubCatListActivity.this);
@@ -218,7 +218,8 @@ public class SubCatListActivity extends NetworkBaseActivity {
 
         } catch (JSONException e) {
             e.printStackTrace();
-            DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),SubCatListActivity.this);
+            showNoData(true);
+            //DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),SubCatListActivity.this);
         }
     }
 

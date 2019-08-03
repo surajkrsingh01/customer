@@ -1,7 +1,18 @@
 package com.shoppurscustomer.models;
 
-public class DeliveryAddress {
-    String name, mobile, address, houseNo, landmark, city, state, country, pinCode, addressType, isDefaultAddress;
+import java.io.Serializable;
+
+public class DeliveryAddress implements Serializable {
+    String id, name, mobile, address, houseNo, landmark, city, state, country, pinCode, addressType,
+            isDefaultAddress, delivery_lat, delivery_long;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -25,6 +36,22 @@ public class DeliveryAddress {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getDelivery_lat() {
+        return delivery_lat;
+    }
+
+    public void setDelivery_lat(String delivery_lat) {
+        this.delivery_lat = delivery_lat;
+    }
+
+    public String getDelivery_long() {
+        return delivery_long;
+    }
+
+    public void setDelivery_long(String delivery_long) {
+        this.delivery_long = delivery_long;
     }
 
     public String getHouseNo() {

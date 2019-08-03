@@ -137,6 +137,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         rlOfferLayout = findViewById(R.id.rl_offer_layout);
         imageViewRemoveOffer = findViewById(R.id.image_remove_offer);
         btnStoreOffers = findViewById(R.id.btn_store_offers);
+        btnStoreOffers.setVisibility(View.GONE);
         fabScan = findViewById(R.id.fab);
 
         Utility.setColorFilter(imageViewRemoveOffer.getDrawable(),colorTheme);
@@ -205,27 +206,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             }
         });
 
-        imageViewScan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openScannar();
-            }
-        });
-
-        fabScan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openScannar();
-            }
-        });
-
-
-        linearLayoutScanCenter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openScannar();
-            }
-        });
 
         imageViewSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -522,11 +502,11 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     shopObject.put("orderDeliveryNote","Note");
                     shopObject.put("orderDeliveryMode","Self");
                     shopObject.put("paymentMode",paymentMode);
-                    shopObject.put("deliveryAddress","");
-                    shopObject.put("deliveryCountry","");
-                    shopObject.put("deliveryState","");
-                    shopObject.put("deliveryCity","");
-                    shopObject.put("pinCode","");
+                    shopObject.put("deliveryAddress",sharedPreferences.getString(Constants.CUST_ADDRESS,""));
+                    shopObject.put("deliveryCountry",sharedPreferences.getString(Constants.CUST_COUNTRY,""));
+                    shopObject.put("deliveryState",sharedPreferences.getString(Constants.CUST_STATE,""));
+                    shopObject.put("deliveryCity",sharedPreferences.getString(Constants.CUST_CITY,""));
+                    shopObject.put("pinCode",sharedPreferences.getString(Constants.CUST_PINCODE,""));
                     shopObject.put("createdBy",sharedPreferences.getString(Constants.FULL_NAME,""));
                     shopObject.put("updateBy",sharedPreferences.getString(Constants.FULL_NAME,""));
                     if(paymentMode.equals("Cash")){
@@ -729,11 +709,14 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
                         Intent intent = new Intent(CartActivity.this, TransactionDetailsActivity.class);
                         intent.putExtra("orderNumber", orderNumber);
-                        intent.putExtra("totalAmount", Float.parseFloat(tvNetPayable.getText().toString().split(" ")[1]));
+                        String ta = tvNetPayable.getText().toString().split(" ")[1];
+                        ta = ta.replaceAll(",", "");
+                        intent.putExtra("totalAmount", Float.parseFloat(ta));
                         intent.putExtra("shopOrderList", (Serializable) myProductList);
                         startActivity(intent);
                         finish();
                     }else{
+                        Log.d("shopArray ", shopArray.toString());
                         // integrate ccAvenue..
                         Intent intent = new Intent(CartActivity.this, CCAvenueWebViewActivity.class);
                         intent.putExtra("flag", "wallet");
@@ -1101,9 +1084,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             bottomSearchFragment.setSubcatId("");
             bottomSearchFragment.show(getSupportFragmentManager(), bottomSearchFragment.getTag());
             return true;
-        }else if (id == R.id.action_scan) {
-            openScannar();
-            return true;
         }else if (id == android.R.id.home) {
             super.onBackPressed();
             return true;
@@ -1191,19 +1171,17 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         }else{
             itemList.clear();
             List<MyProduct> cartList =  dbHelper.getCartProducts();
-            for(MyProduct ob : cartList){
-//                if(ob.getSellingPrice() != 0f)
-//                setOffer(ob);
-                itemList.add(ob);
-            }
+            itemList.addAll(cartList);
         }
         if(itemList.size() > 0){
             setFooterValues();
             relativeLayoutCartFooter.setVisibility(View.VISIBLE);
+            btnStoreOffers.setVisibility(View.VISIBLE);
             myItemAdapter.notifyDataSetChanged();
         }else{
             relativeLayoutCartFooter.setVisibility(View.GONE);
             linearLayoutScanCenter.setVisibility(View.VISIBLE);
+            btnStoreOffers.setVisibility(View.GONE);
         }
     }
 }

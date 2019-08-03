@@ -7,6 +7,7 @@ package com.shoppurscustomer.models;
 public class MyShop {
     private String id,name,code,desc,subCatName,address,mobile, state, city, shopimage, dbname, dbusername, dbpassword;
     private int image, type;
+    private double latitude, longitude;
 
     public int getType() {
         return type;
@@ -82,6 +83,22 @@ public class MyShop {
 
     public String getName() {
         return name;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public void setName(String name) {

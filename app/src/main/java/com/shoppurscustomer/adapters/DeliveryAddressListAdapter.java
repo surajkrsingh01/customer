@@ -1,6 +1,7 @@
 package com.shoppurscustomer.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.Settings.AddDeliveryAddressActivity;
+import com.shoppurscustomer.activities.Settings.DeliveryAddressListActivity;
 import com.shoppurscustomer.interfaces.MyItemClickListener;
 import com.shoppurscustomer.models.Coupon;
 import com.shoppurscustomer.models.DeliveryAddress;
@@ -68,6 +71,11 @@ public class DeliveryAddressListAdapter extends RecyclerView.Adapter<DeliveryAdd
                 myViewHolder.text_landmark.setText("Near " + deliveryAddress.getLandmark());
             }
             myViewHolder.text_city_state_pin.setText(deliveryAddress.getCity() +", "+deliveryAddress.getState()+", " +deliveryAddress.getPinCode());
+            if(deliveryAddress.getIsDefaultAddress()!=null && deliveryAddress.getIsDefaultAddress().equals("Yes")){
+                myViewHolder.checkBox_default_address.setChecked(true);
+            }else {
+                myViewHolder.checkBox_default_address.setChecked(false);
+            }
         }
     }
 
@@ -96,10 +104,35 @@ public class DeliveryAddressListAdapter extends RecyclerView.Adapter<DeliveryAdd
             btn_edit = itemView.findViewById(R.id.btn_edit);
             btn_delete = itemView.findViewById(R.id.btn_delete);
             checkBox_default_address = itemView.findViewById(R.id.checkbox_default_address);
-            checkBox_default_address.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            checkBox_default_address.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    DialogAndToast.showDialog("Want to use as default address", context);
+                public void onClick(View v) {
+                    boolean checked = ((CheckBox) v).isChecked();
+                    if (checked){
+                        ((DeliveryAddressListActivity)context).showAlert("Delivery Address", "Do you want to use as Default Delivery Address?", "set_default", myItemList.get(getAdapterPosition()));
+                    }
+                    else{
+
+                    }
+                }
+            });
+
+            btn_edit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, AddDeliveryAddressActivity.class);
+                    intent.putExtra("flag", "edit");
+                    intent.putExtra("object", myItemList.get(getAdapterPosition()));
+                    context.startActivity(intent);
+                }
+            });
+
+            btn_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((DeliveryAddressListActivity)context).showAlert("Delivery Address", "Do you want to delete this address?", "delete", myItemList.get(getAdapterPosition()));
+                    //((DeliveryAddressListActivity)context).deleteAddress(myItemList.get(getAdapterPosition()));
                 }
             });
         }

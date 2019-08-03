@@ -87,9 +87,11 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COUPON_NAME = "couponName";
     public static final String COUPON_PER = "couponPer";
     public static final String COUPON_MAX_AMOUNT = "couponMaxAmount";
+    public static final String DELIVERY_ADDRESS_ID = "deliveryAddressId";
     public static final String DELIVERY_HOUSE_NO = "deliveryHouse";
     public static final String DELIVERY_LANDMARK = "deliveryLandmark";
     public static final String DELIVERY_CUSTOMER_NAME = "deliveryCustomerName";
+    public static final String IS_DELIVERY_DEFAULT = "isDeliveryDefault";
     public static final String DELIVERY_CUSTOMER_CODE = "deliveryCustomerCode";
     public static final String DELIVERY_CUSTOMER_MOBILE= "deliveryMobile";
     public static final String DELIVERY_ADDRESS = "deliveryAddress";
@@ -267,11 +269,15 @@ public class DbHelper extends SQLiteOpenHelper {
             "("+SHOP_CODE+" TEXT NOT NULL)";
 
     public static final String CREATE_DELIVERY_ADDRESS = "create table "+DELIVERY_ADDRESS_TABLE +
-            "("+DELIVERY_CUSTOMER_CODE+" TEXT NOT NULL, " +
+            "("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            " "+DELIVERY_CUSTOMER_CODE+" TEXT NOT NULL, " +
             " "+DELIVERY_CUSTOMER_NAME+" TEXT NOT NULL, " +
             " "+DELIVERY_CUSTOMER_MOBILE+" TEXT NOT NULL, " +
             " "+DELIVERY_HOUSE_NO+" TEXT, " +
             " "+DELIVERY_ADDRESS+" TEXT, " +
+            " "+IS_DELIVERY_DEFAULT+" TEXT, " +
+            " "+LATITUDE+" TEXT, " +
+            " "+LONGITUDE+" TEXT, " +
             " "+DELIVERY_LANDMARK+" TEXT, " +
             " "+DELIVERY_CITY+" TEXT, " +
             " "+DELIVERY_STATE+" TEXT, " +
@@ -282,7 +288,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public DbHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, 6);
+        super(context, DATABASE_NAME, null, 7);
         this.context=context;
     }
 
@@ -326,6 +332,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_PRODUCT_UNIT_TABLE);
         db.execSQL(CREATE_PRODUCT_SIZE_TABLE);
         db.execSQL(CREATE_PRODUCT_COLOR_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS "+DELIVERY_ADDRESS_TABLE);
         db.execSQL(CREATE_DELIVERY_ADDRESS);
     }
 
@@ -679,7 +686,7 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(SHOP_CODE, code);
         Log.d(TAG, code+" ");
         double val = db.insert(FAVORITE_TABLE, null, values);
-        Log.d(TAG, val+" ");
+        Log.d(TAG, "Favourite Added "+ val);
         db.close(); // Closing database connection
     }
 
@@ -691,6 +698,7 @@ public class DbHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(SHOP_CODE, mList.get(i));
             double val = db.insert(FAVORITE_TABLE, null, values);
+            Log.d(TAG, "Favourite Added "+ val);
         }
         db.close(); // Closing database connection
     }
@@ -725,13 +733,40 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(DELIVERY_CUSTOMER_CODE, custCode);
         contentValues.put(DELIVERY_HOUSE_NO, item.getHouseNo());
         contentValues.put(DELIVERY_ADDRESS, item.getAddress());
+        contentValues.put(IS_DELIVERY_DEFAULT, item.getIsDefaultAddress());
+        contentValues.put(LATITUDE, item.getDelivery_lat());
+        contentValues.put(LONGITUDE, item.getDelivery_long());
         contentValues.put(DELIVERY_LANDMARK, item.getLandmark());
         contentValues.put(DELIVERY_CITY, item.getCity());
         contentValues.put(DELIVERY_STATE, item.getState());
+        contentValues.put(DELIVERY_COUNTRY, item.getCountry());
         contentValues.put(DELIVERY_PIN, item.getPinCode());
         db.insert(DELIVERY_ADDRESS_TABLE, null, contentValues);
         Log.i("DbHelper","Delivery Address is added");
         return true;
+    }
+
+    public void updateDeliveryAddress(DeliveryAddress item, String custCode){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DELIVERY_CUSTOMER_NAME, item.getName());
+        contentValues.put(DELIVERY_CUSTOMER_MOBILE, item.getMobile());
+        contentValues.put(DELIVERY_CUSTOMER_CODE, custCode);
+        contentValues.put(DELIVERY_HOUSE_NO, item.getHouseNo());
+        contentValues.put(DELIVERY_ADDRESS, item.getAddress());
+        contentValues.put(IS_DELIVERY_DEFAULT, item.getIsDefaultAddress());
+        contentValues.put(LATITUDE, item.getDelivery_lat());
+        contentValues.put(LONGITUDE, item.getDelivery_long());
+        contentValues.put(DELIVERY_LANDMARK, item.getLandmark());
+        contentValues.put(DELIVERY_CITY, item.getCity());
+        contentValues.put(DELIVERY_STATE, item.getState());
+        contentValues.put(DELIVERY_COUNTRY, item.getCountry());
+        contentValues.put(DELIVERY_PIN, item.getPinCode());
+
+        Log.d(ID, String.valueOf(item.getId()));
+        Log.d(DELIVERY_CUSTOMER_CODE, String.valueOf(custCode));
+        db.update(DELIVERY_ADDRESS_TABLE, contentValues, ID + " = ?" + " AND " + DELIVERY_CUSTOMER_CODE + "=?",
+                new String[] { String.valueOf(item.getId()),  String.valueOf(custCode)});
     }
 
     public List<DeliveryAddress> getallDeliveryAddress(String custCode){
@@ -743,18 +778,31 @@ public class DbHelper extends SQLiteOpenHelper {
         if(res.moveToFirst()){
             do{
                 item=new DeliveryAddress();
+                item.setId(res.getString(res.getColumnIndex(ID)));
                 item.setName(res.getString(res.getColumnIndex(DELIVERY_CUSTOMER_NAME)));
                 item.setMobile(res.getString(res.getColumnIndex(DELIVERY_CUSTOMER_MOBILE)));
                 item.setHouseNo(res.getString(res.getColumnIndex(DELIVERY_HOUSE_NO)));
                 item.setAddress(res.getString(res.getColumnIndex(DELIVERY_ADDRESS)));
+                item.setIsDefaultAddress(res.getString(res.getColumnIndex(IS_DELIVERY_DEFAULT)));
+                item.setDelivery_lat(res.getString(res.getColumnIndex(LATITUDE)));
+                item.setDelivery_long(res.getString(res.getColumnIndex(LONGITUDE)));
                 item.setLandmark(res.getString(res.getColumnIndex(DELIVERY_LANDMARK)));
                 item.setCity(res.getString(res.getColumnIndex(DELIVERY_CITY)));
                 item.setState(res.getString(res.getColumnIndex(DELIVERY_STATE)));
                 item.setPinCode(res.getString(res.getColumnIndex(DELIVERY_PIN)));
+                item.setCountry(res.getString(res.getColumnIndex(DELIVERY_COUNTRY)));
                 itemList.add(item);
             }while (res.moveToNext());
         }
         return itemList;
+    }
+
+    // Deleting single contact
+    public void remove_delivery_address(String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.d(TAG, id+" ");
+        db.delete(DELIVERY_ADDRESS_TABLE, ID + " = ?", new String[] { id });
+        db.close();
     }
 
 
