@@ -44,7 +44,7 @@ public class CartShopListActivity extends NetworkBaseActivity {
     private List<MyShop> itemList;
     private RecyclerView recyclerView;
     private SearchShopAdapter myItemAdapter;
-    private TextView textViewError;
+    private TextView textViewError, text_left_label, text_right_label;
     private String flag;
 
     @Override
@@ -60,6 +60,16 @@ public class CartShopListActivity extends NetworkBaseActivity {
     }
 
     private void init(){
+        text_left_label = findViewById(R.id.text_left_label);
+        text_right_label = findViewById(R.id.text_right_label);
+        text_left_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(CartShopListActivity.this, CartActivity.class));
+                finish();
+            }
+        });
+
         textViewError = findViewById(R.id.text_error);
         recyclerView=findViewById(R.id.recycler_view);
 

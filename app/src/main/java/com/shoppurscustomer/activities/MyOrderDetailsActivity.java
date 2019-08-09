@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.Settings.SettingActivity;
 import com.shoppurscustomer.adapters.MyOrderDetailsAdapter;
 import com.shoppurscustomer.models.MyOrderDetail;
 import com.shoppurscustomer.models.MyProduct;
@@ -47,6 +48,7 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
     private RelativeLayout rl_footer_action;
     private ImageView imageView2,imageView4;
     private View view1, view2;
+    private TextView text_left_label, text_right_label;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +105,23 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
                 Intent intent = new Intent(MyOrderDetailsActivity.this,InvoiceActivity.class);
                 intent.putExtra("orderNumber",orderNumber);
                 startActivity(intent);
+            }
+        });
+
+        text_left_label = findViewById(R.id.text_left_label);
+        text_right_label = findViewById(R.id.text_right_label);
+        text_left_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MyOrderDetailsActivity.this, SettingActivity.class));
+                finish();
+            }
+        });
+        text_right_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MyOrderDetailsActivity.this, MyOrderActivity.class));
+                finish();
             }
         });
     }

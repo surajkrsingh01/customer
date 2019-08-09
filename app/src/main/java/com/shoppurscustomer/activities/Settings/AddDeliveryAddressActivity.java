@@ -1,6 +1,8 @@
 package com.shoppurscustomer.activities.Settings;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -123,8 +125,11 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
             latitude = Double.parseDouble(deliveryAddress.getDelivery_lat());
             longitude = Double.parseDouble(deliveryAddress.getDelivery_long());
         }else {
-            latitude = Double.parseDouble(sharedPreferences.getString(Constants.CUST_LAT,""));
-            longitude = Double.parseDouble(sharedPreferences.getString(Constants.CUST_LONG,""));
+            String lat = sharedPreferences.getString(Constants.CUST_LAT,"");
+            if(!TextUtils.isEmpty(lat)) {
+                latitude = Double.parseDouble(sharedPreferences.getString(Constants.CUST_LAT, ""));
+                longitude = Double.parseDouble(sharedPreferences.getString(Constants.CUST_LONG, ""));
+            }
         }
 
 
@@ -199,7 +204,7 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateAddress();
+                showAlert("Delivery Address", "Do you want to update Delivery Address?");
             }
         });
 
@@ -409,7 +414,7 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
             Log.e(TAG, illegalArgumentException.getMessage());
         }
 
-        if(addresses.size() > 0){
+        if(addresses!=null && addresses.size() > 0){
             Address address = addresses.get(0);
             ArrayList<String> addressFragments = new ArrayList<String>();
             for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
@@ -710,6 +715,25 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
 
     private void openDialog(){
         DialogAndToast.showDialog("Get location",this);
+    }
+
+    public void showAlert(String title, String msg){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(msg)
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        updateAddress();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.setTitle(title);
+        alert.show();
     }
 
 }

@@ -51,7 +51,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
     private List<Object> itemList;
     private RecyclerView recyclerView;
     private ApplyOfferAdapter myItemAdapter;
-    private TextView textViewError;
+    private TextView textViewError, text_left_label, text_right_label;
 
     private RelativeLayout rlOfferDesc;
     private String flag;
@@ -71,6 +71,16 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
     }
 
     private void init() {
+        text_left_label = findViewById(R.id.text_left_label);
+        text_right_label = findViewById(R.id.text_right_label);
+        text_left_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ApplyOffersActivity.this, CartShopListActivity.class));
+                finish();
+            }
+        });
+
         flag = getIntent().getStringExtra("flag");
         shopCode = getIntent().getStringExtra("shopCode");
         rlOfferDesc = findViewById(R.id.rl_offer_desc);
@@ -374,8 +384,8 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                     JSONObject jsonObject = response.getJSONObject("result");
                     if(productDetailsType == 1){
-                        MyProduct product = (MyProduct) itemList.get(position);
-                        product.setQoh(jsonObject.getInt("prodQoh"));
+                        ((MyProduct)(itemList.get(position))).setQoh(jsonObject.getInt("prodQoh"));
+                       // product.setQoh(jsonObject.getInt("prodQoh"));
                         checkFreeProductOffer();
                     }else {
                         freeProdut = new MyProduct();
@@ -410,11 +420,13 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                         onProductClicked(type, position);
                     }
 
+                }else {
+                    DialogAndToast.showToast("Something went wrong, Please try again", ApplyOffersActivity.this);
                 }
             }
 
         }catch (JSONException a){
-
+            DialogAndToast.showToast("Something went wrong, Please try again", ApplyOffersActivity.this);
         }
     }
 
@@ -495,10 +507,10 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
             }
 
         }else if(type == 2){
-            if(myProduct.getIsBarcodeAvailable().equals("Y")){
-                /*if(myProduct.getQuantity() == myProduct.getBarcodeList().size()){
+            /*if(myProduct.getIsBarcodeAvailable().equals("Y")){
+                *//*if(myProduct.getQuantity() == myProduct.getBarcodeList().size()){
                     DialogAndToast.showDialog("There are no more stocks",this);
-                }else{*/
+                }else{*//*
                 int qty = myProduct.getQuantity() + 1;
                 if(qty == 1){
                     counter++;
@@ -518,8 +530,9 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                 //updateCartCount();
                 // }
 
-            }else{
+            }else{*/
                 if(myProduct.getQuantity() == myProduct.getQoh()){
+                    myItemAdapter.notifyDataSetChanged();
                     DialogAndToast.showDialog("There are no more stocks",this);
                 }else{
                     int qty = myProduct.getQuantity() + 1;
@@ -541,7 +554,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                     myItemAdapter.notifyItemChanged(position);
                     //updateCartCount();
                 }
-            }
+            //}
         }
     }
 
@@ -668,13 +681,14 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
 
 
     private void getProductDetails(String prodId){
+        if(productDetailsType==1)
+            showProgress(true);
         Map<String,String> params=new HashMap<>();
         params.put("id", prodId); // as per user selected category from top horizontal categories list
         params.put("code", shopCode);
         params.put("dbName",shopCode);
         Log.d(TAG, params.toString());
         String url=getResources().getString(R.string.url)+"/products/ret_products_details";
-        showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"productDetails");
     }
 

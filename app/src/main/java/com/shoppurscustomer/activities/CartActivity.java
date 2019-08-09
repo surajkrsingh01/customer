@@ -23,6 +23,7 @@ import com.android.volley.Request;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.Settings.DeliveryAddressListActivity;
+import com.shoppurscustomer.activities.Settings.SettingActivity;
 import com.shoppurscustomer.activities.payment.ccavenue.activities.CCAvenueWebViewActivity;
 import com.shoppurscustomer.activities.payment.ccavenue.utility.AvenuesParams;
 import com.shoppurscustomer.adapters.CartAdapter;
@@ -88,6 +89,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
     private FloatingActionButton fabScan;
     private String shopCode, shopName;
+    private TextView text_left_label, text_right_label;
 
     private BottomSearchFragment bottomSearchFragment;
 
@@ -104,7 +106,15 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     }
 
     private void init(){
-       // dbHelper.deleteTable(DbHelper.CART_TABLE);
+        text_left_label = findViewById(R.id.text_left_label);
+        text_right_label = findViewById(R.id.text_right_label);
+        text_left_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(CartActivity.this, SettingActivity.class));
+                finish();
+            }
+        });
 
         shopCode = sharedPreferences.getString(Constants.SHOP_INSIDE_CODE,"");
         shopName = sharedPreferences.getString(Constants.SHOP_INSIDE_NAME,"");
@@ -749,8 +759,9 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                  if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                      JSONObject jsonObject = response.getJSONObject("result");
                      if(productDetailsType == 1){
-                         MyProduct product = itemList.get(position);
-                         product.setQoh(jsonObject.getInt("prodQoh"));
+                        // MyProduct product = itemList.get(position);
+                        // product.setQoh(jsonObject.getInt("prodQoh"));
+                         itemList.get(position).setQoh(jsonObject.getInt("prodQoh"));
                          checkFreeProductOffer();
                      }else {
                          freeProdut = new MyProduct();
@@ -808,7 +819,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         this.type = type;
         if(type==2){
             productDetailsType = 1;
-            getProductDetails(itemList.get(position).getId());
+            getProductDetails(itemList.get(position).getId(), itemList.get(position).getShopCode());
         }else onProductClicked(position, type);
     }
 
@@ -817,18 +828,18 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             ProductDiscountOffer productDiscountOffer = itemList.get(position).getProductDiscountOffer();
             if(productDiscountOffer.getProdBuyId()!= productDiscountOffer.getProdFreeId()){
                 productDetailsType = 2;
-                getProductDetails(String.valueOf(productDiscountOffer.getProdFreeId()));
+                getProductDetails(String.valueOf(productDiscountOffer.getProdFreeId()),itemList.get(position).getShopCode());
             }else onProductClicked(position, type);
         }else {
             onProductClicked(position, type);
         }
     }
 
-    private void getProductDetails(String prodId){
+    private void getProductDetails(String prodId, String shopcode){
         Map<String,String> params=new HashMap<>();
         params.put("id", prodId); // as per user selected category from top horizontal categories list
-        params.put("code", shopCode);
-        params.put("dbName",shopCode);
+        params.put("code", shopcode);
+        params.put("dbName",shopcode);
         Log.d(TAG, params.toString());
         String url=getResources().getString(R.string.url)+"/products/ret_products_details";
         showProgress(true);
@@ -856,7 +867,26 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                 offerId = 0;
                 deliveryDistance = 0;
 
-            }else{
+            }else if(itemList.size() > 1 && item.getQuantity() == 1){
+                dbHelper.removeProductFromCart(item.getId());
+                int qty = item.getQuantity() - 1;
+                itemList.remove(position);
+                /*for(int i=position; i<itemList.size();i++){
+                    MyProduct product = itemList.get(i);
+                    ProductDiscountOffer pdoffer = product.getProductDiscountOffer();
+                    if(pdoffer!=null && product.getFreeProductPosition()>0) {
+                        Log.d("Free Product name", product.getName());
+                        Log.d("Free Product position", product.getFreeProductPosition()+"");
+                        product.setFreeProductPosition(product.getFreeProductPosition() - 1);
+                        dbHelper.updateFreeCartData(pdoffer.getProdFreeId(),product.getOfferItemCounter(),0f);
+                        dbHelper.updateFreePositionCartData(product.getFreeProductPosition(), Integer.parseInt(product.getId()));
+                    }
+                }*/
+
+               // myItemAdapter.notifyItemChanged(position);
+                myItemAdapter.notifyDataSetChanged();
+                setFooterValues();
+            }else {
                 int qty = item.getQuantity() - 1;
                 float netSellingPrice = getOfferAmount(item,type);
                 item.setQuantity(qty);
@@ -871,12 +901,13 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     itemList.remove(position);
                 }
                 myItemAdapter.notifyItemChanged(position);
+                myItemAdapter.notifyDataSetChanged();
             }
         }else if(type == 2){
-            if(item.getIsBarcodeAvailable().equals("Y")){
-               /* if(item.getQuantity() == item.getBarcodeList().size()){
+            /*if(item.getIsBarcodeAvailable().equals("Y")){
+               *//* if(item.getQuantity() == item.getBarcodeList().size()){
                     DialogAndToast.showDialog("There are no more stocks",this);
-                }else{*/
+                }else{*//*
                     int qty = item.getQuantity() + 1;
                     item.setQuantity(qty);
                     Log.i(TAG,"qty "+qty);
@@ -894,8 +925,8 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     myItemAdapter.notifyItemChanged(position);
                 //}
 
-            }else{
-                if(item.getQuantity() == item.getQoh()){
+            }else{*/
+                if(item.getQuantity() >= item.getQoh()){
                     DialogAndToast.showDialog("There are no more stocks",this);
                 }else{
                     int qty = item.getQuantity() + 1;
@@ -914,7 +945,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     setFooterValues();
                     myItemAdapter.notifyItemChanged(position);
                 }
-            }
+          //  }
 
         }else if(type == 3){
 
@@ -994,8 +1025,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                 }else{
                     Log.i(TAG,"Different product");
                    if(item.getQuantity() % productDiscountOffer.getProdBuyQty() == 0){
-
-
                        item.setOfferItemCounter(item.getOfferItemCounter() + 1);
                        MyProduct item1 = null;
                        if(item.getOfferItemCounter() == 1){
@@ -1102,7 +1131,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
        setOffer(item);
        // item.setProductPriceOfferList(dbHelper.getProductPriceOffer(""+item.getProdId()));
 
-        if(item.getIsBarcodeAvailable().equals("Y")){
+        /*if(item.getIsBarcodeAvailable().equals("Y")){
           //  item.setBarcodeList(dbHelper.getBarCodesForCart(prodId));
             if(item.getBarcodeList() != null && item.getBarcodeList().size() > 0){
                 item.setQuantity(1);
@@ -1118,8 +1147,8 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                 DialogAndToast.showDialog("Product is out of stock.",this);
             }
 
-        }else{
-            if(item.getQoh() > 0){
+        }else{*/
+            if(item.getQuantity() <= item.getQoh() ){
                 item.setQuantity(1);
                 item.setTotalAmount(item.getSellingPrice());
                 dbHelper.addProductToCart(item);
@@ -1133,9 +1162,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             }else{
                 DialogAndToast.showDialog("Product is out of stock.",this);
             }
-        }
-
-
+        //}
     }
 
     private void setOffer(MyProduct item){

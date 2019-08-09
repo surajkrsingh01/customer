@@ -48,12 +48,12 @@ public class ProductDetailActivity extends NetworkBaseActivity {
     private List<MyReview> myReviewList;
     private TextView textViewSubCatName,textViewProductName,
             tvStarRatings,tvNumRatings, text_product_selling_price,text_product_mrp,textViewDesc,tv_cartCount, tvReadMore, tvDiscount ;
-    private ImageView imageView2,imageView3,imageView4;
-    private Button btnAddCart, btn_plus, btn_minus;
+    private ImageView imageView2,imageView3,imageView4, image_plus, image_minus;
+    private Button btnAddCart;
     private LinearLayout linear_plus_minus, linear_qty;
     private String shopName, shopCode, shopdbName, custdbName, dbUserName, dbPassword ,custId,custName;
     private RelativeLayout rlfooterviewcart;
-    private TextView cartItemCount,cartItemPrice, viewCart;
+    private TextView cartItemCount,cartItemPrice, viewCart, text_left_label, text_right_label;
     private MyProduct myProduct;
 
     @Override
@@ -83,6 +83,16 @@ public class ProductDetailActivity extends NetworkBaseActivity {
     }
 
     private void initViews(){
+        text_left_label = findViewById(R.id.text_left_label);
+        text_right_label = findViewById(R.id.text_right_label);
+        text_left_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ProductDetailActivity.this, ShopProductListActivity.class));
+                finish();
+            }
+        });
+
         imageView2 = findViewById(R.id.image_view_2);
         imageView3 = findViewById(R.id.image_view_3);
         imageView4 = findViewById(R.id.image_view_4);
@@ -99,8 +109,8 @@ public class ProductDetailActivity extends NetworkBaseActivity {
 
         btnAddCart = findViewById(R.id.btn_addCart);
         linear_plus_minus = findViewById(R.id.linear_plus_minus);
-        btn_plus = findViewById(R.id.btn_plus);
-        btn_minus = findViewById(R.id.btn_minus);
+        image_plus = findViewById(R.id.image_plus);
+        image_minus = findViewById(R.id.image_minus);
         linear_qty = findViewById(R.id.linear_qty);
         tv_cartCount = findViewById(R.id.tv_cartCount);
 
@@ -203,20 +213,20 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         btnAddCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                linear_plus_minus.setVisibility(View.VISIBLE);
-                btnAddCart.setVisibility(View.GONE);
+              //  linear_plus_minus.setVisibility(View.VISIBLE);
+               // btnAddCart.setVisibility(View.GONE);
                 int count = Integer.parseInt(tv_cartCount.getText().toString());
                 updateCart(2);
             }
         });
-        btn_minus.setOnClickListener(new View.OnClickListener() {
+        image_minus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int count = Integer.parseInt(tv_cartCount.getText().toString());
                 updateCart(1);
             }
         });
-        btn_plus.setOnClickListener(new View.OnClickListener() {
+        image_plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int count = Integer.parseInt(tv_cartCount.getText().toString());
@@ -283,6 +293,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                             dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId());
                     }
                     myProduct.setQuantity(0);
+                    updateAddButtons();
                     updateCartCount();
                 }else{
                     int qty = myProduct.getQuantity() - 1;
@@ -299,8 +310,9 @@ public class ProductDetailActivity extends NetworkBaseActivity {
             }
 
         }else if(type == 2){
-            if(myProduct.getIsBarcodeAvailable().equals("Y")){
+            /*if(myProduct.getIsBarcodeAvailable().equals("Y")){
                 if(myProduct.getQuantity() == myProduct.getBarcodeList().size()){
+                    updateAddButtons();
                     DialogAndToast.showDialog("There are no more stocks",this);
                 }else{
                     int qty = myProduct.getQuantity() + 1;
@@ -321,8 +333,9 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     updateCartCount();
                 }
 
-            }else{
-                if(myProduct.getQuantity() == myProduct.getQoh()){
+            }else{*/
+                if(myProduct.getQuantity() >= myProduct.getQoh()){
+                    updateAddButtons();
                     DialogAndToast.showDialog("There are no more stocks",this);
                 }else{
                     int qty = myProduct.getQuantity() + 1;
@@ -341,20 +354,22 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     Log.i(TAG,"qty "+qty);
 
                     dbHelper.updateCartData(myProduct);
+                    updateAddButtons();
                     updateCartCount();
                 }
             }
-        }
+        //}
     }
 
     private void getProductDetails(String prodId){
+        if(productDetailsType==1)
+            showProgress(true);
         Map<String,String> params=new HashMap<>();
         params.put("id", prodId); // as per user selected category from top horizontal categories list
         params.put("code", shopCode);
         params.put("dbName",shopCode);
         Log.d(TAG, params.toString());
         String url=getResources().getString(R.string.url)+"/products/ret_products_details";
-        showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"productDetails");
     }
 
@@ -589,6 +604,8 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                         onProductClicked(type);
                     }
 
+                }else {
+                    DialogAndToast.showToast("Something went wrong, Please try again", ProductDetailActivity.this);
                 }
             }
 
@@ -664,5 +681,22 @@ public class ProductDetailActivity extends NetworkBaseActivity {
     public void onResume() {
         super.onResume();
         updateCartCount();
+    }
+
+    public void updateAddButtons(){
+        if(dbHelper.checkProdExistInCart(myProduct.getId(), shopCode)){
+            btnAddCart.setVisibility(View.GONE);
+            linear_plus_minus.setVisibility(View.VISIBLE);
+            Log.d("Id "+myProduct.getId(), "shopCode " +shopCode);
+            Log.d("Count ", String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode)));
+            tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode)));
+            myProduct.setFreeProductPosition(dbHelper.getFreeProductPosition(myProduct.getId(), shopCode));
+            myProduct.setOfferItemCounter(dbHelper.getOfferCounter(myProduct.getId(), shopCode));
+            myProduct.setQuantity(Integer.parseInt(tv_cartCount.getText().toString()));
+        }else {
+            tv_cartCount.setText(String.valueOf(0));
+            linear_plus_minus.setVisibility(View.GONE);
+            btnAddCart.setVisibility(View.VISIBLE);
+        }
     }
 }

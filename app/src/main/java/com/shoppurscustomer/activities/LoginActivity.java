@@ -302,7 +302,7 @@ public class LoginActivity extends NetworkBaseActivity{
 
         String url=getResources().getString(R.string.url)+"/shop/favourite_shops";
         Log.i(TAG,params.toString());
-        showProgress(true);
+        //showProgress(true);
         jsonObjectFavShopApiRequest(Request.Method.POST,url,new JSONObject(params),"getfavoriteshop");
     }
 

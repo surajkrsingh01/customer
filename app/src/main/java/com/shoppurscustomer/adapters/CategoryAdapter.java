@@ -285,6 +285,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(itemView);
             textHeader=itemView.findViewById(R.id.text_date_range);
             textDesc=itemView.findViewById(R.id.text_desc);
+            textHeader.setVisibility(View.GONE);
+            textDesc.setVisibility(View.GONE);
             if(type.equals("productList")){
                 text_mobile = itemView.findViewById(R.id.text_mobile);
                 text_mobile.setVisibility(View.VISIBLE);
@@ -299,9 +301,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public class MyProductListType1ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener {
 
         private TextView textName,textMrp, textbarcode, tv_cartCount;
-        private ImageView imageView;
+        private ImageView imageView, image_plus, image_minus;
         private View rootView;
-        private Button btnAddCart, btn_plus, btn_minus;
+        private Button btnAddCart;
         private LinearLayout linear_plus_minus;
 
         public MyProductListType1ViewHolder(View itemView) {
@@ -313,8 +315,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             imageView=itemView.findViewById(R.id.image_view);
             btnAddCart = itemView.findViewById(R.id.btn_addCart);
             linear_plus_minus = itemView.findViewById(R.id.linear_plus_minus);
-            btn_plus = itemView.findViewById(R.id.btn_plus);
-            btn_minus = itemView.findViewById(R.id.btn_minus);
+            image_plus = itemView.findViewById(R.id.image_plus);
+            image_minus = itemView.findViewById(R.id.image_minus);
             tv_cartCount = itemView.findViewById(R.id.tv_cartCount);
             rootView.setOnTouchListener(this);
         }
@@ -626,7 +628,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     DialogAndToast.showToast("Add to Cart ", context);
                 }
             });
-            myViewHolder.btn_minus.setOnClickListener(new View.OnClickListener() {
+            myViewHolder.image_minus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                    int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
@@ -640,7 +642,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                    }
                 }
             });
-            myViewHolder.btn_plus.setOnClickListener(new View.OnClickListener() {
+            myViewHolder.image_plus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());

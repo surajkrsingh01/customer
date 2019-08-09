@@ -79,6 +79,7 @@ public class ShopAddressActivity extends NetworkBaseActivity implements OnMapRea
     private LatLng shopLatLng;
     private double latitude = 0, longitude = 0;
     private String flag;
+    private TextView text_left_label, text_right_label;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +93,16 @@ public class ShopAddressActivity extends NetworkBaseActivity implements OnMapRea
     }
 
     private void init() {
+        text_left_label = findViewById(R.id.text_left_label);
+        text_right_label = findViewById(R.id.text_right_label);
+        text_left_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //startActivity(new Intent(ShopAddressActivity.this, StoresListActivity.class));
+                finish();
+            }
+        });
+
         flag = getIntent().getStringExtra("flag");
         latitude = getIntent().getDoubleExtra("lat", 0);
         longitude = getIntent().getDoubleExtra("long", 0);

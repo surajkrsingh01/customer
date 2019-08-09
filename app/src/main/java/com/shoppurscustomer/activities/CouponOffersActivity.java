@@ -105,11 +105,11 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
                         coupon.setStatus(dataObject.getString("status"));
                         coupon.setStartDate(dataObject.getString("startDate"));
                         coupon.setEndDate(dataObject.getString("endDate"));
-                        dbHelper.addCouponOffer(coupon, Utility.getTimeStamp(),Utility.getTimeStamp());
-                        itemList.add(coupon);
+                        //dbHelper.addCouponOffer(coupon, Utility.getTimeStamp(),Utility.getTimeStamp());
+                        //itemList.add(coupon);
                     }
 
-                    if(couponArray.length() == 0){
+                    if(itemList.size() == 0){
                         showNoData(true);
                     }else{
                         showNoData(false);

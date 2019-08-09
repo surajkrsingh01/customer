@@ -582,6 +582,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 productItem.setProductUnitList(getProductUnitList(db, Integer.parseInt(productItem.getId())));
                 productItem.setProductSizeList(getProductSizeList(db, Integer.parseInt(productItem.getId())));
                 if(productItem.getSellingPrice() == 0f){
+                    if(itemList.size()>productItem.getFreeProductPosition())
                     itemList.add(productItem.getFreeProductPosition(),productItem);
                 }else{
                     List<ProductPriceOffer> productPriceOfferList = getProductPriceOffer(""+productItem.getId());
@@ -1571,13 +1572,15 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public boolean removeProductFromCart(String id){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(CART_TABLE, ID+" = ? AND "+PROD_SP+" != ?",new String[]{String.valueOf(id),String.valueOf(0f)});
+        long val = db.delete(CART_TABLE, ID+" = ? AND "+PROD_SP+" != ?",new String[]{String.valueOf(id),String.valueOf(0f)});
+        Log.d(TAG, "removed product from cart status "+val);
         return true;
     }
 
     public boolean removeFreeProductFromCart(int id){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(CART_TABLE, ID+" = ? AND "+PROD_SP+" = ?",new String[]{String.valueOf(id),String.valueOf(0f)});
+        long val = db.delete(CART_TABLE, ID+" = ? AND "+PROD_SP+" = ?",new String[]{String.valueOf(id),String.valueOf(0f)});
+        Log.d(TAG, "removed free product from cart status "+val);
         return true;
     }
 

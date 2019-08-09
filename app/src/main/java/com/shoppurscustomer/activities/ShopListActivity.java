@@ -44,7 +44,7 @@ public class ShopListActivity extends NetworkBaseActivity {
     private List<String> myfavoriteLists;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
-    private TextView textViewError, tv_myfav, tv_mynormal;
+    private TextView textViewError, tv_myfav, tv_mynormal, text_left_label, text_right_label;
     private RecyclerView recyclerViewNormalshop, recyclerViewFavoriteshop;
     private ShopAdapter myNormalshopAdapter,myFavoriteshopAdapter ;
     private String subCatName, subCatId, catId;
@@ -99,11 +99,15 @@ public class ShopListActivity extends NetworkBaseActivity {
             }
         });
 
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(R.color.yellow500));
-        }*/
+        text_left_label = findViewById(R.id.text_left_label);
+        text_right_label = findViewById(R.id.text_right_label);
+        text_left_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //startActivity(new Intent(ShopListActivity.this, SubCatListActivity.class));
+                finish();
+            }
+        });
 
         initFooter(this,1);
         getFavoriteShops();
@@ -112,6 +116,10 @@ public class ShopListActivity extends NetworkBaseActivity {
 
     private void getItemList(){
         swipeRefreshLayout.setRefreshing(false);
+        myFavoriteitemList.clear();
+        myNormalitemList.clear();
+        myfavoriteLists.clear();
+        getFavoriteShops();
     }
 
     private void showNoData(boolean show){
@@ -175,7 +183,7 @@ public class ShopListActivity extends NetworkBaseActivity {
         params.put("subcatid",subCatId);
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url)+"/shoplist";
-        showProgress(true);
+        //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }
 
@@ -183,13 +191,13 @@ public class ShopListActivity extends NetworkBaseActivity {
 
     @Override
     public void onJsonObjectResponse(JSONObject response, String apiName) {
-        showProgress(false);
+       // showProgress(false);
         try {
             // JSONObject jsonObject=response.getJSONObject("response");
             Log.d("response", response.toString());
             if(apiName.equals("NormalShops")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-
+                    showProgress(false);
                     JSONObject jsonObject = response.getJSONObject("result");
                     JSONArray shopJArray = jsonObject.getJSONArray("shoplist");
 
@@ -230,6 +238,7 @@ public class ShopListActivity extends NetworkBaseActivity {
 
                 }else {
                     DialogAndToast.showDialog(response.getString("message"),ShopListActivity.this);
+                    showProgress(false);
                 }
             }else if(apiName.equals("FavoriteShops")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
@@ -239,12 +248,15 @@ public class ShopListActivity extends NetworkBaseActivity {
                         myfavoriteLists.add(jsonArray.getJSONObject(i).getString(""+i));
                     }
                     getNormalShops();
+                }else {
+                    showProgress(false);
                 }
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
             DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),ShopListActivity.this);
+            showProgress(false);
         }
     }
 

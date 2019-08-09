@@ -1,5 +1,6 @@
 package com.shoppurscustomer.activities;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -9,9 +10,12 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.Settings.SettingActivity;
 import com.shoppurscustomer.adapters.MyOrderAdapter;
 import com.shoppurscustomer.models.MyOrder;
 import com.shoppurscustomer.models.MyProduct;
@@ -41,6 +45,7 @@ public class MyOrderActivity extends NetworkBaseActivity{
     private SwipeRefreshLayout swipe_refresh;
     private String callingActivity;
     private String []orderNumberList;
+    private TextView text_first_label;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +61,14 @@ public class MyOrderActivity extends NetworkBaseActivity{
         dbUserName = sharedPreferences.getString(Constants.DB_USER_NAME,"");
         dbPassword = sharedPreferences.getString(Constants.DB_PASSWORD,"");
         custId = sharedPreferences.getString(Constants.USER_ID,"");
+
+        text_first_label = findViewById(R.id.text_first_label);
+        text_first_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MyOrderActivity.this, SettingActivity.class));
+            }
+        });
 
         swipe_refresh = findViewById(R.id.swipe_refresh);
         swipe_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

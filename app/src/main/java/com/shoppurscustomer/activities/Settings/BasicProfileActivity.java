@@ -184,10 +184,11 @@ public class BasicProfileActivity extends BaseImageActivity {
                        editor.putString(Constants.PROFILE_PIC, getResources().getString(R.string.base_image_url) +
                                "/customers/" + sharedPreferences.getString(Constants.USER_ID, "") + "/photo.jpg");
                        editor.putString("profile_image_signature",timestamp);
-                       editor.commit();
 
                    }
+                   editor.commit();
                    DialogAndToast.showToast(response.getString("message"),this);
+                   finish();
                }else{
                    DialogAndToast.showDialog(response.getString("message"),this);
                }

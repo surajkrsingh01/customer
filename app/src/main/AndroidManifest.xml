@@ -41,70 +41,86 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.CategoryListActivity"
             android:label="@string/title_activity_products"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.SubCatListActivity"
             android:label="@string/title_activity_sub_cat_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.ShopAddressActivity"
             android:label="@string/title_activity_shop_address"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.ProductListActivity"
             android:label="@string/title_activity_product_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.ProductDetailActivity"
             android:label="@string/title_activity_product_detail"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.StoresListActivity"
             android:label="@string/title_activity_stores_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.BaseActivity" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.Settings.SettingActivity"
             android:label="@string/title_activity_setting"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.NetworkBaseActivity" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.Settings.PersonalProfileActivity"
             android:label="@string/title_activity_personalinfo"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.ChangePasswordActivity"
             android:label="@string/title_activity_changepasswordo"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.CartShopListActivity"
             android:label="@string/title_activity_cart_shop"
             android:theme="@style/AppTheme.NoActionBar" />
 
 
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.TransactionDetailsActivity"
             android:label="@string/title_activity_transaction"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.InvoiceActivity"
             android:label="@string/title_activity_invoice"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.ApplyOffersActivity"
             android:label="@string/title_activity_apply_offer"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.CouponOffersActivity"
             android:label="@string/title_activity_apply_coupons"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.Settings.AddDeliveryAddressActivity"
             android:label="@string/title_activity_add_delivery__address"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -113,59 +129,69 @@
             android:label="@string/title_activity_ccAvenue"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.Settings.DeliveryAddressListActivity"
             android:label="@string/title_activity_delivery_address"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.Settings.DisplayActivity"
             android:label="@string/title_activity_personalinfo"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.ShopListActivity"
             android:label="@string/title_activity_shop_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.SearchActivity"
             android:label="@string/title_activity_search"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.ForgotPasswordActivity"
             android:label="@string/title_activity_search"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.CartActivity"
             android:label="@string/title_activity_cart"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.MyOrderActivity"
             android:label="@string/title_activity_order"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.MyOrderDetailsActivity"
             android:label="@string/title_activity_order_details"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.ShopProductListActivity"
             android:label="Products"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.ScannarActivity"
             android:label="BarCode Scanner"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.Settings.AddressActivity"
             android:label="Address"
-            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.Settings.BasicProfileActivity"
             android:label="Basic Profile"
-            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
 

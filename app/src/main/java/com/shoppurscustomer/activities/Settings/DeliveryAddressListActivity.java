@@ -41,7 +41,7 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
     private List<DeliveryAddress> itemList;
     private RecyclerView recyclerView;
     private DeliveryAddressListAdapter myItemAdapter;
-    private TextView textViewError;
+    private TextView textViewError, text_header;
     private LinearLayout rl_new_DeliveryAddress;
 
     private String flag;
@@ -58,6 +58,13 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
     }
 
     private void init(){
+        text_header = findViewById(R.id.text_header);
+        text_header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(DeliveryAddressListActivity.this, SettingActivity.class));
+            }
+        });
         textViewError = findViewById(R.id.text_error);
         recyclerView=findViewById(R.id.recycler_view);
         rl_new_DeliveryAddress = findViewById(R.id.linear_eidt);

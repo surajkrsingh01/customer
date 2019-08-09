@@ -1,5 +1,6 @@
 package com.shoppurscustomer.activities;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -42,6 +43,7 @@ public class SubCatListActivity extends NetworkBaseActivity {
     private ProgressBar progressBar;
     private StaggeredGridLayoutManager staggeredGridLayoutManager;
     private String catName, catId;
+    private TextView text_left_label, text_right_label, text_desc;
 
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
 
@@ -52,6 +54,18 @@ public class SubCatListActivity extends NetworkBaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        text_left_label = findViewById(R.id.text_left_label);
+        text_right_label = findViewById(R.id.text_right_label);
+        text_left_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SubCatListActivity.this, CategoryListActivity.class));
+                finish();
+            }
+        });
+
+        text_desc = findViewById(R.id.text_desc);
+
         catName = getIntent().getStringExtra("catName");
         catId = getIntent().getStringExtra("catId");
 
@@ -60,9 +74,12 @@ public class SubCatListActivity extends NetworkBaseActivity {
 
         itemList = new ArrayList<>();
         HomeListItem myItem = new HomeListItem();
-        myItem.setTitle(catName);
-        myItem.setDesc(catName+" Products");
+        //myItem.setTitle(catName);
+        //myItem.setDesc(catName+" Products");
         itemList.add(myItem);
+
+        text_right_label.setText(catName);
+        text_desc.setText(catName+" Products");
 
         swipeRefreshLayout=findViewById(R.id.swipe_refresh);
         progressBar=findViewById(R.id.progress_bar);

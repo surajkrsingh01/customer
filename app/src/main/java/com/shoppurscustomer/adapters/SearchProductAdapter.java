@@ -133,14 +133,14 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
         myViewHolder.btnAddCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
-                int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
+               // myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
+                //int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
                 if(callingActivityName.equals("ShopProductListActivity") || callingActivityName.equals("CartActivity"))
                     myItemClickListener.onItemClicked(position, 2);
                 //((ShopProductListActivity) context).updateCart( 2, position);
             }
         });
-        myViewHolder.btn_minus.setOnClickListener(new View.OnClickListener() {
+        myViewHolder.image_minus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
@@ -149,7 +149,7 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
                 //((ShopProductListActivity) context).updateCart(1, position);
             }
         });
-        myViewHolder.btn_plus.setOnClickListener(new View.OnClickListener() {
+        myViewHolder.image_plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
@@ -257,9 +257,9 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView textName, textMrp, textSp, textOffPer, textStatus, textbarcode, tv_cartCount;
-        private ImageView imageView;
+        private ImageView imageView, image_minus, image_plus;
         private View rootView;
-        private Button btnAddCart, btn_plus, btn_minus;
+        private Button btnAddCart;
         private LinearLayout linear_plus_minus;
         private Spinner spinnerUnit;
         private RelativeLayout relative_unit;
@@ -277,8 +277,8 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
             imageView = itemView.findViewById(R.id.image_view);
             btnAddCart = itemView.findViewById(R.id.btn_addCart);
             linear_plus_minus = itemView.findViewById(R.id.linear_plus_minus);
-            btn_plus = itemView.findViewById(R.id.btn_plus);
-            btn_minus = itemView.findViewById(R.id.btn_minus);
+            image_minus = itemView.findViewById(R.id.image_minus);
+            image_plus = itemView.findViewById(R.id.image_plus);
             tv_cartCount = itemView.findViewById(R.id.tv_cartCount);
             spinnerUnit = itemView.findViewById(R.id.spinner_unit);
             relative_unit = itemView.findViewById(R.id.relative_unit);

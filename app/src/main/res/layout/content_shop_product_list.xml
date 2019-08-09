@@ -67,17 +67,38 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/text_header"
-                android:textColor="?attr/secondaryTextColor"
-                android:text="Shop Details"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:paddingLeft="@dimen/view_horizontal_margin"
-                android:paddingRight="@dimen/view_horizontal_margin"
-                android:textSize="@dimen/home_list_header_text_size"
-                android:textAllCaps="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:id="@+id/linear_back_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/activity_vertical_margin">
+                <TextView
+                    android:maxLines="1"
+                    android:text="Shops"
+                    android:id="@+id/text_left_label"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:paddingLeft="@dimen/view_horizontal_margin"
+                    android:paddingRight="@dimen/view_horizontal_margin"
+                    android:textSize="@dimen/home_list_header_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:id="@+id/view_seperator"
+                    android:layout_width="2dp"
+                    android:layout_height="20dp"
+                    android:background="?attr/separatorColor"/>
+                <TextView
+                    android:paddingLeft="@dimen/view_horizontal_margin"
+                    android:paddingRight="@dimen/view_horizontal_margin"
+                    android:id="@+id/text_right_label"
+                    android:text="Shop Details"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="@dimen/small_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
 
         </RelativeLayout>
 

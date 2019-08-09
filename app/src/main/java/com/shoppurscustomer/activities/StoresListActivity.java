@@ -141,7 +141,7 @@ public class StoresListActivity extends NetworkBaseActivity {
         Map<String,String> params=new HashMap<>();
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url)+"/shop/favourite_shops";
-        showProgress(true);
+        //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"FavoriteShops");
     }
 
@@ -150,14 +150,14 @@ public class StoresListActivity extends NetworkBaseActivity {
         params.put("subcatid","1");
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url)+"/shoplist";
-        showProgress(true);
+        //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }
 
 
     @Override
     public void onJsonObjectResponse(JSONObject response, String apiName) {
-        showProgress(false);
+        //showProgress(false);
         try {
             // JSONObject jsonObject=response.getJSONObject("response");
             Log.d("response", response.toString());
@@ -187,14 +187,17 @@ public class StoresListActivity extends NetworkBaseActivity {
                         myItem.setItemList(catList);
                         itemList.add(myItem);
                         getFavoriteStores();
+                    }else{
+                        showProgress(false);
                     }
 
                 }else {
                     DialogAndToast.showDialog(response.getString("message"),StoresListActivity.this);
+                    showProgress(false);
                 }
             } else if(apiName.equals("NormalShops")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-
+                    showProgress(false);
                     JSONObject jsonObject = response.getJSONObject("result");
                     JSONArray shopJArray = jsonObject.getJSONArray("shoplist");
 
@@ -249,6 +252,7 @@ public class StoresListActivity extends NetworkBaseActivity {
 
                 }else {
                     DialogAndToast.showDialog(response.getString("message"),StoresListActivity.this);
+                    showProgress(false);
                 }
             }else if(apiName.equals("FavoriteShops")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
@@ -258,6 +262,8 @@ public class StoresListActivity extends NetworkBaseActivity {
                         myfavoriteShopIds.add(jsonArray.getJSONObject(i).getString(""+i));
                     }
                     getNormalStores();
+                }else {
+                    showProgress(false);
                 }
             }
 
@@ -269,7 +275,11 @@ public class StoresListActivity extends NetworkBaseActivity {
 
 
     private void getItemList(){
+        favoriteShopList.clear();
+        normalShopList.clear();
+        itemList.clear();
         swipeRefreshLayout.setRefreshing(false);
+        getAllCategories();
     }
 
     private void showNoData(boolean show){

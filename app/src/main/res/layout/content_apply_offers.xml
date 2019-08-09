@@ -9,24 +9,45 @@
     tools:context=".activities.ApplyOffersActivity"
     tools:showIn="@layout/activity_apply_offers">
 
-    <TextView
-        android:id="@+id/text_header"
-        android:textColor="?attr/secondaryTextColor"
-        android:text="Offers"
+    <LinearLayout
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/view_horizontal_margin"
-        android:paddingRight="@dimen/view_horizontal_margin"
-        android:textSize="@dimen/home_list_header_text_size"
-        android:textAllCaps="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:id="@+id/linear_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:maxLines="1"
+            android:text="Stores"
+            android:id="@+id/text_left_label"
+            android:textColor="?attr/secondaryTextColor"
+            android:paddingLeft="@dimen/view_horizontal_margin"
+            android:paddingRight="@dimen/view_horizontal_margin"
+            android:textSize="@dimen/home_list_header_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <View
+            android:id="@+id/view_seperator"
+            android:layout_width="2dp"
+            android:layout_height="20dp"
+            android:background="?attr/separatorColor"/>
+        <TextView
+            android:paddingLeft="@dimen/view_horizontal_margin"
+            android:paddingRight="@dimen/view_horizontal_margin"
+            android:id="@+id/text_right_label"
+            android:text="Offers"
+            android:textColor="?attr/secondaryTextColor"
+            android:textSize="@dimen/small_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/text_sub_header"
         android:layout_marginTop="@dimen/view_vertical_margin"
         android:paddingLeft="@dimen/view_horizontal_margin"
         android:paddingRight="@dimen/view_horizontal_margin"
-        android:layout_below="@+id/text_header"
+        android:layout_below="@+id/linear_header"
         android:textColor="?attr/primaryTextColor"
         android:text="Available Offers"
         android:textStyle="bold"

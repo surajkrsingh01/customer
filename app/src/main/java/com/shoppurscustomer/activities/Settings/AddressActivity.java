@@ -1,6 +1,8 @@
 package com.shoppurscustomer.activities.Settings;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -55,6 +57,7 @@ import com.shoppurscustomer.activities.NetworkBaseActivity;
 import com.shoppurscustomer.interfaces.OnLocationReceivedListener;
 import com.shoppurscustomer.location.GpsLocationProvider;
 import com.shoppurscustomer.location.NetworkSensor;
+import com.shoppurscustomer.models.DeliveryAddress;
 import com.shoppurscustomer.models.SpinnerItem;
 import com.shoppurscustomer.utilities.ConnectionDetector;
 import com.shoppurscustomer.utilities.Constants;
@@ -166,7 +169,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateAddress();
+               showAlert("Customer Address", "Do you want to update Address?");
             }
         });
 
@@ -383,7 +386,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
             Log.e(TAG, illegalArgumentException.getMessage());
         }
 
-        if(addresses.size() > 0){
+        if(addresses!=null && addresses.size() > 0){
             Address address = addresses.get(0);
             ArrayList<String> addressFragments = new ArrayList<String>();
             for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
@@ -646,6 +649,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
                     }
                     editor.commit();
                     DialogAndToast.showToast(response.getString("message"),this);
+                    finish();
                 }else{
                     DialogAndToast.showDialog(response.getString("message"),this);
                 }
@@ -659,5 +663,23 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
         DialogAndToast.showDialog("Get location",this);
     }
 
+    public void showAlert(String title, String msg){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(msg)
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        updateAddress();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.setTitle(title);
+        alert.show();
+    }
 
 }

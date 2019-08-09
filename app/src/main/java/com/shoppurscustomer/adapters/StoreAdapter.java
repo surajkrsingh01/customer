@@ -256,12 +256,12 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                                 intent.putExtra("long", shop.getLongitude());
                                 context.startActivity(intent);
                             }else {
-                                Intent intent = new Intent(context, ShopAddressActivity.class);
+                               /* Intent intent = new Intent(context, ShopAddressActivity.class);
                                 intent.putExtra("flag", "shopAddress");
                                 intent.putExtra("lat", 30.651100);
                                 intent.putExtra("long", 76.821000);
-                                context.startActivity(intent);
-                                //DialogAndToast.showDialog("Location Not Available", context);
+                                context.startActivity(intent);*/
+                                DialogAndToast.showDialog("Location Not Available", context);
                             }
                         }
                         return true;

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -91,6 +92,7 @@ public class DeliveryAddressListAdapter extends RecyclerView.Adapter<DeliveryAdd
         private TextView text_name,text_house, text_address, text_landmark,text_city_state_pin,text_mobile;
         private CheckBox checkBox_default_address;
         private ImageView btn_edit, btn_delete;
+        private LinearLayout linear_address_details;
 
 
         public MyViewHolder(View itemView) {
@@ -104,6 +106,17 @@ public class DeliveryAddressListAdapter extends RecyclerView.Adapter<DeliveryAdd
             btn_edit = itemView.findViewById(R.id.btn_edit);
             btn_delete = itemView.findViewById(R.id.btn_delete);
             checkBox_default_address = itemView.findViewById(R.id.checkbox_default_address);
+            linear_address_details = itemView.findViewById(R.id.linear_address_details);
+
+            linear_address_details.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, AddDeliveryAddressActivity.class);
+                    intent.putExtra("flag", "edit");
+                    intent.putExtra("object", myItemList.get(getAdapterPosition()));
+                    context.startActivity(intent);
+                }
+            });
 
             checkBox_default_address.setOnClickListener(new View.OnClickListener() {
                 @Override

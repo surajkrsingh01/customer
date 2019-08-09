@@ -65,7 +65,7 @@ public class MainActivity extends NetworkBaseActivity {
         setSupportActionBar(toolbar);
 
         text_customer_address = findViewById(R.id.text_customer_address);
-        text_customer_address.setText(Utility.getTimeStamp("EEE dd MMM, YYYY"));
+        text_customer_address.setText(Utility.getTimeStamp("EEE dd MMM, yyyy"));
 
         customer_profile= findViewById(R.id.profile_image);
         customer_profile.setCircleBackgroundColor(colorTheme);

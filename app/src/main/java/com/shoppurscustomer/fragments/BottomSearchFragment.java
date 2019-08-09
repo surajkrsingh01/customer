@@ -25,6 +25,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.ApplyOffersActivity;
 import com.shoppurscustomer.activities.CartActivity;
 import com.shoppurscustomer.activities.ShopProductListActivity;
 import com.shoppurscustomer.activities.TransactionDetailsActivity;
@@ -437,8 +438,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                     JSONObject jsonObject = response.getJSONObject("result");
                     if(productDetailsType == 1){
-                        MyProduct product = myProductList.get(position);
-                        product.setQoh(jsonObject.getInt("prodQoh"));
+                       myProductList.get(position).setQoh(jsonObject.getInt("prodQoh"));
                         checkFreeProductOffer();
                     }else {
                         freeProdut = new MyProduct();
@@ -473,6 +473,8 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                         onProductClicked(type, position);
                     }
 
+                }else {
+                    DialogAndToast.showToast("Something went wrong, Please try again", getContext());
                 }
             }
         } catch (JSONException e) {
@@ -575,7 +577,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
             }
 
         }else if(type == 2){
-            if(myProduct.getIsBarcodeAvailable().equals("Y")){
+            /*if(myProduct.getIsBarcodeAvailable().equals("Y")){
                 if(myProduct.getQuantity() == myProduct.getBarcodeList().size()){
                     DialogAndToast.showDialog("There are no more stocks",getContext());
                 }else{
@@ -601,8 +603,9 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                         ((CartActivity)getContext()).setFooterValues();
                 }
 
-            }else{
+            }else{*/
                 if(myProduct.getQuantity() == myProduct.getQoh()){
+                    productAdapter.notifyDataSetChanged();
                     DialogAndToast.showDialog("There are no more stocks",getContext());
                 }else{
                     int qty = myProduct.getQuantity() + 1;
@@ -627,11 +630,13 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     else if(callingActivityName.equals("CartActivity"))
                         ((CartActivity)getContext()).setFooterValues();
                 }
-            }
+           // }
         }
     }
 
     private void getProductDetails(String prodId){
+        if(productDetailsType==1)
+            showProgress(true);
         Map<String,String> params=new HashMap<>();
         params.put("id", prodId); // as per user selected category from top horizontal categories list
         params.put("code", shopCode);
@@ -640,7 +645,6 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
         Log.d(TAG, params.toString());
         String url=getResources().getString(R.string.url)+"/products/ret_products_details";
-        showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"productDetails");
     }
 

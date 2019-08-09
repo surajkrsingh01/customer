@@ -11,6 +11,7 @@
     tools:showIn="@layout/activity_product_detail">
 
     <androidx.core.widget.NestedScrollView
+        android:layout_below="@id/linear_header"
         android:layout_above="@+id/rlfooterviewcart"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -23,6 +24,37 @@
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/linear_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:maxLines="1"
+                    android:text="Products"
+                    android:id="@+id/text_left_label"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:paddingLeft="@dimen/view_horizontal_margin"
+                    android:paddingRight="@dimen/view_horizontal_margin"
+                    android:textSize="@dimen/home_list_header_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:id="@+id/view_seperator"
+                    android:layout_width="2dp"
+                    android:layout_height="20dp"
+                    android:background="?attr/separatorColor"/>
+                <TextView
+                    android:paddingLeft="@dimen/view_horizontal_margin"
+                    android:paddingRight="@dimen/view_horizontal_margin"
+                    android:id="@+id/text_right_label"
+                    android:text="Product Details"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="@dimen/small_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
             <HorizontalScrollView
                 android:layout_marginTop="@dimen/view_vertical_margin"
@@ -149,16 +181,19 @@
                     android:layout_height="wrap_content" />
 
                 <Button
-                    android:layout_marginRight="15dp"
                     android:layout_alignParentRight="true"
+                    android:layout_marginRight="15dp"
                     android:layout_marginTop="10dp"
+                    android:visibility="visible"
+                    android:layout_below="@+id/text_mrp"
                     android:id="@+id/btn_addCart"
-                    android:textColor="@color/white"
+                    android:textColor="?attr/primaryTextColor"
+                    android:background="?attr/solidPrimaryStrokeBorderBackground"
                     android:text="Add"
-                    android:layout_width="50dp"
-                    android:layout_height="25dp"
-                    android:background="@drawable/red_solid_round_corner_background"
+                    android:layout_width="60dp"
+                    android:layout_height="@dimen/cart_action_size"
                     android:textSize="@dimen/home_list_header_text_size" />
+
                 <LinearLayout
                     android:layout_marginRight="15dp"
                     android:layout_alignParentRight="true"
@@ -169,33 +204,33 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-                    <Button
-                        android:id="@+id/btn_minus"
-                        android:textColor="@color/white"
-                        android:background="@drawable/red_solid_square_corner_background"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:text="-"
-                        android:textSize="15sp"/>
+                    <ImageView
+                        android:id="@+id/image_minus"
+                        android:background="?attr/solidPrimaryStrokeBorderBackground"
+                        android:src="@drawable/ic_remove_black_24dp"
+                        android:tint="?attr/primaryTextColor"
+                        android:layout_width="@dimen/cart_action_size"
+                        android:layout_height="@dimen/cart_action_size" />
                     <TextView
-                        android:textColor="?attr/primaryTextColor"
+                        android:gravity="center"
                         android:id="@+id/tv_cartCount"
-                        android:layout_marginLeft="10dp"
+                        android:textStyle="bold"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/cart_action_size"
+                        android:textColor="?attr/primaryTextColor"
                         android:text="0"
-                        android:textSize="15sp"/>
-                    <Button
-                        android:layout_marginLeft="10dp"
-                        android:id="@+id/btn_plus"
-                        android:background="@drawable/red_solid_square_corner_background"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:textColor="@color/white"
-                        android:text="+"
-                        android:textSize="15sp"/>
+                        android:textSize="@dimen/large_text_size"
+                        android:textAlignment="center"/>
+                    <ImageView
+                        android:id="@+id/image_plus"
+                        android:background="?attr/solidPrimaryStrokeBorderBackground"
+                        android:src="@drawable/ic_add_black_24dp"
+                        android:tint="?attr/primaryTextColor"
+                        android:layout_width="@dimen/cart_action_size"
+                        android:layout_height="@dimen/cart_action_size" />
                 </LinearLayout>
-
             </RelativeLayout>
 
             <RelativeLayout

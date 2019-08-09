@@ -111,11 +111,10 @@
                 <View
                     android:background="@color/grey200"
                     android:layout_width="match_parent"
-                    android:layout_height="16dp"/>
+                    android:layout_height="1dp"/>
 
                 <LinearLayout
                     android:orientation="vertical"
-                    android:background="@color/white"
                     android:layout_marginTop="@dimen/activity_vertical_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -129,7 +128,6 @@
                             android:text="Transaction Id"
                             android:textSize="16sp"
                             android:textColor="?attr/primaryTextColor"
-                            android:background="@color/white"
                             android:padding="12dp"
                             android:layout_toLeftOf="@+id/transaction_id"
                             android:layout_marginRight="10dp"
@@ -141,7 +139,6 @@
                             android:text=""
                             android:textSize="16sp"
                             android:textColor="?attr/primaryTextColor"
-                            android:background="@color/white"
                             android:padding="12dp"
                             android:layout_alignParentRight="true"
                             android:layout_width="wrap_content"
@@ -165,7 +162,6 @@
                             android:text="RRN"
                             android:textSize="16sp"
                             android:textColor="?attr/primaryTextColor"
-                            android:background="@color/white"
                             android:padding="12dp"
                             android:layout_toLeftOf="@+id/tv_rrn"
                             android:layout_marginRight="10dp"
@@ -177,7 +173,6 @@
                             android:text=""
                             android:textSize="16sp"
                             android:textColor="?attr/primaryTextColor"
-                            android:background="@color/white"
                             android:padding="12dp"
                             android:layout_alignParentRight="true"
                             android:layout_width="wrap_content"
@@ -199,7 +194,6 @@
                             android:text="Total amount"
                             android:textSize="16sp"
                             android:textColor="?attr/primaryTextColor"
-                            android:background="@color/white"
                             android:padding="12dp"
                             android:layout_toLeftOf="@+id/tv_amount"
                             android:layout_marginRight="10dp"
@@ -211,7 +205,6 @@
                             android:text=""
                             android:textSize="16sp"
                             android:textColor="?attr/primaryTextColor"
-                            android:background="@color/white"
                             android:padding="12dp"
                             android:layout_alignParentRight="true"
                             android:layout_width="wrap_content"
@@ -233,7 +226,6 @@
                             android:text="Payment Method"
                             android:textSize="16sp"
                             android:textColor="?attr/primaryTextColor"
-                            android:background="@color/white"
                             android:padding="12dp"
                             android:layout_toLeftOf="@+id/tv_payment_method"
                             android:layout_marginRight="10dp"
@@ -245,7 +237,6 @@
                             android:text=""
                             android:textSize="16sp"
                             android:textColor="?attr/primaryTextColor"
-                            android:background="@color/white"
                             android:padding="12dp"
                             android:layout_alignParentRight="true"
                             android:layout_width="wrap_content"

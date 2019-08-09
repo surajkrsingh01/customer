@@ -60,6 +60,7 @@
         </RelativeLayout>
 
         <LinearLayout
+            android:id="@+id/linear_address_details"
             android:layout_below="@+id/relative_address_layout"
             android:orientation="vertical"
             android:layout_centerVertical="true"

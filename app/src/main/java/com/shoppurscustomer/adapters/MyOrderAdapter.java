@@ -81,6 +81,7 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.MyViewHo
                 String[] name = item.getShopName().split(" ");
                 initials = name[0].substring(0,1)+name[1].substring(0,1);
             }else{
+                if(item.getShopName().length()>2)
                 initials = item.getShopName().substring(0,2);
             }
 

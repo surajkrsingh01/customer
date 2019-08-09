@@ -9,14 +9,50 @@
     tools:context=".activities.ShopAddressActivity"
     tools:showIn="@layout/activity_shop_address">
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/relative_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin">
+
+        <TextView
+            android:id="@+id/text_left_label"
+            android:text="Shops"
+            android:textColor="?attr/secondaryTextColor"
+            android:textSize="@dimen/small_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:visibility="gone"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:id="@+id/view_seperator"
+            android:layout_width="2dp"
+            android:layout_height="20dp"
+            android:background="?attr/separatorColor"/>
+
+        <TextView
+            android:visibility="gone"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:id="@+id/text_right_label"
+            android:text="Shop Address"
+            android:textColor="?attr/secondaryTextColor"
+            android:textSize="@dimen/small_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
     <TextView
+        android:layout_below="@+id/relative_top"
         android:id="@+id/text_second_label"
-        android:text="Store Address"
+        android:text="Shop Address"
         android:textColor="?attr/primaryTextColor"
         android:textStyle="bold"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="10dp"
-        android:textSize="@dimen/large_text_size"
+        android:layout_marginTop="5dp"
+        android:textSize="@dimen/list_very_large_text_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

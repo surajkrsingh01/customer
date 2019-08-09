@@ -17,7 +17,6 @@
         android:paddingLeft="@dimen/view_horizontal_margin"
         android:paddingRight="@dimen/view_horizontal_margin"
         android:textSize="@dimen/home_list_header_text_size"
-        android:textAllCaps="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

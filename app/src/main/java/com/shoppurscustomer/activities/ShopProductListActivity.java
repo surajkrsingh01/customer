@@ -66,7 +66,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerViewProduct, recyclerViewCategory;
     private TextView tvNoData, cartItemCount, cartItemPrice, viewCart;
-    private TextView text_shop_name, tv_shortName, text_mobile, text_address, text_state_city;
+    private TextView text_shop_name, tv_shortName, text_mobile, text_address, text_state_city, text_left_label, text_right_label;
     private ProgressBar progressBar;
     private RelativeLayout rlfooterviewcart;
     private ShopProductListAdapter shopProductAdapter;
@@ -157,6 +157,16 @@ public class ShopProductListActivity extends NetworkBaseActivity {
             }
         });
 
+        text_left_label = findViewById(R.id.text_left_label);
+        text_right_label = findViewById(R.id.text_right_label);
+        text_left_label.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //startActivity(new Intent(ShopProductListActivity.this, ShopListActivity.class));
+                finish();
+            }
+        });
+
         setShopDetails();
 
         toolbar = findViewById(R.id.toolbar);
@@ -180,16 +190,6 @@ public class ShopProductListActivity extends NetworkBaseActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                dbHelper.deleteTable(DbHelper.CART_TABLE);
-                dbHelper.deleteTable(DbHelper.PRODUCT_UNIT_TABLE);
-                dbHelper.deleteTable(DbHelper.PRODUCT_SIZE_TABLE);
-                dbHelper.deleteTable(DbHelper.PRODUCT_COLOR_TABLE);
-                dbHelper.deleteTable(DbHelper.PROD_FREE_OFFER_TABLE);
-                dbHelper.deleteTable(DbHelper.PROD_PRICE_TABLE);
-                dbHelper.deleteTable(DbHelper.PROD_PRICE_DETAIL_TABLE);
-                dbHelper.deleteTable(DbHelper.PROD_COMBO_TABLE);
-                dbHelper.deleteTable(DbHelper.PROD_COMBO_DETAIL_TABLE);
-                dbHelper.deleteTable(DbHelper.COUPON_TABLE);
                 if(subCategoryList.size()>0)
                 getProducts(selectdSubCatId, "");
             }
@@ -331,10 +331,11 @@ public class ShopProductListActivity extends NetworkBaseActivity {
             }
 
         }else if(type == 2){
-            if(myProduct.getIsBarcodeAvailable().equals("Y")){
-                /*if(myProduct.getQuantity() == myProduct.getBarcodeList().size()){
+            /*if(myProduct.getIsBarcodeAvailable().equals("Y")){
+                if(myProduct.getQuantity() == myProduct.getBarcodeList().size()){
+                    shopProductAdapter.notifyDataSetChanged();
                     DialogAndToast.showDialog("There are no more stocks",this);
-                }else{*/
+                }else{
                     int qty = myProduct.getQuantity() + 1;
                     if(qty == 1){
                         counter++;
@@ -352,10 +353,11 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                     dbHelper.updateCartData(myProduct);
                     shopProductAdapter.notifyItemChanged(position);
                     updateCartCount();
-               // }
+                }
 
-            }else{
-                if(myProduct.getQuantity() == myProduct.getQoh()){
+           }else{*/
+                if(myProduct.getQuantity() >= myProduct.getQoh()){
+                    shopProductAdapter.notifyDataSetChanged();
                     DialogAndToast.showDialog("There are no more stocks",this);
                 }else{
                     int qty = myProduct.getQuantity() + 1;
@@ -377,18 +379,19 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                     shopProductAdapter.notifyItemChanged(position);
                     updateCartCount();
                 }
-            }
+          //  }
         }
     }
 
     private void getProductDetails(String prodId){
+        if(productDetailsType==1)
+            showProgress(true);
         Map<String,String> params=new HashMap<>();
         params.put("id", prodId); // as per user selected category from top horizontal categories list
         params.put("code", shopCode);
         params.put("dbName",shopCode);
         Log.d(TAG, params.toString());
         String url=getResources().getString(R.string.url)+"/products/ret_products_details";
-        showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"productDetails");
     }
 
@@ -460,6 +463,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                         myProduct.setSubCatId(productJArray.getJSONObject(i).getString("prodSubCatId"));
                         myProduct.setName(productJArray.getJSONObject(i).getString("prodName"));
                         myProduct.setQoh(productJArray.getJSONObject(i).getInt("prodQoh"));
+                        Log.d("Qoh ", myProduct.getQoh()+"");
                         myProduct.setMrp(Float.parseFloat(productJArray.getJSONObject(i).getString("prodMrp")));
                         myProduct.setSellingPrice(Float.parseFloat(productJArray.getJSONObject(i).getString("prodSp")));
                         myProduct.setCode(productJArray.getJSONObject(i).getString("prodCode"));
@@ -723,8 +727,8 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                     JSONObject jsonObject = response.getJSONObject("result");
                     if(productDetailsType == 1){
-                        MyProduct product = myProductList.get(position);
-                        product.setQoh(jsonObject.getInt("prodQoh"));
+                        myProductList.get(position).setQoh(jsonObject.getInt("prodQoh"));
+                        Log.d("Qoh ", myProductList.get(position).getQoh()+"");
                         checkFreeProductOffer();
                     }else {
                         freeProdut = new MyProduct();
@@ -759,6 +763,8 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                         onProductClicked(type, position);
                     }
 
+                }else {
+                    DialogAndToast.showToast("Something went wrong, Please try again", ShopProductListActivity.this);
                 }
             }
 

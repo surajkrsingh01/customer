@@ -56,7 +56,7 @@
     <TextView
         android:layout_below="@+id/relative_top"
         android:id="@+id/text_second_label"
-        android:text="Store Address"
+        android:text="Customer Address"
         android:textColor="?attr/primaryTextColor"
         android:textStyle="bold"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
