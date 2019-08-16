@@ -51,6 +51,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static final String ID = "id";
     public static final String SHOP_CODE = "shop_code";
+    public static final String CUST_CODE = "cust_code";
     public static final String CAT_ID = "cat_id";
     public static final String NAME = "name";
     public static final String IMAGE = "image";
@@ -222,9 +223,9 @@ public class DbHelper extends SQLiteOpenHelper {
             " "+UPDATED_AT+" TEXT)";
 
 
-
     public static final String CREATE_CART_TABLE = "create table "+CART_TABLE +
             "("+ID+" TEXT, " +
+            //" "+CUST_CODE+" TEXT, " +
             " "+SHOP_CODE+" TEXT, " +
             " "+COUPON_ID+" TEXT, " +
             " "+COUPON_NAME+" TEXT, " +
@@ -269,7 +270,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "("+SHOP_CODE+" TEXT NOT NULL)";
 
     public static final String CREATE_DELIVERY_ADDRESS = "create table "+DELIVERY_ADDRESS_TABLE +
-            "("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "("+ID+" INTEGER PRIMARY KEY, " +
             " "+DELIVERY_CUSTOMER_CODE+" TEXT NOT NULL, " +
             " "+DELIVERY_CUSTOMER_NAME+" TEXT NOT NULL, " +
             " "+DELIVERY_CUSTOMER_MOBILE+" TEXT NOT NULL, " +
@@ -288,7 +289,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public DbHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, 7);
+        super(context, DATABASE_NAME, null, 8);
         this.context=context;
     }
 
@@ -365,6 +366,7 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
+        //contentValues.put(CUST_CODE, item.getCustCode());
         contentValues.put(SHOP_CODE, item.getShopCode());
         contentValues.put(OFFER_ID, item.getOfferId());
         contentValues.put(OFFER_TYPE, item.getOfferType());
@@ -729,6 +731,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public boolean addDeliveryAddress(DeliveryAddress item, String custCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put(ID, item.getId());
         contentValues.put(DELIVERY_CUSTOMER_NAME, item.getName());
         contentValues.put(DELIVERY_CUSTOMER_MOBILE, item.getMobile());
         contentValues.put(DELIVERY_CUSTOMER_CODE, custCode);
@@ -744,6 +747,30 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(DELIVERY_PIN, item.getPinCode());
         db.insert(DELIVERY_ADDRESS_TABLE, null, contentValues);
         Log.i("DbHelper","Delivery Address is added");
+        return true;
+    }
+
+    public boolean addAllDeliveryAddress(List<DeliveryAddress> items, String custCode){
+        for(DeliveryAddress item: items) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(ID, item.getId());
+            contentValues.put(DELIVERY_CUSTOMER_NAME, item.getName());
+            contentValues.put(DELIVERY_CUSTOMER_MOBILE, item.getMobile());
+            contentValues.put(DELIVERY_CUSTOMER_CODE, custCode);
+            contentValues.put(DELIVERY_HOUSE_NO, item.getHouseNo());
+            contentValues.put(DELIVERY_ADDRESS, item.getAddress());
+            contentValues.put(IS_DELIVERY_DEFAULT, item.getIsDefaultAddress());
+            contentValues.put(LATITUDE, item.getDelivery_lat());
+            contentValues.put(LONGITUDE, item.getDelivery_long());
+            contentValues.put(DELIVERY_LANDMARK, item.getLandmark());
+            contentValues.put(DELIVERY_CITY, item.getCity());
+            contentValues.put(DELIVERY_STATE, item.getState());
+            contentValues.put(DELIVERY_COUNTRY, item.getCountry());
+            contentValues.put(DELIVERY_PIN, item.getPinCode());
+            db.insert(DELIVERY_ADDRESS_TABLE, null, contentValues);
+            Log.i("DbHelper", "Delivery Address is added");
+        }
         return true;
     }
 
@@ -803,6 +830,12 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Log.d(TAG, id+" ");
         db.delete(DELIVERY_ADDRESS_TABLE, ID + " = ?", new String[] { id });
+        db.close();
+    }
+
+    public void deleteAllDeliveryAddress() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from "+ DELIVERY_ADDRESS_TABLE);
         db.close();
     }
 
@@ -1544,14 +1577,15 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
 
-    public void updateOfferCounterCartData(int offerCounter,int prodId){
+    public void updateOfferCounterCartData(int offerCounter,int prodId, String shopCode){
         SQLiteDatabase db = this.getReadableDatabase();
         // query="UPDATE "+PRODUCT_TABLE+" SET "+PROD_QOH+" = ? where "+PROD_CODE+" = ?";
         ContentValues contentValues = new ContentValues();
         contentValues.put(OFFER_ITEM_COUNTER, offerCounter);
-        db.update(CART_TABLE,contentValues,ID+" = ? AND "+PROD_SP+" != ?",
-                new String[]{String.valueOf(prodId),String.valueOf(0f)});
 
+        double result = db.update(CART_TABLE, contentValues, ID + " = ?" + " AND " + SHOP_CODE + "=?" + " AND " + PROD_SP+" != ?",
+                new String[] { String.valueOf(prodId),  shopCode, String.valueOf(0)});
+        Log.d(TAG, "offerCounter updated with "+offerCounter +" update status "+result);
     }
 
     public void updateFreePositionCartData(int position,int prodId){

@@ -204,7 +204,7 @@ public class SearchActivity extends NetworkBaseActivity{
         params.put("limit","10");
         params.put("offset","0");
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.root_url)+"/search/cat/shops";
+        String url=getResources().getString(R.string.root_url)+"search/cat/shops";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }
@@ -227,7 +227,7 @@ public class SearchActivity extends NetworkBaseActivity{
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.root_url)+"/search/shops";
+        String url=getResources().getString(R.string.root_url)+"search/shops";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }

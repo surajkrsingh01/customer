@@ -212,6 +212,8 @@ public class StoresListActivity extends NetworkBaseActivity {
                         myShop.setState(shopJArray.getJSONObject(i).getString("retcountry"));
                         myShop.setCity(shopJArray.getJSONObject(i).getString("retcity"));
                         myShop.setShopimage(shopJArray.getJSONObject(i).getString("retphoto"));
+                        myShop.setLatitude(shopJArray.getJSONObject(i).getDouble("retLat"));
+                        myShop.setLongitude(shopJArray.getJSONObject(i).getDouble("retLong"));
 
                         myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                         myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));

@@ -188,10 +188,31 @@
             android:label="Address"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:launchMode="singleTask"
+            android:name=".activities.ShopContactListActivity"
+            android:label="ShopContactListActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:launchMode="singleTask"
             android:name=".activities.Settings.BasicProfileActivity"
             android:label="Basic Profile"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:launchMode="singleTask"
+            android:name=".activities.InstantPayActivity"
+            android:label="Instant Pay"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:launchMode="singleTask"
+            android:name=".activities.InstantScannarActivity"
+            android:label="InstantPay Scanner"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
 

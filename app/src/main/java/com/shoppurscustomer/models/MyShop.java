@@ -1,13 +1,31 @@
 package com.shoppurscustomer.models;
 
+import java.io.Serializable;
+
 /**
  * Created by suraj kumar singh on 09-03-2019.
  */
 
-public class MyShop {
-    private String id,name,code,desc,subCatName,address,mobile, state, city, shopimage, dbname, dbusername, dbpassword;
+public class MyShop implements Serializable {
+    private String id, merchantId,accessCode, name,code,desc,subCatName,address,mobile, state, city, shopimage, dbname, dbusername, dbpassword;
     private int image, type;
     private double latitude, longitude;
+
+    public String getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(String merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    public String getAccessCode() {
+        return accessCode;
+    }
+
+    public void setAccessCode(String accessCode) {
+        this.accessCode = accessCode;
+    }
 
     public int getType() {
         return type;

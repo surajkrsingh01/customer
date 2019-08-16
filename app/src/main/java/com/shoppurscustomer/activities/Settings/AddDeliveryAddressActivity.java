@@ -57,6 +57,7 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.textfield.TextInputLayout;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.NetworkBaseActivity;
+import com.shoppurscustomer.activities.ShopProductListActivity;
 import com.shoppurscustomer.interfaces.OnLocationReceivedListener;
 import com.shoppurscustomer.location.GpsLocationProvider;
 import com.shoppurscustomer.location.NetworkSensor;
@@ -479,24 +480,6 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
 
     }
 
-    private void getCountries() {
-        String url = getResources().getString(R.string.url) + Constants.GET_COUNTRIES;
-        showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST, url, new JSONObject(), "countries");
-    }
-
-    private void getStates(String countryId) {
-        String url = getResources().getString(R.string.url) + Constants.GET_STATES + countryId;
-        showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST, url, new JSONObject(), "states");
-    }
-
-    private void getCities(String stateId) {
-        String url = getResources().getString(R.string.url) + Constants.GET_CITIES + stateId;
-        showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST, url, new JSONObject(), "cities");
-    }
-
     private void updateAddress(){
         String name = edit_customer_name.getText().toString();
         String mobile = edit_customer_mobile.getText().toString();
@@ -553,164 +536,11 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
         if(flag!=null && flag.equals("edit")) {
             deliveryAddress.setId(this.deliveryAddress.getId());
             deliveryAddress.setIsDefaultAddress(this.deliveryAddress.getIsDefaultAddress());
-            dbHelper.updateDeliveryAddress(deliveryAddress, sharedPreferences.getString(Constants.USER_ID, ""));
+            updateDeliveryAddress(deliveryAddress);
         }
         else
-            dbHelper.addDeliveryAddress(deliveryAddress, sharedPreferences.getString(Constants.USER_ID, ""));
-        finish();
+            addDeliveryAddress(deliveryAddress);
 
-        /*if(flag != null){
-
-            Intent intent = new Intent();
-            intent.putExtra("address",address);
-            intent.putExtra("country",country);
-            intent.putExtra("state",state);
-            intent.putExtra("city",city);
-            intent.putExtra("pin",pin);
-            intent.putExtra("latitude",shopLatLng.latitude);
-            intent.putExtra("longitude",shopLatLng.longitude);
-            setResult(-1,intent);
-            finish();
-
-        }else{
-            Map<String,String> params=new HashMap<>();
-            params.put("address",address);
-            params.put("country",country);
-            params.put("state",state);
-            params.put("city",city);
-            params.put("pinCode",pin);
-            if(shopLatLng == null){
-                params.put("latitude","0.0");
-                params.put("longitude","0.0");
-            }else{
-                params.put("latitude",""+shopLatLng.latitude);
-                params.put("longitude",""+shopLatLng.longitude);
-            }
-
-            params.put("id",sharedPreferences.getString(Constants.USER_ID,""));
-            params.put("mobile",sharedPreferences.getString(Constants.MOBILE_NO,""));
-            params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
-            params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
-            params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-            JSONArray dataArray = new JSONArray();
-            JSONObject dataObject = new JSONObject(params);
-            dataArray.put(dataObject);
-            String url=getResources().getString(R.string.url)+Constants.UPDATE_ADDRESS;
-            showProgress(true);
-            jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updateAddress");*/
-    }
-
-    @Override
-    public void onJsonObjectResponse(JSONObject response, String apiName) {
-
-        try {
-            if (apiName.equals("countries")) {
-
-                if (response.getBoolean("status")) {
-                    JSONArray dataArray = response.getJSONArray("result");
-                    JSONObject jsonObject = null;
-                    SpinnerItem item = null;
-                    int len = dataArray.length();
-                   /* countryListObject.clear();
-                    countryList.clear();
-
-                    for (int i = 0; i < len; i++) {
-                        jsonObject = dataArray.getJSONObject(i);
-                        item = new SpinnerItem();
-                        item.setId("" + jsonObject.getInt("id"));
-                        item.setName(jsonObject.getString("name"));
-                        countryListObject.add(item);
-                        countryList.add(item.getName());
-                    }
-                    countryList.add(0, "Select Country");
-                    countryListObject.add(0, new SpinnerItem());
-                    countryAdapter.notifyDataSetChanged();
-
-                    if (countryList.size() == 2) {
-                        spinnerCountry.setSelection(1);
-                    }*/
-
-                } else {
-                    DialogAndToast.showDialog(response.getString("message"), this);
-                }
-            } else if (apiName.equals("states")) {
-
-                if (response.getBoolean("status")) {
-                    JSONArray dataArray = response.getJSONArray("result");
-                    JSONObject jsonObject = null;
-                    SpinnerItem item = null;
-                    int len = dataArray.length();
-                   /* stateListObject.clear();
-                    stateList.clear();
-
-                    for (int i = 0; i < len; i++) {
-                        jsonObject = dataArray.getJSONObject(i);
-                        item = new SpinnerItem();
-                        item.setId("" + jsonObject.getInt("id"));
-                        item.setName(jsonObject.getString("name"));
-                        stateListObject.add(item);
-                        stateList.add(item.getName());
-                    }
-                    stateList.add(0, "Select State");
-                    stateListObject.add(0, new SpinnerItem());
-                    stateAdapter.notifyDataSetChanged();
-
-                    if(isFirstTime){
-                        setStateValue();
-                    }*/
-
-                } else {
-                    DialogAndToast.showDialog(response.getString("message"), this);
-                }
-            }else if (apiName.equals("cities")) {
-
-                if (response.getBoolean("status")) {
-                    JSONArray dataArray = response.getJSONArray("result");
-                    JSONObject jsonObject = null;
-                    SpinnerItem item = null;
-                    int len = dataArray.length();
-                  /*  cityListObject.clear();
-                    cityList.clear();
-
-                    for (int i = 0; i < len; i++) {
-                        jsonObject = dataArray.getJSONObject(i);
-                        item = new SpinnerItem();
-                        item.setId("" + jsonObject.getInt("id"));
-                        item.setName(jsonObject.getString("name"));
-                        cityListObject.add(item);
-                        cityList.add(item.getName());
-                    }
-                    cityList.add(0, "Select City");
-                    cityListObject.add(0, new SpinnerItem());
-                    cityAdapter.notifyDataSetChanged();
-
-                    if(isFirstTime){
-                        setCityValue();
-                    }*/
-
-                } else {
-                    DialogAndToast.showDialog(response.getString("message"), this);
-                }
-            }else {
-                if(response.getBoolean("status")){
-                    editor.putString(Constants.ADDRESS,editAddress.getText().toString());
-                    editor.putString(Constants.ZIP,editPincode.getText().toString());
-                    editor.putString(Constants.COUNTRY,editCountry.getText().toString());
-                    editor.putString(Constants.STATE,editState.getText().toString());
-                    editor.putString(Constants.CITY,editCity.getText().toString());
-                    if(shopLatLng != null){
-                        editor.putString(Constants.USER_LAT,""+shopLatLng.latitude);
-                        editor.putString(Constants.USER_LONG,""+shopLatLng.longitude);
-                    }
-                    editor.commit();
-                    DialogAndToast.showToast(response.getString("message"),this);
-                }else{
-                    DialogAndToast.showDialog(response.getString("message"),this);
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     private void openDialog(){
@@ -735,5 +565,95 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
         alert.setTitle(title);
         alert.show();
     }
+
+    private void addDeliveryAddress(DeliveryAddress address){
+        this.deliveryAddress = address;
+        Map<String,String> params=new HashMap<>();
+        params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
+        params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
+        params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+
+        params.put("userCode",sharedPreferences.getString(Constants.USER_ID,""));
+        params.put("name",address.getName());
+        params.put("mobile",address.getMobile());
+        params.put("city",address.getCity());
+        params.put("province",address.getState());
+        params.put("country",address.getCountry());
+        params.put("locality",address.getLandmark());
+        params.put("zip",address.getPinCode());
+        params.put("address",address.getAddress());
+        params.put("userName",sharedPreferences.getString(Constants.FULL_NAME,""));
+        params.put("userLat",address.getDelivery_lat());
+        params.put("userLong",address.getDelivery_long());
+        if(!TextUtils.isEmpty(address.getIsDefaultAddress())  && address.getIsDefaultAddress().equals("Yes"))
+        params.put("isDefault","1");
+        else params.put("isDefault","0");
+        String url=getResources().getString(R.string.root_url)+"customers/add_delivery_address";
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"addAddress");
+    }
+    private void updateDeliveryAddress(DeliveryAddress address){
+        this.deliveryAddress = address;
+        Map<String,String> params=new HashMap<>();
+        params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
+        params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
+        params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+
+        params.put("userCode",sharedPreferences.getString(Constants.USER_ID,""));
+        params.put("id", address.getId());
+        params.put("name",address.getName());
+        params.put("mobile",address.getMobile());
+        params.put("city",address.getCity());
+        params.put("province",address.getState());
+        params.put("country",address.getCountry());
+        params.put("locality",address.getLandmark());
+        params.put("zip",address.getPinCode());
+        params.put("address",address.getAddress());
+        params.put("userName",sharedPreferences.getString(Constants.FULL_NAME,""));
+        params.put("userLat",address.getDelivery_lat());
+        params.put("userLong",address.getDelivery_long());
+        if(!TextUtils.isEmpty(address.getIsDefaultAddress()) && address.getIsDefaultAddress().equals("Yes"))
+            params.put("isDefault","1");
+        else params.put("isDefault","0");
+        String url=getResources().getString(R.string.root_url)+"customers/update_delivery_address";
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updateAddress");
+    }
+
+    private void removeDeliveryAddress(){
+        Map<String,String> params=new HashMap<>();
+        params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
+        params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
+        params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+        String url=getResources().getString(R.string.root_url)+Constants.GET_COUPON_OFFER;
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"removeAddress");
+    }
+
+    @Override
+    public void onJsonObjectResponse(JSONObject response, String apiName) {
+        try {
+            if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
+                if (apiName.equals("addAddress")) {
+                    if(!response.getString("result").equals("null")) {
+                        deliveryAddress.setId(response.getString("result"));
+                        dbHelper.addDeliveryAddress(deliveryAddress, sharedPreferences.getString(Constants.USER_ID, ""));
+                        finish();
+                    }
+                }else if(apiName.equals("updateAddress")){
+                    dbHelper.updateDeliveryAddress(deliveryAddress, sharedPreferences.getString(Constants.USER_ID, ""));
+                    finish();
+                }else if(apiName.equals("removeAddress")){
+
+                }
+            }else {
+                DialogAndToast.showToast(response.getString("message"), AddDeliveryAddressActivity.this);
+            }
+        }catch (JSONException e) {
+            e.printStackTrace();
+            DialogAndToast.showToast("Something went wrong, please try again", AddDeliveryAddressActivity.this);
+        }
+    }
+
 
 }

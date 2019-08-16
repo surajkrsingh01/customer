@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -25,6 +26,7 @@ import com.shoppurscustomer.models.Coupon;
 import com.shoppurscustomer.models.DeliveryAddress;
 import com.shoppurscustomer.utilities.ConnectionDetector;
 import com.shoppurscustomer.utilities.Constants;
+import com.shoppurscustomer.utilities.DialogAndToast;
 import com.shoppurscustomer.utilities.Utility;
 
 import org.json.JSONArray;
@@ -91,58 +93,6 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
             //getCouponOffers();
         }
     }
-
-
-    private void getCouponOffers(){
-        Map<String,String> params=new HashMap<>();
-        params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
-        params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
-        params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.root_url)+Constants.GET_COUPON_OFFER;
-        showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"offerList");
-    }
-
-    @Override
-    public void onJsonObjectResponse(JSONObject response, String apiName) {
-/*
-        try {
-            if (apiName.equals("offerList")) {
-                if (response.getBoolean("status")) {
-                    itemList.clear();
-                    JSONArray couponArray = response.getJSONArray("result");
-                    JSONObject dataObject = null;
-                    Coupon coupon = null;
-                    int len = couponArray.length();
-                    len = couponArray.length();
-                    for (int i = 0; i < len; i++) {
-                        dataObject = couponArray.getJSONObject(i);
-                        coupon = new Coupon();
-                        coupon.setId(dataObject.getInt("id"));
-                        coupon.setPercentage(dataObject.getInt("percentage"));
-                        coupon.setAmount((float)dataObject.getDouble("amount"));
-                        coupon.setName(dataObject.getString("name"));
-                        coupon.setStatus(dataObject.getString("status"));
-                        coupon.setStartDate(dataObject.getString("startDate"));
-                        coupon.setEndDate(dataObject.getString("endDate"));
-                        dbHelper.addCouponOffer(coupon, Utility.getTimeStamp(),Utility.getTimeStamp());
-                        itemList.add(coupon);
-                    }
-
-                    if(couponArray.length() == 0){
-                        showNoData(true);
-                    }else{
-                        showNoData(false);
-                        myItemAdapter.notifyDataSetChanged();
-                    }
-
-                }
-            }
-        }catch (JSONException e) {
-            e.printStackTrace();
-        }*/
-    }
-
     private void showNoData(boolean show){
         if(show){
             recyclerView.setVisibility(View.GONE);
@@ -173,13 +123,10 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         if(action.equals("delete")){
-                            dbHelper.remove_delivery_address(deliveryAddress.getId());
-                            updateList();
-
+                            deleteDeliveryAddress(deliveryAddress);
                         }else if(action.equals("set_default")){
                             deliveryAddress.setIsDefaultAddress("Yes");
-                            dbHelper.updateDeliveryAddress(deliveryAddress, sharedPreferences.getString(Constants.USER_ID,""));
-                            setDefaultAddressChecked(deliveryAddress.getId());
+                            updateDeliveryAddress(deliveryAddress);
                         }
                     }
                 })
@@ -193,6 +140,68 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
         alert.setTitle(title);
         alert.show();
     }
+
+    DeliveryAddress deliveryAddress;
+    private void updateDeliveryAddress(DeliveryAddress address){
+        this.deliveryAddress = address;
+        Map<String,String> params=new HashMap<>();
+        params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
+        params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
+        params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+
+        params.put("userCode",sharedPreferences.getString(Constants.USER_ID,""));
+        params.put("id", address.getId());
+        params.put("name",address.getName());
+        params.put("mobile",address.getMobile());
+        params.put("city",address.getCity());
+        params.put("province",address.getState());
+        params.put("country",address.getCountry());
+        params.put("locality",address.getLandmark());
+        params.put("zip",address.getPinCode());
+        params.put("address",address.getAddress());
+        params.put("userName",sharedPreferences.getString(Constants.FULL_NAME,""));
+        params.put("userLat",address.getDelivery_lat());
+        params.put("userLong",address.getDelivery_long());
+        if(!TextUtils.isEmpty(address.getIsDefaultAddress()) && address.getIsDefaultAddress().equals("Yes"))
+            params.put("isDefault","1");
+        else params.put("isDefault","0");
+        String url=getResources().getString(R.string.root_url)+"customers/update_delivery_address";
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updateAddress");
+    }
+
+    private void deleteDeliveryAddress(DeliveryAddress address){
+        this.deliveryAddress = address;
+        Map<String,String> params=new HashMap<>();
+        params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
+        params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
+        params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+        params.put("id", address.getId());
+        String url=getResources().getString(R.string.root_url)+"customers/delete_delivery_address";
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"deleteAddress");
+    }
+
+    @Override
+    public void onJsonObjectResponse(JSONObject response, String apiName) {
+        try {
+            if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
+                if(apiName.equals("updateAddress")){
+                    dbHelper.updateDeliveryAddress(deliveryAddress, sharedPreferences.getString(Constants.USER_ID,""));
+                    setDefaultAddressChecked(deliveryAddress.getId());
+                }else if(apiName.equals("deleteAddress")){
+                    dbHelper.remove_delivery_address(deliveryAddress.getId());
+                    updateList();
+                }
+            }else {
+                DialogAndToast.showToast(response.getString("message"), DeliveryAddressListActivity.this);
+            }
+        }catch (JSONException e) {
+            e.printStackTrace();
+            DialogAndToast.showToast("Something went wrong, please try again", DeliveryAddressListActivity.this);
+        }
+    }
+
 
     @Override
     public void onResume() {

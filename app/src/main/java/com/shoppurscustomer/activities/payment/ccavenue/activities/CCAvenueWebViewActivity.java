@@ -27,6 +27,7 @@ import com.shoppurscustomer.activities.payment.ccavenue.utility.Constants;
 import com.shoppurscustomer.activities.payment.ccavenue.utility.LoadingDialog;
 import com.shoppurscustomer.activities.payment.ccavenue.utility.RSAUtility;
 import com.shoppurscustomer.activities.payment.ccavenue.utility.ServiceUtility;
+import com.shoppurscustomer.models.MyShop;
 import com.shoppurscustomer.utilities.DialogAndToast;
 
 
@@ -49,8 +50,9 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
     public static final String WORKING_KEY = "42A76E35C3C23567D3E1E3284C1A12AF";*/
 
    /**/
-    public static final String ACCESS_CODE = "AVQH72EH28AD03HQDA";
-    public static final String MERCHANT_ID = "143051";
+    public static String ACCESS_CODE = "AVQH72EH28AD03HQDA";
+    public static String MERCHANT_ID = "143051";
+    public static String remarks = "No Remarks";
     public static final String WORKING_KEY = "534D4882D2F074761151788FCE5EE352";
 
     public static final String RSA_KEY_URL = "https://secure.ccavenue.com/transaction/jsp/GetRSA.jsp";
@@ -105,6 +107,11 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
 
         mainIntent = getIntent();
         flag = mainIntent.getStringExtra("flag");
+        if(flag.equals("instantPay")){
+            MyShop myShop = (MyShop) mainIntent.getSerializableExtra("object");
+            remarks = mainIntent.getStringExtra("remarks");
+            MERCHANT_ID = myShop.getMerchantId();
+        }
 
         REDIRECT_URL = getResources().getString(R.string.url_web)+"/web/payment/paymentResponseHandler";
         CANCEL_URL = getResources().getString(R.string.url_web)+"/web/payment/paymentResponseHandler";
@@ -364,17 +371,22 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                 }
             }else if (apiName.equals("updatePaymentStatus")) {
                  if (response.getBoolean("status")) {
-
+                     Log.d("response ", dataObject.toString());
                      if(flag.equals("buyUserLicense")){
                          Intent intent = new Intent();
                          intent.putExtra("response",dataObject.toString());
                          setResult(-1,intent);
                          finish();
                          CCAvenueWebViewActivity.this.finish();
-                     }else{
+                     }else if(flag.equals("online_shoping")){
                          Intent intent = new Intent(CCAvenueWebViewActivity.this, TransactionDetailsActivity.class);
-                         intent.putExtra("responseData",dataObject.toString());
-                         intent.putExtra("shopArray",getIntent().getStringExtra("shopArray"));
+                         intent.putExtra("flag", "online_shoping");
+                         intent.putExtra("response", dataObject.toString());
+                         startActivity(intent);
+                         CCAvenueWebViewActivity.this.finish();
+                     }else if(flag.equals("instantPay")){
+                         Intent intent = new Intent(CCAvenueWebViewActivity.this, TransactionDetailsActivity.class);
+                         intent.putExtra("flag", "instantPay");
                          intent.putExtra("response", dataObject.toString());
                          startActivity(intent);
                          CCAvenueWebViewActivity.this.finish();

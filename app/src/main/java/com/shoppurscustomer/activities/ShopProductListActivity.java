@@ -249,7 +249,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
         Map<String,String> params=new HashMap<>();
         params.put("code", shopCode);
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.root_url)+"/categories/retailer_sub_categories";
+        String url=getResources().getString(R.string.root_url)+"categories/retailer_sub_categories";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url, new JSONObject(params),"get_subcategories");
     }
@@ -295,10 +295,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
     private void onProductClicked(int type, int position){
         this.position = position;
         this.myProduct = myProductList.get(position);
-        myProduct.setQuantity(myProduct.getQuantity());
         myProduct.setShopCode(shopCode);
-        myProduct.setSellingPrice(myProduct.getSellingPrice());
-        myProduct.setTotalAmount(myProduct.getSellingPrice() * myProduct.getQuantity());
 
         if(type == 1){
             if(myProduct.getQuantity() > 0){
@@ -318,7 +315,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                 }else{
                     int qty = myProduct.getQuantity() - 1;
                     float netSellingPrice = getOfferAmount(myProduct,type);
-                    myProduct.setQuantity(qty);
+                    myProduct.setQuantity(myProduct.getQuantity());
                     qty = myProduct.getQuantity();
                     Log.i(TAG,"netSellingPrice "+netSellingPrice);
                     float amount = myProduct.getTotalAmount() - netSellingPrice;
@@ -374,9 +371,10 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                     myProduct.setTotalAmount(amount);
                     qty = myProduct.getQuantity();
                     Log.i(TAG,"qty "+qty);
-
+                    myProduct.setQuantity(myProduct.getQuantity());
                     dbHelper.updateCartData(myProduct);
                     shopProductAdapter.notifyItemChanged(position);
+                    shopProductAdapter.notifyDataSetChanged();
                     updateCartCount();
                 }
           //  }
@@ -907,7 +905,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                             (productDiscountOffer.getProdBuyQty()-1)){
                         item.setQuantity(item.getQuantity() - 2);
                         item.setOfferItemCounter(item.getOfferItemCounter() - 1);
-                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
 
                     }else{
                         item.setQuantity(item.getQuantity() - 1);
@@ -921,7 +919,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                             dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId());
                         }else{
                             dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                         }
                     }
 
@@ -931,10 +929,11 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                     Log.i(TAG,"Same product");
                     Log.i(TAG,"item qty "+item.getQuantity()+" offer buy qty"+productDiscountOffer.getProdBuyQty());
                     Log.i(TAG,"plus mode "+(item.getQuantity() - item.getOfferItemCounter())% productDiscountOffer.getProdBuyQty());
+                    Log.d(TAG, " offerCounter "+item.getOfferItemCounter() +" shopCode "+item.getShopCode() +" Qyantity "+item.getQuantity() +" prodId "+item.getId() +" offer Amount "+amount);
                     if((item.getQuantity() - item.getOfferItemCounter())% productDiscountOffer.getProdBuyQty() == 0){
                         item.setQuantity(item.getQuantity() + 1);
                         item.setOfferItemCounter(item.getOfferItemCounter() + 1);
-                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()));
+                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                     }else{
 
                     }
@@ -953,12 +952,12 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                             dbHelper.addProductToCart(item1);
                             Log.d("FreeProductPosition ", ""+item.getFreeProductPosition());
                             dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()));
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                             Log.i(TAG,"Different product added to cart");
                         }else{
 
                             dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                             Log.i(TAG,"Different product updated in cart");
                         }
                         //  myItemAdapter.notifyDataSetChanged();

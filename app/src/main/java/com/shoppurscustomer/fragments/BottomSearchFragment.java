@@ -224,6 +224,8 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                         myShop.setState(shopJArray.getJSONObject(i).getString("retcountry"));
                         myShop.setCity(shopJArray.getJSONObject(i).getString("retcity"));
                         myShop.setShopimage(shopJArray.getJSONObject(i).getString("retphoto"));
+                        myShop.setLatitude(shopJArray.getJSONObject(i).getDouble("retLat"));
+                        myShop.setLongitude(shopJArray.getJSONObject(i).getDouble("retLong"));
 
                         myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                         myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
@@ -535,10 +537,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
     private void onProductClicked(int type, int position){
         this.position = position;
         this.myProduct = myProductList.get(position);
-       // myProduct.setQuantity(myProduct.getQuantity());
         myProduct.setShopCode(shopCode);
-       // myProduct.setSellingPrice(myProduct.getSellingPrice());
-       // myProduct.setTotalAmount(myProduct.getSellingPrice() * myProduct.getQuantity());
 
         if(type == 1){
             if(myProduct.getQuantity() > 0){
@@ -563,6 +562,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     float netSellingPrice = getOfferAmount(myProduct,type);
                     myProduct.setQuantity(qty);
                     qty = myProduct.getQuantity();
+                    myProduct.setQuantity(myProduct.getQuantity());
                     Log.i(TAG,"netSellingPrice "+netSellingPrice);
                     float amount = myProduct.getTotalAmount() - netSellingPrice;
                     Log.i(TAG,"tot amount "+amount);
@@ -621,6 +621,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     Log.i(TAG,"tot amount "+amount);
                     myProduct.setTotalAmount(amount);
                     qty = myProduct.getQuantity();
+                    myProduct.setQuantity(myProduct.getQuantity());
                     Log.i(TAG,"qty "+qty);
 
                     dbHelper.updateCartData(myProduct);
@@ -692,7 +693,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                             (productDiscountOffer.getProdBuyQty()-1)){
                         item.setQuantity(item.getQuantity() - 2);
                         item.setOfferItemCounter(item.getOfferItemCounter() - 1);
-                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
 
                     }else{
                         item.setQuantity(item.getQuantity() - 1);
@@ -706,7 +707,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                             dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId());
                         }else{
                             dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                         }
                     }
 
@@ -715,11 +716,12 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                 if(productDiscountOffer.getProdBuyId() == productDiscountOffer.getProdFreeId()){
                     Log.i(TAG,"Same product");
                     Log.i(TAG,"item qty "+item.getQuantity()+" offer buy qty"+productDiscountOffer.getProdBuyQty());
+                    Log.d(TAG, " offerCounter "+item.getOfferItemCounter() +" shopCode "+item.getShopCode() +" Qyantity "+item.getQuantity());
                     Log.i(TAG,"plus mode "+(item.getQuantity() - item.getOfferItemCounter())% productDiscountOffer.getProdBuyQty());
                     if((item.getQuantity() - item.getOfferItemCounter())% productDiscountOffer.getProdBuyQty() == 0){
                         item.setQuantity(item.getQuantity() + 1);
                         item.setOfferItemCounter(item.getOfferItemCounter() + 1);
-                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()));
+                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                     }else{
 
                     }
@@ -738,12 +740,12 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                             dbHelper.addProductToCart(item1);
                             Log.d("FreeProductPosition ", ""+item.getFreeProductPosition());
                             dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()));
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                             Log.i(TAG,"Different product added to cart");
                         }else{
 
                             dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                             Log.i(TAG,"Different product updated in cart");
                         }
                         //  myItemAdapter.notifyDataSetChanged();

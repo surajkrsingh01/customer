@@ -38,6 +38,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.models.DeliveryAddress;
 import com.shoppurscustomer.utilities.AppController;
 import com.shoppurscustomer.utilities.ConnectionDetector;
 import com.shoppurscustomer.utilities.Constants;
@@ -273,6 +274,7 @@ public class LoginActivity extends NetworkBaseActivity{
         params.put("mobile",mobile);
         params.put("password",password);
         String url=getResources().getString(R.string.url)+"/loginCustomer";
+        //String url=getResources().getString(R.string.url_web)+"/useradmin/customers/loginCustomer";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"loginCustomer");
     }
@@ -304,6 +306,18 @@ public class LoginActivity extends NetworkBaseActivity{
         Log.i(TAG,params.toString());
         //showProgress(true);
         jsonObjectFavShopApiRequest(Request.Method.POST,url,new JSONObject(params),"getfavoriteshop");
+    }
+
+    private void getDeliveryAddress(){
+        Map<String,String> params=new HashMap<>();
+        params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
+        params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
+        params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+
+        String url=getResources().getString(R.string.url)+"/get_delivery_address";
+        Log.i(TAG,params.toString());
+        //showProgress(true);
+        jsonObjectFavShopApiRequest(Request.Method.POST,url,new JSONObject(params),"getDeliveryAddress");
     }
 
     public void jsonObjectFavShopApiRequest(int method,String url, JSONObject jsonObject, final String apiName){
@@ -338,7 +352,7 @@ public class LoginActivity extends NetworkBaseActivity{
 
     @Override
     public void onJsonObjectResponse(JSONObject response, String apiName) {
-        if(apiName.equals("getfavoriteshop"))
+        if(apiName.equals("getDeliveryAddress"))
         showProgress(false);
         try {
             // JSONObject jsonObject=response.getJSONObject("response");
@@ -351,7 +365,8 @@ public class LoginActivity extends NetworkBaseActivity{
                     editor.putString(Constants.USER_ID, dataObject.getString("userCode"));
                     editor.putString(Constants.PROFILE_PIC, dataObject.getString("photo"));
                     editor.putString(Constants.CUST_ADDRESS, dataObject.getString("address"));
-                    editor.putString(Constants.CUST_ADDRESS, dataObject.getString("address"));
+                    editor.putString(Constants.CUST_LOCALITY, dataObject.getString("locality"));
+                    editor.putString(Constants.CUST_PINCODE, dataObject.getString("zip"));
                     editor.putString(Constants.CUST_CITY, dataObject.getString("city"));
                     editor.putString(Constants.CUST_STATE, dataObject.getString("province"));
                     editor.putString(Constants.CUST_COUNTRY, dataObject.getString("country"));
@@ -373,23 +388,15 @@ public class LoginActivity extends NetworkBaseActivity{
                 if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
                     Log.d(TAG, response.toString());
                     List<String> mFavoriteList = new ArrayList();
-
+                    dbHelper.deleteAllFavorite();
                     if(!response.getString("result").equals("null")){
                     JSONArray jsonArray = response.getJSONArray("result");
                     for (int i = 0; i < jsonArray.length(); i++) {
                         mFavoriteList.add(jsonArray.getJSONObject(i).getString("" + i));
                         dbHelper.add_to_Favorite(jsonArray.getJSONObject(i).getString("" + i));
                     }
-                    /*if (mFavoriteList.size() > 0) {
-                        dbHelper.deleteAllFavorite();
-                        dbHelper.add_to_Favorite(mFavoriteList);
-                    }*/
                 }
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                    editor.putBoolean(Constants.IS_LOGGED_IN, true);
-                    editor.commit();
+                    getDeliveryAddress();
                 }
             } else if (apiName.equals("registerCustomer")) {
                 Log.d("response ", response.toString());
@@ -420,6 +427,43 @@ public class LoginActivity extends NetworkBaseActivity{
                    // DialogAndToast.showDialog(response.getString("message"), LoginActivity.this);
                 }
 
+            }else if (apiName.equals("getDeliveryAddress")) {
+                if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
+                    Log.d(TAG, response.toString());
+                    List<DeliveryAddress> deliveryAddressList = new ArrayList<>();
+                    DeliveryAddress item;
+                    dbHelper.deleteAllDeliveryAddress();
+
+                    if(!response.getString("result").equals("null")){
+                        JSONArray jsonArray = response.getJSONArray("result");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            item = new DeliveryAddress();
+                            item.setId(jsonArray.getJSONObject(i).getString("id"));
+                            item.setName(jsonArray.getJSONObject(i).getString("name"));
+                            item.setMobile(jsonArray.getJSONObject(i).getString("mobile"));
+                            item.setAddress(jsonArray.getJSONObject(i).getString("address"));
+                            if(jsonArray.getJSONObject(i).getInt("isDefault")==1)
+                            item.setIsDefaultAddress("Yes");
+                            else item.setIsDefaultAddress("No");
+                            item.setDelivery_lat(jsonArray.getJSONObject(i).getString("userLat"));
+                            item.setDelivery_long(jsonArray.getJSONObject(i).getString("userLong"));
+                            item.setLandmark(jsonArray.getJSONObject(i).getString("locality"));
+                            item.setCity(jsonArray.getJSONObject(i).getString("city"));
+                            item.setState(jsonArray.getJSONObject(i).getString("province"));
+                            item.setPinCode(jsonArray.getJSONObject(i).getString("zip"));
+                            item.setCountry(jsonArray.getJSONObject(i).getString("country"));
+                            deliveryAddressList.add(item);
+                        }
+                        if(deliveryAddressList.size()>0){
+                            dbHelper.addAllDeliveryAddress(deliveryAddressList, sharedPreferences.getString(Constants.USER_ID, ""));
+                        }
+                    }
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                    editor.putBoolean(Constants.IS_LOGGED_IN, true);
+                    editor.commit();
+                }
             }
         }catch (JSONException e) {
             e.printStackTrace();

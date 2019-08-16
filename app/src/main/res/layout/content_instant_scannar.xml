@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activities.InstantScannarActivity"
+    tools:showIn="@layout/activity_instant_scannar">
+
+    <ImageView
+        android:id="@+id/text_header"
+        android:src="@drawable/arrow_back"
+        android:tint="?attr/primaryTextColor"
+        android:padding="@dimen/activity_vertical_margin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_below="@+id/text_header"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/iv_contacts"
+                android:paddingBottom="@dimen/edit_text_small_vertical_padding"
+                android:paddingLeft="@dimen/edit_text_horizontal_padding"
+                android:paddingRight="@dimen/edit_text_horizontal_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/contacts"
+                android:layout_alignParentRight="true"/>
+
+            <TextView
+                android:id="@+id/tv91"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/secondaryTextColor"
+                android:textStyle="bold"
+                android:textSize="@dimen/large_text_size"
+                android:paddingBottom="@dimen/edit_text_small_vertical_padding"
+                android:paddingLeft="@dimen/edit_text_horizontal_padding"
+                android:text="+91"/>
+
+            <EditText
+                android:layout_toRightOf="@+id/tv91"
+                android:layout_toLeftOf="@+id/iv_contacts"
+                android:id="@+id/edit_mobile"
+                android:hint="Enter Mobile Number"
+                android:textSize="@dimen/large_text_size"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:inputType="number"
+                android:maxLength="10"
+                android:imeOptions="actionNext"
+                android:textColorHint="?attr/secondaryTextColor"
+                android:textColor="?attr/primaryTextColor"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:paddingBottom="@dimen/edit_text_small_vertical_padding"
+                android:paddingLeft="@dimen/edit_text_horizontal_padding"
+                android:paddingRight="@dimen/edit_text_horizontal_padding"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"/>
+
+            <View
+                android:layout_toLeftOf="@+id/iv_contacts"
+                android:id="@+id/seperator_2"
+                android:layout_below="@+id/edit_mobile"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="?attr/separatorColor"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"/>
+
+
+        </RelativeLayout>
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/text_shops"
+            android:text="Recents"
+            android:textColor="?attr/primaryTextColor"
+            android:textStyle="bold"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="10dp"
+            android:textSize="@dimen/large_text_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp"
+                android:id="@+id/recycler_viewCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <View
+                android:visibility="gone"
+                android:id="@+id/seperator_1"
+                android:layout_below="@+id/recycler_viewCategory"
+                android:layout_marginTop="@dimen/view_vertical_margin"
+                android:background="?attr/separatorColor"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+            <ProgressBar
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="100dp"
+                android:id="@+id/progress_bar"
+                android:visibility="gone"
+                android:layout_below="@+id/seperator_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="100dp"
+                android:id="@+id/tvNoData"
+                android:visibility="gone"
+                android:layout_below="@+id/seperator_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/primaryTextColor"
+                android:text="No Data Available"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:visibility="gone"
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/seperator_1"
+                android:id="@+id/recycler_viewShops"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </androidx.recyclerview.widget.RecyclerView>
+        </RelativeLayout>
+
+
+        <com.journeyapps.barcodescanner.DecoratedBarcodeView
+            android:layout_gravity="center"
+            android:id="@+id/zxing_barcode_scanner"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:zxing_scanner_layout="@layout/custom_scanner" />
+
+
+    </LinearLayout>
+</RelativeLayout>

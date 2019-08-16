@@ -114,12 +114,6 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"orderDetails");
     }
 
-    private void openInvoiceActivity(){
-        Intent intent = new Intent(TransactionDetailsActivity.this,InvoiceActivity.class);
-        intent.putExtra("orderNumber",getIntent().getStringExtra("orderNumber"));
-        startActivity(intent);
-        finish();
-    }
 
     @Override
     public void onJsonObjectResponse(JSONObject response, String apiName) {

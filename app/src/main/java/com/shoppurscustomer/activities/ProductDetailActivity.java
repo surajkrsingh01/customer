@@ -206,6 +206,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
             myProduct.setQuantity(Integer.parseInt(tv_cartCount.getText().toString()));
         }else {
             tv_cartCount.setText(String.valueOf(0));
+            myProduct.setQuantity(0);
             linear_plus_minus.setVisibility(View.GONE);
             btnAddCart.setVisibility(View.VISIBLE);
         }
@@ -275,10 +276,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
     }
 
     private void onProductClicked(int type){
-        myProduct.setQuantity(myProduct.getQuantity());
         myProduct.setShopCode(shopCode);
-        myProduct.setSellingPrice(myProduct.getSellingPrice());
-        myProduct.setTotalAmount(myProduct.getSellingPrice() * myProduct.getQuantity());
 
         if(type == 1){
             if(myProduct.getQuantity() > 0){
@@ -304,6 +302,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     float amount = myProduct.getTotalAmount() - netSellingPrice;
                     Log.i(TAG,"tot amount "+amount);
                     myProduct.setTotalAmount(amount);
+                    myProduct.setQuantity(myProduct.getQuantity());
                     dbHelper.updateCartData(myProduct);
                     updateCartCount();
                 }
@@ -351,6 +350,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     Log.i(TAG,"tot amount "+amount);
                     myProduct.setTotalAmount(amount);
                     qty = myProduct.getQuantity();
+                    myProduct.setQuantity(myProduct.getQuantity());
                     Log.i(TAG,"qty "+qty);
 
                     dbHelper.updateCartData(myProduct);
@@ -418,7 +418,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                             (productDiscountOffer.getProdBuyQty()-1)){
                         item.setQuantity(item.getQuantity() - 2);
                         item.setOfferItemCounter(item.getOfferItemCounter() - 1);
-                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
 
                     }else{
                         item.setQuantity(item.getQuantity() - 1);
@@ -432,7 +432,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                             dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId());
                         }else{
                             dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                         }
                     }
 
@@ -445,7 +445,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     if((item.getQuantity() - item.getOfferItemCounter())% productDiscountOffer.getProdBuyQty() == 0){
                         item.setQuantity(item.getQuantity() + 1);
                         item.setOfferItemCounter(item.getOfferItemCounter() + 1);
-                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()));
+                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                     }else{
 
                     }
@@ -464,12 +464,12 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                             dbHelper.addProductToCart(item1);
                             Log.d("FreeProductPosition ", ""+item.getFreeProductPosition());
                             dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()));
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                             Log.i(TAG,"Different product added to cart");
                         }else{
 
                             dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                             Log.i(TAG,"Different product updated in cart");
                         }
                         //  myItemAdapter.notifyDataSetChanged();

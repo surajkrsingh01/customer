@@ -592,7 +592,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                             (productDiscountOffer.getProdBuyQty()-1)){
                         item.setQuantity(item.getQuantity() - 2);
                         item.setOfferItemCounter(item.getOfferItemCounter() - 1);
-                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
 
                     }else{
                         item.setQuantity(item.getQuantity() - 1);
@@ -606,7 +606,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                             dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId());
                         }else{
                             dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                         }
                     }
 
@@ -619,7 +619,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                     if((item.getQuantity() - item.getOfferItemCounter())% productDiscountOffer.getProdBuyQty() == 0){
                         item.setQuantity(item.getQuantity() + 1);
                         item.setOfferItemCounter(item.getOfferItemCounter() + 1);
-                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()));
+                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                     }else{
 
                     }
@@ -638,12 +638,12 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                             dbHelper.addProductToCart(item1);
                             Log.d("FreeProductPosition ", ""+item.getFreeProductPosition());
                             dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()));
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                             Log.i(TAG,"Different product added to cart");
                         }else{
 
                             dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(), Integer.parseInt(item.getId()));
+                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                             Log.i(TAG,"Different product updated in cart");
                         }
                         //  myItemAdapter.notifyDataSetChanged();

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activities.ShopContactListActivity"
+    tools:showIn="@layout/activity_shop_contact_lits">
+
+    <ImageView
+        android:id="@+id/text_header"
+        android:src="@drawable/arrow_back"
+        android:tint="?attr/primaryTextColor"
+        android:padding="@dimen/activity_vertical_margin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_below="@+id/text_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/edit_mobile"
+                android:hint="Search Shops"
+                android:textSize="@dimen/large_text_size"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:inputType="text"
+                android:maxLength="10"
+                android:imeOptions="actionNext"
+                android:textColorHint="?attr/secondaryTextColor"
+                android:textColor="?attr/primaryTextColor"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:paddingBottom="@dimen/edit_text_small_vertical_padding"
+                android:paddingLeft="@dimen/edit_text_horizontal_padding"
+                android:paddingRight="@dimen/edit_text_horizontal_padding"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"/>
+
+            <View
+                android:id="@+id/seperator_2"
+                android:layout_below="@+id/edit_mobile"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="?attr/separatorColor"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/seperator_2"
+                android:id="@+id/recycler_viewShops"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </androidx.recyclerview.widget.RecyclerView>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <ProgressBar
+        android:layout_centerInParent="true"
+        android:layout_marginTop="100dp"
+        android:id="@+id/progress_bar"
+        android:visibility="visible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_centerInParent="true"
+        android:layout_marginTop="100dp"
+        android:id="@+id/tvNoData"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="?attr/primaryTextColor"
+        android:text="No Data Available"/>
+</RelativeLayout>

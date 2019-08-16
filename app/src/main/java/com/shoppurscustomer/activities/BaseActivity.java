@@ -204,9 +204,9 @@ public class BaseActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
               //DialogAndToast.showDialog("Instant Pay", context);
-                Intent intent = new Intent(BaseActivity.this,ScannarActivity.class);
+                Intent intent = new Intent(BaseActivity.this,InstantScannarActivity.class);
                 intent.putExtra("flag","scan");
-                intent.putExtra("type","addToCart");
+                intent.putExtra("type","InstantPay");
                 startActivity(intent);
             }
         });

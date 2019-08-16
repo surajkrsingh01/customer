@@ -146,16 +146,20 @@ public class RegisterActivity extends NetworkBaseActivity{
         Map<String,String> params=new HashMap<>();
         params.put("username",fullName);
         params.put("mobile",mobile);
-       // params.put("username",email.split("@")[0]);
         params.put("user_email",email);
         params.put("mpassword",password);
-        params.put("photo","photo.jpg");
+        params.put("photo","");
+        params.put("city","");
+        params.put("province","");
+        params.put("country","");
+        params.put("zip","");
+        params.put("address", "");
         params.put("user_type","Customer");
-       // params.put("address", "");
         params.put("created_by",fullName);
         params.put("updated_by",fullName);
         params.put("action","1");
         String url=getResources().getString(R.string.url)+"/registerCustomer";
+        //String url=getResources().getString(R.string.url_web)+"/useradmin/customers/registerCustomer";
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"registerCustomer");
     }
 

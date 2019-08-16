@@ -120,6 +120,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         }else if(view == relative_my_cart){
             startActivity(new Intent( SettingActivity.this, CartActivity.class));
         }else if(view == relative_logout){
+            dbHelper.deleteAllTable();
             editor.clear();
             editor.commit();
             startActivity(new Intent(SettingActivity.this, LoginActivity.class));
