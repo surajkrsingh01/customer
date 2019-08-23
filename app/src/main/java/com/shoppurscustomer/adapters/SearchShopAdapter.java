@@ -25,8 +25,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.ApplyOffersActivity;
+import com.shoppurscustomer.activities.CartShopListActivity;
 import com.shoppurscustomer.activities.CouponOffersActivity;
+import com.shoppurscustomer.activities.ShopListActivity;
 import com.shoppurscustomer.activities.ShopProductListActivity;
+import com.shoppurscustomer.activities.StoresListActivity;
 import com.shoppurscustomer.models.MyShop;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.Utility;
@@ -149,11 +152,20 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
             imageMenu=itemView.findViewById(R.id.image_menu);
             imageMenu.setOnClickListener(this);
             rootView.setOnTouchListener(this);
+            imageView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if(view == imageMenu){
+            if(view == imageView){
+                final MyShop shop = (MyShop) mShopList.get(getAdapterPosition());
+                if(flag!=null && flag.equals("CartShopOffers")  || flag!=null && flag.equals("CartShopCoupons") || flag!=null && flag.equals("mainOffers")){
+                    ((CartShopListActivity)context).showLargeImageDialog(shop, imageView);
+                }else{
+                    ((ShopListActivity)context).showLargeImageDialog(shop, imageView);
+                }
+
+            }else if(view == imageMenu){
                 final MyShop shop = (MyShop) mShopList.get(getAdapterPosition());
                 PopupMenu popupMenu = new PopupMenu(view.getContext(), imageMenu);
 
@@ -198,10 +210,10 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
                 // break;
 
                 case MotionEvent.ACTION_UP:
-                    if(flag!=null && flag.equals("CartShopOffers") || flag!=null && flag.equals("CartShopCoupons")){
+                    if(flag!=null && flag.equals("CartShopOffers") || flag!=null && flag.equals("CartShopCoupons") || flag!=null && flag.equals("mainOffers")){
                         MyShop shop = (MyShop) mShopList.get(getAdapterPosition());
                         Intent intent = new Intent();
-                        if(flag.equals("CartShopOffers"))
+                        if(flag.equals("CartShopOffers") || flag.equals("mainOffers"))
                             intent =new Intent(context, ApplyOffersActivity.class);
                             else
                             intent =new Intent(context, CouponOffersActivity.class);

@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 
@@ -273,10 +274,10 @@ public class LoginActivity extends NetworkBaseActivity{
         Map<String,String> params=new HashMap<>();
         params.put("mobile",mobile);
         params.put("password",password);
-        String url=getResources().getString(R.string.url)+"/loginCustomer";
-        //String url=getResources().getString(R.string.url_web)+"/useradmin/customers/loginCustomer";
+        //String url=getResources().getString(R.string.url)+"/loginCustomer";
+        String url=getResources().getString(R.string.url_web)+"/useradmin/customers/loginCustomer";
         showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"loginCustomer");
+        jsonObjectApiRequestForLoginReg(Request.Method.POST,url,new JSONObject(params),"loginCustomer");
     }
 
     public void registerRequest(String email, String fullName, String photoUrl, String password){
@@ -321,6 +322,7 @@ public class LoginActivity extends NetworkBaseActivity{
     }
 
     public void jsonObjectFavShopApiRequest(int method,String url, JSONObject jsonObject, final String apiName){
+
         JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(method,url,jsonObject,new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -329,6 +331,7 @@ public class LoginActivity extends NetworkBaseActivity{
                 showProgress(false);
                 onJsonObjectResponse(response,apiName);
             }
+
         }, new Response.ErrorListener() {
 
             @Override
@@ -340,7 +343,15 @@ public class LoginActivity extends NetworkBaseActivity{
                 onServerErrorResponse(error,apiName);
                 // DialogAndToast.showDialog(getResources().getString(R.string.connection_error),BaseActivity.this);
             }
-        });
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer " + sharedPreferences.getString(Constants.JWT_TOKEN, ""));
+                //params.put("VndUserDetail", appVersion+"#"+deviceName+"#"+osVersionName);
+                return params;
+            }
+        };
 
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                 30000,
@@ -361,6 +372,7 @@ public class LoginActivity extends NetworkBaseActivity{
                 if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
                     JSONObject dataObject = response.getJSONObject("result");
 
+                    editor.putString(Constants.JWT_TOKEN, dataObject.getString("token"));
                     editor.putString(Constants.FULL_NAME, dataObject.getString("username"));
                     editor.putString(Constants.USER_ID, dataObject.getString("userCode"));
                     editor.putString(Constants.PROFILE_PIC, dataObject.getString("photo"));

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import com.android.volley.AuthFailureError;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -173,7 +174,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.root_url)+"/search/shops";
+        String url=getResources().getString(R.string.root_url)+"search/shops";
         //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"searchShops");
     }
@@ -504,7 +505,15 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                 Log.i(TAG,"Json Error "+error.toString());
                 showProgress(false);
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer " + sharedPreferences.getString(Constants.JWT_TOKEN, ""));
+                //params.put("VndUserDetail", appVersion+"#"+deviceName+"#"+osVersionName);
+                return params;
+            }
+        };
 
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                 30000,
@@ -544,14 +553,22 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                 if(myProduct.getQuantity() == 1){
                     counter--;
                     //dbHelper.removeProductFromCart(myProduct.getProdBarCode());
-                    dbHelper.removeProductFromCart(myProduct.getId());
+                    dbHelper.removeProductFromCart(myProduct.getId(), myProduct.getShopCode());
+                    dbHelper.removePriceProductFromCart(myProduct.getId(), myProduct.getShopCode());
+                    if(myProduct.getProductPriceOffer()!=null){
+                        ProductPriceOffer productPriceOffer = myProduct.getProductPriceOffer();
+                        for(ProductPriceDetails productPriceDetails : productPriceOffer.getProductPriceDetails()){
+                            dbHelper.removePriceProductDetailsFromCart(String.valueOf(productPriceDetails.getId()), myProduct.getShopCode());
+                        }
+                    }
                     if(myProduct.getProductDiscountOffer()!=null){
                         ProductDiscountOffer productDiscountOffer = (ProductDiscountOffer)myProduct.getProductOffer();
 
                         if(productDiscountOffer.getProdBuyId() != productDiscountOffer.getProdFreeId())
-                            dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId());
+                            dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId(), myProduct.getShopCode());
                     }
                     myProduct.setQuantity(0);
+                    myProduct.setTotalAmount(0);
                     productAdapter.notifyItemChanged(position);
                     if(callingActivityName.equals("ShopProductListActivity"))
                         ((ShopProductListActivity)getContext()).updateCartCount();
@@ -666,7 +683,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         int qty = item.getQuantity();
         if(item.getProductPriceOffer() != null){
             ProductPriceOffer productPriceOffer = (ProductPriceOffer)item.getProductPriceOffer();
-            if(qty > 1){
+           // if(qty > 1){
                 int maxSize = productPriceOffer.getProductPriceDetails().size();
                 int mod = qty % maxSize;
                 Log.i(TAG,"mod "+mod);
@@ -674,9 +691,9 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     mod = maxSize;
                 }
                 amount = getOfferPrice(mod,item.getSellingPrice(),productPriceOffer.getProductPriceDetails());
-            }else{
+            /*}else{
                 amount = item.getSellingPrice();
-            }
+            }*/
 
             if(type == 1)
                 item.setQuantity(item.getQuantity() - 1);
@@ -704,9 +721,9 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     if(item.getQuantity() % productDiscountOffer.getProdBuyQty() == (productDiscountOffer.getProdBuyQty()-1)){
                         item.setOfferItemCounter(item.getOfferItemCounter() - 1);
                         if(item.getOfferItemCounter() == 0){
-                            dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId());
+                            dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId(), item.getShopCode());
                         }else{
-                            dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
+                            dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f, item.getShopCode());
                             dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                         }
                     }
@@ -739,12 +756,12 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                             item1.setFreeProductPosition(item.getFreeProductPosition());
                             dbHelper.addProductToCart(item1);
                             Log.d("FreeProductPosition ", ""+item.getFreeProductPosition());
-                            dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()));
+                            dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()), item.getShopCode());
                             dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                             Log.i(TAG,"Different product added to cart");
                         }else{
 
-                            dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
+                            dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f, item.getShopCode());
                             dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                             Log.i(TAG,"Different product updated in cart");
                         }
@@ -768,14 +785,19 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
 
     private float getOfferPrice(int qty,float sp,List<ProductPriceDetails> productPriceDetailsList){
         float amount = 0f;
+        int i=-1;
         for(ProductPriceDetails productPriceDetails:productPriceDetailsList){
             if(productPriceDetails.getPcodProdQty() == qty){
                 amount = productPriceDetails.getPcodPrice();
+                if(qty!=1){
+                    amount = amount - productPriceDetailsList.get(i).getPcodPrice();
+                }
                 Log.i(TAG,"offer price "+amount);
                 break;
             }else{
                 amount = sp;
             }
+            i++;
         }
         Log.i(TAG,"final selling price "+amount);
         return amount;

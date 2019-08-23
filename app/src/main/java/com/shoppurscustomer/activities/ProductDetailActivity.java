@@ -46,7 +46,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
     private RecyclerView recyclerViewReview;
     private MyReviewAdapter myReviewAdapter;
     private List<MyReview> myReviewList;
-    private TextView textViewSubCatName,textViewProductName,
+    private TextView textViewSubCatName,textViewProductName, text_product_name_top,
             tvStarRatings,tvNumRatings, text_product_selling_price,text_product_mrp,textViewDesc,tv_cartCount, tvReadMore, tvDiscount ;
     private ImageView imageView2,imageView3,imageView4, image_plus, image_minus;
     private Button btnAddCart;
@@ -96,8 +96,28 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         imageView2 = findViewById(R.id.image_view_2);
         imageView3 = findViewById(R.id.image_view_3);
         imageView4 = findViewById(R.id.image_view_4);
+        imageView2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               showImageDialog(myProduct.getProdImage1(), imageView2);
+            }
+        });
+        imageView3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showImageDialog(myProduct.getProdImage2(), imageView3);
+            }
+        });
+        imageView4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showImageDialog(myProduct.getProdImage3(), imageView4);
+            }
+        });
+
         textViewSubCatName = findViewById(R.id.text_sub_cat);
         textViewProductName = findViewById(R.id.text_product_name);
+        text_product_name_top = findViewById(R.id.text_product_name_top);
         text_product_selling_price = findViewById(R.id.text_product_selling_price);
         text_product_mrp = findViewById(R.id.text_product_mrp);
         text_product_mrp.setPaintFlags(text_product_mrp.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -116,6 +136,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
 
         textViewSubCatName.setText(myProduct.getSubCatName());
         textViewProductName.setText(myProduct.getName());
+        text_product_name_top.setText(myProduct.getName());
         text_product_selling_price.setText(Utility.numberFormat(myProduct.getSellingPrice()));
         text_product_mrp.setText(Utility.numberFormat(myProduct.getMrp()));
         //textViewCode.setText(myProduct.getBarCode());
@@ -283,20 +304,28 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                 if(myProduct.getQuantity() == 1){
                     counter--;
                     //dbHelper.removeProductFromCart(myProduct.getProdBarCode());
-                    dbHelper.removeProductFromCart(myProduct.getId());
+                    dbHelper.removeProductFromCart(myProduct.getId(), myProduct.getShopCode());
+                    dbHelper.removePriceProductFromCart(myProduct.getId(), myProduct.getShopCode());
+                    if(myProduct.getProductPriceOffer()!=null){
+                        ProductPriceOffer productPriceOffer = myProduct.getProductPriceOffer();
+                        for(ProductPriceDetails productPriceDetails : productPriceOffer.getProductPriceDetails()){
+                            dbHelper.removePriceProductDetailsFromCart(String.valueOf(productPriceDetails.getId()), myProduct.getShopCode());
+                        }
+                    }
                     if(myProduct.getProductDiscountOffer()!=null){
                         ProductDiscountOffer productDiscountOffer = (ProductDiscountOffer)myProduct.getProductOffer();
 
                         if(productDiscountOffer.getProdBuyId() != productDiscountOffer.getProdFreeId())
-                            dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId());
+                            dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId(), myProduct.getShopCode());
                     }
                     myProduct.setQuantity(0);
+                    myProduct.setTotalAmount(0);
                     updateAddButtons();
                     updateCartCount();
                 }else{
                     int qty = myProduct.getQuantity() - 1;
                     float netSellingPrice = getOfferAmount(myProduct,type);
-                    myProduct.setQuantity(qty);
+                    //myProduct.setQuantity(qty);
                     qty = myProduct.getQuantity();
                     Log.i(TAG,"netSellingPrice "+netSellingPrice);
                     float amount = myProduct.getTotalAmount() - netSellingPrice;
@@ -391,7 +420,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         int qty = item.getQuantity();
         if(item.getProductPriceOffer() != null){
             ProductPriceOffer productPriceOffer = (ProductPriceOffer)item.getProductPriceOffer();
-            if(qty > 1){
+            //if(qty > 1){
                 int maxSize = productPriceOffer.getProductPriceDetails().size();
                 int mod = qty % maxSize;
                 Log.i(TAG,"mod "+mod);
@@ -399,9 +428,9 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     mod = maxSize;
                 }
                 amount = getOfferPrice(mod,item.getSellingPrice(),productPriceOffer.getProductPriceDetails());
-            }else{
+            /*}else{
                 amount = item.getSellingPrice();
-            }
+            }*/
 
             if(type == 1)
                 item.setQuantity(item.getQuantity() - 1);
@@ -429,9 +458,9 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     if(item.getQuantity() % productDiscountOffer.getProdBuyQty() == (productDiscountOffer.getProdBuyQty()-1)){
                         item.setOfferItemCounter(item.getOfferItemCounter() - 1);
                         if(item.getOfferItemCounter() == 0){
-                            dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId());
+                            dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId(), item.getShopCode());
                         }else{
-                            dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
+                            dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f,item.getShopCode());
                             dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                         }
                     }
@@ -463,12 +492,12 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                             item1.setFreeProductPosition(item.getFreeProductPosition());
                             dbHelper.addProductToCart(item1);
                             Log.d("FreeProductPosition ", ""+item.getFreeProductPosition());
-                            dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()));
+                            dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()), item.getShopCode());
                             dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                             Log.i(TAG,"Different product added to cart");
                         }else{
 
-                            dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f);
+                            dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f, item.getShopCode());
                             dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
                             Log.i(TAG,"Different product updated in cart");
                         }
@@ -492,14 +521,19 @@ public class ProductDetailActivity extends NetworkBaseActivity {
 
     private float getOfferPrice(int qty,float sp,List<ProductPriceDetails> productPriceDetailsList){
         float amount = 0f;
+        int i=-1;
         for(ProductPriceDetails productPriceDetails:productPriceDetailsList){
             if(productPriceDetails.getPcodProdQty() == qty){
                 amount = productPriceDetails.getPcodPrice();
+                if(qty!=1){
+                    amount = amount - productPriceDetailsList.get(i).getPcodPrice();
+                }
                 Log.i(TAG,"offer price "+amount);
                 break;
             }else{
                 amount = sp;
             }
+            i++;
         }
         Log.i(TAG,"final selling price "+amount);
         return amount;
@@ -548,7 +582,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                 }
             }else if(apiName.equals("removeCart")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.removeProductFromCart(myProduct.getId());
+                    dbHelper.removeProductFromCart(myProduct.getId(), myProduct.getShopCode());
                     updateCartCount();
                     Log.d(TAG, "Deleted cart" );
                 }else {
@@ -649,11 +683,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     startActivity(new Intent(ProductDetailActivity.this, CartActivity.class));
                 }
             });
-            float totalAmount = dbHelper.getTotalMrpPriceCart();
-            float totalTax = dbHelper.getTotalTaxesart();
-
-            float totDiscount = totalAmount - dbHelper.getTotalPriceCart();
-            float totalPrice = (totalAmount + totalTax) - totDiscount;
+            float totalPrice = dbHelper.getTotalPriceCart();
 
 
             float deliveryDistance = 0;
@@ -693,6 +723,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
             myProduct.setFreeProductPosition(dbHelper.getFreeProductPosition(myProduct.getId(), shopCode));
             myProduct.setOfferItemCounter(dbHelper.getOfferCounter(myProduct.getId(), shopCode));
             myProduct.setQuantity(Integer.parseInt(tv_cartCount.getText().toString()));
+            myProduct.setTotalAmount(dbHelper.getTotalAmount(myProduct.getId(), shopCode));
         }else {
             tv_cartCount.setText(String.valueOf(0));
             linear_plus_minus.setVisibility(View.GONE);

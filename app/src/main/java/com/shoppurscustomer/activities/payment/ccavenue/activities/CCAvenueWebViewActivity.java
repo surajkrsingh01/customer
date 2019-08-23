@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -19,7 +20,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonArray;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.CartActivity;
 import com.shoppurscustomer.activities.NetworkBaseActivity;
 import com.shoppurscustomer.activities.TransactionDetailsActivity;
 import com.shoppurscustomer.activities.payment.ccavenue.utility.AvenuesParams;
@@ -27,16 +30,22 @@ import com.shoppurscustomer.activities.payment.ccavenue.utility.Constants;
 import com.shoppurscustomer.activities.payment.ccavenue.utility.LoadingDialog;
 import com.shoppurscustomer.activities.payment.ccavenue.utility.RSAUtility;
 import com.shoppurscustomer.activities.payment.ccavenue.utility.ServiceUtility;
+import com.shoppurscustomer.database.DbHelper;
+import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.MyShop;
 import com.shoppurscustomer.utilities.DialogAndToast;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CCAvenueWebViewActivity extends NetworkBaseActivity {
@@ -66,6 +75,8 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
     private String name,address,mobileNo,email,zip,city, state,country,responseData;
     private JSONObject dataObject;
     private WebView webview;
+    private JSONArray orderShopArray;
+    private String shopOrderNumber;
 
 
     @Override
@@ -106,11 +117,21 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
         }
 
         mainIntent = getIntent();
+
         flag = mainIntent.getStringExtra("flag");
         if(flag.equals("instantPay")){
             MyShop myShop = (MyShop) mainIntent.getSerializableExtra("object");
             remarks = mainIntent.getStringExtra("remarks");
             MERCHANT_ID = myShop.getMerchantId();
+        }else if(flag.equals("online_shoping")) {
+            // orderAmount = mainIntent.getStringExtra(AvenuesParams.AMOUNT);
+            // orderCurrency = mainIntent.getStringExtra(AvenuesParams.CURRENCY);
+            shopOrderNumber = mainIntent.getStringExtra("orderNumber");
+            try {
+                orderShopArray = new JSONArray(mainIntent.getStringExtra("shopArray"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         REDIRECT_URL = getResources().getString(R.string.url_web)+"/web/payment/paymentResponseHandler";
@@ -379,11 +400,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                          finish();
                          CCAvenueWebViewActivity.this.finish();
                      }else if(flag.equals("online_shoping")){
-                         Intent intent = new Intent(CCAvenueWebViewActivity.this, TransactionDetailsActivity.class);
-                         intent.putExtra("flag", "online_shoping");
-                         intent.putExtra("response", dataObject.toString());
-                         startActivity(intent);
-                         CCAvenueWebViewActivity.this.finish();
+                         placeOrder(orderShopArray, shopOrderNumber);
                      }else if(flag.equals("instantPay")){
                          Intent intent = new Intent(CCAvenueWebViewActivity.this, TransactionDetailsActivity.class);
                          intent.putExtra("flag", "instantPay");
@@ -391,15 +408,46 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                          startActivity(intent);
                          CCAvenueWebViewActivity.this.finish();
                      }
-
                  }else{
                      DialogAndToast.showDialog(response.getString("message"),this);
+                 }
+             }else if(apiName.equals("place_order")){
+                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
+                     dbHelper.deleteTable(DbHelper.CART_TABLE);
+                     dbHelper.deleteTable(DbHelper.PRODUCT_UNIT_TABLE);
+                     dbHelper.deleteTable(DbHelper.PRODUCT_SIZE_TABLE);
+                     dbHelper.deleteTable(DbHelper.PRODUCT_COLOR_TABLE);
+                     dbHelper.deleteTable(DbHelper.PROD_FREE_OFFER_TABLE);
+                     dbHelper.deleteTable(DbHelper.PROD_PRICE_TABLE);
+                     dbHelper.deleteTable(DbHelper.PROD_PRICE_DETAIL_TABLE);
+                     dbHelper.deleteTable(DbHelper.PROD_COMBO_TABLE);
+                     dbHelper.deleteTable(DbHelper.PROD_COMBO_DETAIL_TABLE);
+                     dbHelper.deleteTable(DbHelper.COUPON_TABLE);
+                     Log.d(TAG, "Ordeer Placed" );
+
+                     Intent intent = new Intent(CCAvenueWebViewActivity.this, TransactionDetailsActivity.class);
+                     intent.putExtra("orderNumber", shopOrderNumber);
+                     intent.putExtra("totalAmount", AvenuesParams.AMOUNT);
+                     List<MyProduct> myProductList = (List<MyProduct>) mainIntent.getSerializableExtra("shopOrderList");
+                     intent.putExtra("shopOrderList", (Serializable) myProductList);
+                     startActivity(intent);
+                     finish();
+                 }else {
+                     DialogAndToast.showToast(response.getString("message"), CCAvenueWebViewActivity.this);
                  }
              }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void placeOrder(JSONArray shopArray, String orderId) throws JSONException {
+        shopArray.getJSONObject(0).put("orderId", orderId );
+        Log.d(TAG, shopArray.toString());
+        String url=getResources().getString(R.string.root_url)+ com.shoppurscustomer.utilities.Constants.PLACE_ORDER;
+        showProgress(true);
+        jsonArrayV2ApiRequest(Request.Method.POST,url, shopArray,"place_order");
     }
 
 

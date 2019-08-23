@@ -6,7 +6,7 @@
     <string name="url_web">http://api.shoppurs.in:8085/ShoppursApp</string>
     <string name="url">http://api.shoppurs.in:8085/ShoppursApp/api/customers</string>
     <string name="root_url">http://api.shoppurs.in:8085/ShoppursApp/api/</string>
-    <string name="url_offer">http://api.shoppurs.in4:8085/ShoppursApp/api/offers/</string>
+    <string name="url_offer">http://api.shoppurs.in:8085/ShoppursApp/api/offers/</string>
     <string name="local_url">http://192.168.1.6:8888/api/customers</string>
     <string name="base_image_url">http://www.shoppurs.in/images</string>
     <string name="sign_up">Sign Up</string>
@@ -76,6 +76,7 @@
     <string name="title_activity_shop_address">Shop Address</string>
     <string name="title_activity_product_list">Product List</string>
     <string name="title_activity_shop_list">My Shops</string>
+    <string name="title_activity_banner_details">Banner Details</string>
     <string name="title_activity_personalinfo">Personal Info</string>
     <string name="title_activity_changepasswordo">Change Password</string>
     <string name="title_activity_cart_shop">Cart Shops</string>
@@ -120,5 +121,28 @@
     <string name="facebook_app_id">469783973585783</string>
     <string name="fb_login_protocol_scheme">fb469783973585783</string>
 
+
+    <string name="transition_dialog">transition_dialog</string>
+
+    <string name="html" translatable="false">
+        <![CDATA[
+        <html>
+            <head>
+                <style type="text/css">
+                    body {
+                        font-size: %4$fpx;
+                        color: #%2$s;
+                        margin: %5$fpx %5$fpx %5$fpx %5$fpx;
+                    }
+                    a {color: #%3$s;}
+                    img {display: inline; height: auto; max-width: 100%%;}
+                    pre {white-space: pre-wrap;}
+                    iframe {width: 90vw; height: 50.625vw;} /* 16:9 */
+                </style>
+            </head>
+            <body>%1$s</body>
+            </html>"
+        ]]>
+    </string>
 
 </resources>

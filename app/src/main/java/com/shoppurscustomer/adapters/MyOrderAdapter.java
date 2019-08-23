@@ -27,6 +27,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.MyOrderActivity;
 import com.shoppurscustomer.activities.MyOrderDetailsActivity;
 import com.shoppurscustomer.models.MyOrder;
 import com.shoppurscustomer.utilities.DialogAndToast;
@@ -85,9 +86,11 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.MyViewHo
                 initials = item.getShopName().substring(0,2);
             }
 
+            myViewHolder.textInitial.setVisibility(View.VISIBLE);
+            myViewHolder.imageView.setVisibility(View.GONE);
             myViewHolder.textInitial.setText(initials);
 
-            RequestOptions requestOptions = new RequestOptions();
+           /* RequestOptions requestOptions = new RequestOptions();
             requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
             // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
             requestOptions.centerCrop();
@@ -116,7 +119,7 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.MyViewHo
                         }
                     })
                     .apply(requestOptions)
-                    .into(myViewHolder.imageView);
+                    .into(myViewHolder.imageView);*/
 
     }
 
@@ -128,7 +131,7 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.MyViewHo
         return 0;
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, View.OnClickListener {
         private TextView textInitial,textCustName,textAmount,textDeliveryType,textViewStatus;
         private ImageView imageView;
         private View rootView;
@@ -143,6 +146,15 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.MyViewHo
             textViewStatus=itemView.findViewById(R.id.text_status);
             imageView=itemView.findViewById(R.id.image_view);
             rootView.setOnTouchListener(this);
+            imageView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if(v == imageView){
+                    final MyOrder order = (MyOrder) myOrderList.get(getAdapterPosition());
+                    ((MyOrderActivity)context).showLargeImageDialog(order, imageView);
+            }
         }
 
         @Override

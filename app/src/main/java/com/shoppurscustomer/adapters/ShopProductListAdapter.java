@@ -97,6 +97,7 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
                 item.setFreeProductPosition(dbHelper.getFreeProductPosition(item.getId(), shopCode));
                 item.setOfferItemCounter(dbHelper.getOfferCounter(item.getId(), shopCode));
                 item.setQuantity(Integer.parseInt(myViewHolder.tv_cartCount.getText().toString()));
+                item.setTotalAmount(dbHelper.getTotalAmount(item.getId(), shopCode));
             }else {
                 item.setQuantity(0);
                 myViewHolder.tv_cartCount.setText(String.valueOf(0));
@@ -260,6 +261,7 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
             text_offer = itemView.findViewById(R.id.text_offer);
             rootView.setOnClickListener(this);
             text_offer.setOnClickListener(this);
+            imageView.setOnClickListener(this);
         }
 
         @Override
@@ -267,6 +269,8 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
 
             if(v==text_offer){
                 ((ShopProductListActivity)context).showOfferDescription(myProductsList.get(getAdapterPosition()));
+            }else if(v == imageView){
+                ((ShopProductListActivity)context).showLargeImageDialog(myProductsList.get(getAdapterPosition()), imageView);
             }else if(v == rootView){
                 MyProduct item = (MyProduct) myProductsList.get(getAdapterPosition());
                 Intent intent = new Intent(context,ProductDetailActivity.class);

@@ -10,6 +10,8 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -59,6 +61,7 @@ import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.NetworkBaseActivity;
 import com.shoppurscustomer.activities.ShopProductListActivity;
 import com.shoppurscustomer.interfaces.OnLocationReceivedListener;
+import com.shoppurscustomer.location.GeocodingLocation;
 import com.shoppurscustomer.location.GpsLocationProvider;
 import com.shoppurscustomer.location.NetworkSensor;
 import com.shoppurscustomer.models.DeliveryAddress;
@@ -440,7 +443,7 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
             marker = mMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                    .title("Current Location"));
+                    .title("Delivery Location"));
 
             mMap.getUiSettings().setZoomControlsEnabled(false); // true to enable
             mMap.setTrafficEnabled(true);
@@ -480,15 +483,16 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
 
     }
 
-    private void updateAddress(){
-        String name = edit_customer_name.getText().toString();
-        String mobile = edit_customer_mobile.getText().toString();
-        String address = editAddress.getText().toString();
-        String pincode = editPincode.getText().toString();
-        String country = editCountry.getText().toString();
-        String state =  editState.getText().toString();
-        String city =  editCity.getText().toString();
-        String locality = editLocality.getText().toString();
+    String name, mobile, address, pincode, locality;
+    private void validateFields(){
+         name = edit_customer_name.getText().toString();
+         mobile = edit_customer_mobile.getText().toString();
+         address = editAddress.getText().toString();
+         pincode = editPincode.getText().toString();
+         country = editCountry.getText().toString();
+         state =  editState.getText().toString();
+         city =  editCity.getText().toString();
+         locality = editLocality.getText().toString();
 
         if (TextUtils.isEmpty(name)) {
             DialogAndToast.showDialog("Please Enter Name",this);
@@ -521,6 +525,34 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
             return;
         }
 
+        GeocodingLocation locationAddress = new GeocodingLocation();
+        locationAddress.getAddressFromLocation(address,
+                getApplicationContext(), new AddDeliveryAddressActivity.GeocoderHandler());
+
+    }
+
+    private class GeocoderHandler extends Handler {
+        @Override
+        public void handleMessage(Message message) {
+            String locationAddress;
+            switch (message.what) {
+                case 1:
+                    Bundle bundle = message.getData();
+                    locationAddress = bundle.getString("address");
+                    shopLatLng = new LatLng(bundle.getDouble("lat"), bundle.getDouble("long"));
+
+                    break;
+                default:
+                    locationAddress = null;
+            }
+            //Log.d("LatLong from Address ", locationAddress);
+            Log.d("LatLong from Address ", " "+shopLatLng);
+            updateAddressAfterGettingLatLong();
+            //latLongTV.setText(locationAddress);
+        }
+    }
+
+    private void  updateAddressAfterGettingLatLong(){
         DeliveryAddress deliveryAddress = new DeliveryAddress();
         deliveryAddress.setName(name);
         deliveryAddress.setMobile(mobile);
@@ -540,7 +572,6 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
         }
         else
             addDeliveryAddress(deliveryAddress);
-
     }
 
     private void openDialog(){
@@ -553,7 +584,7 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        updateAddress();
+                        validateFields();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

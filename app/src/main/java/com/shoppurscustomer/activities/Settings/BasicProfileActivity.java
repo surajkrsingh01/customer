@@ -40,10 +40,10 @@ public class BasicProfileActivity extends BaseImageActivity {
 
     private EditText etUsername,etGstNo,etEmail,etMobile;
     private CircleImageView profileImage;
-    private RelativeLayout rlImageLayout;
     private String imageBase64;
     private TextView tv_top_parent, tv_parent;
     private ImageView btn_camera;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,6 @@ public class BasicProfileActivity extends BaseImageActivity {
         etEmail = findViewById(R.id.edit_email);
         etMobile = findViewById(R.id.edit_mobile);
         profileImage = findViewById(R.id.profile_image);
-        rlImageLayout = findViewById(R.id.relative_image);
         RelativeLayout btnUpdate = findViewById(R.id.relative_footer_action);
         btnUpdate.setBackgroundColor(colorTheme);
         btn_camera = findViewById(R.id.btn_camera);
@@ -95,7 +94,7 @@ public class BasicProfileActivity extends BaseImageActivity {
             }
         });
 
-        rlImageLayout.setOnClickListener(new View.OnClickListener() {
+        btn_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 selectImage();
@@ -117,6 +116,13 @@ public class BasicProfileActivity extends BaseImageActivity {
             public void onClick(View v) {
                 startActivity(new Intent(BasicProfileActivity.this, PersonalProfileActivity.class));
                 finish();
+            }
+        });
+
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showImageDialog(sharedPreferences.getString(Constants.PROFILE_PIC, ""), profileImage);
             }
         });
     }

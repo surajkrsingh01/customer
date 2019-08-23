@@ -6,9 +6,13 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.constraintlayout.widget.ConstraintSet;
+
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,7 +29,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
+import com.shoppurscustomer.activities.ApplyOffersActivity;
+import com.shoppurscustomer.activities.BannerDetailsActivity;
+import com.shoppurscustomer.activities.CartActivity;
+import com.shoppurscustomer.activities.CartShopListActivity;
+import com.shoppurscustomer.activities.CouponOffersActivity;
+import com.shoppurscustomer.activities.MainActivity;
 import com.shoppurscustomer.activities.Settings.SettingActivity;
+import com.shoppurscustomer.activities.ShopAddressActivity;
 import com.shoppurscustomer.activities.ShopProductListActivity;
 import com.shoppurscustomer.activities.StoresListActivity;
 import com.shoppurscustomer.models.CatListItem;
@@ -34,23 +45,30 @@ import com.shoppurscustomer.models.MyItem;
 import com.shoppurscustomer.models.MyShop;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
+import com.shoppurscustomer.utilities.Utility;
 
 import java.util.Date;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private List<Object> itemList;
     private Context context;
     private String type;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     private ConstraintSet constraintSet = new ConstraintSet();
     public MyItemAdapter(Context context, List<Object> itemList,String type) {
         this.itemList = itemList;
         this.context=context;
         this.type = type;
+        sharedPreferences= context.getSharedPreferences(Constants.MYPREFERENCEKEY,MODE_PRIVATE);
+        editor=sharedPreferences.edit();
     }
 
     public class MyHomeHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -111,6 +129,10 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                 case MotionEvent.ACTION_UP:
                    // Log.i("Adapter","onPressUp");
+                    HomeListItem item = (HomeListItem) itemList.get(getAdapterPosition());
+                    Intent intent = new Intent(context, BannerDetailsActivity.class);
+                    intent.putExtra("desc", item.getDesc());
+                    context.startActivity(intent);
                     zoomAnimation(false,rootView);
                     break;
                 case MotionEvent.ACTION_CANCEL:
@@ -181,7 +203,8 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             imageMenu=itemView.findViewById(R.id.image_menu);
             rootView.setOnTouchListener(this);
             //imageMenu.setVisibility(View.GONE);
-           // imageMenu.setOnClickListener(this);
+           imageMenu.setOnClickListener(this);
+            imageView.setOnClickListener(this);
         }
 
         @Override
@@ -199,16 +222,28 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     public boolean onMenuItemClick(MenuItem item) {
                         //Toast.makeText(getBaseContext(), "You selected the action : " + item.getTitle()+" position "+position, Toast.LENGTH_SHORT).show();
                         if(item.getTitle().equals("Call")){
-                            ((StoresListActivity)(context)).makeCall(shop.getMobile());
+                            ((MainActivity)(context)).makeCall(shop.getMobile());
                             Log.i("Adapter","Call Customer"+shop.getName());
                         }else if(item.getTitle().equals("Message")){
-                            ((StoresListActivity)(context)).openWhatsApp(shop.getMobile());
+                            ((MainActivity)(context)).openWhatsApp(shop.getMobile());
                             Log.i("Adapter","Message Customer"+shop.getName());
+                        }else if (item.getTitle().equals("Location")) {
+                            if(shop.getLatitude()!=0) {
+                                Intent intent = new Intent(context, ShopAddressActivity.class);
+                                intent.putExtra("flag", "shopAddress");
+                                intent.putExtra("lat", shop.getLatitude());
+                                intent.putExtra("long", shop.getLongitude());
+                                context.startActivity(intent);
+                            }else {
+                                DialogAndToast.showDialog("Location Not Available", context);
+                            }
                         }
                         return true;
                     }
                 });
-
+            }else if(view ==imageView){
+                final MyShop shop = (MyShop) itemList.get(getAdapterPosition());
+                ((MainActivity)(context)).showLargeImageDialog(shop, imageView);
             }
         }
 
@@ -220,8 +255,29 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     break;
 
                 case MotionEvent.ACTION_UP:
-                    HomeListItem shop = (HomeListItem) itemList.get(getAdapterPosition());
-                     //DialogAndToast.showDialog("item Name "+shop.getDesc(), context );
+                    MyShop shop = (MyShop) itemList.get(getAdapterPosition());
+                     Intent   intent =new Intent(context, ApplyOffersActivity.class);
+                    intent.putExtra("flag","mainOffers");
+                    intent.putExtra("shopCode",shop.getCode());
+                    Log.d("shopCode", shop.getCode());
+                    intent.putExtra("photo",shop.getShopimage());
+                    intent.putExtra("address",shop.getAddress());
+                    intent.putExtra("mobile", shop.getMobile());
+                    intent.putExtra("stateCity",shop.getState()+", "+shop.getCity());
+                    //intent.putExtra("catId", catId);
+                    //intent.putExtra("subcatid",subcatid);
+                    // intent.putExtra("subcatname",subcatname);
+                    intent.putExtra("dbname",shop.getDbname());
+                    intent.putExtra("dbuser",shop.getDbusername());
+                    intent.putExtra("dbpassword",shop.getDbpassword());
+                    intent.putExtra("shop_code",shop.getId());
+                    editor.putString(Constants.SHOP_INSIDE_CODE,shop.getId());
+                    editor.putString(Constants.SHOP_INSIDE_NAME, shop.getName());
+                    editor.putString(Constants.SHOP_DBNAME,shop.getDbname());
+                    editor.putString(Constants.SHOP_DB_USER_NAME,shop.getDbusername());
+                    editor.putString(Constants.SHOP_DB_PASSWORD,shop.getDbpassword());
+                    editor.commit();
+                    context.startActivity(intent);
                     zoomAnimation(false,rootView);
                     break;
                 case MotionEvent.ACTION_CANCEL:
@@ -258,12 +314,17 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 case MotionEvent.ACTION_DOWN:
                     //Log.i("Adapter","onPressDown");
                     zoomAnimation(true,rootView);
-                    //myItemTouchListener.onPressDown(getAdapterPosition());
                     break;
                 // break;
 
                 case MotionEvent.ACTION_UP:
                     // Log.i("Adapter","onPressUp");
+                    HomeListItem category = (HomeListItem) itemList.get(getAdapterPosition());
+                    Intent intent = new Intent(context, CartShopListActivity.class);
+                    //intent.putExtra("custCode",getIntent().getStringExtra("custCode"));
+                    intent.putExtra("flag","mainOffers");
+                    intent.putExtra("catId", category.getId());
+                    context.startActivity(intent);
                     zoomAnimation(false,rootView);
                     break;
                 case MotionEvent.ACTION_CANCEL:
@@ -295,55 +356,18 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    public class MyListType5ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener {
+    public class BannerListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        private TextView textTitle;
-        private ImageView imageView;
-        // private ConstraintLayout constraintLayout;
-        private View rootView;
-        private long downTime,upTime;
+        private RecyclerView recyclerView;
 
-        public MyListType5ViewHolder(View itemView) {
+
+        public BannerListViewHolder(View itemView) {
             super(itemView);
-            rootView = itemView;
-            textTitle=itemView.findViewById(R.id.text_title);
-            imageView=itemView.findViewById(R.id.image_view);
-            //constraintLayout=itemView.findViewById(R.id.parentContsraint);
-            rootView.setOnTouchListener(this);
+            recyclerView=itemView.findViewById(R.id.recycler_view);
         }
 
         @Override
         public void onClick(View view) {
-        }
-
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    //Log.i("Adapter","onPressDown");
-                    zoomAnimation(true,rootView);
-                    downTime = new Date().getTime();
-                    //myItemTouchListener.onPressDown(getAdapterPosition());
-                    break;
-                // break;
-
-                case MotionEvent.ACTION_UP:
-                    // Log.i("Adapter","onPressUp");
-                    zoomAnimation(false,rootView);
-                    upTime = new Date().getTime();
-                    long diff = upTime - downTime;
-                    if(getAdapterPosition() == 0){
-
-                    }else{
-
-                    }
-                    break;
-                case MotionEvent.ACTION_CANCEL:
-                    Log.i("Adapter","onPressCancel");
-                    zoomAnimation(false,rootView);
-                    break;
-            }
-            return true;
         }
     }
 
@@ -375,8 +399,9 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 viewHolder = new MyStoreListType1ViewHolder(v4);
                 break;
             case 5:
-                View v5 = inflater.inflate(R.layout.list_item_type_3_1_layout, parent, false);
-                viewHolder = new MyListType5ViewHolder(v5);
+
+                View v5 = inflater.inflate(R.layout.banner_horizontal_item_list, parent, false);
+                viewHolder = new BannerListViewHolder(v5);
                 break;
             default:
                 View v = inflater.inflate(R.layout.list_item_layout, parent, false);
@@ -389,22 +414,26 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public int getItemViewType(int position) {
         if(type.equals("homeList")){
-            HomeListItem item = (HomeListItem)itemList.get(position);
-            if(item.getType() == 0){
-                return 0;
-            }else if(item.getType() == 1){
-                return 1;
-            }else if(item.getType() == 2){
-                return 2;
-            }else if(item.getType() == 3){
-                return 3;
-            }else if(item.getType() == 4){
-                return 4;
-            }else if(item.getType() == 5){
-                return 5;
-            }
-            else{
-                return 10;
+            if(itemList.get(position) instanceof  MyShop){
+                return  4;
+            }else {
+                HomeListItem item = (HomeListItem)itemList.get(position);
+                if(item.getType() == 0){
+                    return 0;
+                }else if(item.getType() == 1){
+                    return 1;
+                }else if(item.getType() == 2){
+                    return 2;
+                }else if(item.getType() == 3){
+                    return 3;
+                }else if(item.getType() == 4){
+                    return 4;
+                }else if(item.getType() == 5){
+                    return 5;
+                }
+                else{
+                    return 10;
+                }
             }
 
         }else if(type.equals("countries")){
@@ -424,8 +453,9 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
           }else if(holder instanceof MyHomeHeaderViewHolder){
               HomeListItem item = (HomeListItem) itemList.get(position);
               MyHomeHeaderViewHolder myViewHolder = (MyHomeHeaderViewHolder)holder;
-              myViewHolder.textHeader.setVisibility(View.GONE);
-              //myViewHolder.textHeader.setText(item.getTitle());
+              //myViewHolder.textHeader.setVisibility(View.VISIBLE);
+              myViewHolder.textDesc.setVisibility(View.VISIBLE);
+              myViewHolder.textHeader.setText(item.getTitle());
               myViewHolder.textDesc.setText(item.getDesc());
 
               StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
@@ -435,27 +465,19 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
               HomeListItem item = (HomeListItem) itemList.get(position);
               MyListType1ViewHolder myViewHolder = (MyListType1ViewHolder)holder;
 
-              if(TextUtils.isEmpty(item.getTitle())){
-                  myViewHolder.textTitle.setVisibility(View.GONE);
-              }else{
-                  myViewHolder.textTitle.setVisibility(View.VISIBLE);
-                  myViewHolder.textTitle.setText(item.getTitle());
-              }
-              myViewHolder.textName.setText(item.getName());
-
               RequestOptions requestOptions = new RequestOptions();
               requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
-             // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
+              requestOptions.override(Utility.dpToPx(300, context), Utility.dpToPx(350, context));
               requestOptions.centerCrop();
               requestOptions.skipMemoryCache(false);
 
               Glide.with(context)
-                      .load(item.getLocalImage())
+                      .load(item.getImage())
                       .apply(requestOptions)
                       .into(myViewHolder.imageView);
 
-              StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
-              layoutParams.setFullSpan(true);
+              //StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
+              //layoutParams.setFullSpan(true);
 
 
           }else if(holder instanceof MyListType2ViewHolder){
@@ -482,30 +504,24 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
           }else if(holder instanceof MyStoreListType1ViewHolder){
-              HomeListItem item = (HomeListItem) itemList.get(position);
+              MyShop item = (MyShop) itemList.get(position);
               MyStoreListType1ViewHolder myViewHolder = (MyStoreListType1ViewHolder)holder;
-              if(itemList.get(position) instanceof CatListItem) {
-                  CatListItem mcatitem = (CatListItem) itemList.get(position);
-                  if (mcatitem.getTitle() != null && mcatitem.getTitle().equals("My Favourite Stores")){
-                      Log.d("Title", mcatitem.getTitle());
-                      // myViewHolder.image_icon.setVisibility(View.GONE);
-                  }//else myViewHolder.image_icon.setVisibility(View.VISIBLE);
-              }
-              myViewHolder.textName.setText(item.getDesc());
-              myViewHolder.textAddress.setText(item.getTitle());
-              myViewHolder.textMobile.setText(item.getCategory());
-              RequestOptions requestOptions = new RequestOptions();
-              requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
-              requestOptions.centerCrop();
-              requestOptions.skipMemoryCache(false);
-              Glide.with(context)
-                      .load(item.getLocalImage())
-                      .apply(requestOptions)
-                      .error(R.drawable.ic_photo_black_192dp)
-                      .into(myViewHolder.imageView);
+                  MyShop myShop = (MyShop) itemList.get(position);
+                  myViewHolder.textName.setText(myShop.getName());
+                  myViewHolder.textAddress.setText(myShop.getAddress());
+                  myViewHolder.textMobile.setText(myShop.getMobile());
+                  RequestOptions requestOptions = new RequestOptions();
+                  requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+                  requestOptions.centerCrop();
+                  requestOptions.skipMemoryCache(false);
+                  Glide.with(context)
+                          .load(myShop.getShopimage())
+                          .apply(requestOptions)
+                          .error(R.drawable.ic_photo_black_192dp)
+                          .into(myViewHolder.imageView);
 
-              StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
-              layoutParams.setFullSpan(true);
+                  StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
+                  layoutParams.setFullSpan(true);
           }else if(holder instanceof MyListType3ViewHolder){
               HomeListItem item = (HomeListItem) itemList.get(position);
               MyListType3ViewHolder myViewHolder = (MyListType3ViewHolder)holder;
@@ -519,7 +535,7 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
               requestOptions.skipMemoryCache(false);
 
               Glide.with(context)
-                      .load(item.getLocalImage())
+                      .load(item.getImage())
                       .apply(requestOptions)
                       .into(myViewHolder.imageView);
 
@@ -528,22 +544,19 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
               constraintSet.clone(myViewHolder.constraintLayout);
               constraintSet.setDimensionRatio(myViewHolder.imageView.getId(), ratio);
               constraintSet.applyTo(myViewHolder.constraintLayout);
-          }else if(holder instanceof MyListType5ViewHolder){
+          }else if(holder instanceof BannerListViewHolder){
               HomeListItem item = (HomeListItem) itemList.get(position);
-              MyListType5ViewHolder myViewHolder = (MyListType5ViewHolder)holder;
-              myViewHolder.textTitle.setText(item.getName());
+              BannerListViewHolder myViewHolder = (BannerListViewHolder)holder;
+              myViewHolder.recyclerView.setHasFixedSize(true);
+              RecyclerView.LayoutManager layoutManagerHomeMenu=new LinearLayoutManager(context,
+                      LinearLayoutManager.HORIZONTAL,false);
+              myViewHolder.recyclerView.setLayoutManager(layoutManagerHomeMenu);
+              myViewHolder.recyclerView.setItemAnimator(new DefaultItemAnimator());
+              MyItemAdapter myItemAdapter=new MyItemAdapter(context,item.getItemList(),"homeList");
+              myViewHolder.recyclerView.setAdapter(myItemAdapter);
 
-              RequestOptions requestOptions = new RequestOptions();
-              requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
-              //requestOptions.dontTransform();
-              // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
-              // requestOptions.centerCrop();
-              requestOptions.skipMemoryCache(false);
-
-              Glide.with(context)
-                      .load(item.getLocalImage())
-                      .apply(requestOptions)
-                      .into(myViewHolder.imageView);
+              StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
+              layoutParams.setFullSpan(true);
           }
     }
 

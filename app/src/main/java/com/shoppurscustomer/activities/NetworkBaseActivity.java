@@ -55,7 +55,15 @@ public class NetworkBaseActivity extends BaseActivity {
                 onServerErrorResponse(error,apiName);
                 //  DialogAndToast.showDialog(getResources().getString(R.string.connection_error),BaseActivity.this);
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer " + sharedPreferences.getString(Constants.JWT_TOKEN, ""));
+                //params.put("VndUserDetail", appVersion+"#"+deviceName+"#"+osVersionName);
+                return params;
+            }
+        };
 
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                 30000,
@@ -65,6 +73,52 @@ public class NetworkBaseActivity extends BaseActivity {
     }
 
     public void jsonObjectApiRequest(int method,String url, JSONObject jsonObject, final String apiName){
+        try {
+            jsonObject.put("dbUserName",dbuser);
+            jsonObject.put("dbPassword",dbpassword);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i(TAG,url);
+        Log.i(TAG,jsonObject.toString());
+
+        JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(method,url,jsonObject,new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                AppController.getInstance().getRequestQueue().getCache().clear();
+                Log.i(TAG,response.toString());
+                showProgress(false);
+                onJsonObjectResponse(response,apiName);
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // TODO Auto-generated method stub
+                AppController.getInstance().getRequestQueue().getCache().clear();
+                Log.i(TAG,"Json Error "+error.toString());
+                showProgress(false);
+                onServerErrorResponse(error,apiName);
+                // DialogAndToast.showDialog(getResources().getString(R.string.connection_error),BaseActivity.this);
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer " + sharedPreferences.getString(Constants.JWT_TOKEN, ""));
+                //params.put("VndUserDetail", appVersion+"#"+deviceName+"#"+osVersionName);
+                return params;
+            }
+        };
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest);
+    }
+
+    public void jsonObjectApiRequestForLoginReg(int method,String url, JSONObject jsonObject, final String apiName){
         try {
             jsonObject.put("dbUserName",dbuser);
             jsonObject.put("dbPassword",dbpassword);
@@ -123,7 +177,15 @@ public class NetworkBaseActivity extends BaseActivity {
                 onServerErrorResponse(error,apiName);
                 // DialogAndToast.showDialog(getResources().getString(R.string.connection_error),BaseActivity.this);
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer " + sharedPreferences.getString(Constants.JWT_TOKEN, ""));
+                //params.put("VndUserDetail", appVersion+"#"+deviceName+"#"+osVersionName);
+                return params;
+            }
+        };
 
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                 30000,
@@ -157,11 +219,10 @@ public class NetworkBaseActivity extends BaseActivity {
                 //  DialogAndToast.showDialog(getResources().getString(R.string.connection_error),BaseActivity.this);
             }
         }){
-
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", "Basic "+sharedPreferences.getString(Constants.TOKEN,""));
+                params.put("Authorization", "Bearer " + sharedPreferences.getString(Constants.JWT_TOKEN, ""));
                 //params.put("VndUserDetail", appVersion+"#"+deviceName+"#"+osVersionName);
                 return params;
             }

@@ -56,6 +56,19 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/text_product_name_top"
+                android:layout_marginTop="@dimen/view_vertical_margin"
+                android:paddingLeft="@dimen/view_horizontal_margin"
+                android:paddingRight="@dimen/view_horizontal_margin"
+                android:textAllCaps="false"
+                android:textColor="?attr/primaryTextColor"
+                android:text=""
+                android:textStyle="bold"
+                android:textSize="@dimen/product_list_very_large_text_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
             <HorizontalScrollView
                 android:layout_marginTop="@dimen/view_vertical_margin"
                 android:layout_width="match_parent"

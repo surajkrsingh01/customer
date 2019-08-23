@@ -12,6 +12,9 @@ import android.location.Location;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -55,6 +58,7 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.NetworkBaseActivity;
 import com.shoppurscustomer.interfaces.OnLocationReceivedListener;
+import com.shoppurscustomer.location.GeocodingLocation;
 import com.shoppurscustomer.location.GpsLocationProvider;
 import com.shoppurscustomer.location.NetworkSensor;
 import com.shoppurscustomer.models.DeliveryAddress;
@@ -411,7 +415,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
             marker = mMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                    .title("Current Location"));
+                    .title("My Location"));
 
             mMap.getUiSettings().setZoomControlsEnabled(false); // true to enable
             mMap.setTrafficEnabled(true);
@@ -469,9 +473,10 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
         jsonObjectApiRequest(Request.Method.POST, url, new JSONObject(), "cities");
     }
 
-    private void updateAddress(){
-        String address = editAddress.getText().toString();
-        String locality = editLocality.getText().toString();
+    String address,locality;
+    private void validateFields(){
+        address = editAddress.getText().toString();
+        locality = editLocality.getText().toString();
         pin = editPincode.getText().toString();
         country = editCountry.getText().toString();
         state = editState.getText().toString();
@@ -501,6 +506,34 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
             return;
         }
 
+        GeocodingLocation locationAddress = new GeocodingLocation();
+        locationAddress.getAddressFromLocation(address,
+                getApplicationContext(), new GeocoderHandler());
+
+    }
+
+    private class GeocoderHandler extends Handler {
+        @Override
+        public void handleMessage(Message message) {
+            String locationAddress;
+            switch (message.what) {
+                case 1:
+                    Bundle bundle = message.getData();
+                    locationAddress = bundle.getString("address");
+                    shopLatLng = new LatLng(bundle.getDouble("lat"), bundle.getDouble("long"));
+
+                    break;
+                default:
+                    locationAddress = null;
+            }
+            //Log.d("LatLong from Address ", locationAddress);
+            Log.d("LatLong from Address ", " "+shopLatLng);
+            updateAddressAfterGettingLatLong();
+            //latLongTV.setText(locationAddress);
+        }
+    }
+
+    private void updateAddressAfterGettingLatLong(){
         if(flag != null){
 
             Intent intent = new Intent();
@@ -669,7 +702,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        updateAddress();
+                        validateFields();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

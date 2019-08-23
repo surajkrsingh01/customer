@@ -197,4 +197,8 @@ public class MyOrderActivity extends NetworkBaseActivity{
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public void showLargeImageDialog(MyOrder order, View view){
+        showImageDialog(order.getOrderImage(), view);
+    }
 }

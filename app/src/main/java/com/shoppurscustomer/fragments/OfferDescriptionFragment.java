@@ -91,12 +91,13 @@ public class OfferDescriptionFragment extends BottomSheetDialogFragment {
     private void getOfferDetails(){
         String offerName = null;
         List<String> offerDescList = new ArrayList<>();
+        offerDescList.clear();
         if(myProduct.getProductPriceOffer()!=null) {
             ProductPriceOffer productPriceOffer = (ProductPriceOffer) myProduct.getProductPriceOffer();
             offerName = productPriceOffer.getOfferName();
             float totOfferAmt = 0f;
             for(ProductPriceDetails productPriceDetails : productPriceOffer.getProductPriceDetails()){
-                totOfferAmt = totOfferAmt + productPriceDetails.getPcodPrice();
+                totOfferAmt = productPriceDetails.getPcodPrice();
                 offerDescList.add("Buy "+productPriceDetails.getPcodProdQty()+" at Rs "+
                         Utility.numberFormat(totOfferAmt));
             }

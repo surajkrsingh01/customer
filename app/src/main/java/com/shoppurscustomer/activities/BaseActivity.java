@@ -1,10 +1,14 @@
 package com.shoppurscustomer.activities;
 
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.appbar.AppBarLayout;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,8 +22,10 @@ import android.widget.TextView;
 
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.database.DbHelper;
+import com.shoppurscustomer.morphdialog.DialogActivity;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
+import com.shoppurscustomer.utilities.Utility;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -256,6 +262,37 @@ public class BaseActivity extends AppCompatActivity {
             progressDialog.show();
         }else{
             progressDialog.dismiss();
+        }
+    }
+
+    public void showImageDialog(String url,View v){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Intent intent = new Intent(this, DialogActivity.class);
+            intent.putExtra("image",url);
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, v, getString(R.string.transition_dialog));
+            startActivityForResult(intent, 100, options.toBundle());
+        }else {
+            int view = R.layout.activity_dialog;
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder
+                    .setView(view)
+                    .setCancelable(true);
+
+            // create alert dialog
+            final AlertDialog alertDialog = alertDialogBuilder.create();
+
+            // show it
+            alertDialog.show();
+
+            final ImageView imageView = (ImageView) alertDialog.findViewById(R.id.image);
+
+            Glide.with(getApplicationContext())
+                    .load(url)
+                    .centerCrop()
+                    .skipMemoryCache(false)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(Utility.dpToPx(300,this), Utility.dpToPx(300,this))
+                    .into(imageView);
         }
     }
 

@@ -83,12 +83,14 @@ public class ShopContactsAdapter extends RecyclerView.Adapter<ShopContactsAdapte
             //  myViewHolder.textStateCity.setText(item.getState()+", "+item.getCity());
 
             String initials = "";
-            if(item.getName().contains(" ")){
+            if(!TextUtils.isEmpty(item.getName()) && item.getName().length()>0){
+            if (item.getName().contains(" ")) {
                 String[] name = item.getName().split(" ");
-                initials = name[0].substring(0,1);
-            }else{
-                initials = item.getName().substring(0,1);
+                initials = name[0].substring(0, 1);
+            } else {
+                initials = item.getName().substring(0, 1);
             }
+        }
 
             myViewHolder.textInitial.setText(initials);
 

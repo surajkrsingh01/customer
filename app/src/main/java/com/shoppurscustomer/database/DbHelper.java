@@ -155,6 +155,7 @@ public class DbHelper extends SQLiteOpenHelper {
             " "+PROD_FREE_ID+" TEXT NOT NULL, " +
             " "+PROD_BUY_QTY+" TEXT NOT NULL, " +
             " "+PROD_FREE_QTY+" TEXT NOT NULL, " +
+            " "+SHOP_CODE+" TEXT NOT NULL, " +
             " "+START_DATE+" TEXT, " +
             " "+END_DATE+" TEXT, " +
             " "+STATUS+" TEXT, " +
@@ -167,6 +168,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "("+ID+" TEXT NOT NULL, " +
             " "+PROD_ID+" TEXT NOT NULL, " +
             " "+NAME+" TEXT NOT NULL, " +
+            " "+SHOP_CODE+" TEXT NOT NULL, " +
             " "+START_DATE+" TEXT, " +
             " "+END_DATE+" TEXT, " +
             " "+STATUS+" TEXT, " +
@@ -179,6 +181,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "("+ID+" TEXT NOT NULL, " +
             " "+OFFER_ID+" TEXT NOT NULL, " +
             " "+TOTAL_QTY+" TEXT NOT NULL, " +
+            " "+SHOP_CODE+" TEXT NOT NULL, " +
             " "+PROD_SP+" TEXT, " +
             " "+STATUS+" TEXT, " +
             " "+CREATED_BY+" TEXT, " +
@@ -189,6 +192,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String CREATE_PROD_COMBO_TABLE = "create table "+PROD_COMBO_TABLE +
             "("+ID+" TEXT NOT NULL, " +
             " "+NAME+" TEXT NOT NULL, " +
+            " "+SHOP_CODE+" TEXT NOT NULL, " +
             " "+START_DATE+" TEXT, " +
             " "+END_DATE+" TEXT, " +
             " "+STATUS+" TEXT, " +
@@ -202,6 +206,7 @@ public class DbHelper extends SQLiteOpenHelper {
             " "+OFFER_ID+" TEXT NOT NULL, " +
             " "+PROD_ID+" TEXT NOT NULL, " +
             " "+TOTAL_QTY+" TEXT NOT NULL, " +
+            " "+SHOP_CODE+" TEXT NOT NULL, " +
             " "+PROD_SP+" TEXT, " +
             " "+STATUS+" TEXT, " +
             " "+CREATED_BY+" TEXT, " +
@@ -213,6 +218,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "("+ID+" TEXT NOT NULL, " +
             " "+COUPON_PER+" TEXT NOT NULL, " +
             " "+COUPON_MAX_AMOUNT+" TEXT NOT NULL, " +
+            " "+SHOP_CODE+" TEXT NOT NULL, " +
             " "+NAME+" TEXT NOT NULL, " +
             " "+STATUS+" TEXT, " +
             " "+START_DATE+" TEXT, " +
@@ -289,7 +295,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public DbHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, 8);
+        super(context, DATABASE_NAME, null, 9);
         this.context=context;
     }
 
@@ -340,13 +346,13 @@ public class DbHelper extends SQLiteOpenHelper {
     public boolean addProductToCart(MyProduct item){
         if(item.getProductPriceOffer() != null ) {
             ProductPriceOffer productPriceOffer = item.getProductPriceOffer();
-            addProductPriceOffer(productPriceOffer, Utility.getTimeStamp(),Utility.getTimeStamp());
+            addProductPriceOffer(productPriceOffer, Utility.getTimeStamp(),Utility.getTimeStamp(), item.getShopCode());
             for(ProductPriceDetails productPriceDetails : productPriceOffer.getProductPriceDetails()){
-                addProductPriceDetailOffer(productPriceDetails,  Utility.getTimeStamp(),Utility.getTimeStamp());
+                addProductPriceDetailOffer(productPriceDetails,  Utility.getTimeStamp(),Utility.getTimeStamp(),  item.getShopCode());
             }
         }else if(item.getProductDiscountOffer() != null ){
             ProductDiscountOffer productDiscountOffer = item.getProductDiscountOffer();
-            addProductFreeOffer(productDiscountOffer,  Utility.getTimeStamp(),Utility.getTimeStamp());
+            addProductFreeOffer(productDiscountOffer,  Utility.getTimeStamp(),Utility.getTimeStamp(),  item.getShopCode());
         }
 
         if(item.getProductUnitList()!=null) {
@@ -587,8 +593,8 @@ public class DbHelper extends SQLiteOpenHelper {
                     if(itemList.size()>productItem.getFreeProductPosition())
                     itemList.add(productItem.getFreeProductPosition(),productItem);
                 }else{
-                    List<ProductPriceOffer> productPriceOfferList = getProductPriceOffer(""+productItem.getId());
-                    List<ProductDiscountOffer> productDiscountOfferList = getProductFreeOffer(""+productItem.getId());
+                    List<ProductPriceOffer> productPriceOfferList = getProductPriceOffer(""+productItem.getId(), productItem.getShopCode());
+                    List<ProductDiscountOffer> productDiscountOfferList = getProductFreeOffer(""+productItem.getId(), productItem.getShopCode());
                     Log.i(TAG,"productPriceOfferList size "+productPriceOfferList.size());
                     Log.i(TAG,"productDiscountOfferList size "+productDiscountOfferList.size());
 
@@ -935,10 +941,11 @@ public class DbHelper extends SQLiteOpenHelper {
         return itemList;
     }
 
-    public boolean addProductFreeOffer(ProductDiscountOffer item, String createdAt, String updatedAt){
+    public boolean addProductFreeOffer(ProductDiscountOffer item, String createdAt, String updatedAt, String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
+        contentValues.put(SHOP_CODE, shopCode);
         contentValues.put(NAME, item.getOfferName());
         contentValues.put(PROD_BUY_ID, item.getProdBuyId());
         contentValues.put(PROD_FREE_ID, item.getProdFreeId());
@@ -955,41 +962,60 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
 
-    public boolean addProductPriceOffer(ProductPriceOffer item, String createdAt, String updatedAt){
+    public boolean addProductPriceOffer(ProductPriceOffer item, String createdAt, String updatedAt, String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
         contentValues.put(PROD_ID, item.getProdId());
+        contentValues.put(SHOP_CODE, shopCode);
         contentValues.put(NAME, item.getOfferName());
         contentValues.put(START_DATE, item.getStartDate());
         contentValues.put(END_DATE, item.getEndDate());
         contentValues.put(STATUS, item.getStatus());
         contentValues.put(CREATED_AT, createdAt);
         contentValues.put(UPDATED_AT, updatedAt);
-        db.insert(PROD_PRICE_TABLE, null, contentValues);
-        Log.i("DbHelper","addProductPriceOffer Added");
+        double val = db.insert(PROD_PRICE_TABLE, null, contentValues);
+        Log.i("DbHelper","addProductPriceOffer Added "+val);
         return true;
     }
 
-    public boolean addProductPriceDetailOffer(ProductPriceDetails item, String createdAt, String updatedAt){
+    public boolean removePriceProductFromCart(String id, String shopCode){
+        SQLiteDatabase db = this.getWritableDatabase();
+        long val = db.delete(PROD_PRICE_TABLE, PROD_ID+" = ?"  + " AND " + SHOP_CODE + "=?" ,new String[]{String.valueOf(id), shopCode});
+        Log.d(TAG, "removed price product from cart status "+val + "id  "+id);
+        return true;
+    }
+
+
+
+    public boolean addProductPriceDetailOffer(ProductPriceDetails item, String createdAt, String updatedAt, String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
         contentValues.put(OFFER_ID, item.getPcodPcoId());
+        contentValues.put(SHOP_CODE, shopCode);
         contentValues.put(TOTAL_QTY, item.getPcodProdQty());
         contentValues.put(PROD_SP, item.getPcodPrice());
         contentValues.put(STATUS, item.getStatus());
         contentValues.put(CREATED_AT, createdAt);
         contentValues.put(UPDATED_AT, updatedAt);
-        db.insert(PROD_PRICE_DETAIL_TABLE, null, contentValues);
-        Log.i("DbHelper","Row is added");
+        double val = db.insert(PROD_PRICE_DETAIL_TABLE, null, contentValues);
+        Log.i("DbHelper","ProductPriceOffer Details Added "+val);
         return true;
     }
 
-    public boolean addProductComboOffer(ProductComboOffer item, String createdAt, String updatedAt){
+    public boolean removePriceProductDetailsFromCart(String id, String shopCode){
+        SQLiteDatabase db = this.getWritableDatabase();
+        long val = db.delete(PROD_PRICE_DETAIL_TABLE, ID+" = ?"  + " AND " + SHOP_CODE + "=?",new String[]{String.valueOf(id), shopCode});
+        Log.d(TAG, "removed price product Details from cart status "+val + "id  "+id);
+        return true;
+    }
+
+    public boolean addProductComboOffer(ProductComboOffer item, String createdAt, String updatedAt, String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
+        contentValues.put(SHOP_CODE, shopCode);
         contentValues.put(NAME, item.getOfferName());
         contentValues.put(START_DATE, item.getStartDate());
         contentValues.put(END_DATE, item.getEndDate());
@@ -1001,10 +1027,11 @@ public class DbHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean addProductComboDetailOffer(ProductComboDetails item, String createdAt, String updatedAt){
+    public boolean addProductComboDetailOffer(ProductComboDetails item, String createdAt, String updatedAt,  String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
+        contentValues.put(SHOP_CODE, shopCode);
         contentValues.put(OFFER_ID, item.getPcodPcoId());
         contentValues.put(PROD_ID, item.getPcodProdId());
         contentValues.put(TOTAL_QTY, item.getPcodProdQty());
@@ -1017,10 +1044,11 @@ public class DbHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean addCouponOffer(Coupon item, String createdAt, String updatedAt){
+    public boolean addCouponOffer(Coupon item, String createdAt, String updatedAt, String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
+        contentValues.put(SHOP_CODE, shopCode);
         contentValues.put(COUPON_PER, item.getPercentage());
         contentValues.put(NAME, item.getName());
         contentValues.put(COUPON_MAX_AMOUNT, item.getAmount());
@@ -1233,7 +1261,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public float getTotalDisValue(String shopCode){
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select sum("+PROD_MRP+" - "+PROD_SP+") as totalDis from "+CART_TABLE  +" where SHOP_CODE = ?";
+        final String query="select sum(("+PROD_MRP+" - "+PROD_SP+")* " +TOTAL_QTY+") as totalDis from "+CART_TABLE  +" where SHOP_CODE = ?";
         Cursor res =  db.rawQuery(query,  new String[]{ shopCode });
         float dis = 0f;
         if(res.moveToFirst()){
@@ -1303,11 +1331,11 @@ public class DbHelper extends SQLiteOpenHelper {
         return itemList;
     }
 
-    public List<ProductPriceOffer> getProductPriceOffer(String prodId){
+    public List<ProductPriceOffer> getProductPriceOffer(String prodId, String shopCode){
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select * from "+PROD_PRICE_TABLE+" where "+PROD_ID+" IN(?)";
+        final String query="select * from "+PROD_PRICE_TABLE+" where "+PROD_ID+" IN(?)"  + " AND " + SHOP_CODE + "=?";
         final String detailQuery="select * from "+PROD_PRICE_DETAIL_TABLE+" where "+OFFER_ID+" IN(?)";
-        Cursor res =  db.rawQuery(query, new String[]{prodId});
+        Cursor res =  db.rawQuery(query, new String[]{prodId, shopCode});
         Cursor detailsRes =  null;
         ArrayList<ProductPriceOffer> itemList=new ArrayList<>();
         ArrayList<ProductPriceDetails> productPriceDetailsList=null;
@@ -1412,10 +1440,10 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<ProductDiscountOffer> getProductFreeOffer(String prodId){
+    public List<ProductDiscountOffer> getProductFreeOffer(String prodId, String shopCode){
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select * from "+PROD_FREE_OFFER_TABLE +" where "+PROD_BUY_ID+" = ?";
-        Cursor res =  db.rawQuery(query, new String[]{prodId});
+        final String query="select * from "+PROD_FREE_OFFER_TABLE +" where "+PROD_BUY_ID+" = ?"   + " AND " + SHOP_CODE + "=?";
+        Cursor res =  db.rawQuery(query, new String[]{prodId, shopCode});
         List<ProductDiscountOffer> productDiscountOfferList = new ArrayList<>();
         ProductDiscountOffer productDiscountOffer = null;
         if(res.moveToFirst()){
@@ -1482,7 +1510,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
 
-    public boolean updateProductFreeOffer(ProductDiscountOffer item, String updatedAt){
+    public boolean updateProductFreeOffer(ProductDiscountOffer item, String updatedAt, String  shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
@@ -1495,14 +1523,14 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(END_DATE, item.getEndDate());
         contentValues.put(STATUS, item.getStatus());
         contentValues.put(UPDATED_AT, updatedAt);
-        db.update(PROD_FREE_OFFER_TABLE,contentValues,ID+" = ?",
-                new String[]{String.valueOf(item.getId())});
+        db.update(PROD_FREE_OFFER_TABLE,contentValues,ID+" = ?" + " AND " + SHOP_CODE + "=?" ,
+                new String[]{String.valueOf(item.getId()), shopCode});
         Log.i("DbHelper","Row is updated");
         return true;
     }
 
 
-    public boolean updateProductPriceOffer(ProductComboOffer item, String updatedAt){
+    public boolean updateProductPriceOffer(ProductComboOffer item, String updatedAt, String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         //contentValues.put(ID, item.getId());
@@ -1512,13 +1540,13 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(END_DATE, item.getEndDate());
         contentValues.put(STATUS, item.getStatus());
         contentValues.put(UPDATED_AT, updatedAt);
-        db.update(PROD_PRICE_TABLE,contentValues,ID+" = ?",
-                new String[]{String.valueOf(item.getId())});
+        db.update(PROD_PRICE_TABLE,contentValues,ID+" = ?" + " AND " + SHOP_CODE + "=?",
+                new String[]{String.valueOf(item.getId()), shopCode});
         Log.i("DbHelper","Row is updated");
         return true;
     }
 
-    public boolean updateProductPriceDetailOffer(ProductComboDetails item, String updatedAt){
+    public boolean updateProductPriceDetailOffer(ProductComboDetails item, String updatedAt, String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(OFFER_ID, item.getPcodPcoId());
@@ -1526,13 +1554,13 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(PROD_SP, item.getPcodPrice());
         contentValues.put(STATUS, item.getStatus());
         contentValues.put(UPDATED_AT, updatedAt);
-        db.update(PROD_PRICE_DETAIL_TABLE,contentValues,ID+" = ?",
-                new String[]{String.valueOf(item.getId())});
+        db.update(PROD_PRICE_DETAIL_TABLE,contentValues,ID+" = ?" + " AND " + SHOP_CODE + "=?",
+                new String[]{String.valueOf(item.getId()), shopCode});
         Log.i("DbHelper","Row is updated");
         return true;
     }
 
-    public boolean updateProductComboOffer(ProductComboOffer item, String updatedAt){
+    public boolean updateProductComboOffer(ProductComboOffer item, String updatedAt, String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME, item.getOfferName());
@@ -1540,13 +1568,13 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(END_DATE, item.getEndDate());
         contentValues.put(STATUS, item.getStatus());
         contentValues.put(UPDATED_AT, updatedAt);
-        db.update(PROD_COMBO_TABLE,contentValues,ID+" = ?",
-                new String[]{String.valueOf(item.getId())});
+        db.update(PROD_COMBO_TABLE,contentValues,ID+" = ?" + " AND " + SHOP_CODE + "=?",
+                new String[]{String.valueOf(item.getId()), shopCode});
         Log.i("DbHelper","Row is updated");
         return true;
     }
 
-    public boolean updateProductComboDetailOffer(ProductComboDetails item, String updatedAt){
+    public boolean updateProductComboDetailOffer(ProductComboDetails item, String updatedAt, String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(PROD_ID, item.getPcodProdId());
@@ -1554,13 +1582,13 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(PROD_SP, item.getPcodPrice());
         contentValues.put(STATUS, item.getStatus());
         contentValues.put(UPDATED_AT, updatedAt);
-        db.update(PROD_COMBO_DETAIL_TABLE,contentValues,ID+" = ?",
-                new String[]{String.valueOf(item.getId())});
+        db.update(PROD_COMBO_DETAIL_TABLE,contentValues,ID+" = ?" + " AND " + SHOP_CODE + "=?",
+                new String[]{String.valueOf(item.getId()), shopCode});
         Log.i("DbHelper","Row is updated");
         return true;
     }
 
-    public void updateFreeCartData(int id,int qty,float totalAmount){
+    public void updateFreeCartData(int id,int qty,float totalAmount, String shopCode){
         SQLiteDatabase db = this.getReadableDatabase();
         // query="UPDATE "+PRODUCT_TABLE+" SET "+PROD_QOH+" = ? where "+PROD_CODE+" = ?";
         ContentValues contentValues = new ContentValues();
@@ -1569,8 +1597,8 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(PROD_SGST, 0);
         contentValues.put(TOTAL_QTY, qty);
         contentValues.put(TOTAL_AMOUNT, totalAmount);
-        db.update(CART_TABLE,contentValues,ID+" = ? AND "+PROD_SP+" == ?",
-                new String[]{String.valueOf(id),String.valueOf(0f)});
+        db.update(CART_TABLE,contentValues,ID+" = ? AND "+PROD_SP+" == ?" + " AND " + SHOP_CODE + "=?",
+                new String[]{String.valueOf(id),String.valueOf(0f), shopCode});
         //  db.update(CART_TABLE,contentValues,PROD_BARCODE+" = ? AND "+PROD_SP+" == ?",
         //          new String[]{String.valueOf(id),String.valueOf(0f)});
 
@@ -1588,13 +1616,13 @@ public class DbHelper extends SQLiteOpenHelper {
         Log.d(TAG, "offerCounter updated with "+offerCounter +" update status "+result);
     }
 
-    public void updateFreePositionCartData(int position,int prodId){
+    public void updateFreePositionCartData(int position,int prodId, String shopCode){
         SQLiteDatabase db = this.getReadableDatabase();
         // query="UPDATE "+PRODUCT_TABLE+" SET "+PROD_QOH+" = ? where "+PROD_CODE+" = ?";
         ContentValues contentValues = new ContentValues();
         contentValues.put(FREE_PRODUCT_POSITION, position);
-        db.update(CART_TABLE,contentValues,ID+" = ? AND "+PROD_SP+" != ?",
-                new String[]{String.valueOf(prodId),String.valueOf(0f)});
+        db.update(CART_TABLE,contentValues,ID+" = ? AND "+PROD_SP+" != ?" + " AND " + SHOP_CODE + "=?",
+                new String[]{String.valueOf(prodId),String.valueOf(0f), shopCode});
 
     }
 
@@ -1604,16 +1632,16 @@ public class DbHelper extends SQLiteOpenHelper {
         return true;
     }*/
 
-    public boolean removeProductFromCart(String id){
+    public boolean removeProductFromCart(String id, String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
-        long val = db.delete(CART_TABLE, ID+" = ? AND "+PROD_SP+" != ?",new String[]{String.valueOf(id),String.valueOf(0f)});
-        Log.d(TAG, "removed product from cart status "+val);
+        long val = db.delete(CART_TABLE, ID+" = ? AND "+PROD_SP+" != ?"  + " AND " + SHOP_CODE + "=?",new String[]{String.valueOf(id),String.valueOf(0f),shopCode});
+        Log.d(TAG, "removed product from cart status "+val + "id  "+id);
         return true;
     }
 
-    public boolean removeFreeProductFromCart(int id){
+    public boolean removeFreeProductFromCart(int id, String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
-        long val = db.delete(CART_TABLE, ID+" = ? AND "+PROD_SP+" = ?",new String[]{String.valueOf(id),String.valueOf(0f)});
+        long val = db.delete(CART_TABLE, ID+" = ? AND "+PROD_SP+" = ?"  + " AND " + SHOP_CODE + "=?",new String[]{String.valueOf(id),String.valueOf(0f),shopCode });
         Log.d(TAG, "removed free product from cart status "+val);
         return true;
     }

@@ -20,7 +20,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.CartActivity;
+import com.shoppurscustomer.activities.MyOrderActivity;
 import com.shoppurscustomer.interfaces.MyItemTypeClickListener;
+import com.shoppurscustomer.models.MyOrder;
 import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.ProductComboOffer;
 import com.shoppurscustomer.models.ProductDiscountOffer;
@@ -85,11 +87,15 @@ public class CartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             imageViewAdd.setOnClickListener(this);
             imageViewMinus.setOnClickListener(this);
             rlOffer.setOnClickListener(this);
+            imageView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if(view == imageViewAdd){
+            if(view == imageView){
+                final MyProduct product = (MyProduct) itemList.get(getAdapterPosition());
+                ((CartActivity)context).showLargeImageDialog(product, imageView);
+            }else if(view == imageViewAdd){
                 myItemTypeClickListener.onItemClicked(getAdapterPosition(),2);
             }else if(view == rlOffer){
                 ((CartActivity)context).showOfferDescription(itemList.get(getAdapterPosition()));

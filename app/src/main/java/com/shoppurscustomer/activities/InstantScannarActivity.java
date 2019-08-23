@@ -1,5 +1,6 @@
 package com.shoppurscustomer.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -81,6 +83,7 @@ public class InstantScannarActivity extends NetworkBaseActivity {
         text_error = findViewById(R.id.tvNoData);
         editMobile = findViewById(R.id.edit_mobile);
         iv_contacts = findViewById(R.id.iv_contacts);
+        //iv_contacts.setBackgroundColor(colorTheme);
         text_header = findViewById(R.id.text_header);
         text_header.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -262,7 +265,8 @@ public class InstantScannarActivity extends NetworkBaseActivity {
                             startActivity(intent);
                         }
                     }else {
-                        DialogAndToast.showDialog(response.getString("message"), InstantScannarActivity.this);
+                        showMyDialog(response.getString("message"));
+                        //DialogAndToast.showDialog(response.getString("message"), InstantScannarActivity.this);
                     }
                 }else {
                     DialogAndToast.showDialog(response.getString("message"), InstantScannarActivity.this);
@@ -311,5 +315,53 @@ public class InstantScannarActivity extends NetworkBaseActivity {
             DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(), InstantScannarActivity.this);
         }
     }
+
+    public void showMyDialog(String msg) {
+        //  errorNoInternet.setText("Oops... No internet");
+        //  errorNoInternet.setVisibility(View.VISIBLE);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        // set title
+        // alertDialogBuilder.setTitle("Oops...No internet");
+        // set dialog message
+        alertDialogBuilder
+                .setMessage(msg)
+                .setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        onDialogPositiveClicked();
+                    }
+                });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+    }
+
+    @Override
+    public void onDialogPositiveClicked(){
+        resetBarCodeScanner();
+    }
+
+    private void resetBarCodeScanner(){
+        barcodeScannerView.decodeSingle(new BarcodeCallback() {
+            @Override
+            public void barcodeResult(BarcodeResult result) {
+                Log.i(TAG,"result "+result.toString());
+                processResult(result.toString());
+            }
+
+            @Override
+            public void possibleResultPoints(List<ResultPoint> resultPoints) {
+
+            }
+        });
+
+    }
+
+
+
+
 
 }

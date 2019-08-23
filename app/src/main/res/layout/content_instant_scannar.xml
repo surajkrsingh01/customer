@@ -9,16 +9,36 @@
     tools:context=".activities.InstantScannarActivity"
     tools:showIn="@layout/activity_instant_scannar">
 
-    <ImageView
-        android:id="@+id/text_header"
-        android:src="@drawable/arrow_back"
-        android:tint="?attr/primaryTextColor"
-        android:padding="@dimen/activity_vertical_margin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/linear_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="@dimen/activity_vertical_margin">
+        <ImageView
+            android:id="@+id/text_header"
+            android:src="@drawable/arrow_back"
+            android:tint="?attr/primaryTextColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"/>
+
+        <TextView
+            android:text="Pay Instant to Shop"
+            android:id="@+id/text_desc"
+            android:textColor="?attr/primaryTextColor"
+            android:textStyle="bold"
+            android:textSize="@dimen/product_list_very_large_text_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+
 
     <LinearLayout
-        android:layout_below="@+id/text_header"
+        android:layout_below="@+id/linear_top"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -35,6 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/contacts"
+                android:tint="?attr/primaryTextColor"
                 android:layout_alignParentRight="true"/>
 
             <TextView

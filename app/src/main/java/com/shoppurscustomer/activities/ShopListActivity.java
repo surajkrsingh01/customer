@@ -23,6 +23,7 @@ import com.android.volley.Request;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.adapters.ShopAdapter;
 import com.shoppurscustomer.fragments.BottomSearchFragment;
+import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.MyShop;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
@@ -196,12 +197,13 @@ public class ShopListActivity extends NetworkBaseActivity {
             // JSONObject jsonObject=response.getJSONObject("response");
             Log.d("response", response.toString());
             if(apiName.equals("NormalShops")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
+                if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
                     showProgress(false);
+                    if(!response.getString("result").equals("null")){
                     JSONObject jsonObject = response.getJSONObject("result");
                     JSONArray shopJArray = jsonObject.getJSONArray("shoplist");
 
-                    for(int i=0;i<shopJArray.length();i++){
+                    for (int i = 0; i < shopJArray.length(); i++) {
                         MyShop myShop = new MyShop();
                         String shop_code = shopJArray.getJSONObject(i).getString("retcode");
                         myShop.setId(shop_code);
@@ -219,25 +221,34 @@ public class ShopListActivity extends NetworkBaseActivity {
                         myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
                         myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));
                         myShop.setImage(R.drawable.thumb_21);
-                        Log.d(myfavoriteLists.toString(), "shop_code"+ shop_code);
-                        if(myfavoriteLists.contains(shop_code)){
+                        Log.d(myfavoriteLists.toString(), "shop_code" + shop_code);
+                        if (myfavoriteLists.contains(shop_code)) {
                             myFavoriteitemList.add(myShop);
-                        }else
-                        myNormalitemList.add(myShop);
+                        } else
+                            myNormalitemList.add(myShop);
 
                         //"retcode":"shop_8","retname":"Vipin Dhama","retshopname":"Dhama Test 1","retmobile":"9718181697","retlanguage":"English","retaddress":"Delhi","retpincode":"110091","retemail":"vipinsuper19@gmail.com","retphoto":"","retpassword":"1234","retcountry":"India","retstate":"Delhi","retcity":"Delhi","serverip":"49.50.77.154","dbname":"shop_8","dbuser":"shoppurs_master","dbpassword":"$hop@2018#"
                     }
 
-                    if(myNormalitemList.size()>0){
+                    if (myNormalitemList.size() > 0) {
                         myNormalshopAdapter.notifyDataSetChanged();
-                    }else tv_mynormal.setVisibility(View.GONE);
-                    if(myFavoriteitemList.size()>0){
+                    } else tv_mynormal.setVisibility(View.GONE);
+                    if (myFavoriteitemList.size() > 0) {
                         myFavoriteshopAdapter.notifyDataSetChanged();
-                    }else tv_myfav.setVisibility(View.GONE);
-                    if(myNormalitemList.size() ==0 && myFavoriteitemList.size() ==0){
+                    } else tv_myfav.setVisibility(View.GONE);
+                    if (myNormalitemList.size() == 0 && myFavoriteitemList.size() == 0) {
+                        tv_mynormal.setVisibility(View.GONE);
+                        tv_myfav.setVisibility(View.GONE);
                         showNoData(true);
                     }
 
+                }else {
+                        tv_mynormal.setVisibility(View.GONE);
+                        tv_myfav.setVisibility(View.GONE);
+                        showNoData(true);
+                        //DialogAndToast.showDialog(response.getString("message"), ShopListActivity.this);
+                        showProgress(false);
+                    }
                 }else {
                     DialogAndToast.showDialog(response.getString("message"),ShopListActivity.this);
                     showProgress(false);
@@ -305,5 +316,9 @@ public class ShopListActivity extends NetworkBaseActivity {
         catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public void showLargeImageDialog(MyShop shop,  View view){
+            showImageDialog(shop.getShopimage(), view);
     }
 }

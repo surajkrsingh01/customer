@@ -226,11 +226,15 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             imageMenu=itemView.findViewById(R.id.image_menu);
             rootView.setOnTouchListener(this);
             imageMenu.setOnClickListener(this);
+            imageView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if(view == imageMenu){
+            if(view == imageView){
+                final MyShop shop = (MyShop) itemList.get(getAdapterPosition());
+                ((StoresListActivity)context).showLargeImageDialog(shop, imageView);
+            }else if(view == imageMenu){
                 final MyShop shop = (MyShop) itemList.get(getAdapterPosition());
                 PopupMenu popupMenu = new PopupMenu(view.getContext(), imageMenu);
 

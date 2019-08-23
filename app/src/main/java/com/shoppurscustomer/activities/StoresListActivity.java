@@ -198,58 +198,64 @@ public class StoresListActivity extends NetworkBaseActivity {
             } else if(apiName.equals("NormalShops")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                     showProgress(false);
-                    JSONObject jsonObject = response.getJSONObject("result");
-                    JSONArray shopJArray = jsonObject.getJSONArray("shoplist");
+                    if(!response.getString("result").equals("null")) {
+                        JSONObject jsonObject = response.getJSONObject("result");
+                        JSONArray shopJArray = jsonObject.getJSONArray("shoplist");
 
-                    for(int i=0;i<shopJArray.length();i++){
-                        MyShop myShop = new MyShop();
-                        String shop_code = shopJArray.getJSONObject(i).getString("retcode");
-                        myShop.setId(shop_code);
-                        Log.d("shop_id", myShop.getId());
-                        myShop.setName(shopJArray.getJSONObject(i).getString("retshopname"));
-                        myShop.setMobile(shopJArray.getJSONObject(i).getString("retmobile"));
-                        myShop.setAddress(shopJArray.getJSONObject(i).getString("retaddress"));
-                        myShop.setState(shopJArray.getJSONObject(i).getString("retcountry"));
-                        myShop.setCity(shopJArray.getJSONObject(i).getString("retcity"));
-                        myShop.setShopimage(shopJArray.getJSONObject(i).getString("retphoto"));
-                        myShop.setLatitude(shopJArray.getJSONObject(i).getDouble("retLat"));
-                        myShop.setLongitude(shopJArray.getJSONObject(i).getDouble("retLong"));
+                        for (int i = 0; i < shopJArray.length(); i++) {
+                            MyShop myShop = new MyShop();
+                            String shop_code = shopJArray.getJSONObject(i).getString("retcode");
+                            myShop.setId(shop_code);
+                            Log.d("shop_id", myShop.getId());
+                            myShop.setName(shopJArray.getJSONObject(i).getString("retshopname"));
+                            myShop.setMobile(shopJArray.getJSONObject(i).getString("retmobile"));
+                            myShop.setAddress(shopJArray.getJSONObject(i).getString("retaddress"));
+                            myShop.setState(shopJArray.getJSONObject(i).getString("retcountry"));
+                            myShop.setCity(shopJArray.getJSONObject(i).getString("retcity"));
+                            myShop.setShopimage(shopJArray.getJSONObject(i).getString("retphoto"));
+                            myShop.setLatitude(shopJArray.getJSONObject(i).getDouble("retLat"));
+                            myShop.setLongitude(shopJArray.getJSONObject(i).getDouble("retLong"));
 
-                        myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
-                        myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
-                        myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));
-                        myShop.setImage(R.drawable.thumb_21);
-                        //Log.d(favoriteShopList.toString(), "shop_code"+ shop_code);
-                        if(myfavoriteShopIds.contains(shop_code)){
-                            favoriteShopList.add(myShop);
-                        }else
-                            normalShopList.add(myShop);
+                            myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
+                            myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
+                            myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));
+                            myShop.setImage(R.drawable.thumb_21);
+                            //Log.d(favoriteShopList.toString(), "shop_code"+ shop_code);
+                            if (myfavoriteShopIds.contains(shop_code)) {
+                                favoriteShopList.add(myShop);
+                            } else
+                                normalShopList.add(myShop);
 
-                        //"retcode":"shop_8","retname":"Vipin Dhama","retshopname":"Dhama Test 1","retmobile":"9718181697","retlanguage":"English","retaddress":"Delhi","retpincode":"110091","retemail":"vipinsuper19@gmail.com","retphoto":"","retpassword":"1234","retcountry":"India","retstate":"Delhi","retcity":"Delhi","serverip":"49.50.77.154","dbname":"shop_8","dbuser":"shoppurs_master","dbpassword":"$hop@2018#"
-                    }
+                            //"retcode":"shop_8","retname":"Vipin Dhama","retshopname":"Dhama Test 1","retmobile":"9718181697","retlanguage":"English","retaddress":"Delhi","retpincode":"110091","retemail":"vipinsuper19@gmail.com","retphoto":"","retpassword":"1234","retcountry":"India","retstate":"Delhi","retcity":"Delhi","serverip":"49.50.77.154","dbname":"shop_8","dbuser":"shoppurs_master","dbpassword":"$hop@2018#"
+                        }
 
-                    Log.d("itemlist size  ", itemList.size()+"");
-                    Log.d("favoriteShopList size  ", favoriteShopList.size()+"");
-                    Log.d("normalShopList size  ", normalShopList.size()+"");
-                    if(favoriteShopList.size()>0){
-                        CatListItem myItem1 = new CatListItem();
-                        myItem1.setTitle("My Favourite Stores");
-                        myItem1.setType(1);
-                        myItem1.setItemList(favoriteShopList);
-                        itemList.add(myItem1);
+                        Log.d("itemlist size  ", itemList.size() + "");
+                        Log.d("favoriteShopList size  ", favoriteShopList.size() + "");
+                        Log.d("normalShopList size  ", normalShopList.size() + "");
+                        if (favoriteShopList.size() > 0) {
+                            CatListItem myItem1 = new CatListItem();
+                            myItem1.setTitle("My Favourite Stores");
+                            myItem1.setType(1);
+                            myItem1.setItemList(favoriteShopList);
+                            itemList.add(myItem1);
+                            myItemAdapter.notifyDataSetChanged();
+                        }//else tv_myfav.setVisibility(View.GONE);
+
+                        if (normalShopList.size() > 0) {
+                            CatListItem myItem1 = new CatListItem();
+                            myItem1.setTitle("My Stores");
+                            myItem1.setType(1);
+                            myItem1.setItemList(normalShopList);
+                            itemList.add(myItem1);
+                            myItemAdapter.notifyDataSetChanged();
+                        }
+                        if (itemList.size() == 0) {
+                            showNoData(true);
+                        }
+                    }else {
+                        //DialogAndToast.showDialog(response.getString("message"),StoresListActivity.this);
+                        showProgress(false);
                         myItemAdapter.notifyDataSetChanged();
-                    }//else tv_myfav.setVisibility(View.GONE);
-
-                    if(normalShopList.size()>0){
-                        CatListItem myItem1 = new CatListItem();
-                        myItem1.setTitle("My Stores");
-                        myItem1.setType(1);
-                        myItem1.setItemList(normalShopList);
-                        itemList.add(myItem1);
-                        myItemAdapter.notifyDataSetChanged();
-                    }
-                    if(itemList.size() == 0){
-                        showNoData(true);
                     }
 
                 }else {
@@ -402,5 +408,7 @@ public class StoresListActivity extends NetworkBaseActivity {
             e.printStackTrace();
         }
     }
-
+    public void showLargeImageDialog(MyShop shop,  View view){
+        showImageDialog(shop.getShopimage(), view);
+    }
 }

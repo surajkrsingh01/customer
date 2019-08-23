@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -62,13 +63,22 @@ public class CartShopListActivity extends NetworkBaseActivity {
     private void init(){
         text_left_label = findViewById(R.id.text_left_label);
         text_right_label = findViewById(R.id.text_right_label);
-        text_left_label.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(CartShopListActivity.this, CartActivity.class));
-                finish();
-            }
-        });
+        if(flag!=null && flag.equals("mainOffers"))
+            text_left_label.setText("Offers");
+        else text_left_label.setText("Cart");
+
+            text_left_label.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent;
+                    if(flag!=null && flag.equals("mainOffers"))
+                        intent = new Intent(CartShopListActivity.this, MainActivity.class);
+                        else intent = new Intent(CartShopListActivity.this, CartActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+
 
         textViewError = findViewById(R.id.text_error);
         recyclerView=findViewById(R.id.recycler_view);
@@ -82,14 +92,30 @@ public class CartShopListActivity extends NetworkBaseActivity {
         myItemAdapter.setColorTheme(colorTheme);
         if(flag!=null && flag.equals("offers"))
         myItemAdapter.setFlag("CartShopOffers");
+        else if(flag!=null && flag.equals("mainOffers"))
+            myItemAdapter.setFlag("mainOffers");
         else myItemAdapter.setFlag("CartShopCoupons");
         recyclerView.setAdapter(myItemAdapter);
 
         if(ConnectionDetector.isNetworkAvailable(this)){
+            if(flag!=null && flag.equals("mainOffers"))
+            getShopListbyCategory();
+            else
             getShopList();
         }
     }
 
+    private void getShopListbyCategory(){
+        Map<String,String> params=new HashMap<>();
+        params.put("id",getIntent().getStringExtra("catId"));
+        params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
+        params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
+        params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+        String url=getResources().getString(R.string.root_url)+"offers/get_active_offer_shops_by_cat";
+        Log.i(TAG, params.toString());
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url, new JSONObject(params),"shopList");
+    }
 
     private void getShopList(){
         List<MyProduct> cartItemList = dbHelper.getCartProducts();
@@ -131,7 +157,15 @@ public class CartShopListActivity extends NetworkBaseActivity {
                 showProgress(false);
                 onServerErrorResponse(error,apiName);
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer " + sharedPreferences.getString(Constants.JWT_TOKEN, ""));
+                //params.put("VndUserDetail", appVersion+"#"+deviceName+"#"+osVersionName);
+                return params;
+            }
+        };
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                 30000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
@@ -193,5 +227,9 @@ public class CartShopListActivity extends NetworkBaseActivity {
         super.onResume();
         if(myItemAdapter!=null)
             myItemAdapter.notifyDataSetChanged();
+    }
+
+    public void showLargeImageDialog(MyShop shop,  View view){
+        showImageDialog(shop.getShopimage(), view);
     }
 }

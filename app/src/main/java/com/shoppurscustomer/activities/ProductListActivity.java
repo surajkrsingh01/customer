@@ -327,7 +327,7 @@ public class ProductListActivity extends NetworkBaseActivity {
                 }
             }else if(apiName.equals("removeCart")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.removeProductFromCart(myProduct.getId());
+                    dbHelper.removeProductFromCart(myProduct.getId(),myProduct.getShopCode());
                     updateCartCount();
                     Log.d(TAG, "Deleted cart" );
                 }else {

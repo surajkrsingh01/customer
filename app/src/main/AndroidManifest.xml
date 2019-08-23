@@ -97,6 +97,11 @@
             android:name=".activities.CartShopListActivity"
             android:label="@string/title_activity_cart_shop"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:launchMode="singleTask"
+            android:name=".activities.BannerDetailsActivity"
+            android:label="@string/title_activity_banner_details"
+            android:theme="@style/AppTheme.NoActionBar" />
 
 
         <activity
@@ -206,6 +211,21 @@
             android:launchMode="singleTask"
             android:name=".activities.InstantPayActivity"
             android:label="Instant Pay"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:launchMode="singleTask"
+            android:name=".morphdialog.DialogActivity"
+            android:label="Dialog Activity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+
+        <activity
+            android:launchMode="singleTask"
+            android:name=".activities.ImageActivity"
+            android:label=""
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
 

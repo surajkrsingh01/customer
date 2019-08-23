@@ -285,10 +285,15 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
             text_offer = itemView.findViewById(R.id.text_offer);
             rootView.setOnClickListener(this);
             text_offer.setOnClickListener(this);
+            imageView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
+            if(v==imageView){
+               // if(callingActivityName.equals("ShopProductListActivity"))
+                    ((ShopProductListActivity)context).showLargeImageDialog(myProductsList.get(getAdapterPosition()), imageView);
+            }
             if(v==text_offer){
                 if(callingActivityName.equals("ShopProductListActivity"))
                 ((ShopProductListActivity)context).showOfferDescription(myProductsList.get(getAdapterPosition()));

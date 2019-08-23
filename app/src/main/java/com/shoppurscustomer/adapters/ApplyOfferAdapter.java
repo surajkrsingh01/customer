@@ -3,6 +3,7 @@ package com.shoppurscustomer.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +24,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.activities.ApplyOffersActivity;
+import com.shoppurscustomer.activities.MyOrderActivity;
 import com.shoppurscustomer.activities.ProductDetailActivity;
 import com.shoppurscustomer.activities.ShopProductListActivity;
 import com.shoppurscustomer.database.DbHelper;
 import com.shoppurscustomer.interfaces.MyItemTypeClickListener;
+import com.shoppurscustomer.models.MyOrder;
 import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.ProductComboOffer;
 import com.shoppurscustomer.models.ProductDiscountOffer;
@@ -109,6 +112,9 @@ public class ApplyOfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             item.setFreeProductPosition(dbHelper.getFreeProductPosition(item.getId(), shopCode));
             item.setOfferItemCounter(dbHelper.getOfferCounter(item.getId(), shopCode));
             item.setQuantity(Integer.parseInt(myViewHolder.tv_cartCount.getText().toString()));
+            item.setTotalAmount(dbHelper.getTotalAmount(item.getId(), shopCode));
+            Log.d("Quantity ........", ""+dbHelper.getProductQuantity(item.getId(), shopCode));
+            Log.d("Total Amout ........", ""+dbHelper.getTotalAmount(item.getId(), shopCode));
         }else {
             myViewHolder.tv_cartCount.setText(String.valueOf(0));
             myViewHolder.linear_plus_minus.setVisibility(View.GONE);
@@ -274,11 +280,15 @@ public class ApplyOfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             text_offer = itemView.findViewById(R.id.text_offer);
             rootView.setOnClickListener(this);
             text_offer.setOnClickListener(this);
+            imageView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if(view==text_offer){
+            if(view == imageView){
+                final MyProduct product = (MyProduct) myItemList.get(getAdapterPosition());
+                ((ApplyOffersActivity)context).showLargeImageDialog(product, imageView);
+            } else if(view==text_offer){
                 MyProduct item = (MyProduct) myItemList.get(getAdapterPosition());
                 ((ApplyOffersActivity)context).showOfferDescription(item);
             }else if(view == rootView){

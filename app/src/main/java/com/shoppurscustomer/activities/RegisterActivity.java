@@ -158,9 +158,9 @@ public class RegisterActivity extends NetworkBaseActivity{
         params.put("created_by",fullName);
         params.put("updated_by",fullName);
         params.put("action","1");
-        String url=getResources().getString(R.string.url)+"/registerCustomer";
-        //String url=getResources().getString(R.string.url_web)+"/useradmin/customers/registerCustomer";
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"registerCustomer");
+        //String url=getResources().getString(R.string.url)+"/registerCustomer";
+        String url=getResources().getString(R.string.url_web)+"/useradmin/customers/registerCustomer";
+        jsonObjectApiRequestForLoginReg(Request.Method.POST,url,new JSONObject(params),"registerCustomer");
     }
 
     @Override
@@ -173,6 +173,7 @@ public class RegisterActivity extends NetworkBaseActivity{
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                     JSONObject dataObject=response.getJSONObject("result");
 
+                    editor.putString(Constants.JWT_TOKEN, dataObject.getString("token"));
                     editor.putString(Constants.FULL_NAME,dataObject.getString("username"));
                     editor.putString(Constants.USER_ID,dataObject.getString("userid"));
                     editor.putString(Constants.EMAIL,dataObject.getString("user_email"));
