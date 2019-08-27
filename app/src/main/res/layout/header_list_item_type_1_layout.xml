@@ -16,7 +16,7 @@
             android:textColor="?attr/primaryTextColor"
             android:paddingLeft="@dimen/view_horizontal_margin"
             android:paddingRight="@dimen/view_horizontal_margin"
-            android:textSize="@dimen/list_large_text_size"
+            android:textSize="@dimen/list_large_text_size_new"
             android:textStyle="bold"
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"

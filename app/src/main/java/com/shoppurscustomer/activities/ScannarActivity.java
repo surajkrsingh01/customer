@@ -1,8 +1,10 @@
 package com.shoppurscustomer.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -213,10 +215,10 @@ public class ScannarActivity extends NetworkBaseActivity {
                             startActivity(intent);
                         }
                     }else {
-                        DialogAndToast.showDialog(response.getString("message"), ScannarActivity.this);
+                        showMyDialog(response.getString("message"));
                     }
                 } else {
-                    DialogAndToast.showDialog(response.getString("message"), ScannarActivity.this);
+                    showMyDialog(response.getString("message"));
                 }
             }else if(apiName.equals("scanProducts")){
                 if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
@@ -402,16 +404,60 @@ public class ScannarActivity extends NetworkBaseActivity {
                         startActivity(intent);
                         finish();
                     }else {
-                        DialogAndToast.showDialog(response.getString("message"), ScannarActivity.this);
+                        showMyDialog(response.getString("message"));
                     }
                 }else{
-                    DialogAndToast.showDialog(response.getString("message"), ScannarActivity.this);
+                    showMyDialog(response.getString("message"));
                 }
                 }
         }catch (JSONException e) {
             e.printStackTrace();
             DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),ScannarActivity.this);
         }
+    }
+
+    public void showMyDialog(String msg) {
+        //  errorNoInternet.setText("Oops... No internet");
+        //  errorNoInternet.setVisibility(View.VISIBLE);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        // set title
+        // alertDialogBuilder.setTitle("Oops...No internet");
+        // set dialog message
+        alertDialogBuilder
+                .setMessage(msg)
+                .setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        onDialogPositiveClicked();
+                    }
+                });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+    }
+
+    @Override
+    public void onDialogPositiveClicked(){
+        resetBarCodeScanner();
+    }
+
+    private void resetBarCodeScanner(){
+        barcodeScannerView.decodeSingle(new BarcodeCallback() {
+            @Override
+            public void barcodeResult(BarcodeResult result) {
+                Log.i(TAG,"result "+result.toString());
+                processResult(result.toString());
+            }
+
+            @Override
+            public void possibleResultPoints(List<ResultPoint> resultPoints) {
+
+            }
+        });
+
     }
 
 }

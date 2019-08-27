@@ -416,6 +416,8 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                                         productPriceDetails.setPcodPcoId(dataObject.getInt("pcodPcoId"));
                                         productPriceDetails.setPcodProdQty(dataObject.getInt("pcodProdQty"));
                                         productPriceDetails.setPcodPrice((float) dataObject.getDouble("pcodPrice"));
+                                        if(k==0)
+                                            myProduct.setSellingPrice(productPriceDetails.getPcodPrice());
                                         productPriceDetails.setStatus(dataObject.getString("status"));
                                         productPriceOfferDetails.add(productPriceDetails);
                                     }
@@ -584,6 +586,9 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     float amount = myProduct.getTotalAmount() - netSellingPrice;
                     Log.i(TAG,"tot amount "+amount);
                     myProduct.setTotalAmount(amount);
+                    if(myProduct.getProductPriceOffer()!=null){
+                        myProduct.setSellingPrice(amount/qty);
+                    }
                     dbHelper.updateCartData(myProduct);
                     productAdapter.notifyItemChanged(position);
                     if(callingActivityName.equals("ShopProductListActivity"))
@@ -637,6 +642,9 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     float amount = myProduct.getTotalAmount() + netSellingPrice;
                     Log.i(TAG,"tot amount "+amount);
                     myProduct.setTotalAmount(amount);
+                    if(myProduct.getProductPriceOffer()!=null){
+                        myProduct.setSellingPrice(amount/qty);
+                    }
                     qty = myProduct.getQuantity();
                     myProduct.setQuantity(myProduct.getQuantity());
                     Log.i(TAG,"qty "+qty);

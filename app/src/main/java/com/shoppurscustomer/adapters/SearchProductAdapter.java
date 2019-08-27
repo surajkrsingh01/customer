@@ -80,6 +80,52 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
     @Override
     public void onBindViewHolder(final SearchProductAdapter.MyViewHolder myViewHolder, final int position) {
         final MyProduct item = (MyProduct) myProductsList.get(position);
+        if (dbHelper.checkProdExistInCart(item.getId(), shopCode)) {
+            myViewHolder.btnAddCart.setVisibility(View.GONE);
+            myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
+            myViewHolder.tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(item.getId(), shopCode)));
+            item.setFreeProductPosition(dbHelper.getFreeProductPosition(item.getId(), shopCode));
+            item.setOfferItemCounter(dbHelper.getOfferCounter(item.getId(), shopCode));
+            item.setQuantity(Integer.parseInt(myViewHolder.tv_cartCount.getText().toString()));
+            item.setTotalAmount(dbHelper.getTotalAmount(item.getId(), shopCode));
+            item.setSellingPrice(dbHelper.getProductSellingPrice(item.getId(), shopCode));
+
+        } else {
+            item.setTotalAmount(0);
+            item.setQuantity(0);
+            myViewHolder.tv_cartCount.setText(String.valueOf(0));
+            myViewHolder.linear_plus_minus.setVisibility(View.GONE);
+            myViewHolder.btnAddCart.setVisibility(View.VISIBLE);
+        }
+
+        myViewHolder.btnAddCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
+                //int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
+                if(callingActivityName.equals("ShopProductListActivity") || callingActivityName.equals("CartActivity"))
+                    myItemClickListener.onItemClicked(position, 2);
+                //((ShopProductListActivity) context).updateCart( 2, position);
+            }
+        });
+        myViewHolder.image_minus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
+                if(callingActivityName.equals("ShopProductListActivity")  || callingActivityName.equals("CartActivity"))
+                    myItemClickListener.onItemClicked(position, 1);
+                //((ShopProductListActivity) context).updateCart(1, position);
+            }
+        });
+        myViewHolder.image_plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
+                if(callingActivityName.equals("ShopProductListActivity") || callingActivityName.equals("CartActivity"))
+                    myItemClickListener.onItemClicked(position, 2);
+                //((ShopProductListActivity) context).updateCart(2, position);
+            }
+        });
 
         myViewHolder.textbarcode.setText(item.getBarCode());
         myViewHolder.textName.setText(item.getName());
@@ -115,49 +161,6 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
                     myViewHolder.textStatus.setVisibility(View.GONE);
                 }
             }*/
-
-        if (dbHelper.checkProdExistInCart(item.getId(), shopCode)) {
-            myViewHolder.btnAddCart.setVisibility(View.GONE);
-            myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
-            myViewHolder.tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(item.getId(), shopCode)));
-            item.setFreeProductPosition(dbHelper.getFreeProductPosition(item.getId(), shopCode));
-            item.setOfferItemCounter(dbHelper.getOfferCounter(item.getId(), shopCode));
-            item.setQuantity(Integer.parseInt(myViewHolder.tv_cartCount.getText().toString()));
-            item.setTotalAmount(dbHelper.getTotalAmount(item.getId(), shopCode));
-        } else {
-            myViewHolder.tv_cartCount.setText(String.valueOf(0));
-            myViewHolder.linear_plus_minus.setVisibility(View.GONE);
-            myViewHolder.btnAddCart.setVisibility(View.VISIBLE);
-        }
-
-        myViewHolder.btnAddCart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               // myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
-                //int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
-                if(callingActivityName.equals("ShopProductListActivity") || callingActivityName.equals("CartActivity"))
-                    myItemClickListener.onItemClicked(position, 2);
-                //((ShopProductListActivity) context).updateCart( 2, position);
-            }
-        });
-        myViewHolder.image_minus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
-                if(callingActivityName.equals("ShopProductListActivity")  || callingActivityName.equals("CartActivity"))
-                    myItemClickListener.onItemClicked(position, 1);
-                //((ShopProductListActivity) context).updateCart(1, position);
-            }
-        });
-        myViewHolder.image_plus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
-                if(callingActivityName.equals("ShopProductListActivity") || callingActivityName.equals("CartActivity"))
-                    myItemClickListener.onItemClicked(position, 2);
-                //((ShopProductListActivity) context).updateCart(2, position);
-            }
-        });
 
 
         if(item.getProductPriceOffer() != null ) {

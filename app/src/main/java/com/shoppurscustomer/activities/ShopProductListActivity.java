@@ -33,6 +33,7 @@ import com.shoppurscustomer.interfaces.MyItemTypeClickListener;
 import com.shoppurscustomer.models.Barcode;
 import com.shoppurscustomer.models.CartItem;
 import com.shoppurscustomer.models.Category;
+import com.shoppurscustomer.models.Coupon;
 import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.ProductColor;
 import com.shoppurscustomer.models.ProductComboOffer;
@@ -329,13 +330,12 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                     qty = myProduct.getQuantity();
                     Log.i(TAG,"netSellingPrice "+netSellingPrice);
                     float amount = 0;
-                    /*if(myProduct.getProductPriceOffer()!=null){
-                        amount =  netSellingPrice;
-                    }else {*/
-                        amount = myProduct.getTotalAmount() - netSellingPrice;
-                   // }
+                    amount = myProduct.getTotalAmount() - netSellingPrice;
                     Log.i(TAG,"tot amount "+amount);
                     myProduct.setTotalAmount(amount);
+                    if(myProduct.getProductPriceOffer()!=null){
+                        myProduct.setSellingPrice(amount/qty);
+                    }
                     dbHelper.updateCartData(myProduct);
                     shopProductAdapter.notifyItemChanged(position);
                     updateCartCount();
@@ -382,13 +382,12 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                     float netSellingPrice = getOfferAmount(myProduct,type);
                     float amount = 0;
                     Log.i(TAG,"netSellingPrice "+netSellingPrice);
-                    /*if(myProduct.getProductPriceOffer()!=null){
-                        amount = netSellingPrice;
-                    }else {*/
-                        amount = myProduct.getTotalAmount() + netSellingPrice;
-                    //}
+                    amount = myProduct.getTotalAmount() + netSellingPrice;
                     Log.i(TAG,"tot amount "+amount);
                     myProduct.setTotalAmount(amount);
+                    if(myProduct.getProductPriceOffer()!=null){
+                        myProduct.setSellingPrice(amount/qty);
+                    }
                     qty = myProduct.getQuantity();
                     Log.i(TAG,"qty "+qty);
                     myProduct.setQuantity(myProduct.getQuantity());
@@ -639,6 +638,8 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                                     productPriceDetails.setPcodPcoId(dataObject.getInt("pcodPcoId"));
                                     productPriceDetails.setPcodProdQty(dataObject.getInt("pcodProdQty"));
                                     productPriceDetails.setPcodPrice((float) dataObject.getDouble("pcodPrice"));
+                                    if(k==0)
+                                        myProduct.setSellingPrice(productPriceDetails.getPcodPrice());
                                     productPriceDetails.setStatus(dataObject.getString("status"));
                                     productPriceOfferDetails.add(productPriceDetails);
                                 }
@@ -852,6 +853,15 @@ public class ShopProductListActivity extends NetworkBaseActivity {
             }*/
             //totalPrice = totalPrice + deliveryCharges;
 
+            Coupon coupon = dbHelper.getCouponOffer("SHP1");
+            if(coupon!=null && coupon.getPercentage()>0) {
+                Float offerPer = coupon.getPercentage();
+                Float couponDiscount = 0.0f;
+                if (offerPer > 0f) {
+                    couponDiscount  = totalPrice * offerPer / 100;
+                    totalPrice = totalPrice - couponDiscount;
+                }
+            }
 
             cartItemPrice.setText("Amount "+ Utility.numberFormat(totalPrice));
             cartItemCount.setText("Item "+String.valueOf(dbHelper.getCartCount()));

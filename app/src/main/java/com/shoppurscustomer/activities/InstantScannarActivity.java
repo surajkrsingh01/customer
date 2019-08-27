@@ -269,7 +269,7 @@ public class InstantScannarActivity extends NetworkBaseActivity {
                         //DialogAndToast.showDialog(response.getString("message"), InstantScannarActivity.this);
                     }
                 }else {
-                    DialogAndToast.showDialog(response.getString("message"), InstantScannarActivity.this);
+                    showMyDialog(response.getString("message"));
                 }
             }else if(apiName.equals("shopList")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){

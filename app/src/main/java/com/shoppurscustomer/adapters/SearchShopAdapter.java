@@ -231,7 +231,7 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
                         intent.putExtra("dbuser",shop.getDbusername());
                         intent.putExtra("dbpassword",shop.getDbpassword());
                         intent.putExtra("shop_code",shop.getId());
-                        editor.putString(Constants.SHOP_INSIDE_CODE,shop.getId());
+                        editor.putString(Constants.SHOP_INSIDE_CODE,shop.getCode());
                         editor.putString(Constants.SHOP_INSIDE_NAME, shop.getName());
                         editor.putString(Constants.SHOP_DBNAME,shop.getDbname());
                         editor.putString(Constants.SHOP_DB_USER_NAME,shop.getDbusername());
@@ -254,7 +254,7 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
                         intent.putExtra("dbuser",shop.getDbusername());
                         intent.putExtra("dbpassword",shop.getDbpassword());
                         intent.putExtra("shop_code",shop.getId());
-                        editor.putString(Constants.SHOP_INSIDE_CODE,shop.getId());
+                        editor.putString(Constants.SHOP_INSIDE_CODE,shop.getCode());
                         editor.putString(Constants.SHOP_INSIDE_NAME, shop.getName());
                         editor.putString(Constants.SHOP_DBNAME,shop.getDbname());
                         editor.putString(Constants.SHOP_DB_USER_NAME,shop.getDbusername());

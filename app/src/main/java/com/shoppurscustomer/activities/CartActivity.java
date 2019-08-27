@@ -34,6 +34,7 @@ import com.shoppurscustomer.fragments.OfferDescriptionFragment;
 import com.shoppurscustomer.interfaces.MyItemClickListener;
 import com.shoppurscustomer.interfaces.MyItemTypeClickListener;
 import com.shoppurscustomer.models.Barcode;
+import com.shoppurscustomer.models.Coupon;
 import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.ProductDiscountOffer;
 import com.shoppurscustomer.models.ProductPriceDetails;
@@ -61,7 +62,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     private List<MyProduct> itemList;
     private MyProduct freeProdut;
 
-    private RelativeLayout relativeLayoutCartFooter;
+    private RelativeLayout relativeLayoutCartFooter, linear_address_billing;
     private LinearLayout rlAddressBilling;
     private TextView tvItemCount,tvItemPrice,tvCheckout,tvItemTotal,tvTotalTaxes,tvSgst,tvTotalDiscount,
             tvDeliveryCharges,tvNetPayable,tvOfferName;
@@ -70,7 +71,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
     private ImageView imageViewScan,imageViewSearch,imageViewRemoveOffer;
 
-    private float totalPrice,totalTax,totDiscount,offerPer,offerMaxAmount,deliveryDistance,deliveryCharges;
+    private float totalPrice,totalTax,totDiscount,couponDiscount,offerPer,offerMaxAmount,deliveryDistance,deliveryCharges;
     private int offerId,deliveryTypeId;
 
     private String offerName,paymentMode,orderNumber;
@@ -83,7 +84,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     private View seperator_delivery_address;
     private RadioGroup rg_delivery;
     private RadioButton rb_home_delivery, rb_self_delivery;
-    private LinearLayout linearLayoutScanCenter;
+    private LinearLayout linearLayoutScanCenter, rl_bill_details;
     private RelativeLayout rlOfferDesc;
     private Button btnStoreOffers;
     private int position, type, productDetailsType;
@@ -143,6 +144,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         rlDelivery = findViewById(R.id.relative_delivery_layout);
         rlDiscount = findViewById(R.id.relative_discount);
         rl_offer_applied_layout = findViewById(R.id.rl_offer_applied_layout);
+        rl_bill_details = findViewById(R.id.rl_bill_details);
         rlOfferDesc = findViewById(R.id.rl_offer_desc);
         rlOfferDesc.setVisibility(View.GONE);
         rlOfferLayout = findViewById(R.id.rl_offer_layout);
@@ -157,6 +159,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         relativeLayoutPayOptionLayout = findViewById(R.id.relative_pay_layout);
         rlAddressBilling = findViewById(R.id.linear_billing);
         relativeLayoutCartFooter=findViewById(R.id.rlfooterviewcart);
+        linear_address_billing = findViewById(R.id.linear_address_billing);
         relativeLayoutCartFooter.setBackgroundColor(colorTheme);
         recyclerView=findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -404,17 +407,22 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         }else{
             tvItemCount.setText(itemList.size()+" items");
         }
-
-
         totalTax = dbHelper.getTotalTaxesart();
         tvItemTotal.setText(Utility.numberFormat(dbHelper.getTotalPriceCart() - totalTax));
         tvTotalTaxes.setText(Utility.numberFormat(totalTax));
-        totalPrice = dbHelper.getTotalPriceCart();
+        totalPrice = dbHelper.getTotalPriceCart()  ;
         totDiscount = dbHelper.getTotalMrpPriceCart() - dbHelper.getTotalPriceCart();
-        float dis = 0f;
-        if(offerPer > 0f){
-            dis = totalPrice * offerPer / 100;
-            totDiscount = totDiscount + dis ;
+
+        Coupon coupon = dbHelper.getCouponOffer("SHP1");
+        if(coupon!=null && coupon.getPercentage()>0) {
+            offerPer = coupon.getPercentage();
+            if (offerPer > 0f) {
+                couponDiscount  = totalPrice * offerPer / 100;
+                totDiscount = totDiscount + couponDiscount;
+            }
+            rl_offer_applied_layout.setVisibility(View.VISIBLE);
+            tvApplyCoupon.setVisibility(View.GONE);
+            tvOfferName.setText(coupon.getName());
         }
 
         Log.i(TAG," Taxes "+dbHelper.getTotalTaxesart());
@@ -449,7 +457,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             }
         }
 
-        totalPrice = totalPrice + deliveryCharges;
+        totalPrice = totalPrice + deliveryCharges - couponDiscount;
         tvItemPrice.setText("Rs "+Utility.numberFormat(totalPrice));
         tvNetPayable.setText("Rs "+Utility.numberFormat(totalPrice));
 
@@ -533,7 +541,9 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     shopObject.put("custUserCreateStatus","C");
                     shopObject.put("totalQuantity",String.valueOf(dbHelper.getTotalQuantity(shopCode)));
                     shopObject.put("toalAmount",String.valueOf(getTotalAmount(shopCode)));
+
                     shopObject.put("ordCouponId",String.valueOf(offerId));
+
                     shopObject.put("totCgst",String.valueOf(dbHelper.getTaxesCart("cgst", shopCode)));
                     shopObject.put("totSgst",String.valueOf(dbHelper.getTaxesCart("sgst", shopCode)));
                     shopObject.put("totIgst",String.valueOf(dbHelper.getTaxesCart("igst", shopCode)));
@@ -857,6 +867,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                 itemList.clear();
                 //dbHelper.removeProductFromCart(item.getProdBarCode());
                 dbHelper.removeProductFromCart(item.getId(),  item.getShopCode());
+                dbHelper.deleteTable(dbHelper.COUPON_TABLE);
                 dbHelper.removePriceProductFromCart(item.getId(),  item.getShopCode());
                 if(item.getProductPriceOffer()!=null){
                     ProductPriceOffer productPriceOffer = item.getProductPriceOffer();
@@ -905,13 +916,12 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                 qty = item.getQuantity();
                 Log.i(TAG,"netSellingPrice "+netSellingPrice);
                 float amount =0;
-                /*if(item.getProductPriceOffer()!=null){
-                    amount = netSellingPrice;
-                }else {*/
-                    amount = item.getTotalAmount() - netSellingPrice;
-                //}
+                amount = item.getTotalAmount() - netSellingPrice;
                 Log.i(TAG,"tot amount "+amount);
                 item.setTotalAmount(amount);
+                if(item.getProductPriceOffer()!=null){
+                    item.setSellingPrice(amount/qty);
+                }
                 dbHelper.updateCartData(item);
                 setFooterValues();
                 if(qty == 0){
@@ -958,6 +968,9 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     //}
                     Log.i(TAG,"tot amount "+amount);
                     item.setTotalAmount(amount);
+                    if(item.getProductPriceOffer()!=null){
+                        item.setSellingPrice(amount/qty);
+                    }
                     qty = item.getQuantity();
                     item.setQuantity(item.getQuantity());
                     Log.i(TAG,"qty "+qty);
@@ -1236,6 +1249,10 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             btnStoreOffers.setVisibility(View.VISIBLE);
             myItemAdapter.notifyDataSetChanged();
         }else{
+            recyclerView.setVisibility(View.GONE);
+            rlAddressBilling.setVisibility(View.GONE);
+            rl_bill_details.setVisibility(View.GONE);
+            linear_address_billing.setVisibility(View.GONE);
             relativeLayoutCartFooter.setVisibility(View.GONE);
             linearLayoutScanCenter.setVisibility(View.VISIBLE);
             btnStoreOffers.setVisibility(View.GONE);

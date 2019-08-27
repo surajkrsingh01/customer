@@ -6,13 +6,22 @@ public class Coupon implements Serializable {
 	
 	private int id;
 	private float amount,percentage;
-	private String name,status,startDate,endDate,userName,dbName,dbPassword,dbUserName;
+	private String name,shopCode,status,startDate,endDate,userName,dbName,dbPassword,dbUserName;
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
 	}
+
+	public String getShopCode() {
+		return shopCode;
+	}
+
+	public void setShopCode(String shopCode) {
+		this.shopCode = shopCode;
+	}
+
 	public float getAmount() {
 		return amount;
 	}

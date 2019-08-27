@@ -87,24 +87,6 @@ public class ApplyOfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
        final MyProduct item = (MyProduct) myItemList.get(position);
         final MyViewHolder myViewHolder = (MyViewHolder)holder;
 
-       // myViewHolder.code.setText(item.getBarCode());
-        myViewHolder.textName.setText(item.getName());
-        //myViewHolder.textAmount.setText("Rs. "+String.format("%.02f",item.getMrp()));
-        myViewHolder.textSp.setText(Utility.numberFormat(Double.valueOf(item.getSellingPrice())));
-        myViewHolder.textMrp.setText(Utility.numberFormat(Double.valueOf(item.getMrp())));
-        myViewHolder.textMrp.setPaintFlags(myViewHolder.textMrp.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-
-        float diff = Float.valueOf(item.getMrp()) - Float.valueOf(item.getSellingPrice());
-        if(diff > 0f){
-            float percentage = diff * 100 /Float.valueOf(item.getMrp());
-            myViewHolder.textOffPer.setText(String.format("%.02f",percentage)+"% off");
-            myViewHolder.textMrp.setVisibility(View.VISIBLE);
-            myViewHolder.textOffPer.setVisibility(View.VISIBLE);
-        }else{
-            myViewHolder.textMrp.setVisibility(View.GONE);
-            myViewHolder.textOffPer.setVisibility(View.GONE);
-        }
-
         if(dbHelper.checkProdExistInCart(item.getId(), shopCode)){
             myViewHolder.btnAddCart.setVisibility(View.GONE);
             myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
@@ -113,9 +95,12 @@ public class ApplyOfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             item.setOfferItemCounter(dbHelper.getOfferCounter(item.getId(), shopCode));
             item.setQuantity(Integer.parseInt(myViewHolder.tv_cartCount.getText().toString()));
             item.setTotalAmount(dbHelper.getTotalAmount(item.getId(), shopCode));
+            item.setSellingPrice(dbHelper.getProductSellingPrice(item.getId(), shopCode));
             Log.d("Quantity ........", ""+dbHelper.getProductQuantity(item.getId(), shopCode));
             Log.d("Total Amout ........", ""+dbHelper.getTotalAmount(item.getId(), shopCode));
         }else {
+            item.setTotalAmount(0);
+            item.setQuantity(0);
             myViewHolder.tv_cartCount.setText(String.valueOf(0));
             myViewHolder.linear_plus_minus.setVisibility(View.GONE);
             myViewHolder.btnAddCart.setVisibility(View.VISIBLE);
@@ -146,7 +131,23 @@ public class ApplyOfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 ((ApplyOffersActivity)context).updateCart(2, position);
             }
         });
+       // myViewHolder.code.setText(item.getBarCode());
+        myViewHolder.textName.setText(item.getName());
+        //myViewHolder.textAmount.setText("Rs. "+String.format("%.02f",item.getMrp()));
+        myViewHolder.textSp.setText(Utility.numberFormat(Double.valueOf(item.getSellingPrice())));
+        myViewHolder.textMrp.setText(Utility.numberFormat(Double.valueOf(item.getMrp())));
+        myViewHolder.textMrp.setPaintFlags(myViewHolder.textMrp.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
+        float diff = Float.valueOf(item.getMrp()) - Float.valueOf(item.getSellingPrice());
+        if(diff > 0f){
+            float percentage = diff * 100 /Float.valueOf(item.getMrp());
+            myViewHolder.textOffPer.setText(String.format("%.02f",percentage)+"% off");
+            myViewHolder.textMrp.setVisibility(View.VISIBLE);
+            myViewHolder.textOffPer.setVisibility(View.VISIBLE);
+        }else{
+            myViewHolder.textMrp.setVisibility(View.GONE);
+            myViewHolder.textOffPer.setVisibility(View.GONE);
+        }
 
         if(item.getProductPriceOffer() != null ) {
             ProductPriceOffer productPriceOffer = item.getProductPriceOffer();

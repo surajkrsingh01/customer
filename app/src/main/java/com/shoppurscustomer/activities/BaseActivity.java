@@ -83,8 +83,8 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
+    int backColor=0,textColor = 0;
     public void initFooter(final Context context, int type) {
-        int backColor=0,textColor = 0;
         if(isDarkTheme){
             backColor = getResources().getColor(R.color.dark_color);
             textColor = getResources().getColor(R.color.white);

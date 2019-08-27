@@ -70,6 +70,9 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String PROD_CGST = "PROD_CGST";
     public static final String PROD_IGST = "PROD_IGST";
     public static final String PROD_SGST = "PROD_SGST";
+    public static final String PROD_CGST_PER = "PROD_CGST_PER";
+    public static final String PROD_IGST_PER = "PROD_IGST_PER";
+    public static final String PROD_SGST_PER = "PROD_SGST_PER";
     public static final String PROD_WARRANTY = "PROD_WARRANTY";
     public static final String PROD_MFG_DATE = "PROD_MFG_DATE";
     public static final String PROD_EXPIRY_DATE = "PROD_EXPIRY_DATE";
@@ -262,6 +265,9 @@ public class DbHelper extends SQLiteOpenHelper {
             " "+PROD_CGST+" TEXT, " +
             " "+PROD_IGST+" TEXT, " +
             " "+PROD_SGST+" TEXT, " +
+            " "+PROD_CGST_PER+" TEXT, " +
+            " "+PROD_IGST_PER+" TEXT, " +
+            " "+PROD_SGST_PER+" TEXT, " +
             " "+TOTAL_QTY+" TEXT, " +
             " "+TOTAL_AMOUNT+" TEXT, " +
             " "+UNIT+" TEXT, " +
@@ -295,7 +301,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public DbHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, 9);
+        super(context, DATABASE_NAME, null, 10);
         this.context=context;
     }
 
@@ -392,11 +398,17 @@ public class DbHelper extends SQLiteOpenHelper {
             Log.i("dbhelper","cgst "+item.getProdCgst());
             Log.i("dbhelper","sgst "+item.getProdSgst());
         }else{
-            contentValues.put(PROD_CGST, (item.getProdCgst() * item.getSellingPrice() * item.getQuantity()) /100);
-            contentValues.put(PROD_IGST, (item.getProdIgst() * item.getSellingPrice() * item.getQuantity()) /100);
-            contentValues.put(PROD_SGST, (item.getProdSgst() * item.getSellingPrice() * item.getQuantity()) /100);
-            Log.i("dbhelper","cgst "+item.getProdCgst()+" "+(item.getProdCgst() * item.getSellingPrice() * item.getQuantity()) /100);
-            Log.i("dbhelper","sgst "+item.getProdSgst()+" "+(item.getProdSgst() * item.getSellingPrice() * item.getQuantity()) /100);
+            contentValues.put(PROD_CGST_PER, item.getProdCgst());
+            contentValues.put(PROD_IGST_PER, item.getProdIgst());
+            contentValues.put(PROD_SGST_PER, item.getProdSgst());
+            float rate = ((item.getSellingPrice() * (item.getProdCgst()+item.getProdSgst()))/(100 +
+                    (item.getProdCgst()+item.getProdSgst())));
+            Log.d("Rate ", ""+rate);
+            contentValues.put(PROD_CGST, rate);
+            contentValues.put(PROD_IGST, rate/2);
+            contentValues.put(PROD_SGST, rate);
+            Log.i("dbhelper","cgst "+rate);
+            Log.i("dbhelper","sgst "+rate);
         }
         contentValues.put(PROD_IMAGE_1, item.getProdImage1());
         contentValues.put(PROD_IMAGE_2, item.getProdImage2());
@@ -520,6 +532,21 @@ public class DbHelper extends SQLiteOpenHelper {
         return 0;
     }
 
+    public float getProductSellingPrice(String itemId, String shopCode){
+        Log.d("getting itemId", itemId);
+        Log.d("getting shopId", shopCode);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(CART_TABLE, new String[] { PROD_SP }, ID + "=?" + " AND " + SHOP_CODE + "=?",
+                new String[] { itemId, shopCode}, null, null, null, null);
+        if (cursor != null && cursor.getCount()>0) {
+            cursor.moveToFirst();
+            float sp = cursor.getFloat(cursor.getColumnIndex(PROD_SP));
+            Log.d("SP ", sp+"");
+            return sp;
+        }
+        return 0;
+    }
+
     public int getFreeProductPosition(String itemId, String shopCode){
         Log.d("getting itemId", itemId);
         Log.d("getting shopId", shopCode);
@@ -570,9 +597,9 @@ public class DbHelper extends SQLiteOpenHelper {
                 productItem.setBarCode(res.getString(res.getColumnIndex(PROD_BARCODE)));
                 productItem.setDesc(res.getString(res.getColumnIndex(PROD_DESC)));
                 productItem.setProdHsnCode(res.getString(res.getColumnIndex(PROD_HSN_CODE)));
-                productItem.setProdCgst(res.getFloat(res.getColumnIndex(PROD_CGST)));
-                productItem.setProdIgst(res.getFloat(res.getColumnIndex(PROD_IGST)));
-                productItem.setProdSgst(res.getFloat(res.getColumnIndex(PROD_SGST)));
+                productItem.setProdCgst(res.getFloat(res.getColumnIndex(PROD_CGST_PER)));
+                productItem.setProdIgst(res.getFloat(res.getColumnIndex(PROD_IGST_PER)));
+                productItem.setProdSgst(res.getFloat(res.getColumnIndex(PROD_SGST_PER)));
                 productItem.setProdImage1(res.getString(res.getColumnIndex(PROD_IMAGE_1)));
                 productItem.setProdImage2(res.getString(res.getColumnIndex(PROD_IMAGE_2)));
                 productItem.setProdImage3(res.getString(res.getColumnIndex(PROD_IMAGE_3)));
@@ -624,8 +651,19 @@ public class DbHelper extends SQLiteOpenHelper {
         Log.i("dbhelper","qty "+item.getQuantity());
         Log.i("dbhelper","total amount "+item.getTotalAmount());
         Log.i("dbhelper","shopCode "+item.getShopCode());
+        Log.i("dbhelper","SP "+item.getSellingPrice());
+        Log.i("dbhelper","CGST "+item.getProdCgst());
+        Log.i("dbhelper","SGST "+item.getProdSgst());
         contentValues.put(TOTAL_QTY, item.getQuantity());
         contentValues.put(TOTAL_AMOUNT, item.getTotalAmount());
+        contentValues.put(PROD_SP, item.getSellingPrice());
+
+        float rate = ((item.getSellingPrice() * (item.getProdCgst()+item.getProdSgst()))/(100 +
+                (item.getProdCgst()+item.getProdSgst())));
+        Log.d("Rate ", ""+rate);
+        contentValues.put(PROD_CGST, rate/2);
+        contentValues.put(PROD_IGST, rate);
+        contentValues.put(PROD_SGST, rate/2);
 
         db.update(CART_TABLE, contentValues, ID + " = ?" + " AND " + SHOP_CODE + "=?" + " AND " + PROD_SP+" != ?",
                 new String[] { String.valueOf(item.getId()),  String.valueOf(item.getShopCode()), String.valueOf(0)});
@@ -1043,12 +1081,18 @@ public class DbHelper extends SQLiteOpenHelper {
         Log.i("DbHelper","Row is added");
         return true;
     }
+    public boolean removeCouponFromCart(String shopCode){
+        SQLiteDatabase db = this.getWritableDatabase();
+        long val = db.delete(COUPON_TABLE,  SHOP_CODE +"=?",new String[]{shopCode});
+        Log.d(TAG, "removed product from cart status "+val + "shopCode  "+shopCode);
+        return true;
+    }
 
-    public boolean addCouponOffer(Coupon item, String createdAt, String updatedAt, String shopCode){
+    public boolean addCouponOffer(Coupon item, String createdAt, String updatedAt){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
-        contentValues.put(SHOP_CODE, shopCode);
+        contentValues.put(SHOP_CODE, item.getShopCode());
         contentValues.put(COUPON_PER, item.getPercentage());
         contentValues.put(NAME, item.getName());
         contentValues.put(COUPON_MAX_AMOUNT, item.getAmount());
@@ -1057,8 +1101,8 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(END_DATE, item.getEndDate());
         contentValues.put(CREATED_AT, createdAt);
         contentValues.put(UPDATED_AT, updatedAt);
-        db.insert(COUPON_TABLE, null, contentValues);
-        Log.i("DbHelper","Row is added");
+        Long status = db.insert(COUPON_TABLE, null, contentValues);
+        Log.i("DbHelper","Coupon is added status "+status);
         return true;
     }
 
@@ -1466,10 +1510,10 @@ public class DbHelper extends SQLiteOpenHelper {
         return productDiscountOfferList;
     }
 
-    public Coupon getCouponOffer(String id){
+    public Coupon getCouponOffer(String shopCode){
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select * from "+COUPON_TABLE +" where "+ID+" = ?";
-        Cursor res =  db.rawQuery(query, new String[]{id});
+        final String query="select * from "+COUPON_TABLE +" where " + SHOP_CODE + "=?";
+        Cursor res =  db.rawQuery(query, new String[]{shopCode});
         Coupon item = null;
         if(res.moveToFirst()){
             item = new Coupon();
@@ -1488,13 +1532,14 @@ public class DbHelper extends SQLiteOpenHelper {
     public List<Coupon> getCouponOffer(){
         SQLiteDatabase db = this.getReadableDatabase();
         final String query="select * from "+COUPON_TABLE;
-        Cursor res =  db.rawQuery(query,null);
+        Cursor res =  db.rawQuery(query,new String[]{});
         List<Coupon> itemList = new ArrayList<>();
         Coupon item = null;
         if(res.moveToFirst()){
             do{
                 item = new Coupon();
                 item.setId(res.getInt(res.getColumnIndex(ID)));
+                item.setShopCode(res.getString(res.getColumnIndex(SHOP_CODE)));
                 item.setName(res.getString(res.getColumnIndex(NAME)));
                 item.setAmount(res.getFloat(res.getColumnIndex(COUPON_MAX_AMOUNT)));
                 item.setPercentage(res.getFloat(res.getColumnIndex(COUPON_PER)));

@@ -2,7 +2,10 @@ package com.shoppurscustomer.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
@@ -17,6 +20,7 @@ import com.shoppurscustomer.interfaces.MyItemClickListener;
 import com.shoppurscustomer.models.Coupon;
 import com.shoppurscustomer.utilities.ConnectionDetector;
 import com.shoppurscustomer.utilities.Constants;
+import com.shoppurscustomer.utilities.DialogAndToast;
 import com.shoppurscustomer.utilities.Utility;
 
 
@@ -35,8 +39,9 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
     private RecyclerView recyclerView;
     private CouponOfferAdapter myItemAdapter;
     private TextView textApply,textViewError;
+    private EditText edit_coupon_code;
 
-    private String flag, shopDbName;
+    private String flag, shopDbName, shopCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +57,11 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
     private void init(){
         flag = getIntent().getStringExtra("flag");
         shopDbName = getIntent().getStringExtra("dbname");
+        shopCode = getIntent().getStringExtra("shopCode");
         itemList = new ArrayList<>();
         textViewError = findViewById(R.id.text_error);
         textApply = findViewById(R.id.btn_apply);
+        edit_coupon_code = findViewById(R.id.edit_coupon_code);
         recyclerView=findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
@@ -66,6 +73,16 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
         recyclerView.setAdapter(myItemAdapter);
 
         textApply.setTextColor(colorTheme);
+        textApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String couponCode = edit_coupon_code.getText().toString();
+                if(!TextUtils.isEmpty(couponCode))
+                    applyCoupon(couponCode);
+                else
+                DialogAndToast.showDialog("Please Enter Coupon Code ",CouponOffersActivity.this);
+            }
+        });
 
         if(ConnectionDetector.isNetworkAvailable(this)){
             getCouponOffers();
@@ -81,6 +98,18 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
         String url=getResources().getString(R.string.root_url)+Constants.GET_COUPON_OFFER;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"offerList");
+    }
+
+    private void applyCoupon(String couponCode){
+        Map<String,String> params=new HashMap<>();
+        params.put("shopCode",shopCode);
+        params.put("couponCode",couponCode);
+        params.put("dbName",shopDbName);
+        params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
+        params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+        String url=getResources().getString(R.string.root_url)+"offers/validate_coupon_offer";
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"applyCoupon");
     }
 
     @Override
@@ -99,6 +128,7 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
                         dataObject = couponArray.getJSONObject(i);
                         coupon = new Coupon();
                         coupon.setId(dataObject.getInt("id"));
+                        coupon.setShopCode(shopCode);
                         coupon.setPercentage(dataObject.getInt("percentage"));
                         coupon.setAmount((float)dataObject.getDouble("amount"));
                         coupon.setName(dataObject.getString("name"));
@@ -106,7 +136,7 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
                         coupon.setStartDate(dataObject.getString("startDate"));
                         coupon.setEndDate(dataObject.getString("endDate"));
                         //dbHelper.addCouponOffer(coupon, Utility.getTimeStamp(),Utility.getTimeStamp());
-                        //itemList.add(coupon);
+                        itemList.add(coupon);
                     }
 
                     if(itemList.size() == 0){
@@ -116,6 +146,32 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
                         myItemAdapter.notifyDataSetChanged();
                     }
 
+                }
+            }else if(apiName.equals("applyCoupon")){
+                Log.d("response ", response.toString());
+                if (response.getBoolean("status")) {
+                    JSONObject dataObject = response.getJSONObject("result");
+                    Coupon coupon = new Coupon();
+                    coupon.setId(dataObject.getInt("id"));
+                    coupon.setShopCode(dataObject.getString("shopCode"));
+                    coupon.setPercentage(dataObject.getInt("percentage"));
+                    coupon.setAmount((float)dataObject.getDouble("amount"));
+                    coupon.setName(dataObject.getString("name"));
+                    coupon.setStatus(dataObject.getString("status"));
+                    coupon.setStartDate(dataObject.getString("startDate"));
+                    coupon.setEndDate(dataObject.getString("endDate"));
+
+                    if(coupon.getPercentage()>0) {
+                        dbHelper.removeCouponFromCart(coupon.getShopCode());
+                        dbHelper.addCouponOffer(coupon, Utility.getTimeStamp(), Utility.getTimeStamp());
+                        showMyDialog("Coupon Applied Successfully");
+                    }else showMyDialog("Coupon is not Valid");
+                }else {
+                    int result = response.getInt("result");
+                    if(result==0){
+                        showMyDialog("Coupon is not Valid");
+                    }else if(result==1)
+                        showMyDialog("Something went wrong, please try letter");
                 }
             }
         }catch (JSONException e) {
@@ -136,12 +192,6 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
     @Override
     public void onItemClicked(int position) {
         Coupon coupon = (Coupon) itemList.get(position);
-        Intent intent  = new Intent();
-        intent.putExtra("name",coupon.getName());
-        intent.putExtra("id",coupon.getId());
-        intent.putExtra("per",coupon.getPercentage());
-        intent.putExtra("amount",coupon.getAmount());
-        setResult(-1,intent);
-        finish();
+        applyCoupon(coupon.getName());
     }
 }

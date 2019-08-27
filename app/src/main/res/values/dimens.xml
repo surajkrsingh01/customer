@@ -115,6 +115,7 @@
     <!-- List. -->
     <dimen name="list_very_large_text_size">30sp</dimen>
     <dimen name="list_large_text_size">22sp</dimen>
+    <dimen name="list_large_text_size_new">18sp</dimen>
     <dimen name="camera_scan_size">48dp</dimen>
     <dimen name="list_root_padding">16dp</dimen>
     <dimen name="list_pic_size">80dp</dimen>

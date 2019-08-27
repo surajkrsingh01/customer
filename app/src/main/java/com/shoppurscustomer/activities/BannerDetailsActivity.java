@@ -37,8 +37,8 @@ public class BannerDetailsActivity extends NetworkBaseActivity{
         String newHtmlString =  getIntent().getStringExtra("desc");
         setHtml((WebView) findViewById(R.id.web_view),
                 newHtmlString,
-                android.R.attr.colorBackground,
-                android.R.attr.textColorTertiary,
+                backColor,
+                R.attr.primaryTextColor,
                 android.R.attr.colorPrimary,
                 getResources().getDimension(R.dimen.normal_text_size),
                 getResources().getDimension(R.dimen.activity_horizontal_margin));
@@ -57,9 +57,8 @@ public class BannerDetailsActivity extends NetworkBaseActivity{
         }
 
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.setBackgroundColor(ContextCompat.getColor(webView.getContext(),
-                getIdRes(webView.getContext(), backgroundColor)));
-        webView.getSettings().setBuiltInZoomControls(true); // optional
+        webView.setBackgroundColor(backgroundColor);
+        //webView.getSettings().setBuiltInZoomControls(true); // optional
         webView.loadDataWithBaseURL(null,
                 wrapHtml(webView.getContext(),  String.format(" %s ",html), textColor, linkColor, textSize, margin),
                 "text/html", "UTF-8", null);

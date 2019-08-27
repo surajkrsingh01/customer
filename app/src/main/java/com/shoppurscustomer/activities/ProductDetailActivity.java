@@ -23,6 +23,7 @@ import com.shoppurscustomer.R;
 import com.shoppurscustomer.adapters.MyReviewAdapter;
 import com.shoppurscustomer.fragments.DescBottomFragment;
 import com.shoppurscustomer.models.CartItem;
+import com.shoppurscustomer.models.Coupon;
 import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.MyReview;
 import com.shoppurscustomer.models.ProductDiscountOffer;
@@ -79,7 +80,9 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         custName = sharedPreferences.getString(Constants.FULL_NAME, "");
         custId = sharedPreferences.getString(Constants.USER_ID,"");
         myProduct = (MyProduct) getIntent().getSerializableExtra("MyProduct");
-        Log.d("myProduct ", myProduct+" myproduct");
+        Log.d("myProduct ", myProduct.getName()+" name");
+        Log.d("myProduct ", myProduct.getShopCode()+" shopCode");
+        Log.d("myProduct ", myProduct.getId()+"  id");
     }
 
     private void initViews(){
@@ -160,15 +163,6 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         /*textReorderLevel.setText(""+myProductItem.getProdReorderLevel());
         textViewQoh.setText(""+myProductItem.getProdQoh());*/
 
-        float diff = myProduct.getMrp() - myProduct.getSellingPrice();
-        if(diff > 0f){
-            float percentage = diff * 100 / myProduct.getMrp();
-            tvDiscount.setText(String.format("%.02f",percentage)+"% off");
-        }else{
-            tvDiscount.setVisibility(View.GONE);
-            text_product_mrp.setVisibility(View.GONE);
-        }
-
         /*if(myProduct.getIsBarCodeAvailable()!=null && myProduct.getIsBarCodeAvailable().equals("N")){
             buttonAddMultipleBarcode.setVisibility(View.GONE);
         }*/
@@ -225,6 +219,8 @@ public class ProductDetailActivity extends NetworkBaseActivity {
             myProduct.setFreeProductPosition(dbHelper.getFreeProductPosition(myProduct.getId(), shopCode));
             myProduct.setOfferItemCounter(dbHelper.getOfferCounter(myProduct.getId(), shopCode));
             myProduct.setQuantity(Integer.parseInt(tv_cartCount.getText().toString()));
+            myProduct.setSellingPrice(dbHelper.getProductSellingPrice(myProduct.getId(), shopCode));
+
         }else {
             tv_cartCount.setText(String.valueOf(0));
             myProduct.setQuantity(0);
@@ -255,6 +251,15 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                 updateCart(2);
             }
         });
+
+        float diff = myProduct.getMrp() - myProduct.getSellingPrice();
+        if(diff > 0f){
+            float percentage = diff * 100 / myProduct.getMrp();
+            tvDiscount.setText(String.format("%.02f",percentage)+"% off");
+        }else{
+            tvDiscount.setVisibility(View.GONE);
+            text_product_mrp.setVisibility(View.GONE);
+        }
 
         getProductRatings();
     }
@@ -331,9 +336,13 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     float amount = myProduct.getTotalAmount() - netSellingPrice;
                     Log.i(TAG,"tot amount "+amount);
                     myProduct.setTotalAmount(amount);
+                    if(myProduct.getProductPriceOffer()!=null){
+                        myProduct.setSellingPrice(amount/qty);
+                    }
                     myProduct.setQuantity(myProduct.getQuantity());
                     dbHelper.updateCartData(myProduct);
                     updateCartCount();
+                    updateAddButtons();
                 }
             }
 
@@ -378,6 +387,9 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     float amount = myProduct.getTotalAmount() + netSellingPrice;
                     Log.i(TAG,"tot amount "+amount);
                     myProduct.setTotalAmount(amount);
+                    if(myProduct.getProductPriceOffer()!=null){
+                        myProduct.setSellingPrice(amount/qty);
+                    }
                     qty = myProduct.getQuantity();
                     myProduct.setQuantity(myProduct.getQuantity());
                     Log.i(TAG,"qty "+qty);
@@ -699,12 +711,27 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                 tvDeliveryCharges.setText("0.00");
             }*/
             //totalPrice = totalPrice + deliveryCharges;
-
+            Coupon coupon = dbHelper.getCouponOffer("SHP1");
+            if(coupon!=null && coupon.getPercentage()>0) {
+                Float offerPer = coupon.getPercentage();
+                Float couponDiscount = 0.0f;
+                if (offerPer > 0f) {
+                    couponDiscount  = totalPrice * offerPer / 100;
+                    totalPrice = totalPrice - couponDiscount;
+                }
+            }
 
             cartItemPrice.setText("Amount "+ Utility.numberFormat(totalPrice));
             cartItemCount.setText("Item "+String.valueOf(dbHelper.getCartCount()));
             tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode)));
-        }else rlfooterviewcart.setVisibility(View.GONE);
+        }else{
+            myProduct.setTotalAmount(0);
+            myProduct.setQuantity(0);
+            rlfooterviewcart.setVisibility(View.GONE);
+            tv_cartCount.setText(String.valueOf(0));
+            linear_plus_minus.setVisibility(View.GONE);
+            btnAddCart.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -724,6 +751,17 @@ public class ProductDetailActivity extends NetworkBaseActivity {
             myProduct.setOfferItemCounter(dbHelper.getOfferCounter(myProduct.getId(), shopCode));
             myProduct.setQuantity(Integer.parseInt(tv_cartCount.getText().toString()));
             myProduct.setTotalAmount(dbHelper.getTotalAmount(myProduct.getId(), shopCode));
+            myProduct.setSellingPrice(dbHelper.getProductSellingPrice(myProduct.getId(), shopCode));
+            text_product_selling_price.setText(Utility.numberFormat(dbHelper.getProductSellingPrice(myProduct.getId(), shopCode)));
+
+            float diff = myProduct.getMrp() - myProduct.getSellingPrice();
+            if(diff > 0f){
+                float percentage = diff * 100 / myProduct.getMrp();
+                tvDiscount.setText(String.format("%.02f",percentage)+"% off");
+            }else{
+                tvDiscount.setVisibility(View.GONE);
+                text_product_mrp.setVisibility(View.GONE);
+            }
         }else {
             tv_cartCount.setText(String.valueOf(0));
             linear_plus_minus.setVisibility(View.GONE);
