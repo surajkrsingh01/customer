@@ -161,11 +161,30 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
                     coupon.setStartDate(dataObject.getString("startDate"));
                     coupon.setEndDate(dataObject.getString("endDate"));
 
-                    if(coupon.getPercentage()>0) {
+                    if(coupon.getAmount()==0 && coupon.getPercentage()==0){
+                        showMyDialog("Coupon is not Valid");
+                        return;
+                    }else if(coupon.getAmount()>0){
+                        if(!(coupon.getShopCode().equals("SHP1"))){
+                            dbHelper.updateCartCouponDiscount(coupon, "remove_coupon");
+                            dbHelper.updateCartCouponDiscount(coupon, "update_coupon");
+                        }
                         dbHelper.removeCouponFromCart(coupon.getShopCode());
                         dbHelper.addCouponOffer(coupon, Utility.getTimeStamp(), Utility.getTimeStamp());
-                        showMyDialog("Coupon Applied Successfully");
-                    }else showMyDialog("Coupon is not Valid");
+                        showMyDialog("Coupon Applied Successfully Amount "+coupon.getAmount());
+                    }else {
+                        if(coupon.getPercentage()>0) {
+                            Float couponDiscount  = dbHelper.getTotalPriceCart() * coupon.getPercentage() / 100;
+                            coupon.setAmount(couponDiscount);
+                            if(!(coupon.getShopCode().equals("SHP1"))) {
+                                dbHelper.updateCartCouponDiscount(coupon, "remove_coupon");
+                                dbHelper.updateCartCouponDiscount(coupon, "update_coupon");
+                            }
+                            dbHelper.removeCouponFromCart(coupon.getShopCode());
+                            dbHelper.addCouponOffer(coupon, Utility.getTimeStamp(), Utility.getTimeStamp());
+                            showMyDialog("Coupon Applied Successfully Percentage "+coupon.getAmount());
+                        }
+                    }
                 }else {
                     int result = response.getInt("result");
                     if(result==0){

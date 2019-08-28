@@ -854,13 +854,9 @@ public class ShopProductListActivity extends NetworkBaseActivity {
             //totalPrice = totalPrice + deliveryCharges;
 
             Coupon coupon = dbHelper.getCouponOffer("SHP1");
-            if(coupon!=null && coupon.getPercentage()>0) {
-                Float offerPer = coupon.getPercentage();
-                Float couponDiscount = 0.0f;
-                if (offerPer > 0f) {
-                    couponDiscount  = totalPrice * offerPer / 100;
-                    totalPrice = totalPrice - couponDiscount;
-                }
+            if(coupon!=null && coupon.getAmount()>0) {
+                Float couponDiscount = coupon.getAmount();
+                totalPrice = totalPrice - couponDiscount;
             }
 
             cartItemPrice.setText("Amount "+ Utility.numberFormat(totalPrice));

@@ -51,6 +51,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static final String ID = "id";
     public static final String SHOP_CODE = "shop_code";
+    public static final String DISCOUNT = "discount";
     public static final String CUST_CODE = "cust_code";
     public static final String CAT_ID = "cat_id";
     public static final String NAME = "name";
@@ -240,6 +241,7 @@ public class DbHelper extends SQLiteOpenHelper {
             " "+COUPON_NAME+" TEXT, " +
             " "+COUPON_PER+" TEXT, " +
             " "+COUPON_MAX_AMOUNT+" TEXT , " +
+            " "+DISCOUNT+" TEXT , " +
             " "+OFFER_ID+" TEXT , " +
             " "+OFFER_TYPE+" TEXT , " +
             " "+DELIVERY_ADDRESS+" TEXT , " +
@@ -301,7 +303,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public DbHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, 10);
+        super(context, DATABASE_NAME, null, 11);
         this.context=context;
     }
 
@@ -668,6 +670,40 @@ public class DbHelper extends SQLiteOpenHelper {
         db.update(CART_TABLE, contentValues, ID + " = ?" + " AND " + SHOP_CODE + "=?" + " AND " + PROD_SP+" != ?",
                 new String[] { String.valueOf(item.getId()),  String.valueOf(item.getShopCode()), String.valueOf(0)});
     }
+
+    public void updateCartCouponDiscount(Coupon coupon, String flag){
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues contentValues = new ContentValues();
+        Log.i("dbhelper","Discount "+coupon.getAmount());
+        if(flag.equals("remove_coupon")){
+            contentValues.put(TOTAL_AMOUNT, getTotalAmount(coupon.getShopCode()) + getCouponDiscount(coupon.getShopCode()));
+            contentValues.put(DISCOUNT, 0);
+        }else {
+            contentValues.put(TOTAL_AMOUNT, getTotalAmount(coupon.getShopCode()) - coupon.getAmount());
+            contentValues.put(DISCOUNT, coupon.getAmount());
+        }
+
+        db.update(CART_TABLE, contentValues, SHOP_CODE + "=?",
+                new String[] { coupon.getShopCode() });
+    }
+
+    public float getCouponDiscount(String shopCode){
+        SQLiteDatabase db = this.getReadableDatabase();
+        final String query="select "+DISCOUNT+" from "+CART_TABLE +" where "+ SHOP_CODE + "=?";
+        Cursor res =  db.rawQuery(query, new String[]{shopCode});
+        float discount = 0;
+        if(res.moveToFirst()){
+            do{
+                discount =  res.getFloat(res.getColumnIndex("totalQty"));
+            }while (res.moveToNext());
+
+        }
+        Log.d(TAG, "privious coupon discount "+discount);
+
+        return discount;
+    }
+
+
 
 
     // Deleting single contact

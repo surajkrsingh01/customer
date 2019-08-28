@@ -759,14 +759,10 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
             float deliveryDistance = 0;
 
             Coupon coupon = dbHelper.getCouponOffer("SHP1");
-            if(coupon!=null && coupon.getPercentage()>0) {
-                Float offerPer = coupon.getPercentage();
-                Float couponDiscount = 0.0f;
-                if (offerPer > 0f) {
-                    couponDiscount  = totalPrice * offerPer / 100;
+                if(coupon!=null && coupon.getAmount()>0) {
+                    Float couponDiscount = coupon.getAmount();
                     totalPrice = totalPrice - couponDiscount;
                 }
-            }
             cartItemPrice.setText("Amount "+ Utility.numberFormat(totalPrice));
             cartItemCount.setText("Item "+String.valueOf(dbHelper.getCartCount()));
             //cartItemCount.setText(String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode)));

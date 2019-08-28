@@ -149,6 +149,7 @@
                         android:text="Apply Coupon"/>
 
                     <RelativeLayout
+                        android:layout_below="@id/tv_coupon_label"
                         android:id="@+id/rl_offer_applied_layout"
                         android:visibility="gone"
                         android:layout_width="match_parent"

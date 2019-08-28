@@ -410,19 +410,24 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         totalTax = dbHelper.getTotalTaxesart();
         tvItemTotal.setText(Utility.numberFormat(dbHelper.getTotalPriceCart() - totalTax));
         tvTotalTaxes.setText(Utility.numberFormat(totalTax));
-        totalPrice = dbHelper.getTotalPriceCart()  ;
+        totalPrice = dbHelper.getTotalPriceCart();
         totDiscount = dbHelper.getTotalMrpPriceCart() - dbHelper.getTotalPriceCart();
 
-        Coupon coupon = dbHelper.getCouponOffer("SHP1");
-        if(coupon!=null && coupon.getPercentage()>0) {
-            offerPer = coupon.getPercentage();
-            if (offerPer > 0f) {
-                couponDiscount  = totalPrice * offerPer / 100;
+        List<Coupon> couponList = dbHelper.getCouponOffer();
+        for (Coupon coupon: couponList){
+            if(coupon!=null && coupon.getAmount()>0) {
+                couponDiscount = coupon.getAmount();
+                if(coupon.getShopCode().equals("SHP1")) {
+                    totalPrice = totalPrice - couponDiscount;
+                }
                 totDiscount = totDiscount + couponDiscount;
+                tvOfferName.setText(coupon.getName());
             }
+        }
+        if(couponList.size()>0){
             rl_offer_applied_layout.setVisibility(View.VISIBLE);
             tvApplyCoupon.setVisibility(View.GONE);
-            tvOfferName.setText(coupon.getName());
+            //tvOfferName.setText(coupon.getName());
         }
 
         Log.i(TAG," Taxes "+dbHelper.getTotalTaxesart());
@@ -457,7 +462,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             }
         }
 
-        totalPrice = totalPrice + deliveryCharges - couponDiscount;
+        totalPrice = totalPrice + deliveryCharges;
         tvItemPrice.setText("Rs "+Utility.numberFormat(totalPrice));
         tvNetPayable.setText("Rs "+Utility.numberFormat(totalPrice));
 
