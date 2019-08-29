@@ -148,43 +148,11 @@
                         android:textColor="?attr/primaryTextColor"
                         android:text="Apply Coupon"/>
 
-                    <RelativeLayout
-                        android:layout_below="@id/tv_coupon_label"
-                        android:id="@+id/rl_offer_applied_layout"
-                        android:visibility="gone"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_coupons"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/tv_offer_name"
-                            android:layout_toLeftOf="@+id/image_remove_offer"
-                            android:layout_marginRight="12dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/large_text_size"
-                            android:textColor="?attr/primaryTextColor"
-                            android:text=""/>
-
-                        <TextView
-                            android:id="@+id/tv_offer_desc"
-                            android:layout_below="@id/tv_offer_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/small_text_size"
-                            android:textColor="?attr/secondaryTextColor"
-                            android:text="Offer applied on this bill"/>
-
-                        <ImageView
-                            android:id="@+id/image_remove_offer"
-                            android:src="@drawable/ic_cancel_black_24dp"
-                            android:layout_alignParentRight="true"
-                            android:layout_centerVertical="true"
-                            android:tint="@color/orange600"
-                            android:layout_width="26dp"
-                            android:layout_height="26dp" />
-
-                    </RelativeLayout>
-
+                    </androidx.recyclerview.widget.RecyclerView>
 
                 </RelativeLayout>
 

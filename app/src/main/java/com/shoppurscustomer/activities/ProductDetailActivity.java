@@ -22,7 +22,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.adapters.MyReviewAdapter;
 import com.shoppurscustomer.fragments.DescBottomFragment;
-import com.shoppurscustomer.models.CartItem;
 import com.shoppurscustomer.models.Coupon;
 import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.MyReview;
@@ -712,7 +711,18 @@ public class ProductDetailActivity extends NetworkBaseActivity {
             }*/
             //totalPrice = totalPrice + deliveryCharges;
             Coupon coupon = dbHelper.getCouponOffer("SHP1");
-            if(coupon!=null && coupon.getAmount()>0) {
+            if(coupon.getPercentage()>0) {
+                Float couponDiscount  = dbHelper.getTotalPriceCart() * coupon.getPercentage() / 100;
+                if(couponDiscount<coupon.getMaxDiscount()  || coupon.getMaxDiscount()==0)
+                    coupon.setAmount(couponDiscount);
+                else coupon.setAmount(coupon.getMaxDiscount());
+                if(!(coupon.getShopCode().equals("SHP1"))) {
+                    dbHelper.updateCartCouponDiscount(coupon, "remove_coupon");
+                    dbHelper.updateCartCouponDiscount(coupon, "update_coupon");
+                }
+                dbHelper.manageCouponOffer(coupon, "update");
+            }
+            if(coupon.getAmount()>0) {
                 Float couponDiscount = coupon.getAmount();
                 totalPrice = totalPrice - couponDiscount;
             }

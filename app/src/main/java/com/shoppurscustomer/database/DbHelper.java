@@ -92,6 +92,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COUPON_NAME = "couponName";
     public static final String COUPON_PER = "couponPer";
     public static final String COUPON_MAX_AMOUNT = "couponMaxAmount";
+    public static final String COUPON_AMOUNT = "couponAmount";
     public static final String DELIVERY_ADDRESS_ID = "deliveryAddressId";
     public static final String DELIVERY_HOUSE_NO = "deliveryHouse";
     public static final String DELIVERY_LANDMARK = "deliveryLandmark";
@@ -222,6 +223,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "("+ID+" TEXT NOT NULL, " +
             " "+COUPON_PER+" TEXT NOT NULL, " +
             " "+COUPON_MAX_AMOUNT+" TEXT NOT NULL, " +
+            " "+COUPON_AMOUNT+" TEXT NOT NULL, " +
             " "+SHOP_CODE+" TEXT NOT NULL, " +
             " "+NAME+" TEXT NOT NULL, " +
             " "+STATUS+" TEXT, " +
@@ -303,7 +305,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public DbHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, 11);
+        super(context, DATABASE_NAME, null, 12);
         this.context=context;
     }
 
@@ -694,7 +696,7 @@ public class DbHelper extends SQLiteOpenHelper {
         float discount = 0;
         if(res.moveToFirst()){
             do{
-                discount =  res.getFloat(res.getColumnIndex("totalQty"));
+                discount =  res.getFloat(res.getColumnIndex(DISCOUNT));
             }while (res.moveToNext());
 
         }
@@ -718,6 +720,16 @@ public class DbHelper extends SQLiteOpenHelper {
         String countQuery = "SELECT  * FROM " + CART_TABLE;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+        cursor.close();
+        // return count
+        return count;
+    }
+
+    public int getCartCount(String shopCode) {
+        String countQuery = "SELECT  * FROM " + CART_TABLE +" where "+ SHOP_CODE + "=?";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, new String[]{shopCode});
         int count = cursor.getCount();
         cursor.close();
         // return count
@@ -1124,23 +1136,29 @@ public class DbHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean addCouponOffer(Coupon item, String createdAt, String updatedAt){
+    public boolean manageCouponOffer(Coupon item ,String action){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
         contentValues.put(SHOP_CODE, item.getShopCode());
         contentValues.put(COUPON_PER, item.getPercentage());
         contentValues.put(NAME, item.getName());
-        contentValues.put(COUPON_MAX_AMOUNT, item.getAmount());
+        contentValues.put(COUPON_MAX_AMOUNT, item.getMaxDiscount());
+        contentValues.put(COUPON_AMOUNT, item.getAmount());
         contentValues.put(STATUS, item.getStatus());
         contentValues.put(START_DATE, item.getStartDate());
         contentValues.put(END_DATE, item.getEndDate());
-        contentValues.put(CREATED_AT, createdAt);
-        contentValues.put(UPDATED_AT, updatedAt);
-        Long status = db.insert(COUPON_TABLE, null, contentValues);
-        Log.i("DbHelper","Coupon is added status "+status);
+        if(action.equals("add")) {
+            long status = db.insert(COUPON_TABLE, null, contentValues);
+            Log.i("DbHelper","Coupon is added status "+status);
+        }
+        else {
+            int status = db.update(COUPON_TABLE, contentValues, SHOP_CODE+"=? AND "+ID+"=?", new String[]{item.getShopCode(), String.valueOf(item.getId())});
+            Log.i("DbHelper","Coupon is updated status "+status);
+        }
         return true;
     }
+
 
    /* public boolean checkProdExistInCart(String barCode){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -1550,12 +1568,14 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         final String query="select * from "+COUPON_TABLE +" where " + SHOP_CODE + "=?";
         Cursor res =  db.rawQuery(query, new String[]{shopCode});
-        Coupon item = null;
+        Coupon item = new Coupon();
         if(res.moveToFirst()){
             item = new Coupon();
             item.setId(res.getInt(res.getColumnIndex(ID)));
             item.setName(res.getString(res.getColumnIndex(NAME)));
-            item.setAmount(res.getFloat(res.getColumnIndex(COUPON_MAX_AMOUNT)));
+            item.setShopCode(res.getString(res.getColumnIndex(SHOP_CODE)));
+            item.setMaxDiscount(res.getFloat(res.getColumnIndex(COUPON_MAX_AMOUNT)));
+            item.setAmount(res.getFloat(res.getColumnIndex(COUPON_AMOUNT)));
             item.setPercentage(res.getFloat(res.getColumnIndex(COUPON_PER)));
             item.setStatus(res.getString(res.getColumnIndex(STATUS)));
             item.setStartDate(res.getString(res.getColumnIndex(START_DATE)));
@@ -1570,14 +1590,15 @@ public class DbHelper extends SQLiteOpenHelper {
         final String query="select * from "+COUPON_TABLE;
         Cursor res =  db.rawQuery(query,new String[]{});
         List<Coupon> itemList = new ArrayList<>();
-        Coupon item = null;
+        Coupon item = new Coupon();
         if(res.moveToFirst()){
             do{
                 item = new Coupon();
                 item.setId(res.getInt(res.getColumnIndex(ID)));
                 item.setShopCode(res.getString(res.getColumnIndex(SHOP_CODE)));
                 item.setName(res.getString(res.getColumnIndex(NAME)));
-                item.setAmount(res.getFloat(res.getColumnIndex(COUPON_MAX_AMOUNT)));
+                item.setMaxDiscount(res.getFloat(res.getColumnIndex(COUPON_MAX_AMOUNT)));
+                item.setAmount(res.getFloat(res.getColumnIndex(COUPON_AMOUNT)));
                 item.setPercentage(res.getFloat(res.getColumnIndex(COUPON_PER)));
                 item.setStatus(res.getString(res.getColumnIndex(STATUS)));
                 item.setStartDate(res.getString(res.getColumnIndex(START_DATE)));

@@ -27,13 +27,11 @@ import com.shoppurscustomer.activities.Settings.SettingActivity;
 import com.shoppurscustomer.activities.payment.ccavenue.activities.CCAvenueWebViewActivity;
 import com.shoppurscustomer.activities.payment.ccavenue.utility.AvenuesParams;
 import com.shoppurscustomer.adapters.CartAdapter;
-import com.shoppurscustomer.adapters.OfferDescAdapter;
 import com.shoppurscustomer.database.DbHelper;
 import com.shoppurscustomer.fragments.BottomSearchFragment;
 import com.shoppurscustomer.fragments.OfferDescriptionFragment;
 import com.shoppurscustomer.interfaces.MyItemClickListener;
 import com.shoppurscustomer.interfaces.MyItemTypeClickListener;
-import com.shoppurscustomer.models.Barcode;
 import com.shoppurscustomer.models.Coupon;
 import com.shoppurscustomer.models.MyProduct;
 import com.shoppurscustomer.models.ProductDiscountOffer;
@@ -49,7 +47,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -353,17 +350,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             tv_address.setText(address.concat(zip));
             setFooterValues();
            // seperator_delivery_address.setVisibility(View.VISIBLE);
-        }else if(requestCode == 5){
-            if(intent != null){
-                offerName = intent.getStringExtra("name");
-                offerId = intent.getIntExtra("id",0);
-                offerPer = intent.getFloatExtra("per",0f);
-                offerMaxAmount = intent.getFloatExtra("amount",0f);
-                rl_offer_applied_layout.setVisibility(View.VISIBLE);
-                tvOfferName.setText(offerName);
-                tvApplyCoupon.setVisibility(View.GONE);
-                setFooterValues();
-            }
         }
     }
 
@@ -400,6 +386,8 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     }
 
     public void setFooterValues(){
+        updateCouponAmount();
+
         recyclerView.setVisibility(View.VISIBLE);
         linearLayoutScanCenter.setVisibility(View.GONE);
         if(itemList.size() == 1){
@@ -407,28 +395,12 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         }else{
             tvItemCount.setText(itemList.size()+" items");
         }
+
         totalTax = dbHelper.getTotalTaxesart();
         tvItemTotal.setText(Utility.numberFormat(dbHelper.getTotalPriceCart() - totalTax));
         tvTotalTaxes.setText(Utility.numberFormat(totalTax));
         totalPrice = dbHelper.getTotalPriceCart();
-        totDiscount = dbHelper.getTotalMrpPriceCart() - dbHelper.getTotalPriceCart();
-
-        List<Coupon> couponList = dbHelper.getCouponOffer();
-        for (Coupon coupon: couponList){
-            if(coupon!=null && coupon.getAmount()>0) {
-                couponDiscount = coupon.getAmount();
-                if(coupon.getShopCode().equals("SHP1")) {
-                    totalPrice = totalPrice - couponDiscount;
-                }
-                totDiscount = totDiscount + couponDiscount;
-                tvOfferName.setText(coupon.getName());
-            }
-        }
-        if(couponList.size()>0){
-            rl_offer_applied_layout.setVisibility(View.VISIBLE);
-            tvApplyCoupon.setVisibility(View.GONE);
-            //tvOfferName.setText(coupon.getName());
-        }
+        totDiscount = totDiscount + dbHelper.getTotalMrpPriceCart() - dbHelper.getTotalPriceCart();
 
         Log.i(TAG," Taxes "+dbHelper.getTotalTaxesart());
         Log.i(TAG," MRP "+dbHelper.getTotalMrpPriceCart()
@@ -469,6 +441,43 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         tvCheckout.setVisibility(View.VISIBLE);
         rlAddressBilling.setVisibility(View.VISIBLE);
 
+    }
+
+    private void updateCouponAmount(){
+        Log.d("CouponApplied on " ,dbHelper.getTotalAmount("SHP4")+"");
+        List<Coupon> couponList = dbHelper.getCouponOffer();
+        for (Coupon coupon: couponList){
+            if(coupon.getPercentage()>0) {
+                Float couponDiscount;
+                if(coupon.getShopCode().equals("SHP1"))
+                    couponDiscount = dbHelper.getTotalPriceCart() * coupon.getPercentage() / 100;
+                else {
+                    dbHelper.updateCartCouponDiscount(coupon, "remove_coupon");
+                    couponDiscount = dbHelper.getTotalAmount(coupon.getShopCode()) * coupon.getPercentage() / 100;
+                }
+
+                if(couponDiscount<coupon.getMaxDiscount()  || coupon.getMaxDiscount()==0)
+                    coupon.setAmount(couponDiscount);
+                else coupon.setAmount(coupon.getMaxDiscount());
+                if(!(coupon.getShopCode().equals("SHP1"))) {
+                    Log.d("CouponApplied on " ,dbHelper.getTotalAmount(coupon.getShopCode())+"");
+                    Log.d("CouponDiscount " , ""+couponDiscount);
+                    dbHelper.updateCartCouponDiscount(coupon, "update_coupon");
+                }
+                dbHelper.manageCouponOffer(coupon,"update");
+            }
+            if(coupon.getAmount()>0) {
+                couponDiscount = coupon.getAmount();
+                if(coupon.getShopCode().equals("SHP1")) {
+                    totalPrice = totalPrice - couponDiscount;
+                    totDiscount = totDiscount + couponDiscount;
+                }
+                tvOfferName.setText(coupon.getName());
+            }
+        }
+        if(couponList.size()>0){
+            rl_offer_applied_layout.setVisibility(View.VISIBLE);
+        }
     }
 
     private void generateOrder(JSONArray shopArray){
@@ -648,11 +657,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         totalTax = dbHelper.getTotalTaxesart(shopCode);
         totalPrice = dbHelper.getTotalPriceCart(shopCode);
         totDiscount = dbHelper.getTotalMrpPriceCart(shopCode) - dbHelper.getTotalPriceCart(shopCode);
-        float dis = 0f;
-        if (offerPer > 0f) {
-            dis = totalPrice * offerPer / 100;
-            totDiscount = totDiscount + dis;
-        }
 
         Log.i(TAG, " Taxes " + dbHelper.getTotalTaxesart(shopCode));
 
@@ -913,6 +917,8 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                 itemList.remove(position);
                // myItemAdapter.notifyItemChanged(position);
                 myItemAdapter.notifyDataSetChanged();
+                if(dbHelper.getCartCount(item.getShopCode())<1)
+                    dbHelper.removeCouponFromCart(item.getShopCode());
                 setFooterValues();
             }else {
                 int qty = item.getQuantity() - 1;

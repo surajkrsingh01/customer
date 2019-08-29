@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,12 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.android.volley.Request;
-import com.google.gson.JsonObject;
 import com.shoppurscustomer.R;
 import com.shoppurscustomer.adapters.ApplyOfferAdapter;
-import com.shoppurscustomer.adapters.OfferDescAdapter;
 import com.shoppurscustomer.fragments.OfferDescriptionFragment;
-import com.shoppurscustomer.interfaces.MyItemTypeClickListener;
 import com.shoppurscustomer.models.Barcode;
 import com.shoppurscustomer.models.Coupon;
 import com.shoppurscustomer.models.MyProduct;
@@ -759,10 +755,21 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
             float deliveryDistance = 0;
 
             Coupon coupon = dbHelper.getCouponOffer("SHP1");
-                if(coupon!=null && coupon.getAmount()>0) {
+            if(coupon.getPercentage()>0) {
+                Float couponDiscount  = dbHelper.getTotalPriceCart() * coupon.getPercentage() / 100;
+                if(couponDiscount<coupon.getMaxDiscount()  || coupon.getMaxDiscount()==0)
+                    coupon.setAmount(couponDiscount);
+                else coupon.setAmount(coupon.getMaxDiscount());
+                if(!(coupon.getShopCode().equals("SHP1"))) {
+                    dbHelper.updateCartCouponDiscount(coupon, "remove_coupon");
+                    dbHelper.updateCartCouponDiscount(coupon, "update_coupon");
+                }
+                dbHelper.manageCouponOffer(coupon, "update");
+            }
+            if(coupon.getAmount()>0) {
                     Float couponDiscount = coupon.getAmount();
                     totalPrice = totalPrice - couponDiscount;
-                }
+            }
             cartItemPrice.setText("Amount "+ Utility.numberFormat(totalPrice));
             cartItemCount.setText("Item "+String.valueOf(dbHelper.getCartCount()));
             //cartItemCount.setText(String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode)));

@@ -1,6 +1,5 @@
 package com.shoppurscustomer.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,7 +20,6 @@ import com.shoppurscustomer.models.Coupon;
 import com.shoppurscustomer.utilities.ConnectionDetector;
 import com.shoppurscustomer.utilities.Constants;
 import com.shoppurscustomer.utilities.DialogAndToast;
-import com.shoppurscustomer.utilities.Utility;
 
 
 import org.json.JSONArray;
@@ -130,12 +128,13 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
                         coupon.setId(dataObject.getInt("id"));
                         coupon.setShopCode(shopCode);
                         coupon.setPercentage(dataObject.getInt("percentage"));
+                        coupon.setMaxDiscount((float)dataObject.getDouble("amount"));
                         coupon.setAmount((float)dataObject.getDouble("amount"));
                         coupon.setName(dataObject.getString("name"));
                         coupon.setStatus(dataObject.getString("status"));
                         coupon.setStartDate(dataObject.getString("startDate"));
                         coupon.setEndDate(dataObject.getString("endDate"));
-                        //dbHelper.addCouponOffer(coupon, Utility.getTimeStamp(),Utility.getTimeStamp());
+                        //dbHelper.manageCouponOffer(coupon, Utility.getTimeStamp(),Utility.getTimeStamp());
                         itemList.add(coupon);
                     }
 
@@ -156,33 +155,34 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
                     coupon.setShopCode(dataObject.getString("shopCode"));
                     coupon.setPercentage(dataObject.getInt("percentage"));
                     coupon.setAmount((float)dataObject.getDouble("amount"));
+                    coupon.setMaxDiscount((float)dataObject.getDouble("amount"));
                     coupon.setName(dataObject.getString("name"));
                     coupon.setStatus(dataObject.getString("status"));
                     coupon.setStartDate(dataObject.getString("startDate"));
                     coupon.setEndDate(dataObject.getString("endDate"));
 
-                    if(coupon.getAmount()==0 && coupon.getPercentage()==0){
+                    if(coupon.getPercentage()==0){
                         showMyDialog("Coupon is not Valid");
                         return;
-                    }else if(coupon.getAmount()>0){
-                        if(!(coupon.getShopCode().equals("SHP1"))){
-                            dbHelper.updateCartCouponDiscount(coupon, "remove_coupon");
-                            dbHelper.updateCartCouponDiscount(coupon, "update_coupon");
-                        }
-                        dbHelper.removeCouponFromCart(coupon.getShopCode());
-                        dbHelper.addCouponOffer(coupon, Utility.getTimeStamp(), Utility.getTimeStamp());
-                        showMyDialog("Coupon Applied Successfully Amount "+coupon.getAmount());
                     }else {
                         if(coupon.getPercentage()>0) {
-                            Float couponDiscount  = dbHelper.getTotalPriceCart() * coupon.getPercentage() / 100;
+                            Float couponDiscount;
+                            if(coupon.getShopCode().equals("SHP1"))
+                             couponDiscount = dbHelper.getTotalPriceCart() * coupon.getPercentage() / 100;
+                            else
+                                couponDiscount = dbHelper.getTotalAmount(coupon.getShopCode()) * coupon.getPercentage() / 100;
+                            if(couponDiscount<coupon.getMaxDiscount()  || coupon.getMaxDiscount()==0)
                             coupon.setAmount(couponDiscount);
+                            else coupon.setAmount(coupon.getMaxDiscount());
+                            Log.d(coupon.getPercentage()+"" , "Percentage");
+                            Log.d(couponDiscount+"" , "Discount");
                             if(!(coupon.getShopCode().equals("SHP1"))) {
                                 dbHelper.updateCartCouponDiscount(coupon, "remove_coupon");
                                 dbHelper.updateCartCouponDiscount(coupon, "update_coupon");
                             }
                             dbHelper.removeCouponFromCart(coupon.getShopCode());
-                            dbHelper.addCouponOffer(coupon, Utility.getTimeStamp(), Utility.getTimeStamp());
-                            showMyDialog("Coupon Applied Successfully Percentage "+coupon.getAmount());
+                            dbHelper.manageCouponOffer(coupon, "add");
+                            showMyDialog("Coupon Applied Successfully Amount "+coupon.getAmount());
                         }
                     }
                 }else {

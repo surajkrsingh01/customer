@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class Coupon implements Serializable {
 	
 	private int id;
-	private float amount,percentage;
+	private float amount, maxDiscount,percentage;
 	private String name,shopCode,status,startDate,endDate,userName,dbName,dbPassword,dbUserName;
 	public int getId() {
 		return id;
@@ -16,6 +16,14 @@ public class Coupon implements Serializable {
 
 	public String getShopCode() {
 		return shopCode;
+	}
+
+	public float getMaxDiscount() {
+		return maxDiscount;
+	}
+
+	public void setMaxDiscount(float maxDiscount) {
+		this.maxDiscount = maxDiscount;
 	}
 
 	public void setShopCode(String shopCode) {
