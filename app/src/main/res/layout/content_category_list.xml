@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:background="?attr/backgroundColor"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.shoppurscustomer.activities.CategoryListActivity"
+    tools:context="com.shoppurs.activities.CategoryListActivity"
     tools:showIn="@layout/activity_category_list">
 
     <RelativeLayout

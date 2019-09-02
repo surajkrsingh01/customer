@@ -8,15 +8,19 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:64119517741:android:bd50a424a4c9b7c9",
+        "mobilesdk_app_id": "1:64119517741:android:cd3623c795a8c3b9",
         "android_client_info": {
-          "package_name": "com.shoppurscustomer"
+          "package_name": "com.shoppurs"
         }
       },
       "oauth_client": [
         {
-          "client_id": "64119517741-g64l9atm4cjvfk9mp60e7it0hobf98u7.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "64119517741-mhu5b4jmfja7jttvbt98l1a7bnqnvrg7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shoppurs",
+            "certificate_hash": "91405466f27798076a69a5692dc35b019ccef73c"
+          }
         }
       ],
       "api_key": [
@@ -26,12 +30,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "64119517741-g64l9atm4cjvfk9mp60e7it0hobf98u7.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     },
@@ -42,20 +41,7 @@
           "package_name": "com.shoppursshop"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "64119517741-mbpct0dr1h33tev0voio40kmep55h2bq.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.shoppursshop",
-            "certificate_hash": "b79af5fec65de8fa6596d83f53b0532bca7ab0f9"
-          }
-        },
-        {
-          "client_id": "64119517741-g64l9atm4cjvfk9mp60e7it0hobf98u7.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyB-GKvcnqqzEBxT6OvmVPfNs7FBppblo-s"
@@ -63,12 +49,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "64119517741-g64l9atm4cjvfk9mp60e7it0hobf98u7.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

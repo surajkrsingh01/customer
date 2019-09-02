@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/backgroundColor"
-    tools:context="com.shoppurscustomer.activities.RegisterActivity">
+    tools:context="com.shoppurs.activities.RegisterActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:visibility="gone"
