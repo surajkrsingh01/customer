@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 import com.shoppurs.R;
 import com.shoppurs.activities.payment.ccavenue.activities.CCAvenueWebViewActivity;
+import com.shoppurs.activities.payment.ccavenue.activities.PaymentActivity;
 import com.shoppurs.activities.payment.ccavenue.utility.AvenuesParams;
 import com.shoppurs.models.MyShop;
 import com.shoppurs.utilities.DialogAndToast;
@@ -78,7 +79,7 @@ public class InstantPayActivity  extends NetworkBaseActivity {
             DialogAndToast.showDialog("Please enter Remark.",this);
             return;
         }else {
-            Intent intent = new Intent(InstantPayActivity.this, CCAvenueWebViewActivity.class);
+            Intent intent = new Intent(InstantPayActivity.this, PaymentActivity.class);
           //  String ta = editTextAmount.getText().toString().split(" ")[1];
           //  ta = ta.replaceAll(",", "");
             intent.putExtra(AvenuesParams.AMOUNT, String.format("%.02f", Float.parseFloat(editTextAmount.getText().toString())));

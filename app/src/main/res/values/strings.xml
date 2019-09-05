@@ -20,6 +20,7 @@
     <string name="json_parser_error">Json parsing errror.</string>
     <string name="full_name_required">Please enter full name.</string>
     <string name="email_required">Please enter Email Id.</string>
+    <string name="email_required_valid">Please enter Valid Email Id.</string>
     <string name="mobile_required">Please enter Mobile.</string>
     <string name="location_required">Please enter Location.</string>
     <string name="password_required">Please enter Password.</string>

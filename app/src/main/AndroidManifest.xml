@@ -134,6 +134,10 @@
             android:label="@string/title_activity_ccAvenue"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".activities.payment.ccavenue.activities.PaymentActivity"
+            android:label="@string/title_activity_ccAvenue"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:launchMode="singleTask"
             android:name=".activities.Settings.DeliveryAddressListActivity"
             android:label="@string/title_activity_delivery_address"

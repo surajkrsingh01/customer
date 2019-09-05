@@ -105,6 +105,11 @@ public class RegisterActivity extends NetworkBaseActivity{
             cancel=true;
             editEmail.setError(getResources().getString(R.string.email_required));
         }
+        if(!TextUtils.isEmpty(email) && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            focus=editEmail;
+            cancel=true;
+            editEmail.setError(getResources().getString(R.string.email_required_valid));
+        }
 
         if(TextUtils.isEmpty(fullName)){
             focus=editFullName;

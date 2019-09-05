@@ -1,6 +1,8 @@
 package com.shoppurs.activities;
 
 
+import android.app.Notification;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,11 +30,14 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.shoppurs.R;
+import com.shoppurs.services.NotificationService;
 import com.shoppurs.utilities.AppController;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +54,8 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
     //The edittext to input the code
     private EditText editTextCode;
     private String OTP ="";
+    private boolean isOtpGenerated;
+    private Button submitButton;
 
     //firebase auth object
     private FirebaseAuth mAuth;
@@ -61,12 +68,16 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
 
         editMobile = findViewById(R.id.edit_mobile_no);
         editTextCode = findViewById(R.id.editTextCode);
-        Button submitButton = findViewById(R.id.btn_submit);
+        /*if(TextUtils.isEmpty(sharedPreferences.getString(Constants.OTP,"")))
+            editTextCode.setVisibility(View.GONE);
+        else editTextCode.setVisibility(View.VISIBLE);*/
+        submitButton = findViewById(R.id.btn_submit);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(myNumber.isEmpty()){
+               // if(myNumber.isEmpty()){
                     myNumber = editMobile.getText().toString();
+                    OTP = editTextCode.getText().toString();
                     Log.d("mobile ", myNumber);
                     if (TextUtils.isEmpty(myNumber)) {
                         Log.d("mobile ", myNumber);
@@ -75,19 +86,9 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
                         if (myNumber.length() != 10) {
                             DialogAndToast.showDialog("Please Enter Valid Mobile Number", ForgotPasswordActivity.this);
                         } else {
-                            initFirebaseOtp(myNumber);
+                            validate_OTP(myNumber, OTP);
                         }
                     }
-                }
-                else if(TextUtils.isEmpty(OTP)) {
-                    editTextCode.setError("Enter valid code");
-                    editTextCode.requestFocus();
-                    return;
-                }else {
-                    //verifying the code entered manually
-                    verifyVerificationCode(OTP);
-                }
-
             }
         });
         Button cancelButton = findViewById(R.id.btn_cancel);
@@ -106,6 +107,7 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
     }
 
     private void sendVerificationCode(String mobile) {
+        Log.d(TAG, "getGoogleApiForMethod called "+mobile);
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 "+91" + mobile,
                 60,
@@ -120,6 +122,7 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
 
             //Getting the code sent by SMS
             OTP = phoneAuthCredential.getSmsCode();
+            Log.d(TAG, "onVerificationCompleted called "+OTP);
 
             //sometime the code is not detected automatically
             //in this case the code will be null
@@ -128,6 +131,15 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
                 editTextCode.setText(OTP);
                 //verifying the code
                 verifyVerificationCode(OTP);
+            }else{
+                //showMyDialog("Unable to retrieve otp, please try again");
+                //Instant verification: in some cases the phone number can be instantly verified without needing
+                //to send or enter a verification code.
+
+                Intent intent = new Intent(ForgotPasswordActivity.this, ChangePasswordActivity.class);
+                intent.putExtra("flag", "ForgotPassword");
+                intent.putExtra("mobile", myNumber);
+                startActivity(intent);
             }
         }
 
@@ -143,6 +155,7 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
 
             //storing the verification id that is sent to the user
             mVerificationId = s;
+            Log.d(TAG, "onCodeSent called "+mVerificationId);
         }
     };
 
@@ -160,41 +173,43 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            /*//verification successful we will start the profile activity
-                            Intent intent = new Intent(VerifyPhoneActivity.this, ProfileActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);*/
-
-                            DialogAndToast.showDialog("verification successful", ForgotPasswordActivity.this);
+                            editor.putString(Constants.OTP, OTP);
+                            editor.commit();
+                            save_OTP(myNumber, OTP);
+                            //DialogAndToast.showDialog("verification successful", ForgotPasswordActivity.this);
 
                         } else {
-
                             //verification unsuccessful.. display an error message
-
-                            String message = "Somthing is wrong, we will fix it soon...";
-
+                            String message = "OTP varification failed, please try again.";
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                message = "Invalid code entered...";
+                                message = "OTP invalid please try again...";
                             }
-
-                            Snackbar snackbar = Snackbar.make(findViewById(R.id.parent), message, Snackbar.LENGTH_LONG);
-                            snackbar.setAction("Dismiss", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-
-                                }
-                            });
-                            snackbar.show();
+                            DialogAndToast.showDialog(message, ForgotPasswordActivity.this);
                         }
                     }
                 });
     }
 
-    private void forgotPassword(String mobile){
+    private void validate_OTP(String mobile, String otp){
         Map<String,String> params=new HashMap<>();
-        String url=getResources().getString(R.string.url)+"/profile/forgot_password?mobile="+mobile;
+        params.put("mobile", mobile);
+        if(!isOtpGenerated)
+        params.put("otp", "-1");
+        else params.put("otp", otp);
+        String url=getResources().getString(R.string.url_web)+"/useradmin/validate_otp";
         showProgress(true);
-        jsonObjectApiRequest(Request.Method.GET,url,null,"ForgotPassword");
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"validate_otp");
+    }
+
+    private void save_OTP(String mobile, String otp){
+        Map<String,String> params=new HashMap<>();
+        params.put("mobile", mobile);
+        if(TextUtils.isEmpty(otp))
+            params.put("otp", "-1");
+        else params.put("otp", otp);
+        String url=getResources().getString(R.string.url_web)+"/useradmin/save_otp";
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"save_otp");
     }
 
     @Override
@@ -202,18 +217,49 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
             showProgress(false);
         try {
             Log.d("response", response.toString());
-            if (apiName.equals("ForgotPassword")) {
+            if (apiName.equals("validate_otp")) {
                 if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
-                  //  JSONObject dataObject = response.getJSONObject("result");
-                    DialogAndToast.showDialog(response.getString("message"), ForgotPasswordActivity.this);
+                   if(response.getInt("result")==1) {
+                       Intent intent = new Intent(ForgotPasswordActivity.this, ChangePasswordActivity.class);
+                       intent.putExtra("flag", "ForgotPassword");
+                       intent.putExtra("mobile", myNumber);
+                       startActivity(intent);
+                   }else {
+                       isOtpGenerated = true;
+                       editTextCode.setVisibility(View.VISIBLE);
+                       submitButton.setText("Submit");
+                       editTextCode.setText(response.getString("result"));
+                       DialogAndToast.showDialog("Otp has been sent to your mobile, please check your notification", ForgotPasswordActivity.this);
+                       NotificationService.displayNotification(ForgotPasswordActivity.this, this, response.getInt("result")+" is your verification code");
+                   }
+                }else {
+                    if(response.getInt("result")==0) {
+                        editTextCode.setVisibility(View.VISIBLE);
+                        initFirebaseOtp(myNumber);
+                    }else if(response.getInt("result")==1) {
+                        DialogAndToast.showDialog(response.getString("message"), ForgotPasswordActivity.this);
+                    }else if(response.getInt("result")==2) {
+                        DialogAndToast.showDialog(response.getString("message"), ForgotPasswordActivity.this);
+                    }
+                }
+            }else if(apiName.equals("save_otp")){
+                if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
+                    Intent intent = new Intent(ForgotPasswordActivity.this, ChangePasswordActivity.class);
+                    intent.putExtra("flag", "ForgotPassword");
+                    intent.putExtra("mobile", myNumber);
+                    startActivity(intent);
                 } else {
-                     DialogAndToast.showDialog(response.getString("message"), ForgotPasswordActivity.this);
+                    DialogAndToast.showDialog(response.getString("message"), ForgotPasswordActivity.this);
                 }
             }
         }catch (JSONException e) {
             e.printStackTrace();
             DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),ForgotPasswordActivity.this);
         }
+    }
+
+    public void onDialogPositiveClicked(){
+        initFirebaseOtp(myNumber);
     }
 
 

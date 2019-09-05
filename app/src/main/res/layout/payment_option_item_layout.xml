@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/borderBottomSolidBackground"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/text_name"
+        android:layout_toLeftOf="@+id/image_selected"
+        android:textColor="?attr/primaryTextColor"
+        android:textSize="@dimen/simple_list_text_view_size"
+        android:paddingLeft="@dimen/simple_list_text_view_horizontal_margin"
+        android:paddingRight="@dimen/simple_list_text_view_horizontal_margin"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"/>
+
+    <ImageView
+        android:id="@+id/image_arrow"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:tint="@color/secondary_text_color"
+        app:srcCompat="@drawable/arrow_right"
+        android:layout_alignParentRight="true"
+        android:layout_width="18dp"
+        android:layout_height="18dp" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_below="@+id/text_name"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/view_horizontal_margin"
+        android:paddingRight="@dimen/view_horizontal_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include layout="@layout/credit_card_payment_option"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:scrollbars="none"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <RelativeLayout
+            android:visibility="gone"
+            android:layout_below="@+id/recycler_view"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:id="@+id/rl_net_banking"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="All Other Banks"
+                android:id="@+id/tv_select_bank_label"
+                android:textColor="@color/primary_text_color"
+                android:textSize="@dimen/small_text_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <RelativeLayout
+                android:id="@+id/relative_bank"
+                android:layout_below="@+id/tv_select_bank_label"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/cart_action_size"
+                android:background="@drawable/grey_border_background"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <Spinner
+                    android:id="@+id/spinner_bank"
+                    android:layout_toLeftOf="@+id/image_spinner_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null">
+
+                </Spinner>
+
+                <ImageView
+                    android:id="@+id/image_spinner_1"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="5dp"
+                    android:padding="2dp"
+                    app:srcCompat="@drawable/ic_arrow_down"
+                    android:tint="@color/primary_text_color" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btn_pay"
+            android:visibility="gone"
+            android:background="@color/blue600"
+            android:text="PAY"
+            android:textColor="@color/white"
+            android:layout_marginTop="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

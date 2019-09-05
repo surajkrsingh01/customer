@@ -115,7 +115,9 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         }else if(view == relative_invite){
             referToFriend();
         }else if(view == relative_change_password){
-            startActivity(new Intent( SettingActivity.this, ChangePasswordActivity.class));
+            Intent intent = new Intent( SettingActivity.this, ChangePasswordActivity.class);
+            intent.putExtra("flag", "changePassword");
+            startActivity(intent);
         }else if(view == relative_my_cart){
             startActivity(new Intent( SettingActivity.this, CartActivity.class));
         }else if(view == relative_logout){

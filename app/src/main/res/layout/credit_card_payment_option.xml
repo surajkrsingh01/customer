@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/ll_credit_card"
+    android:visibility="gone"
+    android:background="@color/grey200"
+    android:paddingLeft="@dimen/view_horizontal_margin"
+    android:paddingRight="@dimen/view_horizontal_margin"
+    android:paddingTop="@dimen/view_vertical_margin"
+    android:paddingBottom="@dimen/view_vertical_margin"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:text="Card type"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:id="@+id/relative_card_type"
+        android:layout_below="@+id/text_expiry_date_label"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cart_action_size"
+        android:background="@drawable/grey_border_background"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <Spinner
+            android:id="@+id/spinner_card_type"
+            android:layout_toLeftOf="@+id/image_spinner_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null">
+
+        </Spinner>
+
+        <ImageView
+            android:id="@+id/image_spinner_3"
+            android:layout_alignParentRight="true"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginRight="5dp"
+            android:padding="2dp"
+            app:srcCompat="@drawable/ic_arrow_down"
+            android:tint="@color/primary_text_color" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:text="Enter card number"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/edit_credit_number"
+        android:inputType="number"
+        android:layout_marginTop="8dp"
+        android:imeOptions="actionNext"
+        android:background="@drawable/grey_border_background"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
+
+    <RelativeLayout
+        android:id="@+id/relative_expiry_month_layout"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/edit_credit_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/text_expiry_date_label"
+            android:text="Expiry Date"
+            android:textColor="@color/primary_text_color"
+            android:textSize="@dimen/small_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
+            android:id="@+id/relative_month"
+            android:layout_below="@+id/text_expiry_date_label"
+            android:layout_marginTop="5dp"
+            android:layout_width="100dp"
+            android:layout_height="@dimen/cart_action_size"
+            android:background="@drawable/grey_border_background"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <Spinner
+                android:id="@+id/spinner_month"
+                android:layout_toLeftOf="@+id/image_spinner_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null">
+
+            </Spinner>
+
+            <ImageView
+                android:id="@+id/image_spinner_1"
+                android:layout_alignParentRight="true"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="5dp"
+                android:padding="2dp"
+                app:srcCompat="@drawable/ic_arrow_down"
+                android:tint="@color/primary_text_color" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relative_year"
+            android:layout_below="@+id/text_expiry_date_label"
+            android:layout_toRightOf="@+id/relative_month"
+            android:layout_marginTop="5dp"
+            android:layout_width="100dp"
+            android:layout_marginLeft="6dp"
+            android:layout_height="@dimen/cart_action_size"
+            android:background="@drawable/grey_border_background"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <Spinner
+                android:id="@+id/spinner_year"
+                android:layout_toLeftOf="@+id/image_spinner_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null">
+
+            </Spinner>
+
+            <ImageView
+                android:id="@+id/image_spinner_2"
+                android:layout_alignParentRight="true"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="5dp"
+                android:padding="2dp"
+                app:srcCompat="@drawable/ic_arrow_down"
+                android:tint="@color/primary_text_color" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/text_cvv_label"
+        android:text="CVV"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/edit_cvv_number"
+        android:inputType="number"
+        android:layout_marginTop="8dp"
+        android:imeOptions="actionNext"
+        android:background="@drawable/grey_border_background"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="100dp"
+        android:layout_height="40dp" />
+
+
+</LinearLayout>
