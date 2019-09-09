@@ -107,7 +107,7 @@
     <View
         android:background="?attr/separatorColor"
         android:layout_marginTop="@dimen/separator_margin"
-        android:layout_below="@+id/card_view"
+        android:layout_below="@+id/linear_details"
         android:layout_alignLeft="@+id/linear_details"
         android:layout_width="match_parent"
         android:layout_height="1dp"/>

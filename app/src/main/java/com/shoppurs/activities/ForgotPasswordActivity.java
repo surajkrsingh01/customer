@@ -54,7 +54,7 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
     //The edittext to input the code
     private EditText editTextCode;
     private String OTP ="";
-    private boolean isOtpGenerated;
+    private boolean isOtpGenerated, otpOtpAutoDetected;
     private Button submitButton;
 
     //firebase auth object
@@ -75,7 +75,6 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // if(myNumber.isEmpty()){
                     myNumber = editMobile.getText().toString();
                     OTP = editTextCode.getText().toString();
                     Log.d("mobile ", myNumber);
@@ -86,7 +85,11 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
                         if (myNumber.length() != 10) {
                             DialogAndToast.showDialog("Please Enter Valid Mobile Number", ForgotPasswordActivity.this);
                         } else {
-                            validate_OTP(myNumber, OTP);
+                            if(!otpOtpAutoDetected && submitButton.getText().toString().equals("Submit")){
+                                verifyVerificationCode(editTextCode.getText().toString());
+                            }else {
+                                validate_OTP(myNumber, OTP);
+                            }
                         }
                     }
             }
@@ -120,6 +123,7 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
         @Override
         public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
 
+            otpOtpAutoDetected = true;
             //Getting the code sent by SMS
             OTP = phoneAuthCredential.getSmsCode();
             Log.d(TAG, "onVerificationCompleted called "+OTP);
@@ -225,6 +229,7 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
                        intent.putExtra("mobile", myNumber);
                        startActivity(intent);
                    }else {
+                       otpOtpAutoDetected = true;
                        isOtpGenerated = true;
                        editTextCode.setVisibility(View.VISIBLE);
                        submitButton.setText("Submit");
@@ -235,6 +240,7 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
                 }else {
                     if(response.getInt("result")==0) {
                         editTextCode.setVisibility(View.VISIBLE);
+                        submitButton.setText("Submit");
                         initFirebaseOtp(myNumber);
                     }else if(response.getInt("result")==1) {
                         DialogAndToast.showDialog(response.getString("message"), ForgotPasswordActivity.this);

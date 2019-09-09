@@ -24,7 +24,6 @@ import com.shoppurs.interfaces.MyItemTypeClickListener;
 import com.shoppurs.models.PaymentOption;
 import com.shoppurs.utilities.AppController;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,7 +50,7 @@ public class PaymentActivity extends NetworkBaseActivity implements MyItemTypeCl
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-       // initFooterAction(this);
+        //initFooterAction(this);
         TextView tvTotalAmt = findViewById(R.id.text_action);
         tvTotalAmt.setText(getIntent().getStringExtra("amount"));
 

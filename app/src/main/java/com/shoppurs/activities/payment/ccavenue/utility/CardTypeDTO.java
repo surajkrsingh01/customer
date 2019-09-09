@@ -1,6 +1,8 @@
 package com.shoppurs.activities.payment.ccavenue.utility;
 
-public class CardTypeDTO {
+import java.io.Serializable;
+
+public class CardTypeDTO implements Serializable {
 	private String cardName;
 	private String cardType;
 	private String payOptType;

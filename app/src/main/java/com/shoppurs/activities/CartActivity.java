@@ -85,7 +85,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     private RadioGroup rg_delivery;
     private RadioButton rb_home_delivery, rb_self_delivery;
     private LinearLayout linearLayoutScanCenter, rl_bill_details;
-    private RelativeLayout rlOfferDesc;
     private Button btnStoreOffers;
     private int position, type, productDetailsType;
 
@@ -144,8 +143,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         rlDiscount = findViewById(R.id.relative_discount);
         rl_offer_applied_layout = findViewById(R.id.rl_offer_applied_layout);
         rl_bill_details = findViewById(R.id.rl_bill_details);
-        rlOfferDesc = findViewById(R.id.rl_offer_desc);
-        rlOfferDesc.setVisibility(View.GONE);
         rlOfferLayout = findViewById(R.id.rl_offer_layout);
         imageViewRemoveOffer = findViewById(R.id.image_remove_offer);
         btnStoreOffers = findViewById(R.id.btn_store_offers);
@@ -704,6 +701,16 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     itemList.clear();
                     myItemAdapter.notifyDataSetChanged();
                     if(paymentMode.equals("Cash")){
+                        List<MyProduct> cartItemList = dbHelper.getCartProducts();
+                        String shopCodes ="";
+                        for(MyProduct myProduct: cartItemList) {
+                            Log.d("left "+cartItemList.indexOf(myProduct), "right "+(cartItemList.size()-1));
+                            if(cartItemList.size()==1 || cartItemList.indexOf(myProduct) == cartItemList.size()-1)
+                                shopCodes  = shopCodes.concat(myProduct.getShopCode());
+                            else
+                                shopCodes  = shopCodes.concat(myProduct.getShopCode()+",");
+                        }
+
                         dbHelper.deleteTable(DbHelper.CART_TABLE);
                         dbHelper.deleteTable(DbHelper.PRODUCT_UNIT_TABLE);
                         dbHelper.deleteTable(DbHelper.PRODUCT_SIZE_TABLE);
@@ -723,13 +730,12 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                             }
                         }*/
 
-
-                        Intent intent = new Intent(CartActivity.this, TransactionDetailsActivity.class);
+                        Intent intent = new Intent(CartActivity.this, RateAndReviewActivity.class);
                         intent.putExtra("orderNumber", orderNumber);
                         String ta = tvNetPayable.getText().toString().split(" ")[1];
                         ta = ta.replaceAll(",", "");
                         intent.putExtra("totalAmount", Float.parseFloat(ta));
-                        intent.putExtra("shopOrderList", (Serializable) myProductList);
+                        intent.putExtra("shopCodes", shopCodes);
                         startActivity(intent);
                         finish();
                     }else{

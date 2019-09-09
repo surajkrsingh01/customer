@@ -426,7 +426,7 @@ public class LoginActivity extends NetworkBaseActivity{
                     editor.putBoolean(Constants.IS_LOGGED_IN, true);
                     editor.commit();
                     DialogAndToast.showToast("Account created", LoginActivity.this);
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, StoresListActivity.class);
                     startActivity(intent);
                     finish();
 
@@ -469,7 +469,7 @@ public class LoginActivity extends NetworkBaseActivity{
                             dbHelper.addAllDeliveryAddress(deliveryAddressList, sharedPreferences.getString(Constants.USER_ID, ""));
                         }
                     }
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, StoresListActivity.class);
                     startActivity(intent);
                     finish();
                     editor.putBoolean(Constants.IS_LOGGED_IN, true);

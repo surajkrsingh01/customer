@@ -8,21 +8,35 @@
     tools:context=".activities.ScannarActivity"
     tools:showIn="@layout/activity_scannar">
 
-    <TextView
-        android:id="@+id/text_header"
-        android:text="SCAN"
-        android:gravity="center_horizontal"
-        android:textColor="@color/primary_text_color"
-        android:textSize="18sp"
-        android:background="@color/white"
-        android:padding="@dimen/activity_vertical_margin"
+    <LinearLayout
+        android:background="?attr/backgroundColor"
+        android:id="@+id/linear_top"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="@dimen/activity_vertical_margin">
+        <ImageView
+            android:id="@+id/text_header"
+            android:src="@drawable/arrow_back"
+            android:tint="?attr/primaryTextColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"/>
+
+        <TextView
+            android:text="Pay Instant to Shop"
+            android:id="@+id/text_desc"
+            android:textColor="?attr/primaryTextColor"
+            android:textStyle="bold"
+            android:textSize="@dimen/very_large_text_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <com.journeyapps.barcodescanner.DecoratedBarcodeView
         android:id="@+id/zxing_barcode_scanner"
-        android:layout_below="@+id/text_header"
-        android:layout_marginTop="12dp"
+        android:layout_below="@+id/linear_top"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:zxing_scanner_layout="@layout/custom_scanner" />

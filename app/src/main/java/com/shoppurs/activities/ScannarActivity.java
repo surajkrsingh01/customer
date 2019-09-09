@@ -8,6 +8,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.google.zxing.ResultPoint;
@@ -43,6 +46,8 @@ public class ScannarActivity extends NetworkBaseActivity {
     private DecoratedBarcodeView barcodeScannerView;
     private boolean isProduct;
     private String flag,type, shopCode;
+    private TextView text_header;
+    private ImageView imgBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +60,21 @@ public class ScannarActivity extends NetworkBaseActivity {
         flag = intent.getStringExtra("flag");
         type = intent.getStringExtra("type");
         shopCode =intent.getStringExtra("shopCode");
+        text_header = findViewById(R.id.text_desc);
+        imgBack = findViewById(R.id.text_header);
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        if(type.equals("scanStores")){
+            text_header.setText("Scan QR code of store to access their products");
+        }else if(type.equals("scanProducts")){
+            text_header.setText("Scan QR code of products");
+        }
+
+
 
         //Initialize barcode scanner view
         barcodeScannerView = findViewById(R.id.zxing_barcode_scanner);

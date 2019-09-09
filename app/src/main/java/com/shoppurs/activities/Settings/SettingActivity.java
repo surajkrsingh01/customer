@@ -124,8 +124,9 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
             dbHelper.deleteAllTable();
             editor.clear();
             editor.commit();
-            startActivity(new Intent(SettingActivity.this, LoginActivity.class));
-            finish();
+            Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
     }
 

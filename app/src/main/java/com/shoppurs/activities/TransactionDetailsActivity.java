@@ -33,7 +33,7 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
     private RelativeLayout rlFooter;
     private TextView tvFooter;
     private boolean isDelivered;
-    private List<MyProduct> myShopOrderList;
+    private String shopCodes;
 
     private String custCode,orderNumber,paymentStatus;
     private float totalAmount;
@@ -77,7 +77,7 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
                 Intent intent = new Intent(TransactionDetailsActivity.this, MyOrderActivity.class);
                 intent.putExtra("callingActivity", "TransactionDetailsActivity");
                 intent.putExtra("orderNumber", orderNumber);
-                intent.putExtra("shopOrderList", (Serializable) myShopOrderList);
+                intent.putExtra("shopOrderList", shopCodes);
                 startActivity(intent);
             }
         });

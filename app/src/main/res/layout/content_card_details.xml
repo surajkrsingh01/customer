@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activities.payment.ccavenue.activities.CardDetailsActivity"
+    tools:showIn="@layout/activity_card_details">
+
+    <TextView
+        android:id="@+id/text_left_label"
+        android:text="Card"
+        android:textColor="?attr/secondaryTextColor"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_below="@+id/text_left_label"
+        android:id="@+id/text_second_label"
+        android:text="Enter Card Details"
+        android:textColor="?attr/primaryTextColor"
+        android:textStyle="bold"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="5dp"
+        android:textSize="@dimen/list_very_large_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/ll_credit_card"
+        android:layout_below="@+id/text_second_label"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:paddingLeft="26dp"
+        android:paddingRight="26dp"
+        android:paddingTop="@dimen/view_vertical_margin"
+        android:paddingBottom="@dimen/view_vertical_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_card_type_label"
+            android:text="Select Bank"
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="@dimen/very_small_text_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <RelativeLayout
+            android:id="@+id/relative_card_type"
+            android:layout_below="@+id/text_expiry_date_label"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/payment_action_size"
+            android:background="?attr/borderBackground"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+
+            <Spinner
+                android:id="@+id/spinner_card_type"
+                android:layout_toLeftOf="@+id/image_spinner_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null">
+
+            </Spinner>
+
+            <ImageView
+                android:id="@+id/image_spinner_3"
+                android:layout_alignParentRight="true"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="5dp"
+                android:padding="2dp"
+                app:srcCompat="@drawable/ic_arrow_down"
+                android:tint="?attr/primaryTextColor" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:text="Card Number"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="@dimen/very_small_text_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/edit_credit_number"
+            android:inputType="number"
+            android:layout_marginTop="8dp"
+            android:imeOptions="actionNext"
+            android:textColor="?attr/primaryTextColor"
+            android:background="?attr/borderBackground"
+            android:textSize="@dimen/small_text_size"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/payment_action_size" />
+
+        <RelativeLayout
+            android:id="@+id/relative_expiry_month_layout"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_below="@+id/edit_credit_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/text_expiry_date_label"
+                android:text="Expiry Date"
+                android:textColor="?attr/primaryTextColor"
+                android:textSize="@dimen/very_small_text_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <RelativeLayout
+                android:id="@+id/relative_month"
+                android:layout_below="@+id/text_expiry_date_label"
+                android:layout_marginTop="5dp"
+                android:layout_width="@dimen/payment_small_edit_size"
+                android:layout_height="@dimen/payment_action_size"
+                android:background="?attr/borderBackground"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <Spinner
+                    android:id="@+id/spinner_month"
+                    android:layout_toLeftOf="@+id/image_spinner_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null">
+
+                </Spinner>
+
+                <ImageView
+                    android:id="@+id/image_spinner_1"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="5dp"
+                    android:padding="2dp"
+                    app:srcCompat="@drawable/ic_arrow_down"
+                    android:tint="?attr/primaryTextColor" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/relative_year"
+                android:layout_below="@+id/text_expiry_date_label"
+                android:layout_toRightOf="@+id/relative_month"
+                android:layout_marginTop="5dp"
+                android:layout_width="@dimen/payment_small_edit_size"
+                android:layout_marginLeft="3dp"
+                android:layout_height="@dimen/payment_action_size"
+                android:background="?attr/borderBackground"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
+
+                <Spinner
+                    android:id="@+id/spinner_year"
+                    android:layout_toLeftOf="@+id/image_spinner_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null">
+
+                </Spinner>
+
+                <ImageView
+                    android:id="@+id/image_spinner_2"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="5dp"
+                    android:padding="2dp"
+                    app:srcCompat="@drawable/ic_arrow_down"
+                    android:tint="?attr/primaryTextColor" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/text_cvv_label"
+            android:text="CVV"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="@dimen/very_small_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/edit_cvv_number"
+            android:inputType="number"
+            android:layout_marginTop="8dp"
+            android:imeOptions="actionNext"
+            android:maxLength="3"
+            android:textColor="?attr/primaryTextColor"
+            android:gravity="center_horizontal"
+            android:background="?attr/borderBackground"
+            android:textSize="@dimen/small_text_size"
+            android:layout_width="60dp"
+            android:layout_height="@dimen/payment_action_size" />
+
+        <RelativeLayout
+            android:background="?attr/borderBackground"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp"
+            android:paddingTop="10dp"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <CheckBox
+                android:id="@+id/checkbox_save_card"
+                android:layout_marginRight="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/text_info_3"
+                android:layout_toRightOf="@+id/checkbox_save_card"
+                android:text="Save your card with CCAvenue Checkout for future payments"
+                android:textColor="?attr/primaryTextColor"
+                android:textSize="@dimen/very_small_text_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/text_info_4"
+                android:layout_below="@+id/text_info_3"
+                android:layout_toRightOf="@+id/checkbox_save_card"
+                android:text="(Note: We do not save your CVV/CVC number.)"
+                android:textColor="?attr/primaryTextColor"
+                android:textSize="@dimen/very_small_text_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/text_info_1"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="I agree with the Privacy Policy by proceeding with this payment."
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="@dimen/very_small_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/text_amount"
+                android:text="INR 500.00"
+                android:textColor="@color/blue600"
+                android:textStyle="bold"
+                android:textSize="@dimen/large_text_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/text_Info_2"
+                android:layout_marginLeft="5dp"
+                android:text="(Total Amount Payable)"
+                android:textColor="?attr/primaryTextColor"
+                android:textSize="@dimen/very_small_text_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_pay"
+            android:background="@color/green600"
+            android:textColor="@color/white"
+            android:text="Make Payment"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="@dimen/very_small_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/payment_action_size"/>
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_marginLeft="16dp"
+            android:background="@color/green600"
+            android:textColor="@color/white"
+            android:text="Cancel"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="@dimen/very_small_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/payment_action_size"/>
+
+    </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

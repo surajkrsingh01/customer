@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.android.volley.Request;
+import com.google.gson.JsonArray;
 import com.shoppurs.R;
 import com.shoppurs.adapters.ApplyOfferAdapter;
 import com.shoppurs.fragments.OfferDescriptionFragment;
@@ -171,8 +172,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
                     JSONObject dataObject;
                     if(!response.getString("result").equals("null")){
-                        JSONArray productJArray = response.getJSONArray("result");
-
+                        JSONArray productJArray = response.getJSONObject("result").getJSONArray("productList");
                         for (int i = 0; i < productJArray.length(); i++) {
                             MyProduct myProduct = new MyProduct();
                             myProduct.setShopCode(shopCode);
@@ -347,9 +347,61 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                                 }
                                 myProduct.setProductPriceOffer(productPriceOffer);
                             }
-
-
                             itemList.add(myProduct);
+                        }
+
+                        JSONArray comboJArray = response.getJSONObject("result").getJSONArray("comboOfferList");
+                        for(int m =0;m<comboJArray.length();m++){
+                            MyProduct comboProduct = new MyProduct();
+                            ProductComboOffer productComboOffer = new ProductComboOffer();
+                            ProductComboDetails productComboDetails;
+                            List<ProductComboDetails> productComboDetailsList = new ArrayList<>();
+                            comboProduct.setShopCode(shopCode);
+                            comboProduct.setId(comboJArray.getJSONObject(m).getString("id"));
+                            comboProduct.setName(comboJArray.getJSONObject(m).getString("offerName"));
+                            JSONArray comboProductDetailsJArray = comboJArray.getJSONObject(m).getJSONArray("productComboOfferDetails");
+                            for(int p=0;p<comboProductDetailsJArray.length();p++){
+                                productComboDetails = new ProductComboDetails();
+                                productComboDetails.setId(comboProductDetailsJArray.getJSONObject(p).getInt("id"));
+                                productComboDetails.setPcodPcoId(comboProductDetailsJArray.getJSONObject(p).getInt("pcodPcoId"));
+                                productComboDetails.setPcodProdQty(comboProductDetailsJArray.getJSONObject(p).getInt("pcodProdQty"));
+                                productComboDetails.setPcodPrice((float) comboProductDetailsJArray.getJSONObject(p).getDouble("pcodPrice"));
+                                productComboDetails.setStatus(comboProductDetailsJArray.getJSONObject(p).getString("status"));
+                                productComboDetailsList.add(productComboDetails);
+                            }
+                            productComboOffer.setProductComboOfferDetails(productComboDetailsList);
+                            comboProduct.setProductComboOffer(productComboOffer);
+
+                            JSONArray comboProductJArray = comboJArray.getJSONObject(m).getJSONArray("productList");
+                            for(int n =0;n<comboProductJArray.length();n++){
+                                MyProduct myProduct = new MyProduct();
+                                myProduct.setId(comboProductJArray.getJSONObject(n).getString("prodId"));
+                                myProduct.setCatId(comboProductJArray.getJSONObject(n).getString("prodCatId"));
+                                myProduct.setSubCatId(comboProductJArray.getJSONObject(n).getString("prodSubCatId"));
+                                myProduct.setName(comboProductJArray.getJSONObject(n).getString("prodName"));
+                                myProduct.setQoh(comboProductJArray.getJSONObject(n).getInt("prodQoh"));
+                                myProduct.setMrp(Float.parseFloat(comboProductJArray.getJSONObject(n).getString("prodMrp")));
+                                myProduct.setSellingPrice(Float.parseFloat(comboProductJArray.getJSONObject(n).getString("prodSp")));
+                                myProduct.setCode(comboProductJArray.getJSONObject(n).getString("prodCode"));
+                                myProduct.setIsBarcodeAvailable(comboProductJArray.getJSONObject(n).getString("isBarcodeAvailable"));
+                                //myProduct.setBarCode(comboProductJArray.getJSONObject(n).getString("prodBarCode"));
+                                myProduct.setDesc(comboProductJArray.getJSONObject(n).getString("prodDesc"));
+                                myProduct.setLocalImage(R.drawable.thumb_16);
+                                myProduct.setProdImage1(comboProductJArray.getJSONObject(n).getString("prodImage1"));
+                                myProduct.setProdImage2(comboProductJArray.getJSONObject(n).getString("prodImage2"));
+                                myProduct.setProdImage3(comboProductJArray.getJSONObject(n).getString("prodImage3"));
+                                myProduct.setProdHsnCode(comboProductJArray.getJSONObject(n).getString("prodHsnCode"));
+                                myProduct.setProdMfgDate(comboProductJArray.getJSONObject(n).getString("prodMfgDate"));
+                                myProduct.setProdExpiryDate(comboProductJArray.getJSONObject(n).getString("prodExpiryDate"));
+                                myProduct.setProdMfgBy(comboProductJArray.getJSONObject(n).getString("prodMfgBy"));
+                                myProduct.setProdExpiryDate(comboProductJArray.getJSONObject(n).getString("prodExpiryDate"));
+                                myProduct.setOfferId(comboProductJArray.getJSONObject(n).getString("offerId"));
+                                myProduct.setProdCgst(Float.parseFloat(comboProductJArray.getJSONObject(n).getString("prodCgst")));
+                                myProduct.setProdIgst(Float.parseFloat(comboProductJArray.getJSONObject(n).getString("prodIgst")));
+                                myProduct.setProdSgst(Float.parseFloat(comboProductJArray.getJSONObject(n).getString("prodSgst")));
+                                myProduct.setProdWarranty(comboProductJArray.getJSONObject(n).getString("prodWarranty"));
+                            }
+                            //itemList.add(comboProduct);
                         }
                     }
                     if(itemList.size()>0){

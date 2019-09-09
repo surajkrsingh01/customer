@@ -762,6 +762,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
+            <ImageView
+                android:id="@+id/image_barcode"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

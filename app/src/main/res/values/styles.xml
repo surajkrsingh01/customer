@@ -71,6 +71,9 @@
         <item name="solidPrimaryStrokeBorderBackground">
             @drawable/white_stroke_dark_round_background
         </item>
+        <item name="borderBackground">
+            @drawable/white_border_background
+        </item>
         <item name="borderBottomSolidBackground">@drawable/dark_theme_grey_border_bottom_background</item>
     </style>
 
@@ -83,6 +86,9 @@
         <item name="borderBottomSolidBackground">@drawable/grey_border_bottom_background</item>
         <item name="solidPrimaryStrokeBorderBackground">
             @drawable/grey_border_small_round_background
+        </item>
+        <item name="borderBackground">
+            @drawable/grey_border_background
         </item>
     </style>
 

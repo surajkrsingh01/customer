@@ -125,6 +125,20 @@ public class StoresListActivity extends NetworkBaseActivity {
 
 
         getAllCategories();
+
+        if(!sharedPreferences.getBoolean(Constants.IS_TOKEN_SAVED, false)){
+            saveToken();
+        }
+    }
+
+    public void saveToken(){
+        Map<String,String> params=new HashMap<>();
+        params.put("mobile", sharedPreferences.getString(Constants.MOBILE_NO, ""));
+        params.put("userType", "customer");
+        params.put("token",sharedPreferences.getString(Constants.FCM_TOKEN, ""));
+        params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
+        String url=getResources().getString(R.string.url_web)+"/api/user/save_fcm_token";
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"saveToken");
     }
 
     public void getAllCategories(){
@@ -270,6 +284,11 @@ public class StoresListActivity extends NetworkBaseActivity {
                     getNormalStores();
                 }else {
                     showProgress(false);
+                }
+            }else if(apiName.equals("saveToken")){
+                if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
+                    editor.putBoolean(Constants.IS_TOKEN_SAVED, true);
+                    editor.commit();
                 }
             }
 

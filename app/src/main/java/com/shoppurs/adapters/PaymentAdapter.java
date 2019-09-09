@@ -1,6 +1,7 @@
 package com.shoppurs.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.shoppurs.R;
+import com.shoppurs.activities.payment.ccavenue.activities.CardDetailsActivity;
+import com.shoppurs.activities.payment.ccavenue.activities.OtherPaymentListActivity;
 import com.shoppurs.activities.payment.ccavenue.utility.CardTypeDTO;
 import com.shoppurs.interfaces.MyItemTypeClickListener;
 import com.shoppurs.models.PaymentOption;
@@ -27,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class PaymentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private List<PaymentOption> itemList;
     private Context context;
@@ -47,7 +50,7 @@ public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.cardsList = cardsList;
     }
 
-    public PaymentAdapter(Context context, List<PaymentOption> itemList, boolean isDarkTheme) {
+    public PaymentAdapter(Context context, List<PaymentOption> itemList,boolean isDarkTheme) {
         this.itemList = itemList;
         this.context=context;
         this.isDarkTheme = isDarkTheme;
@@ -83,7 +86,12 @@ public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             PaymentOption paymentOption = itemList.get(getAdapterPosition());
 
             if(paymentOption.getId().equals("OPTCRDC") || paymentOption.getId().equals("OPTDBCRD")){
-                if(preRecyclerView != null){
+
+                Intent intent = new Intent(context, CardDetailsActivity.class);
+                intent.putExtra("flag",paymentOption.getId());
+                context.startActivity(intent);
+
+              /*  if(preRecyclerView != null){
                     preRecyclerView.setVisibility(View.GONE);
                 }
 
@@ -100,10 +108,16 @@ public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 llCreditCard.setVisibility(View.VISIBLE);
                 btnPay.setVisibility(View.VISIBLE);
                 preButtonPay = btnPay;
-                preCreditCard = llCreditCard;
+                preCreditCard = llCreditCard;*/
             }else if(paymentOption.getId().equals("OPTNBK") || paymentOption.getId().equals("OPTWLT")
             || paymentOption.getId().equals("OPTUPI")){
-                if(preCreditCard != null)
+
+                Intent intent = new Intent(context, OtherPaymentListActivity.class);
+                intent.putExtra("flag",paymentOption.getId());
+                intent.putExtra("cardList",cardsList.get(paymentOption.getId()));
+                context.startActivity(intent);
+
+               /* if(preCreditCard != null)
                 preCreditCard.setVisibility(View.GONE);
 
                 if(preButtonPay != null)
@@ -121,9 +135,9 @@ public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 btnPay.setVisibility(View.VISIBLE);
                 preRecyclerView = recyclerView;
                 preButtonPay = btnPay;
-                preRlNetBanking = rl_net_banking;
+                preRlNetBanking = rl_net_banking;*/
             }else{
-                if(preCreditCard != null)
+               /* if(preCreditCard != null)
                 preCreditCard.setVisibility(View.GONE);
                 if(preButtonPay != null)
                 preButtonPay.setVisibility(View.GONE);
@@ -133,7 +147,7 @@ public class PaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if(preRecyclerView != null){
                     preRecyclerView.setVisibility(View.GONE);
                     preButtonPay.setVisibility(View.GONE);
-                }
+                }*/
             }
         }
     }

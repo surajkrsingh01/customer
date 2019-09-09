@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activities.payment.ccavenue.activities.OtherPaymentListActivity"
+    tools:showIn="@layout/activity_other_payment_list">
+
+    <TextView
+        android:id="@+id/text_left_label"
+        android:text="Payment"
+        android:textColor="?attr/secondaryTextColor"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_below="@+id/text_left_label"
+        android:id="@+id/text_second_label"
+        android:text="Label"
+        android:textColor="?attr/primaryTextColor"
+        android:textStyle="bold"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="5dp"
+        android:textSize="@dimen/list_very_large_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_below="@+id/text_second_label"
+        android:scrollbars="none"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:scrollbars="none"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <RelativeLayout
+                android:layout_below="@+id/recycler_view"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:id="@+id/rl_net_banking"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="All Other Banks"
+                    android:id="@+id/tv_select_bank_label"
+                    android:textColor="?attr/primaryTextColor"
+                    android:textSize="@dimen/very_small_text_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <RelativeLayout
+                    android:id="@+id/relative_bank"
+                    android:layout_below="@+id/tv_select_bank_label"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/payment_action_size"
+                    android:background="?attr/borderBackground"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp">
+
+                    <Spinner
+                        android:id="@+id/spinner_bank"
+                        android:layout_toLeftOf="@+id/image_spinner_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null">
+
+                    </Spinner>
+
+                    <ImageView
+                        android:id="@+id/image_spinner_1"
+                        android:layout_alignParentRight="true"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginRight="5dp"
+                        android:padding="2dp"
+                        app:srcCompat="@drawable/ic_arrow_down"
+                        android:tint="?attr/primaryTextColor" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/text_info_4"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_below="@+id/rl_net_banking"
+                android:text="(Note: We will redirect you to the bank you have chosen above. Once the bank verifies your net banking credentials, we will proceed with your payment)"
+                android:textColor="?attr/primaryTextColor"
+                android:textSize="@dimen/very_small_text_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <RelativeLayout
+                android:background="?attr/borderBackground"
+                android:id="@+id/rl_save_layout"
+                android:layout_below="@+id/text_info_4"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:paddingRight="16dp"
+                android:paddingBottom="16dp"
+                android:paddingTop="10dp"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:id="@+id/checkbox_save_card"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/text_info_3"
+                    android:layout_toRightOf="@+id/checkbox_save_card"
+                    android:text="Save your Bank name with CCAvenue Checkout for future payments"
+                    android:textColor="?attr/primaryTextColor"
+                    android:textSize="@dimen/very_small_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+
+            <TextView
+                android:id="@+id/text_info_1"
+                android:layout_below="@+id/rl_save_layout"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="I agree with the Privacy Policy by proceeding with this payment."
+                android:textColor="?attr/primaryTextColor"
+                android:textSize="@dimen/very_small_text_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:id="@+id/ll_amount_layout"
+                android:layout_below="@+id/text_info_1"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/text_amount"
+                    android:text="INR 500.00"
+                    android:textColor="@color/blue600"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/large_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/text_Info_2"
+                    android:layout_marginLeft="5dp"
+                    android:text="(Total Amount Payable)"
+                    android:textColor="?attr/primaryTextColor"
+                    android:textSize="@dimen/very_small_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginBottom="10dp"
+                android:layout_below="@+id/ll_amount_layout"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/btn_pay"
+                    android:background="@color/green600"
+                    android:textColor="@color/white"
+                    android:text="Make Payment"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:textSize="@dimen/very_small_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/payment_action_size"/>
+
+                <Button
+                    android:id="@+id/btn_cancel"
+                    android:layout_marginLeft="16dp"
+                    android:background="@color/green600"
+                    android:textColor="@color/white"
+                    android:text="Cancel"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:textSize="@dimen/very_small_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/payment_action_size"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+
+</RelativeLayout>

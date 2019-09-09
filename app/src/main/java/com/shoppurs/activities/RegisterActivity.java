@@ -190,7 +190,7 @@ public class RegisterActivity extends NetworkBaseActivity{
                     editor.putBoolean(Constants.IS_LOGGED_IN,true);
                     editor.commit();
                     DialogAndToast.showToast("Account created",RegisterActivity.this);
-                    Intent intent=new Intent(RegisterActivity.this,MainActivity.class);
+                    Intent intent=new Intent(RegisterActivity.this,StoresListActivity.class);
                     startActivity(intent);
                     finish();
 

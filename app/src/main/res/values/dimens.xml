@@ -75,8 +75,8 @@
     <dimen name="home_list_image_size_width">220dp</dimen>
     <dimen name="home_list_image_size_height">300dp</dimen>
     <dimen name="home_list_image_size_2">300dp</dimen>
-    <dimen name="home_list_image_width_4">130dp</dimen>
-    <dimen name="home_list_image_height_4">110dp</dimen>
+    <dimen name="home_list_image_width_4">90dp</dimen>
+    <dimen name="home_list_image_height_4">70dp</dimen>
     <dimen name="home_list_image_2_size">80dp</dimen>
     <dimen name="home_list_header_text_size">14sp</dimen>
     <dimen name="home_list_desc_text_size">18sp</dimen>
@@ -170,5 +170,9 @@
     <dimen name="dialog_elevation">6dp</dimen>
 
     <!-- Profile. -->
+
+    <!-- payment. -->
+    <dimen name="payment_action_size">30dp</dimen>
+    <dimen name="payment_small_edit_size">90dp</dimen>
 
 </resources>

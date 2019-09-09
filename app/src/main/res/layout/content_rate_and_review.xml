@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activities.RateAndReviewActivity"
+    tools:showIn="@layout/activity_rate_and_review">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/relative_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin">
+
+        <TextView
+            android:id="@+id/text_left_label"
+            android:text="Rate and Review"
+            android:textColor="?attr/secondaryTextColor"
+            android:textSize="@dimen/small_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:visibility="gone"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:id="@+id/view_seperator"
+            android:layout_width="2dp"
+            android:layout_height="20dp"
+            android:background="?attr/separatorColor"/>
+
+        <TextView
+            android:visibility="gone"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:id="@+id/text_right_label"
+            android:text="Shop Address"
+            android:textColor="?attr/secondaryTextColor"
+            android:textSize="@dimen/small_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_below="@+id/relative_top"
+        android:id="@+id/text_second_label"
+        android:text="Write a Review"
+        android:textColor="?attr/primaryTextColor"
+        android:textStyle="bold"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="5dp"
+        android:textSize="@dimen/list_very_large_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RatingBar
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/text_second_label"
+        android:id="@+id/ratingBar"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="false"
+        android:numStars="5"
+        android:stepSize="0.5"
+        android:rating="0" />
+
+    <EditText
+        android:id="@+id/et_review"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="50dp"
+        android:layout_below="@+id/ratingBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Write your review here"
+        android:textColorHint="?attr/secondaryTextColor"
+        android:textColor="?attr/primaryTextColor"
+        android:textSize="@dimen/normal_text_size" />
+
+    <include layout="@layout/footer_action_layout"/>
+
+</RelativeLayout>

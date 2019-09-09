@@ -10,12 +10,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.shoppurs.R;
 import com.shoppurs.activities.payment.ccavenue.utility.CardTypeDTO;
 import com.shoppurs.interfaces.MyItemClickListener;
 import com.shoppurs.utilities.Utility;
-
 
 import java.util.List;
 
