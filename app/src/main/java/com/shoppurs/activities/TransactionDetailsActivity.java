@@ -2,6 +2,7 @@ package com.shoppurs.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -34,7 +35,7 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
     private TextView tvFooter;
     private boolean isDelivered;
     private String shopCodes;
-
+    private String flag;
     private String custCode,orderNumber,paymentStatus;
     private float totalAmount;
     private RelativeLayout relative_footer;
@@ -45,9 +46,7 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
         setContentView(R.layout.activity_transaction_details);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         init();
-        setStatusLayout(false);
     }
 
     private void init(){
@@ -63,22 +62,45 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
         tvFooter = findViewById(R.id.text_action);
         relative_footer = findViewById(R.id.relative_footer_action);
         relative_footer.setBackgroundColor(colorTheme);
-        tvFooter.setText("Track Your Order");
-        orderNumber = getIntent().getStringExtra("orderNumber");
-        totalAmount = getIntent().getFloatExtra("totalAmount", 0);
-       // myShopOrderList = (List<MyProduct>) getIntent().getSerializableExtra("shopOrderList");
-        //Log.d("shopOrderList ", myShopOrderList.size() +"");
-        getorderDetails();
+        setStatusLayout(false);
+
+        flag = getIntent().getStringExtra("flag");
+        if(!TextUtils.isEmpty(flag) && flag.equals("instantPay")){
+            try {
+                setStatusLayout(true);
+                tvStatus.setText("You Payment has been Received.");
+                JSONObject dataObject = new JSONObject(getIntent().getStringExtra("responseData"));
+                Log.d("InstantPay Response ", dataObject.toString());
+                tvFooter.setText("Back");
+                tvAmount.setText(dataObject.getString("amount"));
+                findViewById(R.id.rlrrn).setVisibility(View.GONE);
+                findViewById(R.id.rl_t_id).setVisibility(View.GONE);
+                findViewById(R.id.rl_p_method).setVisibility(View.GONE);
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+        }else {
+            tvFooter.setText("Track Your Order");
+            orderNumber = getIntent().getStringExtra("orderNumber");
+            totalAmount = getIntent().getFloatExtra("totalAmount", 0);
+            // myShopOrderList = (List<MyProduct>) getIntent().getSerializableExtra("shopOrderList");
+            //Log.d("shopOrderList ", myShopOrderList.size() +"");
+            getorderDetails();
+        }
 
         rlFooter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //openInvoiceActivity();
-                Intent intent = new Intent(TransactionDetailsActivity.this, MyOrderActivity.class);
-                intent.putExtra("callingActivity", "TransactionDetailsActivity");
-                intent.putExtra("orderNumber", orderNumber);
-                intent.putExtra("shopOrderList", shopCodes);
-                startActivity(intent);
+                if(!TextUtils.isEmpty(flag) && flag.equals("instantPay")){
+                    finish();
+                }else {
+                    Intent intent = new Intent(TransactionDetailsActivity.this, MyOrderActivity.class);
+                    intent.putExtra("callingActivity", "TransactionDetailsActivity");
+                    intent.putExtra("orderNumber", orderNumber);
+                    intent.putExtra("shopOrderList", shopCodes);
+                    startActivity(intent);
+                }
             }
         });
     }

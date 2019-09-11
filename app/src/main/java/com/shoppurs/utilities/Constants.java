@@ -86,7 +86,7 @@ public class Constants {
     public static String UPDATE_ADDRESS="/profile/update_address";
     public static String GENERATE_ORDER="order/generate_order";
     public static String PLACE_ORDER="order/place_order";
-    public static String ADD_TRANS_DATA="trans/add_trans_data";
+    public static String ADD_TRANS_DATA="/api/trans/add_trans_data";
     public static String ADD_INVOICE_DATA="trans/generate_invoice";
     public static String GET_COUNTRIES="countries";
     public static String GET_STATES="states?countryId=";

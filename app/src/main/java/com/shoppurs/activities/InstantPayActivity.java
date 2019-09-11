@@ -79,7 +79,7 @@ public class InstantPayActivity  extends NetworkBaseActivity {
             DialogAndToast.showDialog("Please enter Remark.",this);
             return;
         }else {
-            Intent intent = new Intent(InstantPayActivity.this, PaymentActivity.class);
+            Intent intent = new Intent(InstantPayActivity.this, CCAvenueWebViewActivity.class);
           //  String ta = editTextAmount.getText().toString().split(" ")[1];
           //  ta = ta.replaceAll(",", "");
             intent.putExtra(AvenuesParams.AMOUNT, String.format("%.02f", Float.parseFloat(editTextAmount.getText().toString())));

@@ -120,6 +120,7 @@
                     android:layout_height="wrap_content">
 
                     <RelativeLayout
+                        android:id="@+id/rl_t_id"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -218,6 +219,7 @@
                         android:layout_height="1dp"/>
 
                     <RelativeLayout
+                        android:id="@+id/rl_p_method"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 

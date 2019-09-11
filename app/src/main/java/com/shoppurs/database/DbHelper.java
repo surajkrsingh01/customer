@@ -663,12 +663,20 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(TOTAL_QTY, item.getQuantity());
         contentValues.put(TOTAL_AMOUNT, item.getTotalAmount());
         contentValues.put(PROD_SP, item.getSellingPrice());
-        float rate = ((item.getSellingPrice() * (item.getProdCgst()+item.getProdSgst()))/(100 +
-                (item.getProdCgst()+item.getProdSgst())));
-        Log.d("Rate ", ""+rate);
-        contentValues.put(PROD_CGST, rate/2);
-        contentValues.put(PROD_IGST, rate);
-        contentValues.put(PROD_SGST, rate/2);
+        if(item.getComboProductIds()!=null){
+            contentValues.put(PROD_CGST, item.getProdCgst());
+            contentValues.put(PROD_IGST, item.getProdIgst());
+            contentValues.put(PROD_SGST, item.getProdSgst());
+            Log.i("dbhelper","cgst "+item.getProdCgst());
+            Log.i("dbhelper","sgst "+item.getProdSgst());
+        }else {
+            float rate = ((item.getSellingPrice() * (item.getProdCgst() + item.getProdSgst())) / (100 +
+                    (item.getProdCgst() + item.getProdSgst())));
+            Log.d("Rate ", "" + rate);
+            contentValues.put(PROD_CGST, rate / 2);
+            contentValues.put(PROD_IGST, rate);
+            contentValues.put(PROD_SGST, rate / 2);
+        }
 
         db.update(CART_TABLE, contentValues, ID + " = ?" + " AND " + SHOP_CODE + "=?" + " AND " + PROD_SP+" != ?",
                 new String[] { String.valueOf(item.getId()),  String.valueOf(item.getShopCode()), String.valueOf(0)});

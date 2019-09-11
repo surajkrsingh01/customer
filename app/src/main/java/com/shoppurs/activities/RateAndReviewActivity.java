@@ -73,7 +73,7 @@ public class RateAndReviewActivity extends NetworkBaseActivity {
             String url=getResources().getString(R.string.url_web)+"/api/order/rate_review";
             params.put("rating", String.valueOf(rating));
             params.put("reviewMessage", review);
-            params.put("shopCodes", shopCodes);
+            params.put("shopList", shopCodes);
             params.put("number", orderNumber);
             params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
             params.put("dbUserName", sharedPreferences.getString(Constants.DB_USER_NAME, ""));

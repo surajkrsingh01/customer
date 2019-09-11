@@ -2,6 +2,7 @@ package com.shoppurs.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -739,6 +740,16 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                         startActivity(intent);
                         finish();
                     }else{
+                        List<MyProduct> cartItemList = dbHelper.getCartProducts();
+                        String shopCodes ="";
+                        for(MyProduct myProduct: cartItemList) {
+                            Log.d("left "+cartItemList.indexOf(myProduct), "right "+(cartItemList.size()-1));
+                            if(cartItemList.size()==1 || cartItemList.indexOf(myProduct) == cartItemList.size()-1)
+                                shopCodes  = shopCodes.concat(myProduct.getShopCode());
+                            else
+                                shopCodes  = shopCodes.concat(myProduct.getShopCode()+",");
+                        }
+
                         Log.d("shopArray ", shopArray.toString());
                         // integrate ccAvenue..
                         Intent intent = new Intent(CartActivity.this, CCAvenueWebViewActivity.class);
@@ -749,7 +760,8 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                         intent.putExtra("flag", "online_shoping");
                         intent.putExtra("shopArray",shopArray.toString());
                         intent.putExtra("orderNumber", orderNumber);
-                        intent.putExtra("shopOrderList", (Serializable) myProductList);
+                        shopArray.getJSONObject(0).put("orderNumber", orderNumber);
+                        intent.putExtra("shopCodes", shopCodes);
                         startActivity(intent);
                         finish();
                     }
@@ -830,7 +842,10 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     public void onItemClicked(int position, int type) {
         this.position = position;
         this.type = type;
-        if(type==2){
+        if(!TextUtils.isEmpty(itemList.get(position).getOfferType()) && itemList.get(position).getOfferType().equals("ComboOffer"))
+            isProductCombo = true;
+        else isProductCombo =false;
+        if(type==2 && !isProductCombo){
             productDetailsType = 1;
             getProductDetails(itemList.get(position).getId(), itemList.get(position).getShopCode());
         }else onProductClicked(position, type);
@@ -860,6 +875,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     }
 
 
+    boolean isProductCombo;
     private  void onProductClicked(int position, int type){
         this.position = position;
         Log.i(TAG,"onItemClicked "+position+" type "+type);
@@ -957,7 +973,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                 //}
 
             }else{*/
-                if(item.getQuantity() >= item.getQoh()){
+                if(item.getQuantity() >= item.getQoh() && !isProductCombo){
                     DialogAndToast.showDialog("There are no more stocks",this);
                 }else{
                     float amount = 0;

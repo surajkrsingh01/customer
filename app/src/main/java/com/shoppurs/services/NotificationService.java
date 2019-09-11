@@ -36,7 +36,7 @@ public class NotificationService {
 
 
     @SuppressWarnings({ "deprecation" })
-    public static void displayNotification(Context context, AppCompatActivity startActivity, String message) {
+    public static void displayNotification(Context context, String message) {
         Intent intent;
         // Create an explicit intent for an Activity in your app
        /* if(startActivity instanceof ForgotPasswordActivity)

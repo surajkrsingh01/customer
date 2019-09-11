@@ -46,6 +46,8 @@ import java.util.Map;
 public class ApplyOffersActivity extends NetworkBaseActivity {
 
     private List<Object> itemList;
+    List<ProductComboOffer> comboOffer;
+    private Map<Integer, MyProduct> comboProductMap;
     private RecyclerView recyclerView;
     private ApplyOfferAdapter myItemAdapter;
     private TextView textViewError, text_left_label, text_right_label;
@@ -113,43 +115,48 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"activeOfferList");
     }
 
-    private void setActiveOfferList(){
-        List<ProductComboOffer> comboOffer = dbHelper.getProductComboOffer();
+    private void setComboOfferList(){
         Log.i(TAG,"combo offer  "+comboOffer.size());
         MyProduct myProductItem = null;
 
         String comboName = "";
         String comboIds = "";
+
         float totAmt = 0f;
         float totMrp = 0f;
         float totSgst =0f;
         float totCgst = 0f;
-        MyProduct comboProductItem = null;
+        MyProduct comboProductItem;
         int comboId = 1;
         for(ProductComboOffer productComboOffer : comboOffer){
             myProductItem = new MyProduct();
             for(ProductComboDetails productComboDetails : productComboOffer.getProductComboOfferDetails()){
-                //          comboProductItem = dbHelper.getProductDetails(productComboDetails.getPcodProdId());
+                Log.d("comboProductMap Size ", ""+comboProductMap);
+                          comboProductItem = comboProductMap.get(productComboDetails.getPcodProdId());
                 totAmt = totAmt + (productComboDetails.getPcodPrice() * productComboDetails.getPcodProdQty());
                 totMrp = totMrp + (comboProductItem.getMrp() * productComboDetails.getPcodProdQty());
-                totCgst = totCgst + (productComboDetails.getPcodPrice() *
-                        comboProductItem.getProdCgst() * productComboDetails.getPcodProdQty()/100);
-                totSgst = totSgst + (productComboDetails.getPcodPrice() *
-                        comboProductItem.getProdSgst() * productComboDetails.getPcodProdQty()/100);
+
+                float rate = ((productComboDetails.getPcodPrice() * (comboProductItem.getProdCgst()+comboProductItem.getProdSgst()))/(100 +
+                        (comboProductItem.getProdCgst()+comboProductItem.getProdSgst())));
+
+                totCgst = totCgst + ((rate/2) * productComboDetails.getPcodProdQty());
+                totSgst = totSgst + ((rate/2) * productComboDetails.getPcodProdQty());
+
                 if(TextUtils.isEmpty(comboName)){
                     comboName = comboProductItem.getName();
                     comboIds = ""+comboProductItem.getId();
                 }else{
                     comboName = comboName +"+"+comboProductItem.getName();
-                    comboIds = comboIds+"-"+comboProductItem.getId();
+                    comboIds = comboIds +"-"+comboProductItem.getId();
                 }
-
+                Log.i(TAG,"product Id "+comboIds);
             }
             Log.i(TAG,"cgst "+totCgst);
             Log.i(TAG,"sgst "+totSgst);
             Log.i(TAG,"totAmt "+totAmt);
             Log.i(TAG,"totMrp "+totMrp);
-            myProductItem.setId(String.valueOf(comboId));
+            myProductItem.setId("-"+comboId);
+            myProductItem.setOfferType("ComboOffer");
             myProductItem.setName(comboName);
             myProductItem.setComboProductIds(comboIds);
             myProductItem.setSellingPrice(totAmt);
@@ -158,6 +165,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
             myProductItem.setProdSgst(totSgst);
             myProductItem.setProdCgst(totCgst);
             myProductItem.setIsBarcodeAvailable("N");
+            myProductItem.setShopCode(shopCode);
             itemList.add(myProductItem);
             comboId++;
         }
@@ -351,26 +359,28 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                         }
 
                         JSONArray comboJArray = response.getJSONObject("result").getJSONArray("comboOfferList");
+                        comboOffer = new ArrayList<>();
+                        comboProductMap = new HashMap<>();
                         for(int m =0;m<comboJArray.length();m++){
-                            MyProduct comboProduct = new MyProduct();
                             ProductComboOffer productComboOffer = new ProductComboOffer();
                             ProductComboDetails productComboDetails;
                             List<ProductComboDetails> productComboDetailsList = new ArrayList<>();
-                            comboProduct.setShopCode(shopCode);
-                            comboProduct.setId(comboJArray.getJSONObject(m).getString("id"));
-                            comboProduct.setName(comboJArray.getJSONObject(m).getString("offerName"));
+                            productComboOffer.setId(comboJArray.getJSONObject(m).getInt("id"));
+                            productComboOffer.setOfferName(comboJArray.getJSONObject(m).getString("offerName"));
+                            productComboOffer.setStatus(comboJArray.getJSONObject(m).getString("status"));
                             JSONArray comboProductDetailsJArray = comboJArray.getJSONObject(m).getJSONArray("productComboOfferDetails");
                             for(int p=0;p<comboProductDetailsJArray.length();p++){
                                 productComboDetails = new ProductComboDetails();
                                 productComboDetails.setId(comboProductDetailsJArray.getJSONObject(p).getInt("id"));
                                 productComboDetails.setPcodPcoId(comboProductDetailsJArray.getJSONObject(p).getInt("pcodPcoId"));
+                                productComboDetails.setPcodProdId(comboProductDetailsJArray.getJSONObject(p).getInt("pcodProdId"));
                                 productComboDetails.setPcodProdQty(comboProductDetailsJArray.getJSONObject(p).getInt("pcodProdQty"));
                                 productComboDetails.setPcodPrice((float) comboProductDetailsJArray.getJSONObject(p).getDouble("pcodPrice"));
                                 productComboDetails.setStatus(comboProductDetailsJArray.getJSONObject(p).getString("status"));
                                 productComboDetailsList.add(productComboDetails);
                             }
                             productComboOffer.setProductComboOfferDetails(productComboDetailsList);
-                            comboProduct.setProductComboOffer(productComboOffer);
+                            comboOffer.add(productComboOffer);
 
                             JSONArray comboProductJArray = comboJArray.getJSONObject(m).getJSONArray("productList");
                             for(int n =0;n<comboProductJArray.length();n++){
@@ -400,9 +410,11 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                                 myProduct.setProdIgst(Float.parseFloat(comboProductJArray.getJSONObject(n).getString("prodIgst")));
                                 myProduct.setProdSgst(Float.parseFloat(comboProductJArray.getJSONObject(n).getString("prodSgst")));
                                 myProduct.setProdWarranty(comboProductJArray.getJSONObject(n).getString("prodWarranty"));
+                                comboProductMap.put(Integer.parseInt(myProduct.getId()), myProduct);
                             }
-                            //itemList.add(comboProduct);
                         }
+                        if(comboOffer.size()>0)
+                            setComboOfferList();
                     }
                     if(itemList.size()>0){
                         myItemAdapter.notifyDataSetChanged();
@@ -490,13 +502,17 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
 
     private int productDetailsType =1, type;
     private MyProduct myProduct, freeProdut;
+    boolean isProductCombo;
     public void updateCart(int type, int position){
         MyProduct myProduct = (MyProduct) itemList.get(position);
         Log.d("clicked Position ", position+"");
-
         this.position = position;
         this.type = type;
-        if(type==2){
+
+        if(!TextUtils.isEmpty(myProduct.getOfferType()) && myProduct.getOfferType().equals("ComboOffer"))
+            isProductCombo = true;
+        else isProductCombo =false;
+        if(type==2 && !isProductCombo){
             productDetailsType = 1;
             getProductDetails(myProduct.getId());
         }else onProductClicked(type, position);
@@ -575,7 +591,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                 // }
 
             }else{*/
-                if(myProduct.getQuantity() == myProduct.getQoh()){
+                if(myProduct.getQuantity() == myProduct.getQoh() && !isProductCombo){
                     myItemAdapter.notifyDataSetChanged();
                     DialogAndToast.showDialog("There are no more stocks",this);
                 }else{

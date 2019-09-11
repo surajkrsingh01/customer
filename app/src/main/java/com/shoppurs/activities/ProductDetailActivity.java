@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -142,7 +144,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         text_product_mrp.setText(Utility.numberFormat(myProduct.getMrp()));
         //textViewCode.setText(myProduct.getBarCode());
 
-        if(myProduct.getDesc().length() > 200){
+        if(!TextUtils.isEmpty(myProduct.getDesc()) && myProduct.getDesc().length() > 200){
             textViewDesc.setText(myProduct.getDesc().substring(0,200)+"...");
             tvReadMore.setVisibility(View.VISIBLE);
         }else{
@@ -291,9 +293,13 @@ public class ProductDetailActivity extends NetworkBaseActivity {
 
     int type, productDetailsType, counter;
     MyProduct freeProdut;
+    boolean isProductCombo;
     public void updateCart(int type){
        this.type = type;
-        if(type==2){
+        if(!TextUtils.isEmpty(myProduct.getOfferType()) && myProduct.getOfferType().equals("ComboOffer"))
+            isProductCombo = true;
+        else isProductCombo =false;
+        if(type==2 && !isProductCombo){
             productDetailsType = 1;
             getProductDetails(myProduct.getId());
         }else onProductClicked(type);
@@ -369,7 +375,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                 }
 
             }else{*/
-                if(myProduct.getQuantity() >= myProduct.getQoh()){
+                if(myProduct.getQuantity() >= myProduct.getQoh() && !isProductCombo){
                     updateAddButtons();
                     DialogAndToast.showDialog("There are no more stocks",this);
                 }else{

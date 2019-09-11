@@ -400,6 +400,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                      }else if(flag.equals("instantPay")){
                          Intent intent = new Intent(CCAvenueWebViewActivity.this, TransactionDetailsActivity.class);
                          intent.putExtra("flag", "instantPay");
+                         intent.putExtra("totalAmount", dataObject.getString("amount"));
                          intent.putExtra("response", dataObject.toString());
                          startActivity(intent);
                          CCAvenueWebViewActivity.this.finish();
@@ -422,10 +423,12 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                      Log.d(TAG, "Ordeer Placed" );
 
                      Intent intent = new Intent(CCAvenueWebViewActivity.this, TransactionDetailsActivity.class);
-                     intent.putExtra("orderNumber", shopOrderNumber);
-                     intent.putExtra("totalAmount", AvenuesParams.AMOUNT);
-                     List<MyProduct> myProductList = (List<MyProduct>) mainIntent.getSerializableExtra("shopOrderList");
-                     intent.putExtra("shopOrderList", (Serializable) myProductList);
+                     intent.putExtra("flag", "oneline_purchase");
+                     intent.putExtra("response", dataObject.toString());
+                     intent.putExtra("orderNumber", dataObject.getString("orderNumber"));
+                     intent.putExtra("totalAmount", dataObject.getString("amount"));
+                     String  shopCodes = mainIntent.getStringExtra("shopCodes");
+                     intent.putExtra("shopCodes", shopCodes);
                      startActivity(intent);
                      finish();
                  }else {
@@ -440,6 +443,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
 
     private void placeOrder(JSONArray shopArray, String orderId) throws JSONException {
         shopArray.getJSONObject(0).put("orderId", orderId );
+        shopArray.getJSONObject(0).put("transactionId", dataObject.getString("transactionId") );
         Log.d(TAG, shopArray.toString());
         String url=getResources().getString(R.string.root_url)+ com.shoppurs.utilities.Constants.PLACE_ORDER;
         showProgress(true);
@@ -470,7 +474,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
             Log.i(TAG,"Save Response "+dataObject.toString());
             try{
                 dataObject.put("orderNumber",orderId);
-                if(dataObject.getString("response_code").equals("0")){
+                if(dataObject.getString("response_code").equals("0") || dataObject.getString("status_message").toUpperCase().equals("SUCCESS")){
                     dataObject.put("status", "Done");
                     dataObject.put("approved", true);
                 }else{
