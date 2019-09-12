@@ -150,7 +150,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 NotificationService.displayNotification(this, message);
             }
 
-            sendNotification(message);
+           // sendNotification(message);
         }
     }
 

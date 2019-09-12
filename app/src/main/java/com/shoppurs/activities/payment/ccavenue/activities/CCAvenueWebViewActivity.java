@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -20,7 +21,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.shoppurs.R;
+import com.shoppurs.activities.CartActivity;
 import com.shoppurs.activities.NetworkBaseActivity;
+import com.shoppurs.activities.RateAndReviewActivity;
 import com.shoppurs.activities.TransactionDetailsActivity;
 import com.shoppurs.activities.payment.ccavenue.utility.AvenuesParams;
 import com.shoppurs.activities.payment.ccavenue.utility.Constants;
@@ -400,6 +403,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                      }else if(flag.equals("instantPay")){
                          Intent intent = new Intent(CCAvenueWebViewActivity.this, TransactionDetailsActivity.class);
                          intent.putExtra("flag", "instantPay");
+                         Log.d("After Payment response ", dataObject.toString());
                          intent.putExtra("totalAmount", dataObject.getString("amount"));
                          intent.putExtra("response", dataObject.toString());
                          startActivity(intent);
@@ -422,15 +426,15 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                      dbHelper.deleteTable(DbHelper.COUPON_TABLE);
                      Log.d(TAG, "Ordeer Placed" );
 
-                     Intent intent = new Intent(CCAvenueWebViewActivity.this, TransactionDetailsActivity.class);
+                     Intent intent = new Intent(CCAvenueWebViewActivity.this, RateAndReviewActivity.class);
                      intent.putExtra("flag", "oneline_purchase");
                      intent.putExtra("response", dataObject.toString());
-                     intent.putExtra("orderNumber", dataObject.getString("orderNumber"));
+                     intent.putExtra("orderNumber", mainIntent.getStringExtra("orderNumber"));
                      intent.putExtra("totalAmount", dataObject.getString("amount"));
                      String  shopCodes = mainIntent.getStringExtra("shopCodes");
                      intent.putExtra("shopCodes", shopCodes);
                      startActivity(intent);
-                     finish();
+                     CCAvenueWebViewActivity.this.finish();
                  }else {
                      DialogAndToast.showToast(response.getString("message"), CCAvenueWebViewActivity.this);
                  }
@@ -441,9 +445,13 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
         }
     }
 
-    private void placeOrder(JSONArray shopArray, String orderId) throws JSONException {
-        shopArray.getJSONObject(0).put("orderId", orderId );
-        shopArray.getJSONObject(0).put("transactionId", dataObject.getString("transactionId") );
+    private void placeOrder(JSONArray shopArray, String orderNumber) throws JSONException {
+        String []orderNumberlist = orderNumber.split(",");
+
+        for(int i=0;i<orderShopArray.length();i++) {
+            shopArray.getJSONObject(i).put("orderNumber", orderNumberlist[i]);
+            shopArray.getJSONObject(i).put("transactionId", dataObject.getString("transactionId"));
+        }
         Log.d(TAG, shopArray.toString());
         String url=getResources().getString(R.string.root_url)+ com.shoppurs.utilities.Constants.PLACE_ORDER;
         showProgress(true);
@@ -473,7 +481,16 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
             dataObject = new JSONObject(responseData);
             Log.i(TAG,"Save Response "+dataObject.toString());
             try{
-                dataObject.put("orderNumber",orderId);
+                if(flag.equals("online_shoping")) {
+                    dataObject.put("orderNumber", mainIntent.getStringExtra("orderNumber"));
+                    String shopCodes="";
+                    for(int i=0;i<orderShopArray.length();i++){
+                        if(TextUtils.isEmpty(shopCodes))
+                            shopCodes = orderShopArray.getJSONObject(i).getString("shopCode");
+                        else shopCodes  = shopCodes+","+orderShopArray.getJSONObject(i).getString("shopCode");
+                    }
+                    dataObject.put("shopCode", shopCodes);
+                }
                 if(dataObject.getString("response_code").equals("0") || dataObject.getString("status_message").toUpperCase().equals("SUCCESS")){
                     dataObject.put("status", "Done");
                     dataObject.put("approved", true);
@@ -491,15 +508,17 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                 dataObject.put("responseMessage", dataObject.getString("status_message"));
                 dataObject.put("currencyCode", dataObject.getString("currency"));
                 dataObject.put("date", dataObject.getString("trans_date"));
-                //dataObject.put("status", dataObject.getString("order_status"));
-                dataObject.put("custCode",getIntent().getStringExtra("custCode"));
+                dataObject.put("custUserCreateStatus", ("C"));
+                dataObject.put("custCode",sharedPreferences.getString(com.shoppurs.utilities.Constants.USER_ID, ""));
                 //dataObject.put("cardHolderName",dataObject.getString("Card Hodler Name"));
                 dataObject.put("userName",sharedPreferences.getString(com.shoppurs.utilities.Constants.FULL_NAME,""));
                 dataObject.put("dbName",sharedPreferences.getString(com.shoppurs.utilities.Constants.DB_NAME,""));
                 dataObject.put("dbUserName",sharedPreferences.getString(com.shoppurs.utilities.Constants.DB_USER_NAME,""));
                 dataObject.put("dbPassword",sharedPreferences.getString(com.shoppurs.utilities.Constants.DB_PASSWORD,""));
+                Log.d("dataObject ", dataObject.toString());
             }catch (JSONException e){
                 e.printStackTrace();
+                CCAvenueWebViewActivity.this.finish();
             }
             String url=getResources().getString(R.string.url_web)+ com.shoppurs.utilities.Constants.ADD_TRANS_DATA;
             showProgress(true);
@@ -507,6 +526,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
 
         }catch (JSONException e){
             e.printStackTrace();
+            CCAvenueWebViewActivity.this.finish();
         }
     }
 

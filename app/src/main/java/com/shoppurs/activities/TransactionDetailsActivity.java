@@ -69,7 +69,8 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
             try {
                 setStatusLayout(true);
                 tvStatus.setText("You Payment has been Received.");
-                JSONObject dataObject = new JSONObject(getIntent().getStringExtra("responseData"));
+                textViewStatusHeader.setText("Thanks");
+                JSONObject dataObject = new JSONObject(getIntent().getStringExtra("response"));
                 Log.d("InstantPay Response ", dataObject.toString());
                 tvFooter.setText("Back");
                 tvAmount.setText(dataObject.getString("amount"));

@@ -10,6 +10,24 @@ public class MyShop implements Serializable {
     private String id, merchantId,accessCode, name,code,desc,subCatName,address,mobile, state, city, shopimage, dbname, dbusername, dbpassword;
     private int image, type;
     private double latitude, longitude;
+    private String isDeliveryAvailable;
+    private double minDeliveryAmount;
+
+    public String isDeliveryAvailable() {
+        return isDeliveryAvailable;
+    }
+
+    public void setDeliveryAvailable(String deliveryAvailable) {
+        isDeliveryAvailable = deliveryAvailable;
+    }
+
+    public double getMinDeliveryAmount() {
+        return minDeliveryAmount;
+    }
+
+    public void setMinDeliveryAmount(double minDeliveryAmount) {
+        this.minDeliveryAmount = minDeliveryAmount;
+    }
 
     public String getMerchantId() {
         return merchantId;

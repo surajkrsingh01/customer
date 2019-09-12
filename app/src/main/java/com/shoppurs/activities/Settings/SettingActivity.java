@@ -18,6 +18,7 @@ import com.shoppurs.activities.CartActivity;
 import com.shoppurs.activities.ChangePasswordActivity;
 import com.shoppurs.activities.LoginActivity;
 import com.shoppurs.activities.MyOrderActivity;
+import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.CountDrawable;
 
 public class SettingActivity extends BaseActivity implements View.OnClickListener {
@@ -121,8 +122,10 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         }else if(view == relative_my_cart){
             startActivity(new Intent( SettingActivity.this, CartActivity.class));
         }else if(view == relative_logout){
+            String fcmTocken = sharedPreferences.getString(Constants.FCM_TOKEN,"");
             dbHelper.deleteAllTable();
             editor.clear();
+            editor.putString(Constants.FCM_TOKEN, fcmTocken);
             editor.commit();
             Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);

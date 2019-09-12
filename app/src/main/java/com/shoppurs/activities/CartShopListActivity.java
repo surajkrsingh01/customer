@@ -185,6 +185,8 @@ public class CartShopListActivity extends NetworkBaseActivity {
                         myShop.setState(shopJArray.getJSONObject(i).getString("retcountry"));
                         myShop.setCity(shopJArray.getJSONObject(i).getString("retcity"));
                         myShop.setShopimage(shopJArray.getJSONObject(i).getString("retphoto"));
+                        myShop.setDeliveryAvailable(shopJArray.getJSONObject(i).getString("isDeliveryAvailable"));
+                        myShop.setMinDeliveryAmount(shopJArray.getJSONObject(i).getDouble("minDeliveryAmount"));
                         myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                         myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
                         myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));
