@@ -35,6 +35,7 @@ import com.shoppurs.fragments.OfferDescriptionFragment;
 import com.shoppurs.interfaces.MyItemClickListener;
 import com.shoppurs.interfaces.MyItemTypeClickListener;
 import com.shoppurs.models.Coupon;
+import com.shoppurs.models.DeliveryAddress;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductDiscountOffer;
 import com.shoppurs.models.ProductPriceDetails;
@@ -295,10 +296,12 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             }
         });
 
-        tv_address.setOnClickListener(new View.OnClickListener() {
+        /*tv_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(CartActivity.this, DeliveryAddressListActivity.class), 101);
+                Intent intent = new Intent(CartActivity.this, DeliveryAddressListActivity.class);
+                intent.putExtra("flag", "CartActivity");
+                startActivityForResult(intent, 101);
                 tv_self_status.setVisibility(View.GONE);
             }
         });
@@ -306,10 +309,12 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         tv_address_label.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(CartActivity.this, DeliveryAddressListActivity.class), 101);
+                Intent intent = new Intent(CartActivity.this, DeliveryAddressListActivity.class);
+                intent.putExtra("flag", "CartActivity");
+                startActivityForResult(intent, 101);
                 tv_self_status.setVisibility(View.GONE);
             }
-        });
+        });*/
 
         tvApplyCoupon.setOnClickListener(new View.OnClickListener() {
             @Override
