@@ -988,6 +988,32 @@ public class DbHelper extends SQLiteOpenHelper {
         return itemList;
     }
 
+    public DeliveryAddress getdefaultDeliveryAddress(String custCode){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String unitSql="select * from "+DELIVERY_ADDRESS_TABLE+" WHERE "+DELIVERY_CUSTOMER_CODE+" = ?" +" AND "+IS_DELIVERY_DEFAULT+" = ?";
+        Cursor res =  db.rawQuery(unitSql, new String[]{String.valueOf(custCode), "Yes"});
+        DeliveryAddress item = null;
+        if(res.moveToFirst()){
+            do{
+                item=new DeliveryAddress();
+                item.setId(res.getString(res.getColumnIndex(ID)));
+                item.setName(res.getString(res.getColumnIndex(DELIVERY_CUSTOMER_NAME)));
+                item.setMobile(res.getString(res.getColumnIndex(DELIVERY_CUSTOMER_MOBILE)));
+                item.setHouseNo(res.getString(res.getColumnIndex(DELIVERY_HOUSE_NO)));
+                item.setAddress(res.getString(res.getColumnIndex(DELIVERY_ADDRESS)));
+                item.setIsDefaultAddress(res.getString(res.getColumnIndex(IS_DELIVERY_DEFAULT)));
+                item.setDelivery_lat(res.getString(res.getColumnIndex(LATITUDE)));
+                item.setDelivery_long(res.getString(res.getColumnIndex(LONGITUDE)));
+                item.setLandmark(res.getString(res.getColumnIndex(DELIVERY_LANDMARK)));
+                item.setCity(res.getString(res.getColumnIndex(DELIVERY_CITY)));
+                item.setState(res.getString(res.getColumnIndex(DELIVERY_STATE)));
+                item.setPinCode(res.getString(res.getColumnIndex(DELIVERY_PIN)));
+                item.setCountry(res.getString(res.getColumnIndex(DELIVERY_COUNTRY)));
+            }while (res.moveToNext());
+        }
+        return item;
+    }
+
     // Deleting single contact
     public void remove_delivery_address(String id) {
         SQLiteDatabase db = this.getWritableDatabase();

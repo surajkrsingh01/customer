@@ -300,6 +300,7 @@
     </androidx.recyclerview.widget.RecyclerView>
 
     <RelativeLayout
+        android:layout_marginBottom="5dp"
         android:id="@+id/relative_amount_footer"
         android:layout_above="@+id/relative_footer_action"
         android:layout_gravity="center"

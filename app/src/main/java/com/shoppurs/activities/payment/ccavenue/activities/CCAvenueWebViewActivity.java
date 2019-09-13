@@ -508,7 +508,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                 dataObject.put("responseMessage", dataObject.getString("status_message"));
                 dataObject.put("currencyCode", dataObject.getString("currency"));
                 dataObject.put("date", dataObject.getString("trans_date"));
-                dataObject.put("custUserCreateStatus", ("C"));
+                dataObject.put("userCreateStatus", ("C"));
                 dataObject.put("custCode",sharedPreferences.getString(com.shoppurs.utilities.Constants.USER_ID, ""));
                 //dataObject.put("cardHolderName",dataObject.getString("Card Hodler Name"));
                 dataObject.put("userName",sharedPreferences.getString(com.shoppurs.utilities.Constants.FULL_NAME,""));

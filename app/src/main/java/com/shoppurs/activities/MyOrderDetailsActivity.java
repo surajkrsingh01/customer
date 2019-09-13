@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -92,7 +94,6 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
         recycler_order.getRecycledViewPool().setMaxRecycledViews(0, 0);
         myOrderDetailsAdapter = new MyOrderDetailsAdapter(MyOrderDetailsActivity.this,myOrderDetailslist );
         recycler_order.setAdapter(myOrderDetailsAdapter);
-        setTrackStatus(orderStatus);
         getOrderDetails();
 
         tv_footer = findViewById(R.id.text_action);
@@ -102,12 +103,16 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
         rl_footer_action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MyOrderDetailsActivity.this,InvoiceActivity.class);
-                intent.putExtra("orderNumber",orderNumber);
-                startActivity(intent);
+                if(!TextUtils.isEmpty(tv_footer.getText().toString()) && tv_footer.getText().toString().equals("Back"))
+                    finish();
+                else {
+                    Intent intent = new Intent(MyOrderDetailsActivity.this, InvoiceActivity.class);
+                    intent.putExtra("orderNumber", orderNumber);
+                    startActivity(intent);
+                }
             }
         });
-
+        setTrackStatus(orderStatus);
         text_left_label = findViewById(R.id.text_left_label);
         text_right_label = findViewById(R.id.text_right_label);
         text_left_label.setOnClickListener(new View.OnClickListener() {
@@ -187,6 +192,7 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
             view1.setBackgroundColor(getResources().getColor(R.color.green700));
             textView2.setTextColor(getResources().getColor(R.color.green700));
             imageView2.setBackgroundResource(R.drawable.accent_color_4_circle_background);
+            tv_footer.setText("Back");
         }else if(mode.toLowerCase().equals("delivered")){
             view1.setBackgroundColor(getResources().getColor(R.color.green700));
             textView2.setTextColor(getResources().getColor(R.color.green700));
@@ -195,11 +201,15 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
             view2.setBackgroundColor(getResources().getColor(R.color.green700));
             textView4.setTextColor(getResources().getColor(R.color.green700));
             imageView4.setBackgroundResource(R.drawable.accent_color_4_circle_background);
+            rl_footer_action.setVisibility(View.VISIBLE);
         }else if(mode.toLowerCase().equals("cancelled")){
             view1.setBackgroundColor(getResources().getColor(R.color.green700));
             textView2.setTextColor(getResources().getColor(R.color.green700));
             imageView2.setBackgroundResource(R.drawable.accent_color_4_circle_background);
             textView2.setText("Cancelled");
+            tv_footer.setText("Back");
+        }else if(mode.toLowerCase().equals("pending")){
+            tv_footer.setText("Back");
         }
     }
 }
