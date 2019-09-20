@@ -80,13 +80,11 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         myItemAdapter=new DeliveryAddressListAdapter(this,itemList);
+        myItemAdapter.setFlag(flag);
         myItemAdapter.setMyItemClickListener(this);
         myItemAdapter.setColorTheme(colorTheme);
         recyclerView.setAdapter(myItemAdapter);
 
-        if(ConnectionDetector.isNetworkAvailable(this)){
-            //getCouponOffers();
-        }
     }
     private void showNoData(boolean show){
         if(show){
@@ -137,7 +135,7 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
     }
 
     DeliveryAddress deliveryAddress;
-    private void updateDeliveryAddress(DeliveryAddress address){
+    public void updateDeliveryAddress(DeliveryAddress address){
         this.deliveryAddress = address;
         Map<String,String> params=new HashMap<>();
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
@@ -184,6 +182,12 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
                 if(apiName.equals("updateAddress")){
                     dbHelper.updateDeliveryAddress(deliveryAddress, sharedPreferences.getString(Constants.USER_ID,""));
                     setDefaultAddressChecked(deliveryAddress.getId());
+                    if(!TextUtils.isEmpty(flag) && flag.equals("CartActivity")){
+                        Intent intent = new Intent();
+                        intent.putExtra("object", deliveryAddress);
+                        setResult(-1, intent);
+                        finish();
+                    }
                 }else if(apiName.equals("deleteAddress")){
                     dbHelper.remove_delivery_address(deliveryAddress.getId());
                     updateList();

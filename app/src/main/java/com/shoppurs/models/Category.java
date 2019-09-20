@@ -1,9 +1,17 @@
 package com.shoppurs.models;
 
 public class Category {
-    private String id,name,image;
+    private String id,subCatId, name,image;
     private int localImage;
     private boolean isSelected;
+
+    public String getSubCatId() {
+        return subCatId;
+    }
+
+    public void setSubCatId(String subCatId) {
+        this.subCatId = subCatId;
+    }
 
     public boolean isSelected() {
         return isSelected;

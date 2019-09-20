@@ -8,6 +8,7 @@ public class Constants {
     public static String APP_NAME="shoppurs";
 
     public static String MYPREFERENCEKEY="com."+APP_NAME+".MyPrefs";
+    public static String GOOGLE_MAP_API_KEY="googleMapApiKey";
     public static String USER_ID="userID";
     public static String FIRST_NAME = "firstName";
     public static String USER_CODE="userCode";
@@ -94,7 +95,7 @@ public class Constants {
     public static String GET_INVOICE="trans/get_invoice";
     public static String GET_COUPON_OFFER="offers/get_coupon_offer";
 
-    public static String IS_DELIVERY_AVAILABLE="isDeliveryAvailable";
+    public static String IS_HOME_DELIVERY_SELECTED ="isHomeDeliverySelected";
     public static String MIN_DELIVERY_DISTANCE="minDeliveryDistance";
     public static String MIN_DELIVERY_AMOUNT="minDeliveryAmount";
     public static String DELIVERY_EST_TIME="deliveryEstTime";

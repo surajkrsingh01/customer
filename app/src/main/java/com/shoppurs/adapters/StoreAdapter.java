@@ -36,6 +36,7 @@ import com.shoppurs.models.CatListItem;
 import com.shoppurs.models.Category;
 import com.shoppurs.models.MyItem;
 import com.shoppurs.models.MyShop;
+import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
@@ -282,13 +283,22 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                     intent.putExtra("address",shop.getAddress());
                     intent.putExtra("mobile", shop.getMobile());
                     intent.putExtra("stateCity",shop.getState()+", "+shop.getCity());
-                    //intent.putExtra("catId", catId);
-                    //intent.putExtra("subcatid",subcatid);
-                    // intent.putExtra("subcatname",subcatname);
                     intent.putExtra("dbname",shop.getDbname());
                     intent.putExtra("dbuser",shop.getDbusername());
                     intent.putExtra("dbpassword",shop.getDbpassword());
                     intent.putExtra("shop_code",shop.getId());
+
+                    ShopDeliveryModel shopDeliveryModel = new ShopDeliveryModel();
+                    shopDeliveryModel.setShopCode(shop.getId());
+                    shopDeliveryModel.setRetLat(shop.getLatitude());
+                    shopDeliveryModel.setRetLong(shop.getLongitude());
+                    shopDeliveryModel.setIsDeliveryAvailable(shop.getIsDeliveryAvailable());
+                    shopDeliveryModel.setMinDeliveryAmount(shop.getMinDeliveryAmount());
+                    shopDeliveryModel.setMinDeliverytime(shop.getMinDeliverytime());
+                    shopDeliveryModel.setMinDeliverydistance(shop.getMinDeliverydistance());
+                    shopDeliveryModel.setChargesAfterMinDistance(shop.getChargesAfterMinDistance());
+                    intent.putExtra("shopDeliveryModel", shopDeliveryModel);
+
                     editor.putString(Constants.SHOP_INSIDE_CODE,shop.getId());
                     editor.putString(Constants.SHOP_INSIDE_NAME, shop.getName());
                     editor.putString(Constants.SHOP_DBNAME,shop.getDbname());

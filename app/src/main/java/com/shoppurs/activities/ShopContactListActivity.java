@@ -102,6 +102,8 @@ public class ShopContactListActivity extends NetworkBaseActivity {
         recycler_viewShops.setAdapter(shopContactsAdapter);
 
         Map<String,String> params=new HashMap<>();
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url)+"/allshoplist";
         //showProgress(true);
@@ -198,8 +200,8 @@ public class ShopContactListActivity extends NetworkBaseActivity {
             }else if(apiName.equals("contactList")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
 
-                    //JSONObject jsonObject = response.getJSONObject("result");
-                    JSONArray shopJArray = response.getJSONArray("result");
+                    JSONObject jsonObject = response.getJSONObject("result");
+                    JSONArray shopJArray = jsonObject.getJSONArray("shoplist");
                     myShopList.clear();
                     for(int i=0;i<shopJArray.length();i++){
                         MyShop myShop = new MyShop();

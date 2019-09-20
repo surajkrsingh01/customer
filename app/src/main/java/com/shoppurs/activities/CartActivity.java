@@ -40,6 +40,7 @@ import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductDiscountOffer;
 import com.shoppurs.models.ProductPriceDetails;
 import com.shoppurs.models.ProductPriceOffer;
+import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
@@ -49,7 +50,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -95,6 +95,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     private TextView text_left_label, text_right_label;
 
     private BottomSearchFragment bottomSearchFragment;
+    private DeliveryAddress deliveryAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -249,7 +250,17 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             }
         });
 
-        boolean isDeliveryAvailable = sharedPreferences.getBoolean(Constants.IS_DELIVERY_AVAILABLE, false);
+        boolean isDeliveryAvailable =false;
+        List<MyProduct> myProductsList = dbHelper.getCartProducts();
+        for(MyProduct product: myProductsList){
+           ShopDeliveryModel deliveryModel = dbHelper.getShopDeliveryDetails(product.getShopCode());
+           Log.d(TAG, deliveryModel.getIsDeliveryAvailable());
+           if(!TextUtils.isEmpty(deliveryModel.getIsDeliveryAvailable()) && deliveryModel.getIsDeliveryAvailable().equals("Y")){
+               isDeliveryAvailable = true;
+               break;
+           }else isDeliveryAvailable =false;
+        }
+
         tv_mode = findViewById(R.id.tv_mode);
         tv_self_status = findViewById(R.id.tv_self_status);
         rg_delivery = findViewById(R.id.rg_delivery);
@@ -264,15 +275,33 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         if(!isDeliveryAvailable){ // home delivery not available
             tv_self_status.setText("Self Delivery");
             rg_delivery.setVisibility(View.GONE);
+            editor.putBoolean(Constants.IS_HOME_DELIVERY_SELECTED, false);
+            editor.commit();
         } else {
             rg_delivery.setVisibility(View.VISIBLE);
             tv_self_status.setVisibility(View.GONE);
+            if(sharedPreferences.getBoolean(Constants.IS_HOME_DELIVERY_SELECTED,false)) {
+                rg_delivery.check(R.id.rb_home_delivery);
+                deliveryTypeId = R.id.rb_home_delivery;
+                tv_address_label.setVisibility(View.VISIBLE);
+                tv_address.setVisibility(View.VISIBLE);
+                deliveryAddress = dbHelper.getdefaultDeliveryAddress(sharedPreferences.getString(Constants.USER_ID,""));
+                if(deliveryAddress!=null) {
+                    tv_address.setText(deliveryAddress.getAddress().concat(deliveryAddress.getPinCode()));
+                    shopIndexforCalculatingDistance = 0;
+                    calculateDistance(deliveryAddress);
+                }
+            }else {
+                deliveryTypeId = R.id.rb_self_delivery;
+            }
         }
 
         rg_delivery.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId == R.id.rb_self_delivery){
+                    editor.putBoolean(Constants.IS_HOME_DELIVERY_SELECTED, false);
+                    editor.commit();
                     deliveryTypeId = checkedId;
                     tv_self_status.setText("Self Delivery");
                     //tv_self_status.setVisibility(View.VISIBLE);
@@ -281,22 +310,26 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     tv_address.setVisibility(View.GONE);
                     tvDeliveryCharges.setText("0.00");
                     deliveryDistance = 0;
-                    rlDelivery.setVisibility(View.GONE);
+                    setFooterValues();
+                   // rlDelivery.setVisibility(View.GONE);
                 }else{
-                    if(totalPrice > sharedPreferences.getInt(Constants.MIN_DELIVERY_AMOUNT,0)){
-                        startActivityForResult(new Intent(CartActivity.this, DeliveryAddressListActivity.class), 101);
+                    deliveryTypeId = checkedId;
+                    editor.putBoolean(Constants.IS_HOME_DELIVERY_SELECTED, true);
+                    editor.commit();
+                    tv_address_label.setVisibility(View.VISIBLE);
+                    deliveryAddress = dbHelper.getdefaultDeliveryAddress(sharedPreferences.getString(Constants.USER_ID,""));
+                    if(deliveryAddress!=null){
+                        tv_address.setVisibility(View.VISIBLE);
+                        tv_address.setText(deliveryAddress.getAddress().concat(deliveryAddress.getPinCode()));
                         tv_self_status.setVisibility(View.GONE);
-                    }else{
-                        rb_self_delivery.setChecked(true);
-                        DialogAndToast.showDialog("Minimum amount should be more than Rs."
-                                +sharedPreferences.getInt(Constants.MIN_DELIVERY_AMOUNT,0)+" for home delivery.",CartActivity.this);
+                        shopIndexforCalculatingDistance = 0;
+                        calculateDistance(deliveryAddress);
                     }
-
                 }
             }
         });
 
-        /*tv_address.setOnClickListener(new View.OnClickListener() {
+        tv_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(CartActivity.this, DeliveryAddressListActivity.class);
@@ -314,7 +347,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                 startActivityForResult(intent, 101);
                 tv_self_status.setVisibility(View.GONE);
             }
-        });*/
+        });
 
         tvApplyCoupon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -356,17 +389,14 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if(requestCode ==101 && intent!=null){
-            String address = intent.getStringExtra("address");
-            String country = intent.getStringExtra("country");
-            String state = intent.getStringExtra("state");
-            String city = intent.getStringExtra("city");
-            String zip = intent.getStringExtra("zip");
-            deliveryDistance = intent.getFloatExtra("distance",0f);
-            Log.d("addr ", address +country + state + city +zip+deliveryDistance);
-            tv_address_label.setVisibility(View.VISIBLE);
-            tv_address.setVisibility(View.VISIBLE);
-            tv_address.setText(address.concat(zip));
-            setFooterValues();
+           deliveryAddress  =  (DeliveryAddress)intent.getSerializableExtra("object");
+           if(deliveryAddress!=null) {
+               tv_address_label.setVisibility(View.VISIBLE);
+               tv_address.setVisibility(View.VISIBLE);
+               tv_address.setText(deliveryAddress.getAddress().concat(deliveryAddress.getPinCode()));
+               shopIndexforCalculatingDistance = 0;
+               calculateDistance(deliveryAddress);
+           }
            // seperator_delivery_address.setVisibility(View.VISIBLE);
         }
     }
@@ -433,23 +463,13 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         }
 
         if(deliveryTypeId == R.id.rb_self_delivery){
-            rlDelivery.setVisibility(View.GONE);
+            rlDelivery.setVisibility(View.VISIBLE);
+            deliveryCharges = 0;
+            tvDeliveryCharges.setText(Utility.numberFormat(deliveryCharges));
         }else{
             rlDelivery.setVisibility(View.VISIBLE);
-            Log.i(TAG,"Min Delivery Distance "+sharedPreferences.getInt(Constants.MIN_DELIVERY_DISTANCE,0));
-            Log.i(TAG,"Charges after Delivery Distance "+sharedPreferences.getInt(Constants.CHARGE_AFTER_MIN_DISTANCE,0));
-            Log.i(TAG,"Delivery Distance "+deliveryDistance);
-            if(deliveryDistance > sharedPreferences.getInt(Constants.MIN_DELIVERY_DISTANCE,0)){
-               float diffKms = deliveryDistance -  sharedPreferences.getInt(Constants.MIN_DELIVERY_DISTANCE,0);
-               int intKms = (int)diffKms;
-               float decimalKms = diffKms - intKms;
-
-                int chargesPerKm = sharedPreferences.getInt(Constants.CHARGE_AFTER_MIN_DISTANCE,0);
-                deliveryCharges = intKms * chargesPerKm + decimalKms * chargesPerKm;
-                tvDeliveryCharges.setText(Utility.numberFormat(deliveryCharges));
-            }else{
-                tvDeliveryCharges.setText("0.00");
-            }
+            deliveryCharges = dbHelper.getAllShopsDeliveryCharges();
+            tvDeliveryCharges.setText(Utility.numberFormat(deliveryCharges));
         }
 
         totalPrice = totalPrice + deliveryCharges;
@@ -650,24 +670,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
         Log.i(TAG, " Taxes " + dbHelper.getTotalTaxesart(shopCode));
 
-        //totalPrice = totalPrice - dis;
-        if (deliveryTypeId == R.id.rb_self_delivery) {
-            rlDelivery.setVisibility(View.GONE);
-        } else {
-            rlDelivery.setVisibility(View.VISIBLE);
-            Log.i(TAG, "Min Delivery Distance " + sharedPreferences.getInt(Constants.MIN_DELIVERY_DISTANCE, 0));
-            Log.i(TAG, "Charges after Delivery Distance " + sharedPreferences.getInt(Constants.CHARGE_AFTER_MIN_DISTANCE, 0));
-            Log.i(TAG, "Delivery Distance " + deliveryDistance);
-            if (deliveryDistance > sharedPreferences.getInt(Constants.MIN_DELIVERY_DISTANCE, 0)) {
-                float diffKms = deliveryDistance - sharedPreferences.getInt(Constants.MIN_DELIVERY_DISTANCE, 0);
-                int intKms = (int) diffKms;
-                float decimalKms = diffKms - intKms;
-
-                int chargesPerKm = sharedPreferences.getInt(Constants.CHARGE_AFTER_MIN_DISTANCE, 0);
-                deliveryCharges = intKms * chargesPerKm + decimalKms * chargesPerKm;
-            }
-        }
-
         totalPrice = totalPrice + deliveryCharges;
         return  totalPrice;
     }
@@ -727,6 +729,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                         dbHelper.deleteTable(DbHelper.PROD_COMBO_TABLE);
                         dbHelper.deleteTable(DbHelper.PROD_COMBO_DETAIL_TABLE);
                         dbHelper.deleteTable(DbHelper.COUPON_TABLE);
+                        dbHelper.deleteTable(DbHelper.SHOP_DELIVERY_DETAILS_TABLE);
                         /*for (MyProduct cartItem : cartItemList) {
                            dbHelper.setQoh(cartItem.getProdId(),-cartItem.getQty());
                             if(cartItem.getIsBarCodeAvailable().equals("Y")){
@@ -827,6 +830,35 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                      }
 
                  }
+             }else if(apiName.equals("distance")){
+                 if(response.getString("status").equals("OK")){
+                     JSONArray jsonArray = response.getJSONArray("rows");
+                     if(jsonArray.length() > 0){
+                         JSONObject jsonObject = jsonArray.getJSONObject(0);
+                         JSONArray jsonArray1 = jsonObject.getJSONArray("elements");
+                         if(jsonArray1.length() > 0){
+                             JSONObject jsonObject1 = jsonArray1.getJSONObject(0);
+                             if(jsonObject1.getString("status").equals("OK")){
+                                 distance = jsonObject1.getJSONObject("distance").getDouble("value")/1000;
+                                 Log.i(TAG,"Distance "+distance+" Kms");
+                                 updateDeliveryCharges(distance, shopDeliveryModelList.get(shopIndexforCalculatingDistance));
+                             }
+                             shopIndexforCalculatingDistance++;
+                             calculateDistance(deliveryAddress);
+                         }else {
+                             distance = -1;
+                             errorInCalculatingDistance();
+                         }
+
+                     }else {
+                         distance = -1;
+                         errorInCalculatingDistance();
+                     }
+
+                 }else {
+                     distance = -1;
+                     errorInCalculatingDistance();
+                 }
              }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -891,6 +923,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                 //dbHelper.removeProductFromCart(item.getProdBarCode());
                 dbHelper.removeProductFromCart(item.getId(),  item.getShopCode());
                 dbHelper.deleteTable(dbHelper.COUPON_TABLE);
+                dbHelper.deleteTable(dbHelper.SHOP_DELIVERY_DETAILS_TABLE);
                 dbHelper.removePriceProductFromCart(item.getId(),  item.getShopCode());
                 if(item.getProductPriceOffer()!=null){
                     ProductPriceOffer productPriceOffer = item.getProductPriceOffer();
@@ -1299,5 +1332,54 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
     public void showLargeImageDialog(MyProduct product, View view){
         showImageDialog(product.getProdImage1(), view);
+    }
+
+    private double distance;
+    private int shopIndexforCalculatingDistance =0;
+    List<ShopDeliveryModel> shopDeliveryModelList;
+    private void calculateDistance(DeliveryAddress deliveryAddress){
+        shopDeliveryModelList = dbHelper.getShopDeliveryDetails();
+        Log.d("shopIndexforCalculatingDistance "+ shopIndexforCalculatingDistance, "shopDeliveryModelList "+shopDeliveryModelList.size());
+        if(shopIndexforCalculatingDistance <shopDeliveryModelList.size()) {
+            ShopDeliveryModel shopDeliveryModel = shopDeliveryModelList.get(shopIndexforCalculatingDistance);
+            if (!TextUtils.isEmpty(shopDeliveryModel.getIsDeliveryAvailable()) && shopDeliveryModel.getIsDeliveryAvailable().equals("Y")) {
+                distance = 0;
+                progressDialog.setMessage("Loading...");
+                showProgress(true);
+                String url = "https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                        "units=imperial&origins=" + shopDeliveryModel.getRetLat() + "," + shopDeliveryModel.getRetLong() +
+                        "&destinations=" + deliveryAddress.getDelivery_lat() + "," + deliveryAddress.getDelivery_long() + "&key=" + sharedPreferences.getString(Constants.GOOGLE_MAP_API_KEY, "");
+
+                jsonObjectApiRequest(Request.Method.GET, url, new JSONObject(), "distance");
+            } else if (shopIndexforCalculatingDistance < shopDeliveryModelList.size() - 1) {
+                shopIndexforCalculatingDistance++;
+                calculateDistance(deliveryAddress);
+            }
+        }
+    }
+
+    public void errorInCalculatingDistance(){
+        distance = 0;
+        shopIndexforCalculatingDistance++;
+        calculateDistance(deliveryAddress);
+        Log.i("Customer feed: ", "Error in calculating distance.");
+    }
+
+    private void updateDeliveryCharges(double distance, ShopDeliveryModel shopDeliveryModel){
+        Log.d("MinDeliverydistance ", shopDeliveryModel.getMinDeliverydistance()+"");
+        Log.d("ChargesAfterMinDistance ", shopDeliveryModel.getChargesAfterMinDistance()+"");
+        Log.d("distance ", distance+"");
+        if(distance > shopDeliveryModel.getMinDeliverydistance()){
+            float diffKms = (float) (distance -  shopDeliveryModel.getMinDeliverydistance());
+            int intKms = (int)diffKms;
+            float decimalKms = diffKms - intKms;
+
+            int chargesPerKm = (int) shopDeliveryModel.getChargesAfterMinDistance();
+            float charges = intKms * chargesPerKm + decimalKms * chargesPerKm;
+            tvDeliveryCharges.setText(Utility.numberFormat(charges));
+            shopDeliveryModel.setNetDeliveryCharge(charges);
+            dbHelper.updateShopDeliveryDetails(shopDeliveryModel);
+            setFooterValues();
+        }
     }
 }

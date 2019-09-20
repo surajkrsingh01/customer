@@ -467,7 +467,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/small_text_size"
                         android:textColor="?attr/primaryTextColor"
-                        android:text="Khanpur New Delhi 110062"/>
+                        android:text=""/>
 
                     <RelativeLayout
                         android:visibility="gone"

@@ -424,6 +424,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                      dbHelper.deleteTable(DbHelper.PROD_COMBO_TABLE);
                      dbHelper.deleteTable(DbHelper.PROD_COMBO_DETAIL_TABLE);
                      dbHelper.deleteTable(DbHelper.COUPON_TABLE);
+                     dbHelper.deleteTable(DbHelper.SHOP_DELIVERY_DETAILS_TABLE);
                      Log.d(TAG, "Ordeer Placed" );
 
                      Intent intent = new Intent(CCAvenueWebViewActivity.this, RateAndReviewActivity.class);

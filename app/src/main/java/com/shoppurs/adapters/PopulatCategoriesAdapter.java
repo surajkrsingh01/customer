@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +29,15 @@ public class PopulatCategoriesAdapter extends RecyclerView.Adapter<PopulatCatego
     private List<Category> categoryList;
     private boolean isDarkTheme;
     private int themeColor;
+    private String flag;
 
     public void setTheme(boolean isDark, int themeColor){
         isDarkTheme = isDark;
         this.themeColor = themeColor;
+    }
+
+    public void setFlag(String flag){
+        this.flag = flag;
     }
 
     public PopulatCategoriesAdapter(Context context, List<Category> categoryList) {
@@ -64,6 +71,7 @@ public class PopulatCategoriesAdapter extends RecyclerView.Adapter<PopulatCatego
     @Override
     public int getItemCount() {
         if (categoryList != null) {
+            Log.d("adapter Size ", ""+categoryList.size());
             return categoryList.size();
         }
         return 0;
@@ -87,7 +95,14 @@ public class PopulatCategoriesAdapter extends RecyclerView.Adapter<PopulatCatego
         public void onClick(View v) {
             if(v == relative_category){
                 Category item = categoryList.get(getAdapterPosition());
-                ((SearchActivity) (context)).setEt_search(String.valueOf(item.getName()), item.getId());
+
+                if(!TextUtils.isEmpty(flag) && flag.equals("category")){
+                    ((SearchActivity) (context)).getSubCategories(item);
+                }else if(!TextUtils.isEmpty(flag) && flag.equals("sub_category")){
+                    ((SearchActivity) (context)).setSubCatId(item);
+                }else {
+                    ((SearchActivity) (context)).setEt_search(String.valueOf(item.getName()), item.getId());
+                }
             }
         }
     }

@@ -36,6 +36,7 @@ import com.shoppurs.models.ProductPriceDetails;
 import com.shoppurs.models.ProductPriceOffer;
 import com.shoppurs.models.ProductSize;
 import com.shoppurs.models.ProductUnit;
+import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.models.SubCategory;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
@@ -76,6 +77,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
 
     private int position, type, productDetailsType, selectdSubCatPosition;
     private int counter;
+    private ShopDeliveryModel shopDeliveryModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,9 +95,10 @@ public class ShopProductListActivity extends NetworkBaseActivity {
         catId = getIntent().getStringExtra("catId");
         selectdSubCatId = getIntent().getStringExtra("subcatid");
         selectedSubCatName = getIntent().getStringExtra("subcatname");
+        shopDeliveryModel = new ShopDeliveryModel();
+        shopDeliveryModel = (ShopDeliveryModel) getIntent().getSerializableExtra("shopDeliveryModel");
         custCode = sharedPreferences.getString(Constants.USER_ID,"");
         custdbname = sharedPreferences.getString(Constants.DB_NAME, "");
-
         initViews();
     }
 
@@ -374,6 +377,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                         counter++;
                         myProduct.setFreeProductPosition(counter);
                         dbHelper.addProductToCart(myProduct);
+                        dbHelper.addShopDeliveryDetails(shopDeliveryModel);
                     }
                     float netSellingPrice = getOfferAmount(myProduct,type);
                     float amount = 0;
@@ -1018,4 +1022,12 @@ public class ShopProductListActivity extends NetworkBaseActivity {
     public void showLargeImageDialog(MyProduct product, View view){
         showImageDialog(product.getProdImage1(),view);
     }
+
+    public void showProductDetails(MyProduct product){
+        Intent intent = new Intent(this,ProductDetailActivity.class);
+        intent.putExtra("MyProduct",product);
+        intent.putExtra("shopDeliveryModel",shopDeliveryModel);
+        startActivity(intent);
+    }
+
 }

@@ -103,6 +103,8 @@ public class CartShopListActivity extends NetworkBaseActivity {
     private void getShopListbyCategory(){
         Map<String,String> params=new HashMap<>();
         params.put("id",getIntent().getStringExtra("catId"));
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
@@ -126,6 +128,8 @@ public class CartShopListActivity extends NetworkBaseActivity {
 
         Map<String,String> params=new HashMap<>();
         params.put("code", shopCodes);
+        params.put("latitude", sharedPreferences.getString(Constants.CUST_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
@@ -187,6 +191,11 @@ public class CartShopListActivity extends NetworkBaseActivity {
                         myShop.setShopimage(shopJArray.getJSONObject(i).getString("retphoto"));
                         myShop.setDeliveryAvailable(shopJArray.getJSONObject(i).getString("isDeliveryAvailable"));
                         myShop.setMinDeliveryAmount(shopJArray.getJSONObject(i).getDouble("minDeliveryAmount"));
+
+                        myShop.setMinDeliverytime(shopJArray.getJSONObject(i).getString("minDeliverytime"));
+                        myShop.setMinDeliverydistance(shopJArray.getJSONObject(i).getInt("minDeliverydistance"));
+                        myShop.setChargesAfterMinDistance(shopJArray.getJSONObject(i).getDouble("chargesAfterMinDistance"));
+
                         myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                         myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
                         myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));

@@ -273,9 +273,7 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
                 ((ShopProductListActivity)context).showLargeImageDialog(myProductsList.get(getAdapterPosition()), imageView);
             }else if(v == rootView){
                 MyProduct item = (MyProduct) myProductsList.get(getAdapterPosition());
-                Intent intent = new Intent(context,ProductDetailActivity.class);
-                intent.putExtra("MyProduct",item);
-                context.startActivity(intent);
+                ((ShopProductListActivity)context).showProductDetails(item);
             }
         }
     }

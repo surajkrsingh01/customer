@@ -25,6 +25,11 @@ public class DeliveryAddressListAdapter extends RecyclerView.Adapter<DeliveryAdd
     private List<DeliveryAddress> myItemList;
     private Context context;
     private int colorTheme;
+    private String flag;
+
+    public void setFlag(String flag){
+        this.flag = flag;
+    }
 
     public void setColorTheme(int colorTheme) {
         this.colorTheme = colorTheme;
@@ -107,10 +112,15 @@ public class DeliveryAddressListAdapter extends RecyclerView.Adapter<DeliveryAdd
             linear_address_details.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, AddDeliveryAddressActivity.class);
-                    intent.putExtra("flag", "edit");
-                    intent.putExtra("object", myItemList.get(getAdapterPosition()));
-                    context.startActivity(intent);
+                    if(!TextUtils.isEmpty(flag) && flag.equals("CartActivity")){
+                        myItemList.get(getAdapterPosition()).setIsDefaultAddress("Yes");
+                        ((DeliveryAddressListActivity)context).updateDeliveryAddress(myItemList.get(getAdapterPosition()));
+                    }else {
+                        Intent intent = new Intent(context, AddDeliveryAddressActivity.class);
+                        intent.putExtra("flag", "edit");
+                        intent.putExtra("object", myItemList.get(getAdapterPosition()));
+                        context.startActivity(intent);
+                    }
                 }
             });
 

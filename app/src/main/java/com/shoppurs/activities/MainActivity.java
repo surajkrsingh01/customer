@@ -247,6 +247,8 @@ public class MainActivity extends NetworkBaseActivity {
 
     public void getBanners(){
         Map<String,String> params=new HashMap<>();
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url_offer)+"get_banner_offers";
         showProgress(true);
@@ -255,6 +257,8 @@ public class MainActivity extends NetworkBaseActivity {
 
     public void getCategories(){
         Map<String,String> params=new HashMap<>();
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url_offer)+"get_active_offer_categories";
         //showProgress(true);
@@ -263,6 +267,8 @@ public class MainActivity extends NetworkBaseActivity {
 
     public void getShops(){
         Map<String,String> params=new HashMap<>();
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url_offer)+"get_active_offer_shops";
         //showProgress(true);
@@ -386,6 +392,11 @@ public class MainActivity extends NetworkBaseActivity {
                             myShop.setLongitude(shopJArray.getJSONObject(i).getDouble("retLong"));
                             myShop.setDeliveryAvailable(shopJArray.getJSONObject(i).getString("isDeliveryAvailable"));
                             myShop.setMinDeliveryAmount(shopJArray.getJSONObject(i).getDouble("minDeliveryAmount"));
+
+                            myShop.setMinDeliverytime(shopJArray.getJSONObject(i).getString("minDeliverytime"));
+                            myShop.setMinDeliverydistance(shopJArray.getJSONObject(i).getInt("minDeliverydistance"));
+                            myShop.setChargesAfterMinDistance(shopJArray.getJSONObject(i).getDouble("chargesAfterMinDistance"));
+
                             myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                             myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
                             myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));

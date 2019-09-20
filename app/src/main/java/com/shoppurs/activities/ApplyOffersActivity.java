@@ -30,6 +30,7 @@ import com.shoppurs.models.ProductPriceDetails;
 import com.shoppurs.models.ProductPriceOffer;
 import com.shoppurs.models.ProductSize;
 import com.shoppurs.models.ProductUnit;
+import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
@@ -60,6 +61,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
     private ProgressBar progressBar;
     private RelativeLayout rlfooterviewcart;
     private TextView cartItemCount,cartItemPrice, viewCart;
+    private ShopDeliveryModel shopDeliveryModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,8 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
 
         flag = getIntent().getStringExtra("flag");
         shopCode = getIntent().getStringExtra("shopCode");
+        shopDeliveryModel = new ShopDeliveryModel();
+        shopDeliveryModel = (ShopDeliveryModel) getIntent().getSerializableExtra("shopDeliveryModel");
         rlOfferDesc = findViewById(R.id.rl_offer_desc);
         itemList = new ArrayList<>();
         progressBar = findViewById(R.id.progress_bar);
@@ -601,6 +605,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                         counter++;
                         myProduct.setFreeProductPosition(counter);
                         dbHelper.addProductToCart(myProduct);
+                        dbHelper.addShopDeliveryDetails(shopDeliveryModel);
                     }
                     float netSellingPrice = getOfferAmount(myProduct,type);
                     Log.i(TAG,"netSellingPrice "+netSellingPrice);

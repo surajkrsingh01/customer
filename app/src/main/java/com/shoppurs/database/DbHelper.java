@@ -20,6 +20,7 @@ import com.shoppurs.models.ProductPriceDetails;
 import com.shoppurs.models.ProductPriceOffer;
 import com.shoppurs.models.ProductSize;
 import com.shoppurs.models.ProductUnit;
+import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.Utility;
 
@@ -39,6 +40,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String PRODUCT_UNIT_TABLE = "PRODUCT_UNIT_TABLE";
     public static final String DELIVERY_ADDRESS_TABLE = "DELIVERY_ADDRESS_TABLE";
     public static final String PRODUCT_SIZE_TABLE = "PRODUCT_SIZE_TABLE";
+    public static final String SHOP_DELIVERY_DETAILS_TABLE = "SHOP_DELIVERY_DETAILS_TABLE";
     public static final String PRODUCT_COLOR_TABLE = "PRODUCT_COLOR_TABLE";
     public static final String CART_TABLE = "CART_TABLE";
     public static final String PROD_FREE_OFFER_TABLE = "PROD_FREE_OFFER_TABLE";
@@ -132,6 +134,25 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String SIZE_ID= "sizeId";
     public static final String COLOR_NAME= "colorName";
     public static final String COLOR_VALUE= "colorValue";
+
+    private static String RET_LAT = "retLat";
+    private static String RET_LONG = "retLong";
+    private static String IS_DELIVERY_AVAILABLE = "isDeliveryAvailable";
+    private static String MIN_DELIVERY_AMOUNT = "minDeliveryAmount"; //charge per km
+    private static String MIN_DELIVERY_TIME = "minDeliverytime";
+    private static String MIN_DELIVERY_DISTANCE = "minDeliverydistance";
+    private static String CHARGE_AFTER_MIN_DISTANCE = "chargesAfterMinDistance";
+
+    public static final String CREATE_SHOP_DELIVERY_DETAILS_TABLE = "create table "+SHOP_DELIVERY_DETAILS_TABLE +
+            "("+SHOP_CODE+" TEXT UNIQUE, " +
+            " "+RET_LAT+" TEXT, " +
+            " "+RET_LONG+" TEXT, " +
+            " "+DELIVERY_CHARGES+" TEXT, " +
+            " "+IS_DELIVERY_AVAILABLE+" TEXT, " +
+            " "+MIN_DELIVERY_AMOUNT+" TEXT, " +
+            " "+MIN_DELIVERY_TIME+" TEXT, " +
+            " "+MIN_DELIVERY_DISTANCE+" TEXT, " +
+            " "+CHARGE_AFTER_MIN_DISTANCE+" TEXT)";
 
     public static final String CREATE_PRODUCT_UNIT_TABLE = "create table "+PRODUCT_UNIT_TABLE +
             "("+ID+" TEXT NOT NULL, " +
@@ -307,7 +328,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public DbHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, 13);
+        super(context, DATABASE_NAME, null, 16);
         this.context=context;
     }
 
@@ -325,6 +346,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_PROD_COMBO_TABLE);
         db.execSQL(CREATE_PROD_COMBO_DETAIL_TABLE);
         db.execSQL(CREATE_COUPON_TABLE);
+        db.execSQL(CREATE_SHOP_DELIVERY_DETAILS_TABLE);
     }
 
     @Override
@@ -353,6 +375,8 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_PRODUCT_COLOR_TABLE);
         db.execSQL("DROP TABLE IF EXISTS "+DELIVERY_ADDRESS_TABLE);
         db.execSQL(CREATE_DELIVERY_ADDRESS);
+        db.execSQL("DROP TABLE IF EXISTS "+SHOP_DELIVERY_DETAILS_TABLE);
+        db.execSQL(CREATE_SHOP_DELIVERY_DETAILS_TABLE);
     }
 
     public boolean addProductToCart(MyProduct item){
@@ -506,8 +530,95 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
     // code to add the new contact
-    public void add_to_Cart(List<CartItem> cartItems) {
+    public void addShopDeliveryDetails(ShopDeliveryModel shopDeliveryModel) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(SHOP_CODE, shopDeliveryModel.getShopCode());
+        contentValues.put(RET_LAT, shopDeliveryModel.getRetLat());
+        contentValues.put(RET_LONG, shopDeliveryModel.getRetLong());
+        contentValues.put(IS_DELIVERY_AVAILABLE, shopDeliveryModel.getIsDeliveryAvailable());
+        contentValues.put(MIN_DELIVERY_AMOUNT, shopDeliveryModel.getMinDeliveryAmount());
+        contentValues.put(MIN_DELIVERY_TIME, shopDeliveryModel.getMinDeliverytime());
+        contentValues.put(MIN_DELIVERY_DISTANCE, shopDeliveryModel.getMinDeliverydistance());
+        contentValues.put(CHARGE_AFTER_MIN_DISTANCE, shopDeliveryModel.getChargesAfterMinDistance());
+        db.insert(SHOP_DELIVERY_DETAILS_TABLE, null, contentValues);
+        Log.d(TAG, "added shopDeliveryModel");
+    }
 
+    public void updateShopDeliveryDetails(ShopDeliveryModel shopDeliveryModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DELIVERY_CHARGES, shopDeliveryModel.getNetDeliveryCharge());
+        double val = db.update(SHOP_DELIVERY_DETAILS_TABLE, contentValues, SHOP_CODE + " = ?",
+                new String[] { String.valueOf(shopDeliveryModel.getShopCode())});
+
+        Log.d("DELIVERY_CHARGES ", shopDeliveryModel.getNetDeliveryCharge() +"");
+        Log.d("Shop Code ", shopDeliveryModel.getShopCode() +"");
+        Log.d("update Status ", val +"");
+
+    }
+
+    public ShopDeliveryModel getShopDeliveryDetails(String shopCode){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String mSql="select * from "+SHOP_DELIVERY_DETAILS_TABLE+" WHERE "+SHOP_CODE+" = ?";
+        Cursor res =  db.rawQuery(mSql, new String[]{String.valueOf(shopCode)});
+        ShopDeliveryModel item = new ShopDeliveryModel();
+        if(res.moveToFirst()){
+                item=new ShopDeliveryModel();
+                item.setShopCode(res.getString(res.getColumnIndex(SHOP_CODE)));
+                item.setRetLat(res.getDouble(res.getColumnIndex(RET_LAT)));
+                item.setRetLong(res.getDouble(res.getColumnIndex(RET_LONG)));
+                item.setIsDeliveryAvailable(res.getString(res.getColumnIndex(IS_DELIVERY_AVAILABLE)));
+                item.setMinDeliveryAmount(res.getDouble(res.getColumnIndex(MIN_DELIVERY_AMOUNT)));
+                item.setMinDeliverytime(res.getString(res.getColumnIndex(MIN_DELIVERY_TIME)));
+                item.setMinDeliverydistance(res.getInt(res.getColumnIndex(MIN_DELIVERY_DISTANCE)));
+                item.setChargesAfterMinDistance(res.getDouble(res.getColumnIndex(CHARGE_AFTER_MIN_DISTANCE)));
+                item.setNetDeliveryCharge(res.getDouble(res.getColumnIndex(DELIVERY_CHARGES)));
+        }
+        return item;
+    }
+
+    public List<ShopDeliveryModel> getShopDeliveryDetails(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String mSql="select * from "+SHOP_DELIVERY_DETAILS_TABLE+"";
+        Cursor res =  db.rawQuery(mSql, null);
+        ShopDeliveryModel item = null;
+        List<ShopDeliveryModel> shopDeliveryModelList = new ArrayList<>();
+        if(res.moveToFirst()){
+            do {
+                item = new ShopDeliveryModel();
+                item.setShopCode(res.getString(res.getColumnIndex(SHOP_CODE)));
+                item.setRetLat(res.getDouble(res.getColumnIndex(RET_LAT)));
+                item.setRetLong(res.getDouble(res.getColumnIndex(RET_LONG)));
+                item.setIsDeliveryAvailable(res.getString(res.getColumnIndex(IS_DELIVERY_AVAILABLE)));
+                item.setMinDeliveryAmount(res.getDouble(res.getColumnIndex(MIN_DELIVERY_AMOUNT)));
+                item.setMinDeliverytime(res.getString(res.getColumnIndex(MIN_DELIVERY_TIME)));
+                item.setMinDeliverydistance(res.getInt(res.getColumnIndex(MIN_DELIVERY_DISTANCE)));
+                item.setChargesAfterMinDistance(res.getDouble(res.getColumnIndex(CHARGE_AFTER_MIN_DISTANCE)));
+                item.setNetDeliveryCharge(res.getDouble(res.getColumnIndex(DELIVERY_CHARGES)));
+                shopDeliveryModelList.add(item);
+            }while (res.moveToNext());
+        }
+        return shopDeliveryModelList;
+    }
+
+    public float getAllShopsDeliveryCharges(){
+        float totalCharges=0;
+        String countQuery = "SELECT  sum("+DELIVERY_CHARGES+") as deliveryCharges FROM " +  SHOP_DELIVERY_DETAILS_TABLE;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        if(cursor.moveToFirst()) {
+            totalCharges = cursor.getFloat(cursor.getColumnIndex(DELIVERY_CHARGES));
+            cursor.close();
+        }
+        return totalCharges;
+    }
+
+    public boolean removeShopDeliveryDetails(String shopCode){
+        SQLiteDatabase db = this.getWritableDatabase();
+        long val = db.delete(SHOP_DELIVERY_DETAILS_TABLE,  SHOP_CODE +"=?",new String[]{shopCode});
+        Log.d(TAG, "removed Coupon from cart status "+val + "shopCode  "+shopCode);
+        return true;
     }
 
     public int getProductQuantity(String itemId, String shopCode){
@@ -989,7 +1100,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public DeliveryAddress getdefaultDeliveryAddress(String custCode){
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
         String unitSql="select * from "+DELIVERY_ADDRESS_TABLE+" WHERE "+DELIVERY_CUSTOMER_CODE+" = ?" +" AND "+IS_DELIVERY_DEFAULT+" = ?";
         Cursor res =  db.rawQuery(unitSql, new String[]{String.valueOf(custCode), "Yes"});
         DeliveryAddress item = null;
@@ -1232,6 +1343,7 @@ public class DbHelper extends SQLiteOpenHelper {
         Log.d(TAG, "removed Coupon from cart status "+val + "shopCode  "+shopCode);
         return true;
     }
+
 
     public boolean manageCouponOffer(Coupon item ,String action){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -1835,6 +1947,8 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         long val = db.delete(CART_TABLE, ID+" = ? AND "+PROD_SP+" != ?"  + " AND " + SHOP_CODE + "=?",new String[]{String.valueOf(id),String.valueOf(0f),shopCode});
         Log.d(TAG, "removed product from cart status "+val + "id  "+id);
+        if(getCartCount(shopCode)<1)
+            removeShopDeliveryDetails(shopCode);
         return true;
     }
 
@@ -1881,6 +1995,7 @@ public class DbHelper extends SQLiteOpenHelper {
         deleteTable(DbHelper.PROD_PRICE_DETAIL_TABLE);
         deleteTable(DbHelper.PROD_FREE_OFFER_TABLE);
         deleteTable(DbHelper.COUPON_TABLE);
+        deleteTable(DbHelper.SHOP_DELIVERY_DETAILS_TABLE);
 
     }
 

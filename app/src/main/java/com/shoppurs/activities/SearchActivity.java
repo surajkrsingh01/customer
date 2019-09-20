@@ -20,9 +20,13 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.shoppurs.R;
@@ -30,8 +34,10 @@ import com.shoppurs.activities.Settings.AddressActivity;
 import com.shoppurs.activities.Settings.SettingActivity;
 import com.shoppurs.adapters.PopulatCategoriesAdapter;
 import com.shoppurs.adapters.ShopAdapter;
+import com.shoppurs.models.CatListItem;
 import com.shoppurs.models.Category;
 import com.shoppurs.models.MyShop;
+import com.shoppurs.models.SubCategory;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
@@ -51,18 +57,25 @@ public class SearchActivity extends NetworkBaseActivity{
 
     private Toolbar toolbar;
     private AppBarLayout appBarLayout;
-    private RecyclerView recycler_popular_category, recycler_popular_tags, recyclerView_shops;
-    private List<Category> categoryList, tagList;
-    private PopulatCategoriesAdapter populatCategoriesAdapter;
+    private RecyclerView recycler_popular_category, recycler_popular_tags, recyclerView_shops, recycler_search_product;
+    private List<Category> popularCategoryList, tagList, allCategoryList;
+    private PopulatCategoriesAdapter populatCategoriesAdapter, allCategoriesAdapter;
     private ShopAdapter shopAdapter;
     private List<Object> shopList;
     private TextView cancel;
     private EditText et_search;
-    private TextView text_customer_address, text_shops, text_popular_category, text_popular_tags, text_error;
+    private TextView text_customer_address, text_shops, text_popular_category, text_popular_tags,
+                     text_search_by_product, text_error;
     private CircleImageView customer_profile;
     private ProgressBar progress_bar;
     String searchCatId;
-    private boolean isCategorySearch;
+    private boolean isCategorySearch, isSearchByProduct;
+    private ImageView iv_cancel;
+    private Category selectedCategory, selectedSubCategory;
+    private LinearLayout linear_top;
+    private TextView text_cat, text_sub_cat;
+    private View view_seperator;
+    private RelativeLayout relative_search_cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +100,8 @@ public class SearchActivity extends NetworkBaseActivity{
         recyclerView_shops = findViewById(R.id.recycler_shop_list);
         recycler_popular_category = findViewById(R.id.recycler_popular_category);
         recycler_popular_tags =  findViewById(R.id.recycler_popular_tags);
+        text_search_by_product = findViewById(R.id.text_search_by_product);
+        recycler_search_product = findViewById(R.id.recycler_search_product);
 
         text_error = findViewById(R.id.text_error);
         progress_bar = findViewById(R.id.progress_bar);
@@ -98,7 +113,7 @@ public class SearchActivity extends NetworkBaseActivity{
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
         recycler_popular_category.setLayoutManager(layoutManager);
         recycler_popular_category.setItemAnimator(new DefaultItemAnimator());
-        populatCategoriesAdapter = new PopulatCategoriesAdapter(this, categoryList);
+        populatCategoriesAdapter = new PopulatCategoriesAdapter(this, popularCategoryList);
         populatCategoriesAdapter.setTheme(isDarkTheme, colorTheme);
         recycler_popular_category.setAdapter(populatCategoriesAdapter);
         recycler_popular_category.setNestedScrollingEnabled(false);
@@ -112,7 +127,22 @@ public class SearchActivity extends NetworkBaseActivity{
         recycler_popular_tags.setAdapter(populatCategoriesAdapter);
         recycler_popular_tags.setNestedScrollingEnabled(false);
 
+        allCategoryList = new ArrayList<>();
+        recycler_search_product.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager2 = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        recycler_search_product.setLayoutManager(layoutManager2);
+        recycler_search_product.setItemAnimator(new DefaultItemAnimator());
+        allCategoriesAdapter = new PopulatCategoriesAdapter(SearchActivity.this, allCategoryList);
+        allCategoriesAdapter.setTheme(isDarkTheme, colorTheme);
+        recycler_search_product.setAdapter(allCategoriesAdapter);
+        allCategoriesAdapter.setFlag("category");
+        recycler_search_product.setNestedScrollingEnabled(false);
 
+        linear_top = findViewById(R.id.linear_top);
+        text_cat = findViewById(R.id.text_cat);
+        text_sub_cat = findViewById(R.id.text_sub_cat);
+        view_seperator = findViewById(R.id.view_seperator);
+        relative_search_cancel = findViewById(R.id.relative_search_cancel);
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,14 +166,22 @@ public class SearchActivity extends NetworkBaseActivity{
             @Override
             public void afterTextChanged(Editable s) {
                 if(!TextUtils.isEmpty(s)){
-                    cancel.setVisibility(View.VISIBLE);
-                    showShopListRecycleView(true);
-                    if(isCategorySearch) {
-                        isCategorySearch = false;
-                        searchShopsbyCategory(searchCatId);
-                    }
-                    else{
+                    if(isSearchByProduct && selectedSubCategory==null){
+                        DialogAndToast.showToast("Select Subcategory before search ", SearchActivity.this);
+                    }else if(isSearchByProduct &&  selectedSubCategory!=null){
+                      //  DialogAndToast.showToast("Selected SubCategory is "+selectedSubCategory.getId(), SearchActivity.this);
+                        cancel.setVisibility(View.VISIBLE);
+                        showShopListRecycleView(true);
                         searchShopbyQuery(s.toString());
+                    }else {
+                        cancel.setVisibility(View.VISIBLE);
+                        showShopListRecycleView(true);
+                        if (isCategorySearch) {
+                            isCategorySearch = false;
+                            searchShopsbyCategory(searchCatId);
+                        } else {
+                            searchShopbyQuery(s.toString());
+                        }
                     }
                 }else {
                     cancel.setVisibility(View.GONE);
@@ -184,6 +222,46 @@ public class SearchActivity extends NetworkBaseActivity{
                 startActivity(intent);
             }
         });
+
+        iv_cancel = findViewById(R.id.iv_cancel);
+       // ((GradientDrawable)iv_cancel.getBackground()).setColor(colorTheme);
+        text_search_by_product.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                relative_search_cancel.setVisibility(View.GONE);
+                searchByProductVisibility(true);
+                getCategories();
+            }
+        });
+
+        iv_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchByProductVisibility(false);
+                relative_search_cancel.setVisibility(View.VISIBLE);
+            }
+        });
+
+    }
+
+    public void getSubCategories(Category item){
+        selectedCategory = item;
+        linear_top.setVisibility(View.VISIBLE);
+        text_cat.setText(selectedCategory.getName());
+        Map<String,String> params=new HashMap<>();
+        params.put("id",String.valueOf(selectedCategory.getId()));
+        params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
+        String url=getResources().getString(R.string.url)+"/subcategories";
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"subcategories");
+    }
+
+    public void getCategories(){
+        Map<String,String> params=new HashMap<>();
+        params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
+        String url=getResources().getString(R.string.url)+"/cat_subcat";
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"categories");
     }
 
     private void searchShopsbyCategory(String catId){
@@ -215,10 +293,11 @@ public class SearchActivity extends NetworkBaseActivity{
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
         recyclerView_shops.setLayoutManager(layoutManager);
         recyclerView_shops.setItemAnimator(new DefaultItemAnimator());
-        shopAdapter=new ShopAdapter(this,shopList,"shopList", "", "", "");
+        shopAdapter=new ShopAdapter(this,shopList,"shopList", "", selectedSubCategory.getSubCatId(), selectedSubCategory.getName());
         shopAdapter.setFlag("SearchActivity");
         recyclerView_shops.setAdapter(shopAdapter);
 
+        String url ="";
         Map<String, String> params = new HashMap<>();
         params.put("query",query);
         params.put("limit", "10");
@@ -226,31 +305,45 @@ public class SearchActivity extends NetworkBaseActivity{
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.root_url)+"search/shops";
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+        if(isSearchByProduct){
+            params.put("id", selectedSubCategory.getSubCatId());
+            url=getResources().getString(R.string.root_url)+"search/product/shops";
+        }else
+            url=getResources().getString(R.string.root_url)+"search/shops";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }
 
     private void showShopListRecycleView(boolean visible){
-        if(visible){
-            text_shops.setVisibility(View.VISIBLE);
-            recyclerView_shops.setVisibility(View.VISIBLE);
+        if(!isSearchByProduct) {
+            if (visible) {
+                text_shops.setVisibility(View.VISIBLE);
+                recyclerView_shops.setVisibility(View.VISIBLE);
 
-            text_popular_tags.setVisibility(View.GONE);
-            text_popular_category.setVisibility(View.GONE);
-            recycler_popular_category.setVisibility(View.GONE);
-            recycler_popular_tags.setVisibility(View.GONE);
-            showProgressBar(true);
-        }else {
-            text_shops.setVisibility(View.GONE);
-            text_error.setVisibility(View.GONE);
-            recyclerView_shops.setVisibility(View.GONE);
+                text_popular_tags.setVisibility(View.GONE);
+                text_popular_category.setVisibility(View.GONE);
+                text_search_by_product.setVisibility(View.GONE);
+                iv_cancel.setVisibility(View.GONE);
+                recycler_search_product.setVisibility(View.GONE);
+                recycler_popular_category.setVisibility(View.GONE);
+                recycler_popular_tags.setVisibility(View.GONE);
+                showProgressBar(true);
+            } else {
+                text_shops.setVisibility(View.GONE);
+                text_error.setVisibility(View.GONE);
+                recyclerView_shops.setVisibility(View.GONE);
 
-            text_popular_tags.setVisibility(View.VISIBLE);
-            text_popular_category.setVisibility(View.VISIBLE);
-            recycler_popular_category.setVisibility(View.VISIBLE);
-            recycler_popular_tags.setVisibility(View.VISIBLE);
-            showProgressBar(false);
+                text_popular_tags.setVisibility(View.VISIBLE);
+                text_popular_category.setVisibility(View.VISIBLE);
+                text_search_by_product.setVisibility(View.VISIBLE);
+                iv_cancel.setVisibility(View.VISIBLE);
+                recycler_search_product.setVisibility(View.GONE);
+                recycler_popular_category.setVisibility(View.VISIBLE);
+                recycler_popular_tags.setVisibility(View.VISIBLE);
+                showProgressBar(false);
+            }
         }
     }
 
@@ -275,37 +368,37 @@ public class SearchActivity extends NetworkBaseActivity{
     }
 
     private void getTopCategories(){
-        categoryList = new ArrayList<>();
+        popularCategoryList = new ArrayList<>();
         Category category;
         category = new Category();
         category.setName("Grocery");
         category.setId("1");
-        categoryList.add(category);
+        popularCategoryList.add(category);
 
         category = new Category();
         category.setName("Stationary");
         category.setId("2");
-        categoryList.add(category);
+        popularCategoryList.add(category);
 
         category = new Category();
         category.setName("Fashion");
         category.setId("5");
-        categoryList.add(category);
+        popularCategoryList.add(category);
 
         category = new Category();
         category.setName("Electronics");
         category.setId("100");
-        categoryList.add(category);
+        popularCategoryList.add(category);
 
         category = new Category();
         category.setName("Jewellery");
         category.setId("6");
-        categoryList.add(category);
+        popularCategoryList.add(category);
 
         category = new Category();
         category.setName("Restaurants");
         category.setId("100");
-        categoryList.add(category);
+        popularCategoryList.add(category);
     }
 
     private void getTopTags(){
@@ -344,7 +437,8 @@ public class SearchActivity extends NetworkBaseActivity{
 
 
     public void setEt_search(String search_value, String catID){
-         isCategorySearch = true;
+        searchByProductVisibility(false);
+        isCategorySearch = true;
         searchCatId = catID;
         et_search.setText(search_value);
     }
@@ -377,6 +471,11 @@ public class SearchActivity extends NetworkBaseActivity{
                         myShop.setDeliveryAvailable(shopJArray.getJSONObject(i).getString("isDeliveryAvailable"));
                         myShop.setMinDeliveryAmount(shopJArray.getJSONObject(i).getDouble("minDeliveryAmount"));
 
+                        myShop.setMinDeliverytime(shopJArray.getJSONObject(i).getString("minDeliverytime"));
+                        myShop.setMinDeliverydistance(shopJArray.getJSONObject(i).getInt("minDeliverydistance"));
+                        myShop.setChargesAfterMinDistance(shopJArray.getJSONObject(i).getDouble("chargesAfterMinDistance"));
+
+
                         myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                         myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
                         myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));
@@ -389,11 +488,53 @@ public class SearchActivity extends NetworkBaseActivity{
                     }
 
                     if(shopList.size()>0){
+                        recyclerView_shops.setVisibility(View.VISIBLE);
+                        text_error.setVisibility(View.GONE);
                         shopAdapter.notifyDataSetChanged();
                     }else {
                         showNoData(true);
                     }
 
+                }else {
+                    DialogAndToast.showDialog(response.getString("message"),SearchActivity.this);
+                }
+            }else if(apiName.equals("categories")){
+                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
+                    JSONObject jsonObject = response.getJSONObject("result");
+                    JSONArray catJArray = jsonObject.getJSONArray("categories");
+                    allCategoryList.clear();
+                    for(int i=0;i<catJArray.length();i++){
+                        Category category = new Category();
+                        category.setId(catJArray.getJSONObject(i).getString("catId"));
+                        category.setName(catJArray.getJSONObject(i).getString("catName"));
+                        category.setImage(catJArray.getJSONObject(i).getString("catImage"));
+                        allCategoryList.add(category);
+                    }
+                    Log.i("allCategoryList Size ", allCategoryList.size()+"");
+                    if(allCategoryList.size()>0){
+                        allCategoriesAdapter.setFlag("category");
+                        allCategoriesAdapter.notifyDataSetChanged();
+                        DialogAndToast.showDialog("Select Category and Sub Category before Search ", SearchActivity.this);
+                    }
+                }else {
+                    DialogAndToast.showDialog(response.getString("message"),SearchActivity.this);
+                }
+            }else if(apiName.equals("subcategories")){
+                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
+                    JSONArray resultJArray = response.getJSONArray("result");
+                    allCategoryList.clear();
+                    for (int j = 0; j < resultJArray.length(); j++) {
+                        Category subCategory = new Category();
+                        subCategory.setSubCatId(resultJArray.getJSONObject(j).getString("subCatId"));
+                        subCategory.setId(resultJArray.getJSONObject(j).getString("catId"));
+                        subCategory.setName(resultJArray.getJSONObject(j).getString("subCatName"));
+                        subCategory.setImage(resultJArray.getJSONObject(j).getString("subCatImage"));
+                        allCategoryList.add(subCategory);
+                    }
+                    if(allCategoryList.size()>0){
+                        allCategoriesAdapter.setFlag("sub_category");
+                        allCategoriesAdapter.notifyDataSetChanged();
+                    }else showNoData(true);
                 }else {
                     DialogAndToast.showDialog(response.getString("message"),SearchActivity.this);
                 }
@@ -429,5 +570,64 @@ public class SearchActivity extends NetworkBaseActivity{
 
     public void showLargeImageDialog(MyShop shop,  View view){
         showImageDialog(shop.getShopimage(), view);
+    }
+
+    public void setSubCatId(Category item){
+        this.selectedSubCategory = item;
+        shopList.clear();
+        recycler_search_product.setVisibility(View.GONE);
+        relative_search_cancel.setVisibility(View.VISIBLE);
+        recyclerView_shops.setVisibility(View.VISIBLE);
+        view_seperator.setVisibility(View.VISIBLE);
+        text_sub_cat.setVisibility(View.VISIBLE);
+        text_sub_cat.setText(selectedSubCategory.getName());
+        cancel.setVisibility(View.VISIBLE);
+        //showShopListRecycleView(true);
+    }
+
+    public void manageBackStack(int currentStage){
+        int newStage = currentStage-1;
+        switch (newStage){
+            case 1:
+
+            break;
+            case 2:
+
+            break;
+
+            case 0:
+            finish();
+        }
+    }
+
+    private void searchByProductVisibility(boolean visibility){
+        if(visibility){
+            isSearchByProduct = true;
+            iv_cancel.setImageDrawable(getResources().getDrawable(R.drawable.ic_cancel_black_24dp));
+            text_cat.setText("");
+            view_seperator.setVisibility(View.GONE);
+            text_sub_cat.setText("");
+            linear_top.setVisibility(View.GONE);
+            recycler_search_product.setVisibility(View.VISIBLE);
+            shopList.clear();
+            recyclerView_shops.setVisibility(View.VISIBLE);
+            text_popular_tags.setVisibility(View.GONE);
+            text_popular_category.setVisibility(View.GONE);
+            recycler_popular_category.setVisibility(View.GONE);
+            recycler_popular_tags.setVisibility(View.GONE);
+        }else {
+            isSearchByProduct = false;
+            selectedSubCategory = null;
+            selectedCategory = null;
+            view_seperator.setVisibility(View.GONE);
+            linear_top.setVisibility(View.GONE);
+            iv_cancel.setImageDrawable(getResources().getDrawable(R.drawable.ic_search_black_24dp));
+            recyclerView_shops.setVisibility(View.GONE);
+            recycler_search_product.setVisibility(View.GONE);
+            text_popular_tags.setVisibility(View.VISIBLE);
+            text_popular_category.setVisibility(View.VISIBLE);
+            recycler_popular_category.setVisibility(View.VISIBLE);
+            recycler_popular_tags.setVisibility(View.VISIBLE);
+        }
     }
 }

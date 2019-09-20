@@ -29,6 +29,7 @@ import com.shoppurs.models.MyReview;
 import com.shoppurs.models.ProductDiscountOffer;
 import com.shoppurs.models.ProductPriceDetails;
 import com.shoppurs.models.ProductPriceOffer;
+import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
@@ -56,6 +57,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
     private RelativeLayout rlfooterviewcart;
     private TextView cartItemCount,cartItemPrice, viewCart, text_left_label, text_right_label;
     private MyProduct myProduct;
+    private ShopDeliveryModel shopDeliveryModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,8 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         custName = sharedPreferences.getString(Constants.FULL_NAME, "");
         custId = sharedPreferences.getString(Constants.USER_ID,"");
         myProduct = (MyProduct) getIntent().getSerializableExtra("MyProduct");
+        shopDeliveryModel = new ShopDeliveryModel();
+        shopDeliveryModel = (ShopDeliveryModel) getIntent().getSerializableExtra("shopDeliveryModel");
         Log.d("myProduct ", myProduct.getName()+" name");
         Log.d("myProduct ", myProduct.getShopCode()+" shopCode");
         Log.d("myProduct ", myProduct.getId()+"  id");
@@ -385,6 +389,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                         counter++;
                         myProduct.setFreeProductPosition(counter);
                         dbHelper.addProductToCart(myProduct);
+                        dbHelper.addShopDeliveryDetails(shopDeliveryModel);
                     }
                     float netSellingPrice = getOfferAmount(myProduct,type);
                     Log.i(TAG,"netSellingPrice "+netSellingPrice);

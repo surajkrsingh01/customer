@@ -102,7 +102,68 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/search_by_product_tags">
+            <TextView
+                android:layout_toLeftOf="@+id/iv_cancel"
+                android:id="@+id/text_search_by_product"
+                android:text="Search By Product"
+                android:textColor="?attr/primaryTextColor"
+                android:textStyle="bold"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="10dp"
+                android:textSize="@dimen/large_text_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:layout_marginRight="15dp"
+                android:padding="5dp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/iv_cancel"
+                android:layout_alignTop="@+id/text_search_by_product"
+                android:layout_alignParentRight="true"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:tint="?attr/primaryTextColor"
+                app:srcCompat="@drawable/ic_search_black_24dp"/>
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_below="@+id/text_search_by_product"
+                android:orientation="horizontal"
+                android:id="@+id/linear_top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin">
+                <TextView
+                    android:id="@+id/text_cat"
+                    android:text="Category"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="@dimen/small_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:id="@+id/view_seperator"
+                    android:layout_width="2dp"
+                    android:layout_height="20dp"
+                    android:background="?attr/separatorColor"/>
+                <TextView
+                    android:visibility="gone"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:id="@+id/text_sub_cat"
+                    android:text="SubCategory"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="@dimen/small_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </RelativeLayout>
+
         <TextView
+            android:layout_below="@+id/search_by_product_tags"
             android:visibility="gone"
             android:id="@+id/text_shops"
             android:text="Search Results"
@@ -113,7 +174,6 @@
             android:textSize="@dimen/large_text_size"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:visibility="gone"
@@ -168,6 +228,18 @@
         android:layout_height="wrap_content"
         android:id="@+id/recycler_popular_tags">
     </androidx.recyclerview.widget.RecyclerView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:visibility="gone"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_below="@+id/recycler_popular_tags"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recycler_search_product">
+        </androidx.recyclerview.widget.RecyclerView>
+
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 

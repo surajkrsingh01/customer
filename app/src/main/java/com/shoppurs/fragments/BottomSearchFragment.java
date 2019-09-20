@@ -631,6 +631,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                         counter++;
                         myProduct.setFreeProductPosition(counter);
                         dbHelper.addProductToCart(myProduct);
+                       // dbHelper.addShopDeliveryDetails(shopDeliveryModel);
                     }
                     float netSellingPrice = getOfferAmount(myProduct,type);
                     Log.i(TAG,"netSellingPrice "+netSellingPrice);

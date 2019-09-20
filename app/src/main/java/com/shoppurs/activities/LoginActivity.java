@@ -372,6 +372,7 @@ public class LoginActivity extends NetworkBaseActivity{
                     JSONObject dataObject = response.getJSONObject("result");
 
                     editor.putString(Constants.JWT_TOKEN, dataObject.getString("token"));
+                    editor.putString(Constants.GOOGLE_MAP_API_KEY,dataObject.getString("googleMapApiKey"));
                     editor.putString(Constants.FULL_NAME, dataObject.getString("username"));
                     editor.putString(Constants.USER_ID, dataObject.getString("userCode"));
                     editor.putString(Constants.PROFILE_PIC, dataObject.getString("photo"));

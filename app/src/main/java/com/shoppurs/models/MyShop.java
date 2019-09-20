@@ -12,6 +12,41 @@ public class MyShop implements Serializable {
     private double latitude, longitude;
     private String isDeliveryAvailable;
     private double minDeliveryAmount;
+    private String minDeliverytime;
+    private int minDeliverydistance;
+    private double chargesAfterMinDistance;
+
+    public String getIsDeliveryAvailable() {
+        return isDeliveryAvailable;
+    }
+
+    public void setIsDeliveryAvailable(String isDeliveryAvailable) {
+        this.isDeliveryAvailable = isDeliveryAvailable;
+    }
+
+    public String getMinDeliverytime() {
+        return minDeliverytime;
+    }
+
+    public void setMinDeliverytime(String minDeliverytime) {
+        this.minDeliverytime = minDeliverytime;
+    }
+
+    public int getMinDeliverydistance() {
+        return minDeliverydistance;
+    }
+
+    public void setMinDeliverydistance(int minDeliverydistance) {
+        this.minDeliverydistance = minDeliverydistance;
+    }
+
+    public double getChargesAfterMinDistance() {
+        return chargesAfterMinDistance;
+    }
+
+    public void setChargesAfterMinDistance(double chargesAfterMinDistance) {
+        this.chargesAfterMinDistance = chargesAfterMinDistance;
+    }
 
     public String isDeliveryAvailable() {
         return isDeliveryAvailable;

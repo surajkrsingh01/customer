@@ -143,6 +143,8 @@ public class StoresListActivity extends NetworkBaseActivity {
 
     public void getAllCategories(){
         Map<String,String> params=new HashMap<>();
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
         String url=getResources().getString(R.string.url)+"/cat_subcat";
         showProgress(true);
@@ -159,9 +161,11 @@ public class StoresListActivity extends NetworkBaseActivity {
 
     private void getNormalStores(){
         Map<String,String> params=new HashMap<>();
-        params.put("subcatid","1");
+       // params.put("subcatid","1");
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.url)+"/shoplist";
+        String url=getResources().getString(R.string.url)+"/allshoplist";
         //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }
@@ -225,10 +229,14 @@ public class StoresListActivity extends NetworkBaseActivity {
                             myShop.setState(shopJArray.getJSONObject(i).getString("retcountry"));
                             myShop.setCity(shopJArray.getJSONObject(i).getString("retcity"));
                             myShop.setShopimage(shopJArray.getJSONObject(i).getString("retphoto"));
+
                             myShop.setLatitude(shopJArray.getJSONObject(i).getDouble("retLat"));
                             myShop.setLongitude(shopJArray.getJSONObject(i).getDouble("retLong"));
                             myShop.setDeliveryAvailable(shopJArray.getJSONObject(i).getString("isDeliveryAvailable"));
                             myShop.setMinDeliveryAmount(shopJArray.getJSONObject(i).getDouble("minDeliveryAmount"));
+                            myShop.setMinDeliverytime(shopJArray.getJSONObject(i).getString("minDeliverytime"));
+                            myShop.setMinDeliverydistance(shopJArray.getJSONObject(i).getInt("minDeliverydistance"));
+                            myShop.setChargesAfterMinDistance(shopJArray.getJSONObject(i).getDouble("chargesAfterMinDistance"));
 
                             myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                             myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
@@ -265,7 +273,7 @@ public class StoresListActivity extends NetworkBaseActivity {
                         }
                         if (itemList.size() == 0) {
                             showNoData(true);
-                        }
+                        }else  myItemAdapter.notifyDataSetChanged();
                     }else {
                         //DialogAndToast.showDialog(response.getString("message"),StoresListActivity.this);
                         showProgress(false);

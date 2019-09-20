@@ -29,6 +29,7 @@ import com.shoppurs.activities.ShopListActivity;
 import com.shoppurs.activities.ShopProductListActivity;
 import com.shoppurs.models.MyHeader;
 import com.shoppurs.models.MyShop;
+import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 
@@ -60,6 +61,8 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         this.subcatname = subcatname;
         sharedPreferences= context.getSharedPreferences(Constants.MYPREFERENCEKEY,MODE_PRIVATE);
         editor=sharedPreferences.edit();
+        Log.d("subcatid", subcatid);
+        Log.d("subcatname", subcatname);
     }
 
     public void setFlag(String flag){
@@ -202,6 +205,18 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                     intent.putExtra("dbuser",shop.getDbusername());
                     intent.putExtra("dbpassword",shop.getDbpassword());
                     intent.putExtra("shop_code",shop.getId());
+
+                    ShopDeliveryModel shopDeliveryModel = new ShopDeliveryModel();
+                    shopDeliveryModel.setShopCode(shop.getId());
+                    shopDeliveryModel.setRetLat(shop.getLatitude());
+                    shopDeliveryModel.setRetLong(shop.getLongitude());
+                    shopDeliveryModel.setIsDeliveryAvailable(shop.getIsDeliveryAvailable());
+                    shopDeliveryModel.setMinDeliveryAmount(shop.getMinDeliveryAmount());
+                    shopDeliveryModel.setMinDeliverytime(shop.getMinDeliverytime());
+                    shopDeliveryModel.setMinDeliverydistance(shop.getMinDeliverydistance());
+                    shopDeliveryModel.setChargesAfterMinDistance(shop.getChargesAfterMinDistance());
+                    intent.putExtra("shopDeliveryModel", shopDeliveryModel);
+
                     editor.putString(Constants.SHOP_DBNAME,shop.getDbname());
                     editor.putString(Constants.SHOP_DB_USER_NAME,shop.getDbusername());
                     editor.putString(Constants.SHOP_DB_PASSWORD,shop.getDbpassword());

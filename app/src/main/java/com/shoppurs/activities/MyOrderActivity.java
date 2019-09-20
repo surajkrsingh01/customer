@@ -46,6 +46,10 @@ public class MyOrderActivity extends NetworkBaseActivity{
     private String []orderNumberList;
     private TextView text_first_label;
 
+    private int limit = 10, offset;
+    private boolean isScroll = true,loading;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,10 +60,10 @@ public class MyOrderActivity extends NetworkBaseActivity{
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
 
-        dbName = sharedPreferences.getString(Constants.DB_NAME,"");
-        dbUserName = sharedPreferences.getString(Constants.DB_USER_NAME,"");
-        dbPassword = sharedPreferences.getString(Constants.DB_PASSWORD,"");
-        custId = sharedPreferences.getString(Constants.USER_ID,"");
+        dbName = sharedPreferences.getString(Constants.DB_NAME, "");
+        dbUserName = sharedPreferences.getString(Constants.DB_USER_NAME, "");
+        dbPassword = sharedPreferences.getString(Constants.DB_PASSWORD, "");
+        custId = sharedPreferences.getString(Constants.USER_ID, "");
 
         text_first_label = findViewById(R.id.text_first_label);
         text_first_label.setOnClickListener(new View.OnClickListener() {
@@ -82,122 +86,146 @@ public class MyOrderActivity extends NetworkBaseActivity{
         recycler_order = (RecyclerView) findViewById(R.id.recycler_order);
         recycler_order.setHasFixedSize(true);
         recycler_order.setRecycledViewPool(new RecyclerView.RecycledViewPool());
-        recycler_order.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        recycler_order.setLayoutManager(linearLayoutManager);
         recycler_order.getRecycledViewPool().setMaxRecycledViews(0, 0);
         myOrderAdapter = new MyOrderAdapter(MyOrderActivity.this, myOrderList);
         recycler_order.setAdapter(myOrderAdapter);
 
         callingActivity = getIntent().getStringExtra("callingActivity");
         //Log.d("callingActivity ", callingActivity);
-        if(callingActivity!=null && callingActivity.equals("TransactionDetailsActivity")){
+        if (callingActivity != null && callingActivity.equals("TransactionDetailsActivity")) {
             orderNumberList = getIntent().getStringExtra("orderNumber").split(",");
-            Log.d("orderNumberList ", orderNumberList.length+"");
+            Log.d("orderNumberList ", orderNumberList.length + "");
         }
-
-
-        /*if(callingActivity!=null && callingActivity.equals("TransactionDetailsActivity")){
-            List<MyProduct> myShopOrderList = (List<MyProduct>) getIntent().getSerializableExtra("shopOrderList");
-            MyOrder myOrder;
-            for(MyProduct myShopOrder: myShopOrderList){
-                myOrder = new MyOrder();
-                myOrder.setShopId(Integer.parseInt(myShopOrder.getShopCode()));
-                myOrder.setTotalQuantity(myShopOrder.getQuantity());
-                myOrder.setToalAmount(myShopOrder.getTotalAmount());
-                myOrderList.add(myOrder);
-            }
-            if(myOrderList.size()>0)
-                myOrderAdapter.notifyDataSetChanged();
-        }*/
         getOrders();
-        initFooter(this,2);
-    }
+        initFooter(this, 2);
 
-    private void getItemList(){
-        swipe_refresh.setRefreshing(false);
-    }
+        recycler_order.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(isScroll){
+                    int  visibleItemCount, totalItemCount, pastVisibleItems;
+                    visibleItemCount = linearLayoutManager.getChildCount();
+                    totalItemCount = linearLayoutManager.getItemCount();
+                    Log.i(TAG,"visible "+visibleItemCount+" total "+totalItemCount);
+                    pastVisibleItems = ((LinearLayoutManager)linearLayoutManager).findLastVisibleItemPosition();
+                    Log.i(TAG,"total visible "+(visibleItemCount+pastVisibleItems));
 
-
-    public void getOrders(){
-        Map<String,String> params=new HashMap<>();
-        //params.put("action","4");
-        //params.put("custId",custId);
-        params.put("dbName",dbName);
-        params.put("dbUserName",dbUserName);
-        params.put("dbPassword",dbPassword);
-        String url=getResources().getString(R.string.root_url)+"order/get_order";
-        showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"getOrders");
-    }
-
-    @Override
-    public void onJsonObjectResponse(JSONObject response, String apiName) {
-        showProgress(false);
-        try {
-            Log.d(TAG, response.toString());
-            if(apiName.equals("getOrders")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    JSONArray jsonArray = response.getJSONArray("result");
-                    for(int i=0;i<jsonArray.length();i++){
-                        MyOrder myOrder = new MyOrder();
-                        myOrder.setOrderNumber(jsonArray.getJSONObject(i).getString("orderNumber"));
-                        myOrder.setShopName(jsonArray.getJSONObject(i).getString("shopName"));
-                        myOrder.setOrderDate(jsonArray.getJSONObject(i).getString("orderDate"));
-                        myOrder.setOrderDeliveryNote(jsonArray.getJSONObject(i).getString("orderDeliveryNote"));
-                        myOrder.setOrderDeliveryMode(jsonArray.getJSONObject(i).getString("orderDeliveryMode"));
-                        myOrder.setPaymentMode(jsonArray.getJSONObject(i).getString("paymentMode"));
-                        myOrder.setCustName(jsonArray.getJSONObject(i).getString("custName"));
-                        myOrder.setDeliveryAddress(jsonArray.getJSONObject(i).getString("deliveryAddress"));
-                        myOrder.setOrderStatus(jsonArray.getJSONObject(i).getString("orderStatus"));
-                        myOrder.setOrderImage(jsonArray.getJSONObject(i).getString("orderImage"));
-                        //myOrder.setPinCode(jsonArray.getJSONObject(i).getInt("pinCode"));
-                        myOrder.setMobileNo(jsonArray.getJSONObject(i).getInt("mobileNo"));
-                        myOrder.setOrderId(jsonArray.getJSONObject(i).getInt("orderId"));
-                        myOrder.setTotalQuantity(jsonArray.getJSONObject(i).getInt("totalQuantity"));
-                        myOrder.setToalAmount(jsonArray.getJSONObject(i).getDouble("toalAmount"));
-                        if(callingActivity!=null && callingActivity.equals("TransactionDetailsActivity")){
-                            for(String orderNo: orderNumberList){
-                                Log.d("orderNo "+orderNo, myOrder.getOrderNumber());
-                                if(myOrder.getOrderNumber().equals(orderNo))
-                                    myOrderList.add(myOrder);
-                            }
-                        }else
-                        myOrderList.add(myOrder);
+                    if (!loading) {
+                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                            loading = true;
+                            offset = limit + offset;
+                            getOrders();
+                        }
                     }
-                    if(myOrderList.size()>0){
-                        myOrderAdapter.notifyDataSetChanged();
-                    }else {
-                        //showNoData(true);
-                    }
-
-                }else {
-                    DialogAndToast.showDialog(response.getString("message"),MyOrderActivity.this);
                 }
             }
+        });
+    }
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-            DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),MyOrderActivity.this);
+        private void getItemList () {
+            swipe_refresh.setRefreshing(false);
+        }
+
+
+        public void getOrders () {
+            Map<String, String> params = new HashMap<>();
+            params.put("limit", String.valueOf(limit));
+            params.put("offset", String.valueOf(offset));
+            params.put("dbName", dbName);
+            params.put("dbUserName", dbUserName);
+            params.put("dbPassword", dbPassword);
+            String url = getResources().getString(R.string.root_url) + "order/get_order";
+            showProgress(true);
+            jsonObjectApiRequest(Request.Method.POST, url, new JSONObject(params), "getOrders");
+        }
+
+        @Override
+        public void onJsonObjectResponse (JSONObject response, String apiName){
+            showProgress(false);
+            try {
+                Log.d(TAG, response.toString());
+                if (apiName.equals("getOrders")) {
+                    loading = false;
+                    if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
+                        JSONArray jsonArray = response.getJSONArray("result");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            MyOrder myOrder = new MyOrder();
+                            myOrder.setOrderNumber(jsonArray.getJSONObject(i).getString("orderNumber"));
+                            myOrder.setShopName(jsonArray.getJSONObject(i).getString("shopName"));
+                            myOrder.setOrderDate(jsonArray.getJSONObject(i).getString("orderDate"));
+                            myOrder.setOrderDeliveryNote(jsonArray.getJSONObject(i).getString("orderDeliveryNote"));
+                            myOrder.setOrderDeliveryMode(jsonArray.getJSONObject(i).getString("orderDeliveryMode"));
+                            myOrder.setPaymentMode(jsonArray.getJSONObject(i).getString("paymentMode"));
+                            myOrder.setCustName(jsonArray.getJSONObject(i).getString("custName"));
+                            myOrder.setDeliveryAddress(jsonArray.getJSONObject(i).getString("deliveryAddress"));
+                            myOrder.setOrderStatus(jsonArray.getJSONObject(i).getString("orderStatus"));
+                            myOrder.setOrderImage(jsonArray.getJSONObject(i).getString("orderImage"));
+                            //myOrder.setPinCode(jsonArray.getJSONObject(i).getInt("pinCode"));
+                            myOrder.setMobileNo(jsonArray.getJSONObject(i).getInt("mobileNo"));
+                            myOrder.setOrderId(jsonArray.getJSONObject(i).getInt("orderId"));
+                            myOrder.setTotalQuantity(jsonArray.getJSONObject(i).getInt("totalQuantity"));
+                            myOrder.setToalAmount(jsonArray.getJSONObject(i).getDouble("toalAmount"));
+                            if (callingActivity != null && callingActivity.equals("TransactionDetailsActivity")) {
+                                for (String orderNo : orderNumberList) {
+                                    Log.d("orderNo " + orderNo, myOrder.getOrderNumber());
+                                    if (myOrder.getOrderNumber().equals(orderNo))
+                                        myOrderList.add(myOrder);
+                                }
+                            } else
+                                myOrderList.add(myOrder);
+                        }
+                        if (myOrderList.size() > 0) {
+                            offset = myOrderList.size();
+                            if(jsonArray.length() < limit){
+                                isScroll = false;
+                            }
+                            if(jsonArray.length() > 0){
+                                recycler_order.post(new Runnable() {
+                                    public void run() {
+                                        myOrderAdapter.notifyItemRangeInserted(offset,limit);
+                                    }
+                                });
+                                Log.d(TAG, "NEXT ITEMS LOADED");
+                            }else{
+                                Log.d(TAG, "NO ITEMS FOUND");
+                            }
+
+                        } else {
+                            //showNoData(true);
+                        }
+
+                    } else {
+                        DialogAndToast.showDialog(response.getString("message"), MyOrderActivity.this);
+                    }
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                DialogAndToast.showToast(getResources().getString(R.string.json_parser_error) + e.toString(), MyOrderActivity.this);
+            }
+        }
+
+        @Override
+        public boolean onCreateOptionsMenu (Menu menu){
+            getMenuInflater().inflate(R.menu.menu_shop_list, menu);
+            return super.onCreateOptionsMenu(menu);
+        }
+
+        @Override
+        public boolean onOptionsItemSelected (MenuItem item){
+            if (item.getItemId() == android.R.id.home) {
+                onBackPressed();
+                return true;
+            } else if (item.getItemId() == R.id.action_search) {
+                DialogAndToast.showToast("Search Clicked..", this);
+            }
+            return super.onOptionsItemSelected(item);
+        }
+
+        public void showLargeImageDialog (MyOrder order, View view){
+            showImageDialog(order.getOrderImage(), view);
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_shop_list, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==android.R.id.home){
-            onBackPressed();
-            return true;
-        }else if(item.getItemId()== R.id.action_search){
-            DialogAndToast.showToast("Search Clicked..", this);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void showLargeImageDialog(MyOrder order, View view){
-        showImageDialog(order.getOrderImage(), view);
-    }
-}
