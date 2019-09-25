@@ -174,5 +174,7 @@
     <!-- payment. -->
     <dimen name="payment_action_size">30dp</dimen>
     <dimen name="payment_small_edit_size">90dp</dimen>
-
+    <dimen name="icon_size">36dp</dimen>
+    <dimen name="toolbar_height">64dp</dimen>
+    <dimen name="social_icon_size">30dp</dimen>
 </resources>

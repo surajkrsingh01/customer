@@ -200,10 +200,6 @@ public class ShopProductListActivity extends NetworkBaseActivity {
         if(shopName.length()>1) {
             tv_shortName.setText(shopName.substring(0, 1));
             //image_view_shop .setText(shopName);
-            text_mobile.setText(shopMobile);
-            text_address.setText(address);
-            text_state_city.setText(statecity);
-
             String initials = "";
             if (shopName.contains(" ")) {
                 String[] nameArray = shopName.split(" ");
@@ -214,6 +210,10 @@ public class ShopProductListActivity extends NetworkBaseActivity {
 
             tv_shortName.setText(initials);
         }
+
+        text_mobile.setText(shopMobile);
+        text_address.setText(address);
+        text_state_city.setText(statecity);
 
         if(shopImage !=null && shopImage.contains("http")){
             tv_shortName.setVisibility(View.GONE);

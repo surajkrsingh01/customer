@@ -23,7 +23,8 @@ import com.shoppurs.utilities.CountDrawable;
 
 public class SettingActivity extends BaseActivity implements View.OnClickListener {
 
-    private RelativeLayout relative_personalInfo, relative_my_cart, relative_display, relative_my_order, relative_delivery_address, relative_invite, relative_change_password, relative_logout;
+    private RelativeLayout relative_personalInfo, relative_my_cart, relative_display, relative_my_order, relative_delivery_address, relative_invite,
+            relative_chat,relative_change_password, relative_logout;
     private Toolbar toolbar;
     private Menu myMenu;
     private int cartCount;
@@ -91,6 +92,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         relative_delivery_address = findViewById(R.id.relative_delivery_address);
         relative_invite = findViewById(R.id.relative_invite);
         relative_change_password = findViewById(R.id.relative_change_password);
+        relative_chat = findViewById(R.id.relative_chat);
         relative_logout = findViewById(R.id.relative_logout);
 
         relative_personalInfo.setOnClickListener(this);
@@ -100,6 +102,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         relative_delivery_address.setOnClickListener(this);
         relative_invite.setOnClickListener(this);
         relative_change_password.setOnClickListener(this);
+        relative_chat.setOnClickListener(this);
         relative_logout.setOnClickListener(this);
     }
 
@@ -118,6 +121,10 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         }else if(view == relative_change_password){
             Intent intent = new Intent( SettingActivity.this, ChangePasswordActivity.class);
             intent.putExtra("flag", "changePassword");
+            startActivity(intent);
+        }else if(view == relative_chat){
+            Intent intent = new Intent( SettingActivity.this, ChatActivity.class);
+            intent.putExtra("flag", "chat");
             startActivity(intent);
         }else if(view == relative_my_cart){
             startActivity(new Intent( SettingActivity.this, CartActivity.class));
