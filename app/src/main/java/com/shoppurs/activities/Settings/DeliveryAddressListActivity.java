@@ -21,6 +21,7 @@ import com.shoppurs.activities.NetworkBaseActivity;
 import com.shoppurs.adapters.DeliveryAddressListAdapter;
 import com.shoppurs.interfaces.MyItemClickListener;
 import com.shoppurs.models.DeliveryAddress;
+import com.shoppurs.models.MyProduct;
 import com.shoppurs.utilities.ConnectionDetector;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
@@ -106,6 +107,11 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
         intent.putExtra("amount",coupon.getAmount());
         setResult(-1,intent);
         finish();*/
+    }
+
+    @Override
+    public void onProductSearch(MyProduct myProduct) {
+
     }
 
 

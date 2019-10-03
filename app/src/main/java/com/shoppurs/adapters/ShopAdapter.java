@@ -24,6 +24,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurs.R;
 import com.shoppurs.activities.SearchActivity;
+import com.shoppurs.activities.Settings.FrequencyProductsActivity;
 import com.shoppurs.activities.ShopAddressActivity;
 import com.shoppurs.activities.ShopListActivity;
 import com.shoppurs.activities.ShopProductListActivity;
@@ -46,7 +47,7 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private Context context;
     private List<Object> mShopList;
     private String type;
-    private String catId, subcatid, subcatname, flag;
+    private String catId, subcatid, subcatname, flag, shopListType;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private int counter;
@@ -61,12 +62,16 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         this.subcatname = subcatname;
         sharedPreferences= context.getSharedPreferences(Constants.MYPREFERENCEKEY,MODE_PRIVATE);
         editor=sharedPreferences.edit();
-        Log.d("subcatid", subcatid);
-        Log.d("subcatname", subcatname);
+       // Log.d("subcatid", subcatid);
+       // Log.d("subcatname", subcatname);
     }
 
     public void setFlag(String flag){
         this.flag = flag;
+    }
+
+    public void setShopListType(String type){
+        this.shopListType = type;
     }
 
     public class MyShopHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -191,7 +196,12 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 case MotionEvent.ACTION_UP:
                     // Log.i("Adapter","onPressUp");
                     MyShop shop = (MyShop) mShopList.get(getAdapterPosition());
-                    Intent intent = new Intent(context, ShopProductListActivity.class);
+                    Intent intent;
+                    if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency"))
+                        intent = new Intent(context, FrequencyProductsActivity.class);
+                    else
+                    intent = new Intent(context, ShopProductListActivity.class);
+
                     intent.putExtra("callingClass","ShopListActivity");
                     intent.putExtra("name",shop.getName());
                     intent.putExtra("photo",shop.getShopimage());

@@ -100,4 +100,7 @@ public class Constants {
     public static String MIN_DELIVERY_AMOUNT="minDeliveryAmount";
     public static String DELIVERY_EST_TIME="deliveryEstTime";
     public static String CHARGE_AFTER_MIN_DISTANCE="chargeAfterMinDistance";
+    public static String SEND_MESSAGE="/api/chat/chat_for_support";
+    public static String GET_MESSAGE="/api/chat/get_chat_for_support";
+    public static String GET_CHAT_USERS="chat/get_chat_users";
 }

@@ -14,6 +14,7 @@
     <color name="colorPrimaryDark">@color/grey300</color>
     <color name="colorAccent">@color/accent_blue_A_400</color>
     <color name="transparent_back">#80212121</color>
+    <color name="accent_color_4">@color/green600</color>
 
 
     <color name="dark_color">@color/grey900</color>

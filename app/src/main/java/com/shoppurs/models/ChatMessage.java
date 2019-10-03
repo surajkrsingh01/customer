@@ -1,14 +1,14 @@
 package com.shoppurs.models;
 
-import android.widget.ImageView;
-
 /**
  * Created by Shweta on 11/18/2015.
  */
 public class ChatMessage {
     private int messageId;
     private String messageText;
+    private String prodCode;
     private String messageFrom;
+    private String messageFromPic;
     private String messageTo;
     private String messageTime;
     private String notificationReadSatus;
@@ -19,6 +19,22 @@ public class ChatMessage {
     private String userName;
     private String fileUrl;
     private boolean isImageUploaded;
+
+    public String getProdCode() {
+        return prodCode;
+    }
+
+    public void setProdCode(String prodCode) {
+        this.prodCode = prodCode;
+    }
+
+    public String getMessageFromPic() {
+        return messageFromPic;
+    }
+
+    public void setMessageFromPic(String messageFromPic) {
+        this.messageFromPic = messageFromPic;
+    }
 
     public int getMessageId() {
         return messageId;

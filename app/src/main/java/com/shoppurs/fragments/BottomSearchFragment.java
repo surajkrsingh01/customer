@@ -30,6 +30,7 @@ import com.shoppurs.activities.ShopProductListActivity;
 import com.shoppurs.adapters.SearchProductAdapter;
 import com.shoppurs.adapters.SearchShopAdapter;
 import com.shoppurs.database.DbHelper;
+import com.shoppurs.interfaces.MyItemClickListener;
 import com.shoppurs.interfaces.MyItemTypeClickListener;
 import com.shoppurs.models.Barcode;
 import com.shoppurs.models.MyProduct;
@@ -72,6 +73,23 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
     protected SharedPreferences sharedPreferences;
     private boolean isDarkTheme;
     private DbHelper dbHelper;
+    private MyListItemClickListener myListItemClickListener;
+
+    public MyItemClickListener getMyItemClickListener() {
+        return myItemClickListener;
+    }
+
+    public void setMyItemClickListener(MyItemClickListener myItemClickListener) {
+        this.myItemClickListener = myItemClickListener;
+    }
+
+    public void setMyListItemClickListener(MyListItemClickListener myListItemClickListener) {
+        this.myListItemClickListener = myListItemClickListener;
+    }
+
+    private MyItemClickListener myItemClickListener;
+
+
 
     public BottomSearchFragment() {
 
@@ -138,9 +156,9 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(callingActivityName.equals("ShopListActivity"))
+                if(callingActivityName.equals("ShopListActivity") || callingActivityName.equals("shopInfoActivity"))
                     searchShops(s.toString());
-                else if(callingActivityName.equals("ShopProductListActivity") || callingActivityName.equals("CartActivity")) {
+                else if(callingActivityName.equals("ShopProductListActivity") || callingActivityName.equals("CartActivity") || callingActivityName.equals("ChatActivity")) {
                     Bundle bundle = getArguments();
                     shopCode = bundle.getString("shopCode");
                     searchProducts(s.toString());
@@ -158,6 +176,8 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         recyclerView_Search.setLayoutManager(layoutManager);
         recyclerView_Search.setItemAnimator(new DefaultItemAnimator());
         shopAdapter=new SearchShopAdapter(getContext(),myShopList);
+        shopAdapter.setMyItemClickListener(this);
+        shopAdapter.setFlag(callingActivityName);
         shopAdapter.setSubCatid(subcatId);
         shopAdapter.setSubCatName(subCatName);
         recyclerView_Search.setAdapter(shopAdapter);
@@ -213,6 +233,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                         MyShop myShop = new MyShop();
                         String shop_code = shopJArray.getJSONObject(i).getString("retcode");
                         myShop.setId(shop_code);
+                        myShop.setCode(shop_code);
                         Log.d("shop_id", myShop.getId());
                         myShop.setName(shopJArray.getJSONObject(i).getString("retshopname"));
                         myShop.setMobile(shopJArray.getJSONObject(i).getString("retmobile"));
@@ -534,10 +555,27 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         Log.d("clicked Position "+position, "type "+type);
         this.position = position;
         this.type = type;
-        if(type==2){
-            productDetailsType = 1;
-            getProductDetails(myProductList.get(position).getId());
-        }else onProductClicked(type, position);
+
+        if(callingActivityName.equals("shopInfoActivity")){
+            MyShop shop = myShopList.get(position);
+            Bundle bundle = new Bundle();
+            bundle.putString("shopMobile",shop.getMobile());
+            bundle.putString("shopName",shop.getName());
+            bundle.putString("shoptCode", shop.getCode());
+            bundle.putString("shopImage",shop.getShopimage());
+            //bundle.putString("shopUserCreateStatus",shop.getCustUserCreateStatus());
+            myListItemClickListener.onItemClicked(bundle);
+            this.dismiss();
+        }
+        if(callingActivityName.equals("ChatActivity")){
+            myItemClickListener.onProductSearch(myProductList.get(position));
+        }
+        if(callingActivityName.equals("ShopProductListActivity")){
+            if(type==2) {
+                productDetailsType = 1;
+                getProductDetails(myProductList.get(position).getId());
+            }else onProductClicked(type, position);
+        }
     }
 
     private void onProductClicked(int type, int position){

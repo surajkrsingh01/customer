@@ -4,7 +4,8 @@
     android:id="@+id/text_name"
     android:textColor="?attr/primaryTextColor"
     android:paddingLeft="10dp"
-    android:textSize="13sp"
+    android:textAlignment="center"
+    android:textSize="@dimen/small_text_size"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 </TextView>

@@ -97,7 +97,6 @@
                 android:layout_marginTop="@dimen/register_container_margin_top"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
                 <EditText
                     android:textColorHint="?attr/secondaryTextColor"
                     android:textColor="?attr/primaryTextColor"
@@ -112,7 +111,6 @@
                     android:paddingRight="@dimen/edit_text_horizontal_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout

@@ -301,10 +301,13 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
                     ((CartActivity)context).showOfferDescription(myProductsList.get(getAdapterPosition()));
             }else if (v == rootView) {
                 MyProduct item = (MyProduct) myProductsList.get(getAdapterPosition());
-                //Intent intent = new Intent(context,CartActivity.class);
-                Intent intent = new Intent(context, ProductDetailActivity.class);
-                intent.putExtra("MyProduct", item);
-                context.startActivity(intent);
+                if(callingActivityName.equals("ChatActivity")){
+                    myItemClickListener.onItemClicked(getAdapterPosition(), 0);
+                }else {
+                    Intent intent = new Intent(context, ProductDetailActivity.class);
+                    intent.putExtra("MyProduct", item);
+                    context.startActivity(intent);
+                }
             }
         }
     }

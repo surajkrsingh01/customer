@@ -88,6 +88,9 @@ public class NetworkBaseActivity extends BaseActivity {
                 AppController.getInstance().getRequestQueue().getCache().clear();
                 Log.i(TAG,response.toString());
                 showProgress(false);
+                if(apiName.equals("HandleCartproductDetails"))
+                    onJsonObjectCartResponse(response, apiName);
+                else
                 onJsonObjectResponse(response,apiName);
             }
         }, new Response.ErrorListener() {
@@ -241,6 +244,9 @@ public class NetworkBaseActivity extends BaseActivity {
 
 
     public void onJsonObjectResponse(JSONObject jsonObject, String apiName) {
+    }
+
+    public void onJsonObjectCartResponse(JSONObject jsonObject, String apiName) {
     }
 
     public void onStringResponse(String response, String apiName) {

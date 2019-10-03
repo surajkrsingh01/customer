@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,7 +51,7 @@ public class ShopListActivity extends NetworkBaseActivity {
     private ShopAdapter myNormalshopAdapter,myFavoriteshopAdapter ;
     private String subCatName, subCatId, catId;
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
-    private String dbName, dbUserName, dbPassword;
+    private String dbName, dbUserName, dbPassword, shopListType;
     private ImageView imamge_search;
 
     @Override
@@ -63,6 +65,7 @@ public class ShopListActivity extends NetworkBaseActivity {
         subCatName = getIntent().getStringExtra("subCatName");
         subCatId = getIntent().getStringExtra("subCatId");
         catId = getIntent().getStringExtra("CatId");
+        shopListType = getIntent().getStringExtra("flag");
         dbName = sharedPreferences.getString(Constants.DB_NAME,"");
         dbUserName = sharedPreferences.getString(Constants.DB_USER_NAME,"");
         dbPassword = sharedPreferences.getString(Constants.DB_PASSWORD,"");
@@ -100,6 +103,8 @@ public class ShopListActivity extends NetworkBaseActivity {
         });
 
         text_left_label = findViewById(R.id.text_left_label);
+        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency"))
+            text_left_label.setText("Settings");
         text_right_label = findViewById(R.id.text_right_label);
         text_left_label.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -162,6 +167,7 @@ public class ShopListActivity extends NetworkBaseActivity {
         recyclerViewFavoriteshop.setLayoutManager(layoutManager);
         recyclerViewFavoriteshop.setItemAnimator(new DefaultItemAnimator());
         myFavoriteshopAdapter=new ShopAdapter(this,myFavoriteitemList,"shopList", catId, subCatId, subCatName);
+        myFavoriteshopAdapter.setShopListType(shopListType);
         recyclerViewFavoriteshop.setAdapter(myFavoriteshopAdapter);
 
         Map<String,String> params=new HashMap<>();
@@ -177,6 +183,7 @@ public class ShopListActivity extends NetworkBaseActivity {
         recyclerViewNormalshop.setLayoutManager(layoutManager);
         recyclerViewNormalshop.setItemAnimator(new DefaultItemAnimator());
         myNormalshopAdapter=new ShopAdapter(this,myNormalitemList,"shopList", catId, subCatId, subCatName);
+        myNormalshopAdapter.setShopListType(shopListType);
         recyclerViewNormalshop.setAdapter(myNormalshopAdapter);
 
         Map<String,String> params=new HashMap<>();

@@ -46,6 +46,10 @@ public class BaseImageActivity extends NetworkBaseActivity {
     protected String imageBase64;
     protected AlertDialog alertDialog;
     protected RequestOptions requestOptions;
+    protected int limit = 20,offset = 0;
+    protected int smallLimit = 4,smallOffset = 0;
+    protected int visibleItemCount,pastVisibleItems,totalItemCount;
+    protected boolean loading=false,isScroll = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -294,6 +298,64 @@ public class BaseImageActivity extends NetworkBaseActivity {
             Log.i(TAG,"image captured "+imagePath);
             onCaptureImageResult();
         }
+    }
+
+    protected void selectChatImage(){
+        int view=R.layout.select_chat_attach_dialog;
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder
+                .setCancelable(false)
+                .setView(view);
+
+        // create alert dialog
+        alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+
+        // final TextView textHeader=(TextView) alertDialog.findViewById(R.id.text_header);
+        final ImageView imageCancel=(ImageView) alertDialog.findViewById(R.id.image_close);
+        final Button btnGallery=(Button) alertDialog.findViewById(R.id.btn_gallery);
+        final Button btnCamera=(Button) alertDialog.findViewById(R.id.btn_camera);
+        final Button btn_product = alertDialog.findViewById(R.id.btn_product);
+        imageCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+
+        btnCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userChoosenTask = "Camera";
+                boolean result = Utility.verifyCameraPermissions(BaseImageActivity.this);
+                if (result)
+                    cameraIntent();
+            }
+        });
+
+        btnGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userChoosenTask = "Gallery";
+                boolean result = Utility.verifyStorageOnlyPermissions(BaseImageActivity.this);
+                if (result)
+                    galleryIntent();
+            }
+        });
+
+        btn_product.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectProduct();
+            }
+        });
+
+        alertDialog.show();
+    }
+
+    public void selectProduct(){
+
     }
 
     protected void imageAdded(){

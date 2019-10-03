@@ -17,6 +17,7 @@ import com.shoppurs.R;
 import com.shoppurs.adapters.CouponOfferAdapter;
 import com.shoppurs.interfaces.MyItemClickListener;
 import com.shoppurs.models.Coupon;
+import com.shoppurs.models.MyProduct;
 import com.shoppurs.utilities.ConnectionDetector;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
@@ -210,5 +211,10 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
     public void onItemClicked(int position) {
         Coupon coupon = (Coupon) itemList.get(position);
         applyCoupon(coupon.getName());
+    }
+
+    @Override
+    public void onProductSearch(MyProduct myProduct) {
+
     }
 }

@@ -20,6 +20,7 @@ import com.shoppurs.R;
 import com.shoppurs.activities.NetworkBaseActivity;
 import com.shoppurs.adapters.SettingsAdapter;
 import com.shoppurs.interfaces.MyItemClickListener;
+import com.shoppurs.models.MyProduct;
 import com.shoppurs.utilities.Constants;
 
 import java.util.ArrayList;
@@ -127,5 +128,10 @@ public class PersonalProfileActivity extends NetworkBaseActivity implements MyIt
             Intent intent = new Intent(this, AddressActivity.class);
             startActivity(intent);
         }
+    }
+
+    @Override
+    public void onProductSearch(MyProduct myProduct) {
+
     }
 }

@@ -22,7 +22,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.RateAndReviewActivity"></activity>
+        <activity android:name=".activities.Settings.FrequencyProductsActivity"></activity>
+        <activity android:name=".activities.RateAndReviewActivity" />
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -45,6 +46,11 @@
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.UserListForChatActivity"
+            android:label="@string/title_activity_users_chat"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -154,7 +160,7 @@
             android:name=".activities.Settings.DisplayActivity"
             android:label="@string/title_activity_personalinfo"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.ShopListActivity"
             android:label="@string/title_activity_shop_list"
@@ -239,7 +245,6 @@
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity
             android:name=".activities.Settings.ChatActivity"
             android:label="ChatActivity"

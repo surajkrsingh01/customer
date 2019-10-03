@@ -94,6 +94,7 @@
     <string name="title_activity_order">My Orders</string>
     <string name="title_activity_order_details">Order Details</string>
     <string name="title_activity_forgot_password">Forgot Password</string>
+    <string name="title_activity_users_chat">ChatActivity</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

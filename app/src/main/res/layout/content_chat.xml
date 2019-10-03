@@ -85,27 +85,35 @@
                 android:layout_toLeftOf="@+id/view_separator"
                 android:layout_marginRight="10dp"
                 android:background="@null"
-                android:hint="@string/type_ur_message"
+                android:hint="Type your message..."
                 android:inputType="text"
                 android:layout_centerVertical="true"
                 android:imeOptions="actionDone"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/icon_size"/>
+                android:layout_height="30dp"/>
 
             <View
                 android:id="@+id/view_separator"
                 android:background="@color/grey300"
-                android:layout_toLeftOf="@+id/iv_send"
+                android:layout_toLeftOf="@+id/iv_attach"
                 android:layout_marginRight="10dp"
                 android:layout_width="1dp"
-                android:layout_height="@dimen/icon_size"/>
+                android:layout_height="30dp"/>
+
+            <ImageView
+                android:id="@+id/iv_attach"
+                android:src="@drawable/ic_attach_file_black_24dp"
+                android:layout_toLeftOf="@+id/iv_send"
+                android:layout_marginRight="10dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
 
             <ImageView
                 android:id="@+id/iv_send"
                 android:src="@drawable/send"
                 android:layout_alignParentRight="true"
-                android:layout_width="@dimen/icon_size"
-                android:layout_height="@dimen/icon_size"/>
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
 
         </RelativeLayout>
 

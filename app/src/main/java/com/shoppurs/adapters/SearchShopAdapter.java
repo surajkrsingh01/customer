@@ -29,6 +29,7 @@ import com.shoppurs.activities.CartShopListActivity;
 import com.shoppurs.activities.CouponOffersActivity;
 import com.shoppurs.activities.ShopListActivity;
 import com.shoppurs.activities.ShopProductListActivity;
+import com.shoppurs.interfaces.MyItemTypeClickListener;
 import com.shoppurs.models.MyShop;
 import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.utilities.Constants;
@@ -48,6 +49,7 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
     private SharedPreferences.Editor editor;
     private String subCatid, subCatName, flag;
     private int counter, colorTheme;
+    MyItemTypeClickListener myItemClickListener;
 
     public void setFlag(String flag){
         this.flag = flag;
@@ -72,6 +74,11 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
     public void setSubCatName(String subCatName) {
         this.subCatName = subCatName;
     }
+
+    public void setMyItemClickListener(MyItemTypeClickListener myItemClickListener) {
+        this.myItemClickListener = myItemClickListener;
+    }
+
 
     public SearchShopAdapter(Context context, List<MyShop> myShops) {
         this.context = context;
@@ -244,6 +251,8 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
                         editor.putString(Constants.SHOP_DB_PASSWORD,shop.getDbpassword());
                         editor.commit();
                         context.startActivity(intent);
+                    }else if(flag!=null && flag.equals("shopInfoActivity")){
+                        myItemClickListener.onItemClicked(getAdapterPosition(), 2);
                     }else {
                         MyShop shop = (MyShop) mShopList.get(getAdapterPosition());
                         Intent intent = new Intent(context, ShopProductListActivity.class);

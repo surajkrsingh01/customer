@@ -15,7 +15,15 @@ public class MyProduct implements Serializable {
     private List<ProductSize> productSizeList;
     private List<Barcode> barcodeList;
     private Object productOffer;
+    private ProductFrequency frequency;
 
+    public ProductFrequency getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(ProductFrequency frequency) {
+        this.frequency = frequency;
+    }
 
     public Object getProductOffer() {
         return productOffer;

@@ -37,6 +37,10 @@ public class BaseActivity extends AppCompatActivity {
     protected int colorTheme;
     private Toolbar toolbar;
     private AppBarLayout appBarLayout;
+    protected int limit = 20,offset = 0;
+    protected int smallLimit = 4,smallOffset = 0;
+    protected int visibleItemCount,pastVisibleItems,totalItemCount;
+    protected boolean loading=false,isScroll = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

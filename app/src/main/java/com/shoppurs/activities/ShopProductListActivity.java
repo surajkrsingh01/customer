@@ -1,6 +1,7 @@
 package com.shoppurs.activities;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -27,8 +28,10 @@ import com.shoppurs.adapters.ShopProductListAdapter;
 import com.shoppurs.adapters.TopCategoriesAdapter;
 import com.shoppurs.database.DbHelper;
 import com.shoppurs.fragments.BottomSearchFragment;
+import com.shoppurs.fragments.FrequencyFragment;
 import com.shoppurs.fragments.OfferDescriptionFragment;
 import com.shoppurs.models.Barcode;
+import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductColor;
 import com.shoppurs.models.ProductDiscountOffer;
@@ -55,7 +58,7 @@ import java.util.Map;
  * Created by suraj kumar singh on 20-04-2019.
  */
 
-public class ShopProductListActivity extends NetworkBaseActivity {
+public class ShopProductListActivity extends HandleCartActivity {
 
     private Toolbar toolbar;
     private Menu menu;
@@ -78,6 +81,18 @@ public class ShopProductListActivity extends NetworkBaseActivity {
     private int position, type, productDetailsType, selectdSubCatPosition;
     private int counter;
     private ShopDeliveryModel shopDeliveryModel;
+    private Typeface typeface;
+
+    public boolean isFrequencySelecte() {
+        return isFrequencySelecte;
+    }
+
+    public void setFrequencySelecte(boolean frequencySelecte, ProductFrequency frequency, int position) {
+        isFrequencySelecte = frequencySelecte;
+        myProductList.get(position).setFrequency(frequency);
+    }
+
+    private boolean isFrequencySelecte;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -263,6 +278,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
         recyclerViewProduct.setLayoutManager(layoutManager);
         recyclerViewProduct.setItemAnimator(new DefaultItemAnimator());
         shopProductAdapter = new ShopProductListAdapter(this, myProductList);
+        shopProductAdapter.setTypeFace(Utility.getSimpleLineIconsFont(this));
         shopProductAdapter.setShopCode(shopCode);
         shopProductAdapter.setDarkTheme(isDarkTheme);
         recyclerViewProduct.setAdapter(shopProductAdapter);
@@ -286,166 +302,8 @@ public class ShopProductListActivity extends NetworkBaseActivity {
         Log.d("clicked Position ", position+"");
         this.position = position;
         this.type = type;
-        if(type==2){
-            productDetailsType = 1;
-            getProductDetails(myProductList.get(position).getId());
-        }else onProductClicked(type, position);
+        updateCart(type, position, shopCode, myProductList.get(position),shopDeliveryModel);
     }
-
-    private void onProductClicked(int type, int position){
-        this.position = position;
-        this.myProduct = myProductList.get(position);
-        myProduct.setShopCode(shopCode);
-
-        if(type == 1){
-            if(myProduct.getQuantity() > 0){
-                if(myProduct.getQuantity() == 1){
-                    counter--;
-                    //dbHelper.removeProductFromCart(myProduct.getProdBarCode());
-                    dbHelper.removeProductFromCart(myProduct.getId(), myProduct.getShopCode());
-                    dbHelper.removePriceProductFromCart(myProduct.getId(), myProduct.getShopCode());
-                    if(myProduct.getProductPriceOffer()!=null){
-                        ProductPriceOffer productPriceOffer = myProduct.getProductPriceOffer();
-                        for(ProductPriceDetails productPriceDetails : productPriceOffer.getProductPriceDetails()){
-                            dbHelper.removePriceProductDetailsFromCart(String.valueOf(productPriceDetails.getId()), myProduct.getShopCode());
-                        }
-                    }
-                    if(myProduct.getProductDiscountOffer()!=null){
-                        ProductDiscountOffer productDiscountOffer = (ProductDiscountOffer)myProduct.getProductOffer();
-                        if(productDiscountOffer.getProdBuyId() != productDiscountOffer.getProdFreeId())
-                            dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId(), myProduct.getShopCode());
-                    }
-                    myProduct.setQuantity(0);
-                    myProduct.setTotalAmount(0);
-                    shopProductAdapter.notifyItemChanged(position);
-                    if(dbHelper.getCartCount(myProduct.getShopCode())<1)
-                        dbHelper.removeCouponFromCart(myProduct.getShopCode());
-                    updateCartCount();
-                    Log.d("onRemove Qyantity ", myProduct.getQuantity()+"");
-                }else{
-                    int qty = myProduct.getQuantity() - 1;
-                    float netSellingPrice = getOfferAmount(myProduct,type);
-                    myProduct.setQuantity(myProduct.getQuantity());
-                    qty = myProduct.getQuantity();
-                    Log.i(TAG,"netSellingPrice "+netSellingPrice);
-                    float amount = 0;
-                    amount = myProduct.getTotalAmount() - netSellingPrice;
-                    Log.i(TAG,"tot amount "+amount);
-                    myProduct.setTotalAmount(amount);
-                    if(myProduct.getProductPriceOffer()!=null){
-                        myProduct.setSellingPrice(amount/qty);
-                    }
-                    dbHelper.updateCartData(myProduct);
-                    shopProductAdapter.notifyItemChanged(position);
-                    updateCartCount();
-                }
-            }
-
-        }else if(type == 2){
-            /*if(myProduct.getIsBarcodeAvailable().equals("Y")){
-                if(myProduct.getQuantity() == myProduct.getBarcodeList().size()){
-                    shopProductAdapter.notifyDataSetChanged();
-                    DialogAndToast.showDialog("There are no more stocks",this);
-                }else{
-                    int qty = myProduct.getQuantity() + 1;
-                    if(qty == 1){
-                        counter++;
-                        myProduct.setFreeProductPosition(counter);
-                        dbHelper.addProductToCart(myProduct);
-                    }
-                    myProduct.setQuantity(qty);
-                    Log.i(TAG,"qty "+qty);
-                    float netSellingPrice = getOfferAmount(myProduct,type);
-                    qty = myProduct.getQuantity();
-                    Log.i(TAG,"netSellingPrice "+netSellingPrice);
-                    float amount = myProduct.getTotalAmount() + netSellingPrice;
-                    Log.i(TAG,"tot amount "+amount);
-                    myProduct.setTotalAmount(amount);
-                    dbHelper.updateCartData(myProduct);
-                    shopProductAdapter.notifyItemChanged(position);
-                    updateCartCount();
-                }
-
-           }else{*/
-                if(myProduct.getQuantity() >= myProduct.getQoh()){
-                    shopProductAdapter.notifyDataSetChanged();
-                    DialogAndToast.showDialog("There are no more stocks",this);
-                }else{
-                    int qty = myProduct.getQuantity() + 1;
-                    myProduct.setQuantity(qty);
-                    if(qty == 1){
-                        counter++;
-                        myProduct.setFreeProductPosition(counter);
-                        dbHelper.addProductToCart(myProduct);
-                        dbHelper.addShopDeliveryDetails(shopDeliveryModel);
-                    }
-                    float netSellingPrice = getOfferAmount(myProduct,type);
-                    float amount = 0;
-                    Log.i(TAG,"netSellingPrice "+netSellingPrice);
-                    amount = myProduct.getTotalAmount() + netSellingPrice;
-                    Log.i(TAG,"tot amount "+amount);
-                    myProduct.setTotalAmount(amount);
-                    if(myProduct.getProductPriceOffer()!=null){
-                        myProduct.setSellingPrice(amount/qty);
-                    }
-                    qty = myProduct.getQuantity();
-                    Log.i(TAG,"qty "+qty);
-                    myProduct.setQuantity(myProduct.getQuantity());
-                    dbHelper.updateCartData(myProduct);
-                    shopProductAdapter.notifyItemChanged(position);
-                    shopProductAdapter.notifyDataSetChanged();
-                    updateCartCount();
-                }
-          //  }
-        }
-    }
-
-    private void getProductDetails(String prodId){
-        if(productDetailsType==1)
-            showProgress(true);
-        Map<String,String> params=new HashMap<>();
-        params.put("id", prodId); // as per user selected category from top horizontal categories list
-        params.put("code", shopCode);
-        params.put("dbName",shopCode);
-        Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+"/products/ret_products_details";
-        jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"productDetails");
-    }
-
-    private void checkFreeProductOffer(){
-        if(type ==2 && myProductList.get(position).getProductDiscountOffer()!=null){
-            ProductDiscountOffer productDiscountOffer = myProductList.get(position).getProductDiscountOffer();
-            if(productDiscountOffer.getProdBuyId()!= productDiscountOffer.getProdFreeId()){
-                productDetailsType = 2;
-                getProductDetails(String.valueOf(productDiscountOffer.getProdFreeId()));
-            }else onProductClicked(type, position);
-        }else {
-            onProductClicked(type,position);
-        }
-    }
-
-
-
-    public void removeCart(MyProduct myProduct){
-        this.myProduct = myProduct;
-       /* cartItem = new CartItem();
-        cartItem.setShopCode(shopCode);
-        cartItem.setProdCode(myProduct.getCode());*/
-
-        Map<String,String> params=new HashMap<>();
-        params.put("shopCode",shopCode);
-        params.put("prodCode", myProduct.getCode());
-        params.put("dbName", custdbname);
-        params.put("dbUserName", dbuser);
-        params.put("dbPassword", dbpassword);
-        Log.d(TAG, params.toString());
-
-        String url=getResources().getString(R.string.root_url)+"cart/remove_product";
-        showProgress(true);
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"removeCart");
-    }
-
-
 
     public void shopFavorite(String status){
         Map<String,String> params=new HashMap<>();
@@ -742,51 +600,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
                 }else {
                     DialogAndToast.showToast(response.getString("message"),ShopProductListActivity.this);
                 }
-            }else if(apiName.equals("productDetails")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    JSONObject jsonObject = response.getJSONObject("result");
-                    if(productDetailsType == 1){
-                        myProductList.get(position).setQoh(jsonObject.getInt("prodQoh"));
-                        Log.d("Qoh ", myProductList.get(position).getQoh()+"");
-                        checkFreeProductOffer();
-                    }else {
-                        freeProdut = new MyProduct();
-                        freeProdut.setId(jsonObject.getString("prodId"));
-                        freeProdut.setCatId(jsonObject.getString("prodCatId"));
-                        freeProdut.setSubCatId(jsonObject.getString("prodSubCatId"));
-                        freeProdut.setName(jsonObject.getString("prodName"));
-                        freeProdut.setQoh(jsonObject.getInt("prodQoh"));
-                        freeProdut.setQuantity(1);
-                        freeProdut.setFreeProductPosition(position+1);
-                        freeProdut.setMrp(Float.parseFloat(jsonObject.getString("prodMrp")));
-                        freeProdut.setSellingPrice(0);
-                        freeProdut.setCode(jsonObject.getString("prodCode"));
-                        freeProdut.setIsBarcodeAvailable(jsonObject.getString("isBarcodeAvailable"));
-                        //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
-                        freeProdut.setDesc(jsonObject.getString("prodDesc"));
-                        freeProdut.setLocalImage(R.drawable.thumb_16);
-                        freeProdut.setProdImage1(jsonObject.getString("prodImage1"));
-                        freeProdut.setProdImage2(jsonObject.getString("prodImage2"));
-                        freeProdut.setProdImage3(jsonObject.getString("prodImage3"));
-                        freeProdut.setProdHsnCode(jsonObject.getString("prodHsnCode"));
-                        freeProdut.setProdMfgDate(jsonObject.getString("prodMfgDate"));
-                        freeProdut.setProdExpiryDate(jsonObject.getString("prodExpiryDate"));
-                        freeProdut.setProdMfgBy(jsonObject.getString("prodMfgBy"));
-                        freeProdut.setProdExpiryDate(jsonObject.getString("prodExpiryDate"));
-                        freeProdut.setOfferId(jsonObject.getString("offerId"));
-                        freeProdut.setProdCgst(Float.parseFloat(jsonObject.getString("prodCgst")));
-                        freeProdut.setProdIgst(Float.parseFloat(jsonObject.getString("prodIgst")));
-                        freeProdut.setProdSgst(Float.parseFloat(jsonObject.getString("prodSgst")));
-                        freeProdut.setProdWarranty(jsonObject.getString("prodWarranty"));
-                        //myProduct.setSubCatName(subcatname);
-                        onProductClicked(type, position);
-                    }
-
-                }else {
-                    DialogAndToast.showToast("Something went wrong, Please try again", ShopProductListActivity.this);
-                }
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
             DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),ShopProductListActivity.this);
@@ -825,6 +639,7 @@ public class ShopProductListActivity extends NetworkBaseActivity {
         updateCartCount();
     }
 
+
     float totalPrice;
     public void updateCartCount(){
         totalPrice = 0;
@@ -862,30 +677,6 @@ public class ShopProductListActivity extends NetworkBaseActivity {
     }
 
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.my_product_menu, menu);
-        if(dbHelper.isShopFavorited(shopCode))
-            menu.getItem(0).setIcon(ContextCompat.getDrawable(this,R.drawable.favroite_selected));
-        else menu.getItem(0).setIcon(ContextCompat.getDrawable(this, R.drawable.favrorite_select));
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()== android.R.id.home){
-            onBackPressed();
-            return true;
-        }else if(item.getItemId() == R.id.action_favrouite){
-            if(dbHelper.isShopFavorited(shopCode))
-                shopFavorite("N");
-            else shopFavorite("Y");
-        }
-        return super.onOptionsItemSelected(item);
-    }*/
-
-
     public void showOfferDescription(MyProduct item){
         OfferDescriptionFragment offerDescriptionFragment = new OfferDescriptionFragment();
         offerDescriptionFragment.setProduct(item);
@@ -893,130 +684,13 @@ public class ShopProductListActivity extends NetworkBaseActivity {
         offerDescriptionFragment.show(getSupportFragmentManager(), "Offer Description Bottom Sheet");
     }
 
-
-    private float getOfferAmount(MyProduct item,int type){
-        float amount = 0f;
-        int qty = item.getQuantity();
-        if(item.getProductPriceOffer() != null){
-            ProductPriceOffer productPriceOffer = (ProductPriceOffer)item.getProductPriceOffer();
-            //if(qty > 1){
-                int maxSize = productPriceOffer.getProductPriceDetails().size();
-                int mod = qty % maxSize;
-                Log.i(TAG,"mod "+mod);
-                if(mod == 0){
-                    mod = maxSize;
-                }
-                amount = getOfferPrice(mod,item.getSellingPrice(),productPriceOffer.getProductPriceDetails());
-           // }else{
-           //     amount = item.getSellingPrice();
-            //}
-
-            if(type == 1)
-                item.setQuantity(item.getQuantity() - 1);
-
-        }else if(item.getProductDiscountOffer() != null){
-
-            ProductDiscountOffer productDiscountOffer = (ProductDiscountOffer)item.getProductDiscountOffer();
-            amount = item.getSellingPrice();
-            if(type == 1){
-                if(productDiscountOffer.getProdBuyId() == productDiscountOffer.getProdFreeId()){
-                    Log.i(TAG,"item qty "+item.getQuantity()+" offer buy qty"+productDiscountOffer.getProdBuyQty());
-                    Log.i(TAG,"minus mode "+(item.getQuantity() - item.getOfferItemCounter()-1)% productDiscountOffer.getProdBuyQty());
-                    if((item.getQuantity() - item.getOfferItemCounter() -1)% productDiscountOffer.getProdBuyQty() ==
-                            (productDiscountOffer.getProdBuyQty()-1)){
-                        item.setQuantity(item.getQuantity() - 2);
-                        item.setOfferItemCounter(item.getOfferItemCounter() - 1);
-                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
-
-                    }else{
-                        item.setQuantity(item.getQuantity() - 1);
-                    }
-                }else{
-                    item.setQuantity(item.getQuantity() - 1);
-                    Log.i(TAG,"minus mode "+item.getQuantity() % productDiscountOffer.getProdBuyQty());
-                    if(item.getQuantity() % productDiscountOffer.getProdBuyQty() == (productDiscountOffer.getProdBuyQty()-1)){
-                        item.setOfferItemCounter(item.getOfferItemCounter() - 1);
-                        if(item.getOfferItemCounter() == 0){
-                            dbHelper.removeFreeProductFromCart(productDiscountOffer.getProdFreeId(), item.getShopCode());
-                        }else{
-                            dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f, item.getShopCode());
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
-                        }
-                    }
-
-                }
-            }else if(type == 2){
-                if(productDiscountOffer.getProdBuyId() == productDiscountOffer.getProdFreeId()){
-                    Log.i(TAG,"Same product");
-                    Log.i(TAG,"item qty "+item.getQuantity()+" offer buy qty"+productDiscountOffer.getProdBuyQty());
-                    Log.i(TAG,"plus mode "+(item.getQuantity() - item.getOfferItemCounter())% productDiscountOffer.getProdBuyQty());
-                    Log.d(TAG, " offerCounter "+item.getOfferItemCounter() +" shopCode "+item.getShopCode() +" Qyantity "+item.getQuantity() +" prodId "+item.getId() +" offer Amount "+amount);
-                    if((item.getQuantity() - item.getOfferItemCounter())% productDiscountOffer.getProdBuyQty() == 0){
-                        item.setQuantity(item.getQuantity() + 1);
-                        item.setOfferItemCounter(item.getOfferItemCounter() + 1);
-                        dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
-                    }else{
-
-                    }
-                }else{
-                    Log.i(TAG,"Different product");
-                    if(item.getQuantity() % productDiscountOffer.getProdBuyQty() == 0){
-                        item.setOfferItemCounter(item.getOfferItemCounter() + 1);
-                        MyProduct item1 = null;
-                        if(item.getOfferItemCounter() == 1){
-                //            item1 = dbHelper.getProductDetails(productDiscountOffer.getProdFreeId());
-                            item1 = freeProdut;
-                            item1.setShopCode(shopCode);
-                            item1.setSellingPrice(0f);
-                            item1.setQuantity(1);
-                            item1.setFreeProductPosition(item.getFreeProductPosition());
-                            dbHelper.addProductToCart(item1);
-                            Log.d("FreeProductPosition ", ""+item.getFreeProductPosition());
-                            dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()), item.getShopCode());
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
-                            Log.i(TAG,"Different product added to cart");
-                        }else{
-
-                            dbHelper.updateFreeCartData(productDiscountOffer.getProdFreeId(),item.getOfferItemCounter(),0f, item.getShopCode());
-                            dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
-                            Log.i(TAG,"Different product updated in cart");
-                        }
-                        //  myItemAdapter.notifyDataSetChanged();
-                    }
-
-                }
-
-            }else{
-                amount = item.getSellingPrice();
-            }
-
-        }else{
-            if(type == 1)
-                item.setQuantity(item.getQuantity() - 1);
-            amount = item.getSellingPrice();
-        }
-
-        return amount;
-    }
-
-    private float getOfferPrice(int qty,float sp,List<ProductPriceDetails> productPriceDetailsList){
-        float amount = 0f;
-        int i=-1;
-        for(ProductPriceDetails productPriceDetails:productPriceDetailsList){
-            if(productPriceDetails.getPcodProdQty() == qty){
-                amount = productPriceDetails.getPcodPrice();
-                if(qty!=1){
-                    amount = amount - productPriceDetailsList.get(i).getPcodPrice();
-                }
-                Log.i(TAG,"offer price "+amount);
-                break;
-            }else{
-                amount = sp;
-            }
-            i++;
-        }
-        Log.i(TAG,"final selling price "+amount);
-        return amount;
+    public void showFrequencyBottomShet(MyProduct item, int position){
+        FrequencyFragment frequencyFragment = new FrequencyFragment();
+        if(item.getFrequency()!=null)
+        frequencyFragment.setProduct(item, position, "edit");
+        else frequencyFragment.setProduct(item, position, "add");
+        frequencyFragment.setColorTheme(colorTheme);
+        frequencyFragment.show(getSupportFragmentManager(), "Product ProductFrequency Bottom Sheet");
     }
 
     public void showLargeImageDialog(MyProduct product, View view){
@@ -1030,4 +704,13 @@ public class ShopProductListActivity extends NetworkBaseActivity {
         startActivity(intent);
     }
 
+    @Override
+    public void updateUi(MyProduct product, int position) {
+        Log.d("return position ", position+"");
+        Log.d("return product ", product.getId()+"");
+        myProductList.set(position, product);
+        shopProductAdapter.notifyItemChanged(position);
+        shopProductAdapter.notifyDataSetChanged();
+        updateCartCount();
+    }
 }
