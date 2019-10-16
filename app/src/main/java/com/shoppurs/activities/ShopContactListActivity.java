@@ -42,6 +42,7 @@ public class ShopContactListActivity extends NetworkBaseActivity {
     private TextView text_error;
     private List<MyShop> myShopList;
     private ProgressBar progress_bar;
+    private boolean searchByQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +75,12 @@ public class ShopContactListActivity extends NetworkBaseActivity {
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(!TextUtils.isEmpty(s)){
+                    searchByQuery = true;
                     recycler_viewShops.setVisibility(View.VISIBLE);
                     //showShopListRecycleView(true);
                     searchShopbyQuery(s.toString());
                 }else {
+                    searchByQuery = false;
                     showNoData(false);
                     showProgressBar(false);
                     //recycler_viewShops.setVisibility(View.GONE);
@@ -199,9 +202,14 @@ public class ShopContactListActivity extends NetworkBaseActivity {
                 }
             }else if(apiName.equals("contactList")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
+                    JSONArray shopJArray = null;
+                    if(searchByQuery)
+                        shopJArray = response.getJSONArray("result");
+                    else {
+                        JSONObject jsonObject = response.getJSONObject("result");
+                        shopJArray = jsonObject.getJSONArray("shoplist");
+                    }
 
-                    JSONObject jsonObject = response.getJSONObject("result");
-                    JSONArray shopJArray = jsonObject.getJSONArray("shoplist");
                     myShopList.clear();
                     for(int i=0;i<shopJArray.length();i++){
                         MyShop myShop = new MyShop();

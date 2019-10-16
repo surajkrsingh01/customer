@@ -293,7 +293,9 @@ public class SearchActivity extends NetworkBaseActivity{
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
         recyclerView_shops.setLayoutManager(layoutManager);
         recyclerView_shops.setItemAnimator(new DefaultItemAnimator());
+        if(selectedSubCategory!=null)
         shopAdapter=new ShopAdapter(this,shopList,"shopList", "", selectedSubCategory.getSubCatId(), selectedSubCategory.getName());
+        else shopAdapter=new ShopAdapter(this,shopList,"shopList", "", "", "");
         shopAdapter.setFlag("SearchActivity");
         recyclerView_shops.setAdapter(shopAdapter);
 
