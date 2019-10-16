@@ -31,7 +31,7 @@ import java.util.Map;
 public class RateAndReviewActivity extends NetworkBaseActivity {
 
     private String orderNumber;
-    private float totalAmount;
+    private String totalAmount;
     private String shopCodes;
     private TextView text_action;
     private RelativeLayout relative_footer_action;
@@ -44,7 +44,7 @@ public class RateAndReviewActivity extends NetworkBaseActivity {
         setContentView(R.layout.activity_rate_and_review);
 
         orderNumber = getIntent().getStringExtra("orderNumber");
-        totalAmount = getIntent().getFloatExtra("totalAmount", 0);
+        totalAmount = getIntent().getStringExtra("totalAmount");
         shopCodes = getIntent().getStringExtra("shopCodes");
         text_action = findViewById(R.id.text_action);
         et_review = findViewById(R.id.et_review);

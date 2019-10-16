@@ -169,15 +169,25 @@ public class UserListForChatActivity extends NetworkBaseActivity implements MyIt
                         for(int i = 0; i<len; i++){
                             dataObject = jsonArray.getJSONObject(i);
                             item = new ChatUser();
-                            item.setUserCode(dataObject.getString("userCode"));
-                            item.setLastMessage(dataObject.getString("lastMessage"));
-                            item.setLastMessageDate(dataObject.getString("lastMessageDate"));
-                            item.setUserMobile(dataObject.getString("userMobile"));
-                            item.setUserName(dataObject.getString("userName"));
-                            item.setUserPic(dataObject.getString("userPic"));
-                            if(item.getUserCode().equals("SHP1")){
+
+                            if(dataObject.getString("userCode").equals("SHP1") || dataObject.getString("userFromCode").equals("SHP1")){
 
                             }else{
+                                if(dataObject.getString("userCode").equals(sharedPreferences.getString(Constants.USER_ID, ""))){
+                                    item.setUserCode(dataObject.getString("userFromCode"));
+                                    item.setLastMessage(dataObject.getString("lastMessage"));
+                                    item.setLastMessageDate(dataObject.getString("lastMessageDate"));
+                                    item.setUserMobile(dataObject.getString("userFromMobile"));
+                                    item.setUserName(dataObject.getString("userFromName"));
+                                    item.setUserPic(dataObject.getString("userFromPic"));
+                                }else {
+                                    item.setUserCode(dataObject.getString("userCode"));
+                                    item.setLastMessage(dataObject.getString("lastMessage"));
+                                    item.setLastMessageDate(dataObject.getString("lastMessageDate"));
+                                    item.setUserMobile(dataObject.getString("userMobile"));
+                                    item.setUserName(dataObject.getString("userName"));
+                                    item.setUserPic(dataObject.getString("userPic"));
+                                }
                                 itemList.add(item);
                             }
                         }

@@ -36,8 +36,10 @@ import com.shoppurs.interfaces.MyItemClickListener;
 import com.shoppurs.interfaces.MyItemTypeClickListener;
 import com.shoppurs.models.Coupon;
 import com.shoppurs.models.DeliveryAddress;
+import com.shoppurs.models.FrequencyType;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductDiscountOffer;
+import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.models.ProductPriceDetails;
 import com.shoppurs.models.ProductPriceOffer;
 import com.shoppurs.models.ShopDeliveryModel;
@@ -66,8 +68,8 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
     private RelativeLayout relativeLayoutCartFooter, linear_address_billing;
     private LinearLayout rlAddressBilling;
-    private TextView tvItemCount,tvItemPrice,tvCheckout,tvItemTotal,tvTotalTaxes,tvSgst,tvTotalDiscount,
-            tvDeliveryCharges,tvNetPayable;
+    private TextView tvItemCount,tvNetPayable,tvCheckout,tvItemTotal,tvTotalTaxes,tvSgst,tvTotalDiscount,
+            tvDeliveryCharges;
     private RelativeLayout relativeLayoutPayOptionLayout,rlDiscount,rlDelivery,rl_offer_applied_layout,rlOfferLayout;
     private TextView tvCash,tvCard,tvMPos,tvAndroidPos;
 
@@ -96,6 +98,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
     private BottomSearchFragment bottomSearchFragment;
     private DeliveryAddress deliveryAddress;
+    private String cartType = "normal";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +113,9 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     }
 
     private void init(){
+        if(!TextUtils.isEmpty(getIntent().getStringExtra("cart_type")))
+            cartType = "frequency";
+
         text_left_label = findViewById(R.id.text_left_label);
         text_right_label = findViewById(R.id.text_right_label);
         text_left_label.setOnClickListener(new View.OnClickListener() {
@@ -127,7 +133,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         imageViewScan = findViewById(R.id.image_scan);
         imageViewSearch = findViewById(R.id.image_search);
         tvItemCount=findViewById(R.id.itemCount);
-        tvItemPrice=findViewById(R.id.itemPrice);
+        tvNetPayable=findViewById(R.id.itemPrice);
         tvCheckout=findViewById(R.id.viewCart);
         tvCard = findViewById(R.id.tv_pay_card);
         tvCash = findViewById(R.id.tv_pay_cash);
@@ -141,7 +147,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         tvSgst = findViewById(R.id.tv_sgst);
         tvTotalDiscount = findViewById(R.id.tv_total_discount);
         tvDeliveryCharges = findViewById(R.id.tv_delivery_charges);
-        tvNetPayable = findViewById(R.id.tv_net_pay);
         rlDelivery = findViewById(R.id.relative_delivery_layout);
         rlDiscount = findViewById(R.id.relative_discount);
         rl_offer_applied_layout = findViewById(R.id.rl_offer_applied_layout);
@@ -201,6 +206,8 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                generateJson(paymentMode);
             }
         });
+        if(cartType.equals("frequency"))
+            tvCash.setVisibility(View.GONE);
 
         tvCash.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,6 +220,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                 startActivity(intent);*/
             }
         });
+
 
         tvMPos.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -251,10 +259,11 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         });
 
         boolean isDeliveryAvailable =false;
-        List<MyProduct> myProductsList = dbHelper.getCartProducts();
+        List<MyProduct> myProductsList = dbHelper.getCartProducts(cartType);
+        Log.d("cartSize ", myProductsList.size()+"");
         for(MyProduct product: myProductsList){
            ShopDeliveryModel deliveryModel = dbHelper.getShopDeliveryDetails(product.getShopCode());
-           Log.d(TAG, deliveryModel.getIsDeliveryAvailable());
+          // Log.d("getIsDeliveryAvailable ", deliveryModel.getIsDeliveryAvailable());
            if(!TextUtils.isEmpty(deliveryModel.getIsDeliveryAvailable()) && deliveryModel.getIsDeliveryAvailable().equals("Y")){
                isDeliveryAvailable = true;
                break;
@@ -444,15 +453,15 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             tvItemCount.setText(itemList.size()+" items");
         }
 
-        totalTax = dbHelper.getTotalTaxesart();
-        tvItemTotal.setText(Utility.numberFormat(dbHelper.getTotalPriceCart() - totalTax));
+        totalTax = dbHelper.getTotalTaxesart(cartType);
+        tvItemTotal.setText(Utility.numberFormat(dbHelper.getTotalPriceCart(cartType) - totalTax));
         tvTotalTaxes.setText(Utility.numberFormat(totalTax));
-        totDiscount = dbHelper.getTotalMrpPriceCart() - dbHelper.getTotalPriceCart() + dbHelper.getTotalShopCouponDiscount() + dbHelper.getTotalShoppursCouponDiscount();
-        totalPrice = dbHelper.getTotalPriceCart() - (dbHelper.getTotalShopCouponDiscount()+dbHelper.getTotalShoppursCouponDiscount());
+        totDiscount = dbHelper.getTotalMrpPriceCart(cartType) - dbHelper.getTotalPriceCart(cartType) + dbHelper.getTotalShopCouponDiscount(cartType) + dbHelper.getTotalShoppursCouponDiscount(cartType);
+        totalPrice = dbHelper.getTotalPriceCart(cartType) - (dbHelper.getTotalShopCouponDiscount(cartType)+dbHelper.getTotalShoppursCouponDiscount(cartType));
 
-        Log.i(TAG," Taxes "+dbHelper.getTotalTaxesart());
-        Log.i(TAG," MRP "+dbHelper.getTotalMrpPriceCart()
-                +" Price "+dbHelper.getTotalPriceCart());
+        Log.i(TAG," Taxes "+dbHelper.getTotalTaxesart(cartType));
+        Log.i(TAG," MRP "+dbHelper.getTotalMrpPriceCart(cartType)
+                +" Price "+dbHelper.getTotalPriceCart(cartType));
         Log.i(TAG," diff "+totDiscount+" offerPer "+offerPer+" totalPrice "+totalPrice);
 
         if(totDiscount == 0f){
@@ -473,7 +482,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         }
 
         totalPrice = totalPrice + deliveryCharges;
-        tvItemPrice.setText("Rs "+Utility.numberFormat(totalPrice));
         tvNetPayable.setText("Rs "+Utility.numberFormat(totalPrice));
 
         tvCheckout.setVisibility(View.VISIBLE);
@@ -507,7 +515,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
     private void generateJson(String paymentMode){
         try {
-            cartItemList = dbHelper.getCartProducts();
+            cartItemList = dbHelper.getCartProducts(cartType);
 
             List<String> tempShopList = new ArrayList<>();
             shopArray = new JSONArray();
@@ -539,16 +547,32 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                         }
                     }*/
 
+
+                    shopObject.put("orderType", cartType);
+
                     shopObject.put("shopCode", shopCode);
                     shopObject.put("orderDate", Utility.getTimeStamp());
-                    shopObject.put("orderDeliveryNote","Note");
-                    shopObject.put("orderDeliveryMode","Self");
+                    ShopDeliveryModel deliveryModel = dbHelper.getShopDeliveryDetails(shopCode);
+                    if(deliveryModel!=null && !TextUtils.isEmpty(deliveryModel.getIsDeliveryAvailable()) && deliveryModel.getIsDeliveryAvailable().equals("Y") && sharedPreferences.getBoolean(Constants.IS_HOME_DELIVERY_SELECTED,false)) {
+                        shopObject.put("deliveryCharges", deliveryModel.getNetDeliveryCharge());
+                        shopObject.put("orderDeliveryNote", "Note");
+                        shopObject.put("orderDeliveryMode", "home");
+                        shopObject.put("deliveryAddress", deliveryAddress.getAddress());
+                        shopObject.put("deliveryCountry",deliveryAddress.getCountry());
+                        shopObject.put("deliveryState",deliveryAddress.getState());
+                        shopObject.put("deliveryCity", deliveryAddress.getCity());
+                        shopObject.put("pinCode", deliveryAddress.getPinCode());
+                    }else {
+                        shopObject.put("deliveryCharges", 0);
+                        shopObject.put("orderDeliveryNote", "Note");
+                        shopObject.put("orderDeliveryMode", "self");
+                        shopObject.put("deliveryAddress", "");
+                        shopObject.put("deliveryCountry","");
+                        shopObject.put("deliveryState","");
+                        shopObject.put("deliveryCity", "");
+                        shopObject.put("pinCode", "");
+                    }
                     shopObject.put("paymentMode",paymentMode);
-                    shopObject.put("deliveryAddress",sharedPreferences.getString(Constants.CUST_ADDRESS,""));
-                    shopObject.put("deliveryCountry",sharedPreferences.getString(Constants.CUST_COUNTRY,""));
-                    shopObject.put("deliveryState",sharedPreferences.getString(Constants.CUST_STATE,""));
-                    shopObject.put("deliveryCity",sharedPreferences.getString(Constants.CUST_CITY,""));
-                    shopObject.put("pinCode",sharedPreferences.getString(Constants.CUST_PINCODE,""));
                     shopObject.put("createdBy",sharedPreferences.getString(Constants.FULL_NAME,""));
                     shopObject.put("updateBy",sharedPreferences.getString(Constants.FULL_NAME,""));
                     if(paymentMode.equals("Cash")){
@@ -564,16 +588,18 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     shopObject.put("orderImage","customer.png");
                     shopObject.put("custUserCreateStatus","C");
                     shopObject.put("totalQuantity",String.valueOf(dbHelper.getTotalQuantity(shopCode)));
-                    shopObject.put("toalAmount",String.valueOf(getTotalAmount(shopCode) - dbHelper.getTotalShopCouponDiscount(shopCode)));
+                    shopObject.put("toalAmount",String.valueOf(getTotalAmount(shopCode) - dbHelper.getTotalShopCouponDiscount(shopCode, cartType)));
 
                     shopObject.put("ordCouponId",String.valueOf(offerId));
 
                     shopObject.put("totCgst",String.valueOf(dbHelper.getTaxesCart("cgst", shopCode)));
                     shopObject.put("totSgst",String.valueOf(dbHelper.getTaxesCart("sgst", shopCode)));
                     shopObject.put("totIgst",String.valueOf(dbHelper.getTaxesCart("igst", shopCode)));
-                    shopObject.put("totTax",String.valueOf(dbHelper.getTotalTaxesart(shopCode)));
-                    shopObject.put("deliveryCharges",String.valueOf(deliveryCharges));
-                    float dis = dbHelper.getTotalMrpPriceCart(shopCode) - getTotalAmount(shopCode) + dbHelper.getTotalShopCouponDiscount(shopCode);
+                    shopObject.put("totTax",String.valueOf(dbHelper.getTotalTaxesart(shopCode, cartType)));
+                    float t_sp = (getTotalAmount(shopCode));
+                    if(deliveryModel!=null)
+                    t_sp =  (float) (t_sp - deliveryModel.getNetDeliveryCharge());
+                    float dis = dbHelper.getTotalMrpPriceCart(shopCode, cartType) - t_sp + dbHelper.getTotalShopCouponDiscount(shopCode, cartType);
                     shopObject.put("totDiscount",String.valueOf(dis));
                     shopObject.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
                     shopObject.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
@@ -606,6 +632,14 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     productObject.put("prodImage2",cartItem.getProdImage2());
                     productObject.put("prodImage3",cartItem.getProdImage3());
                     productObject.put("isBarcodeAvailable",cartItem.getIsBarcodeAvailable());
+                    if(cartType.equals("frequency") && cartItem.getFrequency()!=null) {
+                        ProductFrequency frequency = cartItem.getFrequency();
+                        productObject.put("frequency", frequency.getName());
+                        productObject.put("frequencyStartDate", frequency.getStartDate());
+                        productObject.put("frequencyEndDate", frequency.getEndDate());
+                        productObject.put("frequencyQty", frequency.getQyantity());
+                        productObject.put("frequencyValue", frequency.getNoOfDays());
+                    }
                     if(cartItem.getOfferItemCounter() > 0){
                         productObject.put("offerId", cartItem.getOfferId());
                         productObject.put("offerType", cartItem.getOfferType());
@@ -645,6 +679,15 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     productObject.put("prodIgst", cartItem.getProdIgst());
                     productObject.put("prodSp", cartItem.getSellingPrice());
 
+                    if(cartItem.getFrequency()!=null) {
+                        ProductFrequency frequency = cartItem.getFrequency();
+                        productObject.put("frequency", frequency.getName());
+                        productObject.put("frequencyStartDate", frequency.getStartDate());
+                        productObject.put("frequencyEndDate", frequency.getEndDate());
+                        productObject.put("frequencyQty", frequency.getQyantity());
+                        productObject.put("frequencyValue", frequency.getNoOfDays());
+                    }
+
                     if(cartItem.getOfferItemCounter() > 0){
                         productObject.put("offerId", cartItem.getOfferId());
                         productObject.put("offerType", cartItem.getOfferType());
@@ -664,13 +707,14 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     }
 
     public float getTotalAmount(String shopCode) {
-        totalTax = dbHelper.getTotalTaxesart(shopCode);
-        totalPrice = dbHelper.getTotalPriceCart(shopCode);
-        totDiscount = dbHelper.getTotalMrpPriceCart(shopCode) - dbHelper.getTotalPriceCart(shopCode);
+        totalTax = dbHelper.getTotalTaxesart(shopCode, cartType);
+        totalPrice = dbHelper.getTotalPriceCart(shopCode, cartType);
+        totDiscount = dbHelper.getTotalMrpPriceCart(shopCode, cartType) - dbHelper.getTotalPriceCart(shopCode, cartType);
 
-        Log.i(TAG, " Taxes " + dbHelper.getTotalTaxesart(shopCode));
+        Log.i(TAG, " Taxes " + dbHelper.getTotalTaxesart(shopCode, cartType));
 
-        totalPrice = totalPrice + deliveryCharges;
+        ShopDeliveryModel deliveryModel = dbHelper.getShopDeliveryDetails(shopCode);
+        totalPrice = (float) (totalPrice + deliveryModel.getNetDeliveryCharge());
         return  totalPrice;
     }
 
@@ -709,7 +753,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     itemList.clear();
                     myItemAdapter.notifyDataSetChanged();
                     if(paymentMode.equals("Cash")){
-                        List<MyProduct> cartItemList = dbHelper.getCartProducts();
+                        List<MyProduct> cartItemList = dbHelper.getCartProducts(cartType);
                         String shopCodes ="";
                         for(MyProduct myProduct: cartItemList) {
                             Log.d("left "+cartItemList.indexOf(myProduct), "right "+(cartItemList.size()-1));
@@ -743,12 +787,12 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                         intent.putExtra("orderNumber", orderNumber);
                         String ta = tvNetPayable.getText().toString().split(" ")[1];
                         ta = ta.replaceAll(",", "");
-                        intent.putExtra("totalAmount", Float.parseFloat(ta));
+                        intent.putExtra("totalAmount", String.format("%.02f", Float.parseFloat(ta)));
                         intent.putExtra("shopCodes", shopCodes);
                         startActivity(intent);
                         finish();
                     }else{
-                        List<MyProduct> cartItemList = dbHelper.getCartProducts();
+                        List<MyProduct> cartItemList = dbHelper.getCartProducts(cartType);
                         String shopCodes ="";
                         for(MyProduct myProduct: cartItemList) {
                             Log.d("left "+cartItemList.indexOf(myProduct), "right "+(cartItemList.size()-1));
@@ -980,7 +1024,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                 if(item.getProductPriceOffer()!=null){
                     item.setSellingPrice(amount/qty);
                 }
-                dbHelper.updateCartData(item);
+                dbHelper.updateCartData(item, cartType);
                 setFooterValues();
                 if(qty == 0){
                     itemList.remove(position);
@@ -1032,7 +1076,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     qty = item.getQuantity();
                     item.setQuantity(item.getQuantity());
                     Log.i(TAG,"qty "+qty);
-                    dbHelper.updateCartData(item);
+                    dbHelper.updateCartData(item, cartType);
                     if(itemList.size() == 1){
                         relativeLayoutCartFooter.setVisibility(View.VISIBLE);
                     }
@@ -1131,7 +1175,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                            item1.setSellingPrice(0f);
                            item1.setQuantity(1);
                            item1.setFreeProductPosition(position+1);
-                           dbHelper.addProductToCart(item1);
+                           dbHelper.addProductToCart(item1, "normal");
                            itemList.add(position+1,item1);
                            item.setFreeProductPosition(position+1);
                            dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()), item.getShopCode());
@@ -1252,7 +1296,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             if(item.getQuantity() <= item.getQoh() ){
                 item.setQuantity(1);
                 item.setTotalAmount(item.getSellingPrice());
-                dbHelper.addProductToCart(item);
+                dbHelper.addProductToCart(item , "normal");
                 itemList.add(item);
                 //myItemAdapter.notifyItemChanged(itemList.size() -1 );
                 myItemAdapter.notifyDataSetChanged();
@@ -1299,7 +1343,6 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     public void onResume(){
         super.onResume();
         Log.i(TAG,"onResume called.");
-
         if(couponList==null) {
             couponList = dbHelper.getCouponOffer();
             appliedCouponsAdapter.notifyDataSetChanged();
@@ -1312,12 +1355,13 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         }
 
         if(itemList == null){
-            itemList = dbHelper.getCartProducts();
+            itemList = dbHelper.getCartProducts(cartType);
         }else{
             itemList.clear();
-            List<MyProduct> cartList =  dbHelper.getCartProducts();
+            List<MyProduct> cartList =  dbHelper.getCartProducts(cartType);
             itemList.addAll(cartList);
         }
+        Log.d("cartSize onResume ", itemList.size()+"");
         if(itemList.size() > 0){
             setFooterValues();
             relativeLayoutCartFooter.setVisibility(View.VISIBLE);
@@ -1344,7 +1388,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     List<ShopDeliveryModel> shopDeliveryModelList;
     private void calculateDistance(DeliveryAddress deliveryAddress){
         shopDeliveryModelList = dbHelper.getShopDeliveryDetails();
-        Log.d("shopIndexforCalculatingDistance "+ shopIndexforCalculatingDistance, "shopDeliveryModelList "+shopDeliveryModelList.size());
+        Log.d("shopIndexforDistance"+ shopIndexforCalculatingDistance, "shopDeliveryModelList "+shopDeliveryModelList.size());
         if(shopIndexforCalculatingDistance <shopDeliveryModelList.size()) {
             ShopDeliveryModel shopDeliveryModel = shopDeliveryModelList.get(shopIndexforCalculatingDistance);
             if (!TextUtils.isEmpty(shopDeliveryModel.getIsDeliveryAvailable()) && shopDeliveryModel.getIsDeliveryAvailable().equals("Y")) {
@@ -1372,7 +1416,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
     private void updateDeliveryCharges(double distance, ShopDeliveryModel shopDeliveryModel){
         Log.d("MinDeliverydistance ", shopDeliveryModel.getMinDeliverydistance()+"");
-        Log.d("ChargesAfterMinDistance ", shopDeliveryModel.getChargesAfterMinDistance()+"");
+        Log.d("shopIndexforDistance", shopDeliveryModel.getChargesAfterMinDistance()+"");
         Log.d("distance ", distance+"");
         if(distance > shopDeliveryModel.getMinDeliverydistance()){
             float diffKms = (float) (distance -  shopDeliveryModel.getMinDeliverydistance());
@@ -1387,4 +1431,23 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
             setFooterValues();
         }
     }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Log.d("CartActivity ", "onBackPressed");
+        List<MyProduct> cartList =  dbHelper.getCartProducts(cartType);
+        if(cartType.equals("frequency")) {
+            if(cartList.size()>0)
+            dbHelper.removeProductFromCart(cartList.get(0).getId(), cartList.get(0).getShopCode());
+            setFooterValues();
+            Intent intent = new Intent();
+            Log.d("onBackPressed ", " position " + getIntent().getIntExtra("position", 0));
+            intent.putExtra("position", getIntent().getIntExtra("position", 0));
+            setResult(102, intent);
+        }
+    }
+
+
 }

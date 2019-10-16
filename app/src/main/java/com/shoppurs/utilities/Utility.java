@@ -22,6 +22,7 @@ import android.util.TypedValue;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -203,6 +204,18 @@ public class Utility {
     public static String getTimeStamp(String format){
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
         String timeStamp=new SimpleDateFormat(format).format(calendar.getTime());
+        return timeStamp;
+    }
+
+    public static String getFrequencyEndDays(int noOfDays){
+        Calendar now = Calendar.getInstance(Locale.getDefault());
+        now.add(Calendar.DATE, noOfDays);
+        String timeStamp=new SimpleDateFormat("yyyy-MM-dd").format(now.getTime());
+        String endDate = now.get(Calendar.YEAR)
+                + "-"
+                +(now.get(Calendar.MONTH))
+                + "-"
+                + now.get(Calendar.DATE);
         return timeStamp;
     }
 

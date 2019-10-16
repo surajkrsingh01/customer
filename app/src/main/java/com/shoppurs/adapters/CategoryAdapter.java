@@ -612,7 +612,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             if(dbHelper.checkProdExistInCart(item.getId(), shopCode)){
                 myViewHolder.btnAddCart.setVisibility(View.GONE);
                 myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
-                myViewHolder.tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(item.getCode(), shopCode)));
+                myViewHolder.tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(item.getCode(), shopCode, "normal")));
             }else {
                 myViewHolder.tv_cartCount.setText(String.valueOf(1));
                 myViewHolder.linear_plus_minus.setVisibility(View.GONE);

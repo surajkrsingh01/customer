@@ -26,6 +26,7 @@ import com.shoppurs.activities.ShopProductListActivity;
 import com.shoppurs.database.DbHelper;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductDiscountOffer;
+import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.models.ProductPriceOffer;
 import com.shoppurs.models.ProductUnit;
 import com.shoppurs.utilities.Utility;
@@ -44,7 +45,6 @@ public class FrequencyProductListAdapter extends RecyclerView.Adapter<FrequencyP
     private String shopCode;
     private boolean isDarkTheme;
     private Typeface typeface;
-
 
     public void setDarkTheme(boolean darkTheme) {
         isDarkTheme = darkTheme;
@@ -74,13 +74,23 @@ public class FrequencyProductListAdapter extends RecyclerView.Adapter<FrequencyP
     @Override
     public void onBindViewHolder(final FrequencyProductListAdapter.MyViewHolder myViewHolder, final int position) {
         {
-            final MyProduct item = (MyProduct) myProductsList.get(position);
-            myViewHolder.textbarcode.setText(item.getBarCode());
+            final MyProduct item =  myProductsList.get(position);
+            ProductFrequency frequency = item.getFrequency();
+           // myViewHolder.textbarcode.setText(item.getBarCode());
             myViewHolder.textName.setText(item.getName());
             //myViewHolder.textAmount.setText("Rs. "+String.format("%.02f",item.getMrp()));
             myViewHolder.textSp.setText(Utility.numberFormat(Double.valueOf(item.getSellingPrice())));
             myViewHolder.textMrp.setText(Utility.numberFormat(Double.valueOf(item.getMrp())));
             myViewHolder.textMrp.setPaintFlags(myViewHolder.textMrp.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            myViewHolder.text_start_date.setText("Start Order Date: "+frequency.getStartDate());
+            myViewHolder.text_end_date.setText("End Order Date: "+frequency.getEndDate());
+            myViewHolder.text_next_date.setText("Next Order Date: "+frequency.getNextOrderDate());
+            if(frequency.getStatus().equals("1"))
+            myViewHolder.text_frequency_status.setText("Active");
+            else {
+                myViewHolder.text_frequency_status.setText("InActive");
+                myViewHolder.text_frequency.setVisibility(View.VISIBLE);
+            }
 
             float diff = Float.valueOf(item.getMrp()) - Float.valueOf(item.getSellingPrice());
             if(diff > 0f){
@@ -92,71 +102,6 @@ public class FrequencyProductListAdapter extends RecyclerView.Adapter<FrequencyP
                 myViewHolder.textMrp.setVisibility(View.GONE);
                 myViewHolder.textOffPer.setVisibility(View.GONE);
             }
-
-
-            if(item.getProductUnitList() != null && item.getProductUnitList().size() > 0){
-                myViewHolder.relative_unit.setVisibility(View.VISIBLE);
-                List<String> unitList = new ArrayList<>();
-                for(ProductUnit unit : item.getProductUnitList()){
-                    unitList.add(unit.getUnitValue()+" "+unit.getUnitName());
-                }
-                ArrayAdapter<String> unitAdapter = new ArrayAdapter<String>(context, R.layout.simple_dropdown_unit_item, unitList){
-                    @Override
-                    public boolean isEnabled(int position){
-                        return true;
-                    }
-                    @Override
-                    public View getView(int position, View convertView,
-                                        ViewGroup parent) {
-                        View view = super.getView(position, convertView, parent);
-                        TextView tv = (TextView) view;
-                        if(isDarkTheme){
-                            tv.setTextColor(context.getResources().getColor(R.color.white));
-                        }else{
-                            tv.setTextColor(context.getResources().getColor(R.color.primary_text_color));
-                        }
-                        return view;
-                    }
-                    @Override
-                    public View getDropDownView(int position, View convertView,
-                                                ViewGroup parent) {
-                        View view = super.getDropDownView(position, convertView, parent);
-                        if(isDarkTheme){
-                            view.setBackgroundColor(context.getResources().getColor(R.color.dark_color));
-                        }else{
-                            view.setBackgroundColor(context.getResources().getColor(R.color.white));
-                        }
-                        TextView tv = (TextView) view;
-                        if(isDarkTheme){
-                            tv.setTextColor(context.getResources().getColor(R.color.white));
-                        }else{
-                            tv.setTextColor(context.getResources().getColor(R.color.primary_text_color));
-                        }
-                        tv.setPadding(20,20,20,20);
-                        return view;
-                    }
-                };
-
-                myViewHolder.spinnerUnit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        ProductUnit unit = item.getProductUnitList().get(i);
-                        item.setUnit(unit.getUnitValue()+" "+unit.getUnitName());
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-
-                    }
-                });
-
-                myViewHolder.spinnerUnit.setAdapter(unitAdapter);
-
-            }else{
-                myViewHolder.relative_unit.setVisibility(View.GONE);
-            }
-
-
             RequestOptions requestOptions = new RequestOptions();
             requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
             // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
@@ -182,7 +127,7 @@ public class FrequencyProductListAdapter extends RecyclerView.Adapter<FrequencyP
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private TextView textName,textMrp, textSp, textOffPer, textStatus, textbarcode, text_frequency;
+        private TextView textName,textMrp, textSp, textOffPer, textStatus, textbarcode, text_frequency, text_start_date, text_end_date,text_next_date, text_frequency_status ;
         private ImageView imageView, image_minus, image_plus;
         private View rootView;
         private Spinner spinnerUnit;
@@ -203,6 +148,10 @@ public class FrequencyProductListAdapter extends RecyclerView.Adapter<FrequencyP
             spinnerUnit = itemView.findViewById(R.id.spinner_unit);
             relative_unit = itemView.findViewById(R.id.relative_unit);
             text_frequency = itemView.findViewById(R.id.text_frequency);
+            text_start_date = itemView.findViewById(R.id.text_start_date);
+            text_end_date = itemView.findViewById(R.id.text_end_date);
+            text_next_date = itemView.findViewById(R.id.text_next_date);
+            text_frequency_status = itemView.findViewById(R.id.text_frequency_status);
             text_frequency.setTypeface(typeface);
             text_frequency.setOnClickListener(this);
             rootView.setOnClickListener(this);

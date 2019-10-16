@@ -5,6 +5,7 @@ import android.content.Intent;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +29,10 @@ import com.shoppurs.database.DbHelper;
 import com.shoppurs.interfaces.MyItemTypeClickListener;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductDiscountOffer;
+import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.models.ProductPriceOffer;
 import com.shoppurs.models.ProductUnit;
+import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
 
 import java.util.ArrayList;
@@ -47,6 +50,7 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
     private boolean isDarkTheme;
     private String callingActivityName;
     private MyItemTypeClickListener myItemClickListener;
+    private Typeface typeface;
 
     public void setDarkTheme(boolean darkTheme) {
         isDarkTheme = darkTheme;
@@ -68,6 +72,10 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
         this.shopCode = code;
     }
 
+    public void setTypeFace(Typeface typeFace){
+        this.typeface = typeFace;
+    }
+
     @Override
     public SearchProductAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(context).inflate(R.layout.product_list_item_layout, parent, false);
@@ -77,14 +85,23 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
     @Override
     public void onBindViewHolder(final SearchProductAdapter.MyViewHolder myViewHolder, final int position) {
         final MyProduct item = (MyProduct) myProductsList.get(position);
+        ProductFrequency frequency = item.getFrequency();
+        if(frequency!=null  && frequency.getStatus().equals("1")){
+            myViewHolder.text_frequency.setBackground(context.getResources().getDrawable(R.drawable.orange_solid_blue_stroke_circle_background));
+            myViewHolder.text_frequency.setTextColor(context.getResources().getColor(R.color.white));
+        }else {
+            myViewHolder.text_frequency.setBackground(context.getResources().getDrawable(R.drawable.white_solid_blue_stroke_circle_background));
+            myViewHolder.text_frequency.setTextColor(context.getResources().getColor(R.color.orange500));
+        }
+
         if (dbHelper.checkProdExistInCart(item.getId(), shopCode)) {
             myViewHolder.btnAddCart.setVisibility(View.GONE);
             myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
-            myViewHolder.tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(item.getId(), shopCode)));
+            myViewHolder.tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(item.getId(), shopCode, "normal")));
             item.setFreeProductPosition(dbHelper.getFreeProductPosition(item.getId(), shopCode));
             item.setOfferItemCounter(dbHelper.getOfferCounter(item.getId(), shopCode));
             item.setQuantity(Integer.parseInt(myViewHolder.tv_cartCount.getText().toString()));
-            item.setTotalAmount(dbHelper.getTotalAmount(item.getId(), shopCode));
+            item.setTotalAmount(dbHelper.getTotalAmount(item.getId(), shopCode, "normal"));
             item.setSellingPrice(dbHelper.getProductSellingPrice(item.getId(), shopCode));
 
         } else {
@@ -263,7 +280,7 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
         private LinearLayout linear_plus_minus;
         private Spinner spinnerUnit;
         private RelativeLayout relative_unit;
-        private TextView text_offer;
+        private TextView text_offer, text_frequency;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -283,6 +300,10 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
             spinnerUnit = itemView.findViewById(R.id.spinner_unit);
             relative_unit = itemView.findViewById(R.id.relative_unit);
             text_offer = itemView.findViewById(R.id.text_offer);
+            text_frequency = itemView.findViewById(R.id.text_frequency);
+            text_frequency.setVisibility(View.VISIBLE);
+            text_frequency.setTypeface(typeface);
+            text_frequency.setOnClickListener(this);
             rootView.setOnClickListener(this);
             text_offer.setOnClickListener(this);
             imageView.setOnClickListener(this);
@@ -299,6 +320,12 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
                 ((ShopProductListActivity)context).showOfferDescription(myProductsList.get(getAdapterPosition()));
                 else if(callingActivityName.equals("CartActivity"))
                     ((CartActivity)context).showOfferDescription(myProductsList.get(getAdapterPosition()));
+            }else if(v == text_frequency){
+                ProductFrequency frequency = myProductsList.get(getAdapterPosition()).getFrequency();
+                if(frequency!=null && frequency.getStatus().equals("1"))
+                    DialogAndToast.showDialog("Product Frequency is already Active", context);
+                else
+                    ((ShopProductListActivity)context).showFrequencyBottomShet(myProductsList.get(getAdapterPosition()), getAdapterPosition());
             }else if (v == rootView) {
                 MyProduct item = (MyProduct) myProductsList.get(getAdapterPosition());
                 if(callingActivityName.equals("ChatActivity")){

@@ -124,16 +124,17 @@
             </RelativeLayout>
 
                 <TextView
+                    android:visibility="gone"
                     android:layout_alignParentRight="true"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
                     android:id="@+id/text_frequency"
-                    android:textColor="@color/white"
+                    android:textColor="@color/orange500"
                     android:padding="@dimen/edit_text_vertical_padding"
                     android:text="&#xe611;"
                     android:textSize="@dimen/small_text_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/orange_solid_blue_stroke_circle_background"/>
+                    android:background="@drawable/white_solid_blue_stroke_circle_background"/>
         </RelativeLayout>
 
         <RelativeLayout

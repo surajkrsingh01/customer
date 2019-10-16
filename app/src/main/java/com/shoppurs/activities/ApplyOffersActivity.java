@@ -563,7 +563,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                     if(myProduct.getProductPriceOffer()!=null){
                         myProduct.setSellingPrice(amount/qty);
                     }
-                    dbHelper.updateCartData(myProduct);
+                    dbHelper.updateCartData(myProduct, "normal");
                     myItemAdapter.notifyItemChanged(position);
                     myItemAdapter.notifyDataSetChanged();
                     updateCartCount();
@@ -604,7 +604,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                     if(qty == 1){
                         counter++;
                         myProduct.setFreeProductPosition(counter);
-                        dbHelper.addProductToCart(myProduct);
+                        dbHelper.addProductToCart(myProduct, "normal");
                         dbHelper.addShopDeliveryDetails(shopDeliveryModel);
                     }
                     float netSellingPrice = getOfferAmount(myProduct,type);
@@ -619,7 +619,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                     qty = myProduct.getQuantity();
                     Log.i(TAG,"qty "+qty);
 
-                    dbHelper.updateCartData(myProduct);
+                    dbHelper.updateCartData(myProduct, "normal");
                     myItemAdapter.notifyItemChanged(position);
                     myItemAdapter.notifyDataSetChanged();
                     updateCartCount();
@@ -706,7 +706,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                             item1.setSellingPrice(0f);
                             item1.setQuantity(1);
                             item1.setFreeProductPosition(item.getFreeProductPosition());
-                            dbHelper.addProductToCart(item1);
+                            dbHelper.addProductToCart(item1, "normal");
                             Log.d("FreeProductPosition ", ""+item.getFreeProductPosition());
                             dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()),  item.getShopCode());
                             dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
@@ -801,7 +801,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                     startActivity(new Intent(ApplyOffersActivity.this, CartActivity.class));
                 }
             });
-            float totalPrice = dbHelper.getTotalPriceCart() - (dbHelper.getTotalShopCouponDiscount()+dbHelper.getTotalShoppursCouponDiscount());
+            float totalPrice = dbHelper.getTotalPriceCart("normal") - (dbHelper.getTotalShopCouponDiscount("normal")+dbHelper.getTotalShoppursCouponDiscount("normal"));
             float deliveryDistance = 0;
 
             cartItemPrice.setText("Amount "+ Utility.numberFormat(totalPrice));

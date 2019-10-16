@@ -86,14 +86,14 @@ public class ApplyOfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if(dbHelper.checkProdExistInCart(item.getId(), shopCode)){
             myViewHolder.btnAddCart.setVisibility(View.GONE);
             myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
-            myViewHolder.tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(item.getId(), shopCode)));
+            myViewHolder.tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(item.getId(), shopCode, "normal")));
             item.setFreeProductPosition(dbHelper.getFreeProductPosition(item.getId(), shopCode));
             item.setOfferItemCounter(dbHelper.getOfferCounter(item.getId(), shopCode));
             item.setQuantity(Integer.parseInt(myViewHolder.tv_cartCount.getText().toString()));
-            item.setTotalAmount(dbHelper.getTotalAmount(item.getId(), shopCode));
+            item.setTotalAmount(dbHelper.getTotalAmount(item.getId(), shopCode, "normal"));
             item.setSellingPrice(dbHelper.getProductSellingPrice(item.getId(), shopCode));
-            Log.d("Quantity ........", ""+dbHelper.getProductQuantity(item.getId(), shopCode));
-            Log.d("Total Amout ........", ""+dbHelper.getTotalAmount(item.getId(), shopCode));
+            Log.d("Quantity ........", ""+dbHelper.getProductQuantity(item.getId(), shopCode, "normal"));
+            Log.d("Total Amout ........", ""+dbHelper.getTotalAmount(item.getId(), shopCode, "normal"));
         }else {
             item.setTotalAmount(0);
             item.setQuantity(0);

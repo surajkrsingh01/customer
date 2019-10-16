@@ -1,7 +1,10 @@
 package com.shoppurs.fragments;
 
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -24,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textfield.TextInputEditText;
 import com.shoppurs.R;
+import com.shoppurs.activities.Settings.FrequencyProductsActivity;
 import com.shoppurs.activities.ShopProductListActivity;
 import com.shoppurs.adapters.FrequencyTypeAdapter;
 import com.shoppurs.interfaces.MyItemTypeClickListener;
@@ -31,6 +35,7 @@ import com.shoppurs.models.FrequencyType;
 import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.utilities.DialogAndToast;
+import com.shoppurs.utilities.Utility;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -124,7 +129,7 @@ public class FrequencyFragment extends BottomSheetDialogFragment implements MyIt
             frequency = myProduct.getFrequency();
             et_qty.setText(frequency.getQyantity());
             et_no_of_days.setText(frequency.getNoOfDays());
-            //tv_product_frequency_details.setText(frequency.getQyantity());
+            frequency.setStartDate(Utility.getTimeStamp("yyyy-MM-dd"));
         }
 
         iv_clear.setOnClickListener(new View.OnClickListener() {
@@ -164,13 +169,49 @@ public class FrequencyFragment extends BottomSheetDialogFragment implements MyIt
                 return;
             }
 
-            if(getActivity() instanceof ShopProductListActivity) {
-                ((ShopProductListActivity) (getActivity())).setFrequencySelecte(true, frequency, position);
-                ((ShopProductListActivity) (getActivity())).updateCart(2, position);
-                FrequencyFragment.this.dismiss();
-
+            frequency.setStartDate(Utility.getTimeStamp("yyyy-MM-dd"));
+            String freqName = frequency.getName();
+            int freqVal = Integer.parseInt(frequency.getNoOfDays());
+            if(freqName.equals("Everyday")){
+                if(freqVal<2) {
+                    DialogAndToast.showDialog("Please Enter more than 1 frequency ", getContext());
+                    return;
+                }else {
+                    Log.d("endDate ", Utility.getFrequencyEndDays(freqVal));
+                    frequency.setEndDate(Utility.getFrequencyEndDays(freqVal-1));
+                }
+            }else if(freqName.equals("Every 2 Days")){
+                if(freqVal<2) {
+                    DialogAndToast.showDialog("Please Enter more than 1 frequency ", getContext());
+                    return;
+                }else {
+                    frequency.setEndDate(Utility.getFrequencyEndDays(2 * (freqVal-1)));
+                }
+            }else if(freqName.equals("Every 3 Days")){
+                if(freqVal<2) {
+                    DialogAndToast.showDialog("Please Enter more than 1 frequency ", getContext());
+                    return;
+                }else {
+                    frequency.setEndDate(Utility.getFrequencyEndDays(3 * (freqVal-1)));
+                }
+            }else if(freqName.equals("Weekly")){
+                if(freqVal<2) {
+                    DialogAndToast.showDialog("Please Enter more than 1 frequency ", getContext());
+                    return;
+                }else {
+                    frequency.setEndDate(Utility.getFrequencyEndDays(7 * (freqVal-1)));
+                }
+            }else if(freqName.equals("Monthly")){
+                if(freqVal<2) {
+                    DialogAndToast.showDialog("Please Enter more than 1 frequency ", getContext());
+                    return;
+                }else {
+                    frequency.setEndDate(Utility.getFrequencyEndDays(30 * (freqVal-1)));
+                }
             }
+           // tv_product_frequency_details.setText("Placing order of "+myProduct.getName() +freqName +" Starting Date: "+frequency.getStartDate() +" End Date: "+frequency.getEndDate());
 
+            showConfirmDialog(myProduct, frequency);
         }
     }
 
@@ -311,5 +352,34 @@ public class FrequencyFragment extends BottomSheetDialogFragment implements MyIt
     public void onItemClicked(int position, int type) {
         frequency.setName(frequencyTypeList.get(position).getName());
         Log.d("clicked Position ",frequency.getName());
+    }
+
+    private void showConfirmDialog(final MyProduct myProduct, final ProductFrequency frequency){
+        String msg = "Placing order of "+myProduct.getName() +" "+ frequency.getName() +" Starting Date: "+frequency.getStartDate() +" End Date: "+frequency.getEndDate();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(msg)
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if(getActivity() instanceof ShopProductListActivity) {
+                            FrequencyFragment.this.dismiss();
+                            ((ShopProductListActivity) (getActivity())).setFrequencySelecte(true, frequency, position);
+                            ((ShopProductListActivity) (getActivity())).updateFrequencyCart(2, position);
+                        }
+                        if(getActivity() instanceof FrequencyProductsActivity) {
+                            FrequencyFragment.this.dismiss();
+                            ((FrequencyProductsActivity) (getActivity())).setFrequencySelecte(true, frequency, position);
+                            ((FrequencyProductsActivity) (getActivity())).updateFrequencyCart(2, position);
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.setTitle("Product Frequency");
+        alert.show();
     }
 }

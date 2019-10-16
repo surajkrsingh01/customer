@@ -37,6 +37,7 @@ import com.shoppurs.activities.ShopAddressActivity;
 import com.shoppurs.models.HomeListItem;
 import com.shoppurs.models.MyItem;
 import com.shoppurs.models.MyShop;
+import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
@@ -253,6 +254,18 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     intent.putExtra("flag","mainOffers");
                     intent.putExtra("shopCode",shop.getCode());
                     Log.d("shopCode", shop.getCode());
+
+                    ShopDeliveryModel shopDeliveryModel = new ShopDeliveryModel();
+                    shopDeliveryModel.setShopCode(shop.getId());
+                    shopDeliveryModel.setRetLat(shop.getLatitude());
+                    shopDeliveryModel.setRetLong(shop.getLongitude());
+                    shopDeliveryModel.setIsDeliveryAvailable(shop.getIsDeliveryAvailable());
+                    shopDeliveryModel.setMinDeliveryAmount(shop.getMinDeliveryAmount());
+                    shopDeliveryModel.setMinDeliverytime(shop.getMinDeliverytime());
+                    shopDeliveryModel.setMinDeliverydistance(shop.getMinDeliverydistance());
+                    shopDeliveryModel.setChargesAfterMinDistance(shop.getChargesAfterMinDistance());
+                    intent.putExtra("shopDeliveryModel", shopDeliveryModel);
+
                     intent.putExtra("photo",shop.getShopimage());
                     intent.putExtra("address",shop.getAddress());
                     intent.putExtra("mobile", shop.getMobile());

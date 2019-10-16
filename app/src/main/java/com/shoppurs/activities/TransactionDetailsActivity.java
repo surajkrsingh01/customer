@@ -37,7 +37,7 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
     private String shopCodes;
     private String flag;
     private String custCode,orderNumber,paymentStatus;
-    private float totalAmount;
+    private String totalAmount;
     private RelativeLayout relative_footer;
 
     @Override
@@ -83,7 +83,7 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
         }else {
             tvFooter.setText("Track Your Order");
             orderNumber = getIntent().getStringExtra("orderNumber");
-            totalAmount = getIntent().getFloatExtra("totalAmount", 0);
+            totalAmount = getIntent().getStringExtra("totalAmount");
             // myShopOrderList = (List<MyProduct>) getIntent().getSerializableExtra("shopOrderList");
             //Log.d("shopOrderList ", myShopOrderList.size() +"");
             getorderDetails();
@@ -151,7 +151,7 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
                         tvTransactionId.setText(jsonArray.getJSONObject(i).getString("transactionId"));
                         tvRrn.setText(jsonArray.getJSONObject(i).getString("orderRefNo"));
                         tvPaymentMethod.setText(jsonArray.getJSONObject(i).getString("paymentMethod"));
-                        tvAmount.setText(Utility.numberFormat(totalAmount));
+                        tvAmount.setText(totalAmount);
                         paymentStatus = jsonArray.getJSONObject(i).getString("paymentStatus");
                     }
 
@@ -159,7 +159,7 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
                         findViewById(R.id.rlrrn).setVisibility(View.GONE);
                     }
 
-                    if(paymentStatus!=null && paymentStatus.equals("Success") || paymentStatus!=null && paymentStatus.equals("SUCCESS")){
+                    if(paymentStatus!=null && paymentStatus.equals("Success") || paymentStatus!=null && paymentStatus.equals("SUCCESS") || paymentStatus!=null && paymentStatus.equals("CAPTURED") || paymentStatus!=null && paymentStatus.equals("captured")){
                         // placeOrder();
                         setStatusLayout(true);
                     }else{

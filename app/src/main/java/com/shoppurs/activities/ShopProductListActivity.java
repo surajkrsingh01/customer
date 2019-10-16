@@ -31,6 +31,7 @@ import com.shoppurs.fragments.BottomSearchFragment;
 import com.shoppurs.fragments.FrequencyFragment;
 import com.shoppurs.fragments.OfferDescriptionFragment;
 import com.shoppurs.models.Barcode;
+import com.shoppurs.models.DeliveryAddress;
 import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductColor;
@@ -151,6 +152,7 @@ public class ShopProductListActivity extends HandleCartActivity {
                 bundle.putString("shopMobile", shopMobile);
                 bottomSearchFragment.setArguments(bundle);
                 bottomSearchFragment.setCallingActivityName("ShopProductListActivity", sharedPreferences, isDarkTheme);
+                bottomSearchFragment.setTypeFace(Utility.getSimpleLineIconsFont(ShopProductListActivity.this));
                 bottomSearchFragment.setSubCatName(selectedSubCatName);
                 bottomSearchFragment.setSubcatId(selectdSubCatId);
                 bottomSearchFragment.show(getSupportFragmentManager(), bottomSearchFragment.getTag());
@@ -302,7 +304,16 @@ public class ShopProductListActivity extends HandleCartActivity {
         Log.d("clicked Position ", position+"");
         this.position = position;
         this.type = type;
-        updateCart(type, position, shopCode, myProductList.get(position),shopDeliveryModel);
+        updateCart(type, position, shopCode, myProductList.get(position),shopDeliveryModel, this);
+    }
+
+    public void updateFrequencyCart(int type, int position){
+        Log.d("clicked Position ", position+"");
+        this.position = position;
+        this.type = type;
+
+        if(myProductList.get(position).getFrequency()!=null)
+            addFrequencyProducttoCart(type, position, shopCode, myProductList.get(position),shopDeliveryModel, this);
     }
 
     public void shopFavorite(String status){
@@ -361,6 +372,18 @@ public class ShopProductListActivity extends HandleCartActivity {
                         myProduct.setProdWarranty(productJArray.getJSONObject(i).getString("prodWarranty"));
                         //myProduct.setSubCatName(subcatname);
 
+                        if(!TextUtils.isEmpty(productJArray.getJSONObject(i).getString("frequency")) && !productJArray.getJSONObject(i).getString("frequency").equals("null")){
+                            Log.d("Frequency  ", "Available");
+                            ProductFrequency frequency = new ProductFrequency();
+                            frequency.setName(productJArray.getJSONObject(i).getString("frequency"));
+                            frequency.setQyantity(productJArray.getJSONObject(i).getString("frequencyQty"));
+                            frequency.setNoOfDays(productJArray.getJSONObject(i).getString("frequencyValue"));
+                            frequency.setNextOrderDate(productJArray.getJSONObject(i).getString("nextOrderDate"));
+                            frequency.setEndDate(productJArray.getJSONObject(i).getString("frequencyEndDate"));
+                            frequency.setStartDate(productJArray.getJSONObject(i).getString("frequencyStartDate"));
+                            frequency.setStatus(productJArray.getJSONObject(i).getString("freqStatus"));
+                            myProduct.setFrequency(frequency);
+                        }
 
                         int innerLen = 0;
                         int len = 0;
@@ -559,7 +582,7 @@ public class ShopProductListActivity extends HandleCartActivity {
                 }
             } else if(apiName.equals("addtocart")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.addProductToCart(myProduct);
+                    dbHelper.addProductToCart(myProduct, "normal");
                     updateCartCount();
                     Log.d(TAG, "added o cart" );
                 }else {
@@ -567,7 +590,7 @@ public class ShopProductListActivity extends HandleCartActivity {
                 }
             }else if(apiName.equals("updatCart")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                  dbHelper.updateCartData(myProduct);
+                  dbHelper.updateCartData(myProduct, "normal");
                     updateCartCount();
                     Log.d(TAG, "updated cart" );
                 }else {
@@ -632,6 +655,7 @@ public class ShopProductListActivity extends HandleCartActivity {
     @Override
     public void onResume() {
         super.onResume();
+        Log.d("ShopProductListAct", "onResume");
         if(shopProductAdapter!=null) {
             shopProductAdapter.notifyDataSetChanged();
             counter = dbHelper.getCartCount();
@@ -652,7 +676,7 @@ public class ShopProductListActivity extends HandleCartActivity {
                 }
             });
 
-            totalPrice = dbHelper.getTotalPriceCart() - (dbHelper.getTotalShopCouponDiscount()+dbHelper.getTotalShoppursCouponDiscount());
+            totalPrice = dbHelper.getTotalPriceCart("normal") - (dbHelper.getTotalShopCouponDiscount("normal")+dbHelper.getTotalShoppursCouponDiscount("normal"));
 
             Log.d("onRemove totalPrice ",totalPrice+"" );
 
@@ -712,5 +736,24 @@ public class ShopProductListActivity extends HandleCartActivity {
         shopProductAdapter.notifyItemChanged(position);
         shopProductAdapter.notifyDataSetChanged();
         updateCartCount();
+    }
+
+    @Override
+    public void startFrequencyCartActivity() {
+        Intent intent = new Intent( this, CartActivity.class);
+        intent.putExtra("cart_type", "frequency");
+        intent.putExtra("position", position);
+        //startActivityForResult(intent, 102);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.d("requestCode "+requestCode, "intent "+intent);
+        if(requestCode ==102 ){
+            myProductList.get(position).setFrequency(null);
+            //myProductList.get(getIntent().getIntExtra("position", 0)).setFrequency(null);
+        }
     }
 }

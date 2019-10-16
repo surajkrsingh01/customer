@@ -115,6 +115,9 @@ public class ShopListActivity extends NetworkBaseActivity {
         });
 
         initFooter(this,1);
+        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency"))
+            getNormalShops();
+        else
         getFavoriteShops();
        // getNormalShops();
     }
@@ -124,6 +127,9 @@ public class ShopListActivity extends NetworkBaseActivity {
         myFavoriteitemList.clear();
         myNormalitemList.clear();
         myfavoriteLists.clear();
+        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency"))
+            getNormalShops();
+        else
         getFavoriteShops();
     }
 
@@ -191,7 +197,10 @@ public class ShopListActivity extends NetworkBaseActivity {
         params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
         params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.url)+"/shoplist";
+        String url=null;
+        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency"))
+         url=getResources().getString(R.string.root_url)+"order/get_frequency_order_shop_list";
+        else url=getResources().getString(R.string.url)+"/shoplist";
         //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }
@@ -207,9 +216,14 @@ public class ShopListActivity extends NetworkBaseActivity {
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
                     showProgress(false);
                     if(!response.getString("result").equals("null")){
-                    JSONObject jsonObject = response.getJSONObject("result");
-                    JSONArray shopJArray = jsonObject.getJSONArray("shoplist");
+                        JSONArray shopJArray = null;
 
+                        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency")){
+                            shopJArray = response.getJSONArray("result");
+                        }else{
+                            JSONObject jsonObject = response.getJSONObject("result");
+                            shopJArray = jsonObject.getJSONArray("shoplist");
+                        }
                     for (int i = 0; i < shopJArray.length(); i++) {
                         MyShop myShop = new MyShop();
                         String shop_code = shopJArray.getJSONObject(i).getString("retcode");

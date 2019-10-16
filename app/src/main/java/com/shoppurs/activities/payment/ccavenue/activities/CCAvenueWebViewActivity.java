@@ -86,35 +86,15 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
         webview = (WebView) findViewById(R.id.webview);
         webview.getSettings().setJavaScriptEnabled(true);
 
+
         name= sharedPreferences.getString(com.shoppurs.utilities.Constants.FULL_NAME,"");
-        address= sharedPreferences.getString(com.shoppurs.utilities.Constants.CUST_ADDRESS,"");
         email= sharedPreferences.getString(com.shoppurs.utilities.Constants.EMAIL,"");
         mobileNo= sharedPreferences.getString(com.shoppurs.utilities.Constants.MOBILE_NO,"");
+        address= sharedPreferences.getString(com.shoppurs.utilities.Constants.CUST_ADDRESS,"");
         zip= sharedPreferences.getString(com.shoppurs.utilities.Constants.CUST_PINCODE,"");
         city = sharedPreferences.getString(com.shoppurs.utilities.Constants.CUST_CITY,"");
         state = sharedPreferences.getString(com.shoppurs.utilities.Constants.CUST_STATE,"");
         country = sharedPreferences.getString(com.shoppurs.utilities.Constants.CUST_COUNTRY,"");
-
-        if(name.equals("null") || name.equals("Not Available")){
-            name = "";
-        }
-
-        if(address.equals("null") || address.equals("Not Available")){
-              address = "";
-        }
-
-        if(mobileNo.equals("null") || mobileNo.equals("Not Available")){
-            mobileNo = "";
-        }
-
-        if(email.equals("null") || email.equals("Not Available")){
-           email = "";
-        }
-
-        if(zip.equals("null") || zip.equals("Not Available")){
-            zip = "";
-        }
-
         mainIntent = getIntent();
 
         flag = mainIntent.getStringExtra("flag");
@@ -132,6 +112,27 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                 e.printStackTrace();
             }
         }
+
+        if(name.equals("null") || name.equals("Not Available")){
+            name = "";
+        }
+
+        if(address.equals("null") || address.equals("Not Available")){
+            address = "";
+        }
+
+        if(mobileNo.equals("null") || mobileNo.equals("Not Available")){
+            mobileNo = "";
+        }
+
+        if(email.equals("null") || email.equals("Not Available")){
+            email = "";
+        }
+
+        if(zip.equals("null") || zip.equals("Not Available")){
+            zip = "";
+        }
+
 
         REDIRECT_URL = getResources().getString(R.string.url_web)+"/web/payment/paymentResponseHandler";
         CANCEL_URL = getResources().getString(R.string.url_web)+"/web/payment/paymentResponseHandler";
@@ -425,12 +426,13 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                      dbHelper.deleteTable(DbHelper.PROD_COMBO_DETAIL_TABLE);
                      dbHelper.deleteTable(DbHelper.COUPON_TABLE);
                      dbHelper.deleteTable(DbHelper.SHOP_DELIVERY_DETAILS_TABLE);
-                     Log.d(TAG, "Ordeer Placed" );
+                     Log.d(TAG, "Order Placed" );
 
                      Intent intent = new Intent(CCAvenueWebViewActivity.this, RateAndReviewActivity.class);
                      intent.putExtra("flag", "oneline_purchase");
                      intent.putExtra("response", dataObject.toString());
-                     intent.putExtra("orderNumber", mainIntent.getStringExtra("orderNumber"));
+                     //intent.putExtra("orderNumber", mainIntent.getStringExtra("orderNumber"));
+                     intent.putExtra("orderNumber",response.getJSONObject("result").getString("orderNumber"));
                      intent.putExtra("totalAmount", dataObject.getString("amount"));
                      String  shopCodes = mainIntent.getStringExtra("shopCodes");
                      intent.putExtra("shopCodes", shopCodes);

@@ -145,7 +145,7 @@ public class ChatActivity extends BaseImageActivity implements MyItemClickListen
         params.put("messageTo",""+messageTo);
         params.put("messageToMobile",""+messageToMobile);
         params.put("mobile",sharedPreferences.getString(Constants.MOBILE_NO,""));
-        String url=getResources().getString(R.string.url)+Constants.GET_MESSAGE;
+        String url=getResources().getString(R.string.url_web)+Constants.GET_MESSAGE;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"getMessage");
     }
@@ -168,7 +168,7 @@ public class ChatActivity extends BaseImageActivity implements MyItemClickListen
             params.put("messageToPic",messageToPic);
             params.put("messageType","text");
 
-            String url=getResources().getString(R.string.url)+Constants.SEND_MESSAGE;
+            String url=getResources().getString(R.string.url_web)+Constants.SEND_MESSAGE;
             showProgress(true);
             jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"sendMessage");
 
@@ -294,7 +294,7 @@ public class ChatActivity extends BaseImageActivity implements MyItemClickListen
         params.put("messageToPic",messageToPic);
         params.put("messageType","image");
 
-        String url=getResources().getString(R.string.url)+Constants.SEND_MESSAGE;
+        String url=getResources().getString(R.string.url_web)+Constants.SEND_MESSAGE;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"sendMessage");
 
@@ -352,7 +352,7 @@ public class ChatActivity extends BaseImageActivity implements MyItemClickListen
             params.put("messageToPic", messageToPic);
             params.put("messageType", "product");
 
-            String url = getResources().getString(R.string.url) + Constants.SEND_MESSAGE;
+            String url = getResources().getString(R.string.url_web) + Constants.SEND_MESSAGE;
             showProgress(true);
             jsonObjectApiRequest(Request.Method.POST, url, new JSONObject(params), "sendMessage");
 

@@ -169,7 +169,7 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
                         if(coupon.getPercentage()>0) {
                             Float couponDiscount;
                             if(coupon.getShopCode().equals("SHP1"))
-                             couponDiscount = dbHelper.getTotalPriceCart() * coupon.getPercentage() / 100;
+                             couponDiscount = dbHelper.getTotalPriceCart("normal") * coupon.getPercentage() / 100;
                             else
                                 couponDiscount = dbHelper.getTotalAmount(coupon.getShopCode()) * coupon.getPercentage() / 100;
                             if(couponDiscount<coupon.getMaxDiscount()  || coupon.getMaxDiscount()==0)

@@ -37,8 +37,13 @@ public class HandleCartActivity extends NetworkBaseActivity{
 
     }
 
-    public void updateCart(int type, int position, String shopCode, MyProduct product, ShopDeliveryModel deliveryModel){
+    public void startFrequencyCartActivity(){
+
+    }
+
+    public void updateCart(int type, int position, String shopCode, MyProduct product, ShopDeliveryModel deliveryModel, Context context){
         Log.d("clicked Position ", position+"");
+        this.context = context;
         this.position = position;
         this.type = type;
         this.shopCode = shopCode;
@@ -94,7 +99,7 @@ public class HandleCartActivity extends NetworkBaseActivity{
                     if(myProduct.getProductPriceOffer()!=null){
                         myProduct.setSellingPrice(amount/qty);
                     }
-                    dbHelper.updateCartData(myProduct);
+                    dbHelper.updateCartData(myProduct, "normal");
 
                     updateUi(myProduct, position);
                     //shopProductAdapter.notifyItemChanged(position);
@@ -116,7 +121,7 @@ public class HandleCartActivity extends NetworkBaseActivity{
                 if(qty == 1){
                     counter++;
                     myProduct.setFreeProductPosition(counter);
-                    dbHelper.addProductToCart(myProduct);
+                    dbHelper.addProductToCart(myProduct , "normal");
                     dbHelper.addShopDeliveryDetails(shopDeliveryModel);
                 }
                 float netSellingPrice = getOfferAmount(myProduct,type);
@@ -131,51 +136,91 @@ public class HandleCartActivity extends NetworkBaseActivity{
                 qty = myProduct.getQuantity();
                 Log.i(TAG,"qty "+qty);
                 myProduct.setQuantity(myProduct.getQuantity());
-                dbHelper.updateCartData(myProduct);
-
-                if(myProduct.getFrequency()!=null){
-                    int frequencyQty = Integer.parseInt(myProduct.getFrequency().getQyantity());
-                    if(frequencyQty>=myProduct.getQoh()){
-                        DialogAndToast.showDialog("We have only "+myProduct.getQoh() +"product available",this);
-                    }else updateFrequencyProducttoCart(type, position);
-                }else
+                dbHelper.updateCartData(myProduct,"normal");
                 updateUi(myProduct, position);
             }
         }
     }
 
-    public void updateFrequencyProducttoCart(int type, int position){
+    public void addFrequencyProducttoCart(int type, int position, String shopCode, MyProduct product, ShopDeliveryModel deliveryModel, Context context){
+        this.context = context;
         Log.d("clicked Position ", position+"");
-        ProductFrequency productFrequency = myProduct.getFrequency();
-        myProduct.setQuantity(Integer.parseInt(productFrequency.getQyantity()));
-        myProduct.setFreeProductPosition(dbHelper.getFreeProductPosition(myProduct.getId(), shopCode));
-        myProduct.setOfferItemCounter(dbHelper.getOfferCounter(myProduct.getId(), shopCode));
-      //  myProduct.setTotalAmount(dbHelper.getTotalAmount(myProduct.getId(), shopCode));
-        myProduct.setSellingPrice(dbHelper.getProductSellingPrice(myProduct.getId(), shopCode));
-        int qty = myProduct.getQuantity();
-        if (qty == 1) {
-            counter++;
-            myProduct.setFreeProductPosition(counter);
-            dbHelper.addProductToCart(myProduct);
-            dbHelper.addShopDeliveryDetails(shopDeliveryModel);
-            //myProduct
+        Log.d("delivery model ", deliveryModel.getIsDeliveryAvailable()+"");
+        this.position = position;
+        this.type = type;
+        this.shopCode = shopCode;
+        myProduct = product;
+        shopDeliveryModel = deliveryModel;
+        myProduct.setShopCode(shopCode);
+        int qty = myProduct.getQuantity() + 1;
+        myProduct.setQuantity(qty);
+
+        if(type == 2) {
+            if (qty == 1) {
+                counter++;
+                dbHelper.addProductToCart(myProduct, "frequency");
+                dbHelper.addShopDeliveryDetails(shopDeliveryModel);
+            }
+            float netSellingPrice = myProduct.getSellingPrice();
+            float amount = 0;
+            Log.i(TAG, "netSellingPrice " + netSellingPrice);
+            amount = myProduct.getTotalAmount() + netSellingPrice;
+            Log.i(TAG, "tot amount " + amount);
+            myProduct.setTotalAmount(amount);
+            dbHelper.updateCartData(myProduct, "frequency");
+
+            if (myProduct.getFrequency() != null) {
+                updateFrequencyProducttoCart(type, position);
+            } else
+                updateUi(myProduct, position);
         }
-        qty = myProduct.getQuantity();
-        float netSellingPrice = getOfferAmount(myProduct, type);
+    }
+
+    public void updateFrequencyProducttoCart(int type, int position){
+        if(type == 1){
+            if(myProduct.getQuantity() > 0){
+                if(myProduct.getQuantity() == 1){
+                    dbHelper.removeProductFromCart(myProduct.getId(), myProduct.getShopCode());
+                    myProduct.setQuantity(0);
+                    myProduct.setTotalAmount(0);
+                    updateUi(myProduct, position);
+
+                    if(dbHelper.getCartCount(myProduct.getShopCode())<1)
+                        dbHelper.removeCouponFromCart(myProduct.getShopCode());
+                    Log.d("onRemove Qyantity ", myProduct.getQuantity()+"");
+                }else{
+                    float netSellingPrice = myProduct.getSellingPrice();
+                    Log.i(TAG,"netSellingPrice "+netSellingPrice);
+                    float amount = 0;
+                    amount = myProduct.getTotalAmount() - netSellingPrice;
+                    Log.i(TAG,"tot amount "+amount);
+                    myProduct.setTotalAmount(amount);
+                    dbHelper.updateCartData(myProduct, "frequency");
+
+                    updateUi(myProduct, position);
+                    //shopProductAdapter.notifyItemChanged(position);
+                }
+            }
+
+        }
+
+        ProductFrequency productFrequency = myProduct.getFrequency();
+        int finalqty = Integer.parseInt(productFrequency.getQyantity()) * Integer.parseInt(productFrequency.getNoOfDays());
+        myProduct.setQuantity(finalqty);
+        myProduct.setSellingPrice(dbHelper.getProductSellingPrice(myProduct.getId(), shopCode));
+        float netSellingPrice = myProduct.getSellingPrice();
         float amount = 0;
         Log.d(TAG, "netSellingPrice " + netSellingPrice);
         amount = netSellingPrice + (netSellingPrice * (myProduct.getQuantity()-1));
         Log.d(TAG, "tot amount " + amount);
         myProduct.setTotalAmount(amount);
-        if (myProduct.getProductPriceOffer() != null) {
-            myProduct.setSellingPrice(amount / qty);
-        }
-        qty = myProduct.getQuantity();
-        Log.i(TAG, "qty " + qty);
         myProduct.setQuantity(myProduct.getQuantity());
-        dbHelper.updateCartData(myProduct);
+        dbHelper.updateCartData(myProduct, "frequency");
+        Log.d("CartSize ", dbHelper.getCartProducts("frequency").size() +"");
 
-        startActivity(new Intent(this, CartActivity.class));
+        if (type==2) {
+            startFrequencyCartActivity();
+        }
     }
 
     private void getProductDetails(String prodId){
@@ -278,7 +323,7 @@ public class HandleCartActivity extends NetworkBaseActivity{
                             item1.setSellingPrice(0f);
                             item1.setQuantity(1);
                             item1.setFreeProductPosition(item.getFreeProductPosition());
-                            dbHelper.addProductToCart(item1);
+                            dbHelper.addProductToCart(item1, "normal");
                             Log.d("FreeProductPosition ", ""+item.getFreeProductPosition());
                             dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()), item.getShopCode());
                             dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());

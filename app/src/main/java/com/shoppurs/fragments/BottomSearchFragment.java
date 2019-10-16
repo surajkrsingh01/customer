@@ -2,6 +2,7 @@ package com.shoppurs.fragments;
 
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import com.android.volley.AuthFailureError;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +39,7 @@ import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.MyShop;
 import com.shoppurs.models.ProductColor;
 import com.shoppurs.models.ProductDiscountOffer;
+import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.models.ProductPriceDetails;
 import com.shoppurs.models.ProductPriceOffer;
 import com.shoppurs.models.ProductSize;
@@ -74,6 +77,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
     private boolean isDarkTheme;
     private DbHelper dbHelper;
     private MyListItemClickListener myListItemClickListener;
+    private Typeface typeface;
 
     public MyItemClickListener getMyItemClickListener() {
         return myItemClickListener;
@@ -95,11 +99,17 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
 
     }
 
+    public void setTypeFace(Typeface typeFace){
+        this.typeface = typeFace;
+    }
+
     public void setCallingActivityName(String name, SharedPreferences sharedPreferences, boolean isDarkTheme){
      this.callingActivityName = name;
      this.sharedPreferences = sharedPreferences;
      this.isDarkTheme = isDarkTheme;
     }
+
+
 
     public String getCatId() {
         return catId;
@@ -201,6 +211,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         recyclerView_Search.setLayoutManager(layoutManager);
         recyclerView_Search.setItemAnimator(new DefaultItemAnimator());
         productAdapter = new SearchProductAdapter(getContext(),myProductList, callingActivityName);
+        productAdapter.setTypeFace(typeface);
         productAdapter.setMyItemClickListener(this);
         productAdapter.setDarkTheme(isDarkTheme);
         productAdapter.setShopCode(shopCode);
@@ -296,6 +307,18 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                             myProduct.setProdSgst(Float.parseFloat(productJArray.getJSONObject(i).getString("prodSgst")));
                             myProduct.setProdWarranty(productJArray.getJSONObject(i).getString("prodWarranty"));
                             //myProduct.setSubCatName(subcatname);
+
+                            if(!TextUtils.isEmpty(productJArray.getJSONObject(i).getString("frequency")) && !productJArray.getJSONObject(i).getString("frequency").equals("null")){
+                                ProductFrequency frequency = new ProductFrequency();
+                                frequency.setName(productJArray.getJSONObject(i).getString("frequency"));
+                                frequency.setQyantity(productJArray.getJSONObject(i).getString("frequencyQty"));
+                                frequency.setNoOfDays(productJArray.getJSONObject(i).getString("frequencyValue"));
+                                frequency.setNextOrderDate(productJArray.getJSONObject(i).getString("nextOrderDate"));
+                                frequency.setEndDate(productJArray.getJSONObject(i).getString("frequencyEndDate"));
+                                frequency.setStartDate(productJArray.getJSONObject(i).getString("frequencyStartDate"));
+                                frequency.setStatus(productJArray.getJSONObject(i).getString("freqStatus"));
+                                myProduct.setFrequency(frequency);
+                            }
 
 
                             int innerLen = 0;
@@ -622,7 +645,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     if(myProduct.getProductPriceOffer()!=null){
                         myProduct.setSellingPrice(amount/qty);
                     }
-                    dbHelper.updateCartData(myProduct);
+                    dbHelper.updateCartData(myProduct, "normal");
                     productAdapter.notifyItemChanged(position);
                     if(callingActivityName.equals("ShopProductListActivity"))
                         ((ShopProductListActivity)getContext()).updateCartCount();
@@ -668,7 +691,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     if(qty == 1){
                         counter++;
                         myProduct.setFreeProductPosition(counter);
-                        dbHelper.addProductToCart(myProduct);
+                        dbHelper.addProductToCart(myProduct, "normal");
                        // dbHelper.addShopDeliveryDetails(shopDeliveryModel);
                     }
                     float netSellingPrice = getOfferAmount(myProduct,type);
@@ -683,7 +706,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     myProduct.setQuantity(myProduct.getQuantity());
                     Log.i(TAG,"qty "+qty);
 
-                    dbHelper.updateCartData(myProduct);
+                    dbHelper.updateCartData(myProduct, "normal");
                     productAdapter.notifyItemChanged(position);
                     if(callingActivityName.equals("ShopProductListActivity"))
                         ((ShopProductListActivity)getContext()).updateCartCount();
@@ -796,7 +819,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                             item1.setSellingPrice(0f);
                             item1.setQuantity(1);
                             item1.setFreeProductPosition(item.getFreeProductPosition());
-                            dbHelper.addProductToCart(item1);
+                            dbHelper.addProductToCart(item1, "normal");
                             Log.d("FreeProductPosition ", ""+item.getFreeProductPosition());
                             dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()), item.getShopCode());
                             dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());

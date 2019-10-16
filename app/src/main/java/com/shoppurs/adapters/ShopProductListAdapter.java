@@ -27,8 +27,10 @@ import com.shoppurs.activities.ShopProductListActivity;
 import com.shoppurs.database.DbHelper;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductDiscountOffer;
+import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.models.ProductPriceOffer;
 import com.shoppurs.models.ProductUnit;
+import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
 
 import java.util.ArrayList;
@@ -76,15 +78,23 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
     public void onBindViewHolder(final ShopProductListAdapter.MyViewHolder myViewHolder, final int position) {
         {
             final MyProduct item = (MyProduct) myProductsList.get(position);
+            ProductFrequency frequency = item.getFrequency();
+            if(frequency!=null  && frequency.getStatus().equals("1")){
+                myViewHolder.text_frequency.setBackground(context.getResources().getDrawable(R.drawable.orange_solid_blue_stroke_circle_background));
+                myViewHolder.text_frequency.setTextColor(context.getResources().getColor(R.color.white));
+            }else {
+                myViewHolder.text_frequency.setBackground(context.getResources().getDrawable(R.drawable.white_solid_blue_stroke_circle_background));
+                myViewHolder.text_frequency.setTextColor(context.getResources().getColor(R.color.orange500));
+            }
 
             if(dbHelper.checkProdExistInCart(item.getId(), shopCode)){
                 myViewHolder.btnAddCart.setVisibility(View.GONE);
                 myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
-                myViewHolder.tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(item.getId(), shopCode)));
+                myViewHolder.tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(item.getId(), shopCode, "normal")));
                 item.setFreeProductPosition(dbHelper.getFreeProductPosition(item.getId(), shopCode));
                 item.setOfferItemCounter(dbHelper.getOfferCounter(item.getId(), shopCode));
                 item.setQuantity(Integer.parseInt(myViewHolder.tv_cartCount.getText().toString()));
-                item.setTotalAmount(dbHelper.getTotalAmount(item.getId(), shopCode));
+                item.setTotalAmount(dbHelper.getTotalAmount(item.getId(), shopCode, "normal"));
                 item.setSellingPrice(dbHelper.getProductSellingPrice(item.getId(), shopCode));
             }else {
                 item.setQuantity(0);
@@ -266,6 +276,7 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
             relative_unit = itemView.findViewById(R.id.relative_unit);
             text_offer = itemView.findViewById(R.id.text_offer);
             text_frequency = itemView.findViewById(R.id.text_frequency);
+            text_frequency.setVisibility(View.VISIBLE);
             text_frequency.setTypeface(typeface);
             text_frequency.setOnClickListener(this);
             rootView.setOnClickListener(this);
@@ -283,6 +294,10 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
                 MyProduct item = (MyProduct) myProductsList.get(getAdapterPosition());
                 ((ShopProductListActivity)context).showProductDetails(item);
             }else if(v == text_frequency){
+                ProductFrequency frequency = myProductsList.get(getAdapterPosition()).getFrequency();
+                if(frequency!=null && frequency.getStatus().equals("1"))
+                    DialogAndToast.showDialog("Product Frequency is already Active", context);
+                else
                 ((ShopProductListActivity)context).showFrequencyBottomShet(myProductsList.get(getAdapterPosition()), getAdapterPosition());
             }
         }

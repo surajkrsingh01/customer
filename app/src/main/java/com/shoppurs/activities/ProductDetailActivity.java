@@ -218,8 +218,8 @@ public class ProductDetailActivity extends NetworkBaseActivity {
             btnAddCart.setVisibility(View.GONE);
             linear_plus_minus.setVisibility(View.VISIBLE);
             Log.d("Id "+myProduct.getId(), "shopCode " +shopCode);
-            Log.d("Count ", String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode)));
-            tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode)));
+            Log.d("Count ", String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode, "normal")));
+            tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode, "normal")));
             myProduct.setFreeProductPosition(dbHelper.getFreeProductPosition(myProduct.getId(), shopCode));
             myProduct.setOfferItemCounter(dbHelper.getOfferCounter(myProduct.getId(), shopCode));
             myProduct.setQuantity(Integer.parseInt(tv_cartCount.getText().toString()));
@@ -348,7 +348,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                         myProduct.setSellingPrice(amount/qty);
                     }
                     myProduct.setQuantity(myProduct.getQuantity());
-                    dbHelper.updateCartData(myProduct);
+                    dbHelper.updateCartData(myProduct, "normal");
                     updateCartCount();
                     updateAddButtons();
                 }
@@ -388,7 +388,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     if(qty == 1){
                         counter++;
                         myProduct.setFreeProductPosition(counter);
-                        dbHelper.addProductToCart(myProduct);
+                        dbHelper.addProductToCart(myProduct, "normal");
                         dbHelper.addShopDeliveryDetails(shopDeliveryModel);
                     }
                     float netSellingPrice = getOfferAmount(myProduct,type);
@@ -403,7 +403,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     myProduct.setQuantity(myProduct.getQuantity());
                     Log.i(TAG,"qty "+qty);
 
-                    dbHelper.updateCartData(myProduct);
+                    dbHelper.updateCartData(myProduct,"normal");
                     updateAddButtons();
                     updateCartCount();
                 }
@@ -511,7 +511,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                             item1.setSellingPrice(0f);
                             item1.setQuantity(1);
                             item1.setFreeProductPosition(item.getFreeProductPosition());
-                            dbHelper.addProductToCart(item1);
+                            dbHelper.addProductToCart(item1, "normal");
                             Log.d("FreeProductPosition ", ""+item.getFreeProductPosition());
                             dbHelper.updateFreePositionCartData(item.getFreeProductPosition(),Integer.parseInt(item.getId()), item.getShopCode());
                             dbHelper.updateOfferCounterCartData(item.getOfferItemCounter(),Integer.parseInt(item.getId()), item.getShopCode());
@@ -587,7 +587,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
             Log.d("response", response.toString());
             if(apiName.equals("addtocart")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.addProductToCart(myProduct);
+                    dbHelper.addProductToCart(myProduct, "normal");
                     updateCartCount();
                     Log.d(TAG, "added o cart" );
                 }else {
@@ -595,7 +595,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                 }
             }else if(apiName.equals("updatCart")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.updateCartData(myProduct);
+                    dbHelper.updateCartData(myProduct, "normal");
                     updateCartCount();
                     Log.d(TAG, "updated cart" );
                 }else {
@@ -704,7 +704,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     startActivity(new Intent(ProductDetailActivity.this, CartActivity.class));
                 }
             });
-            float totalPrice = dbHelper.getTotalPriceCart() - (dbHelper.getTotalShopCouponDiscount()+dbHelper.getTotalShoppursCouponDiscount());
+            float totalPrice = dbHelper.getTotalPriceCart("normal") - (dbHelper.getTotalShopCouponDiscount("normal")+dbHelper.getTotalShoppursCouponDiscount("normal"));
 
 
             float deliveryDistance = 0;
@@ -723,7 +723,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
 
             cartItemPrice.setText("Amount "+ Utility.numberFormat(totalPrice));
             cartItemCount.setText("Item "+String.valueOf(dbHelper.getCartCount()));
-            tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode)));
+            tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode,  "normal")));
         }else{
             myProduct.setTotalAmount(0);
             myProduct.setQuantity(0);
@@ -745,12 +745,12 @@ public class ProductDetailActivity extends NetworkBaseActivity {
             btnAddCart.setVisibility(View.GONE);
             linear_plus_minus.setVisibility(View.VISIBLE);
             Log.d("Id "+myProduct.getId(), "shopCode " +shopCode);
-            Log.d("Count ", String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode)));
-            tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode)));
+            Log.d("Count ", String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode, "normal")));
+            tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(myProduct.getId(), shopCode, "normal")));
             myProduct.setFreeProductPosition(dbHelper.getFreeProductPosition(myProduct.getId(), shopCode));
             myProduct.setOfferItemCounter(dbHelper.getOfferCounter(myProduct.getId(), shopCode));
             myProduct.setQuantity(Integer.parseInt(tv_cartCount.getText().toString()));
-            myProduct.setTotalAmount(dbHelper.getTotalAmount(myProduct.getId(), shopCode));
+            myProduct.setTotalAmount(dbHelper.getTotalAmount(myProduct.getId(), shopCode, "normal"));
             myProduct.setSellingPrice(dbHelper.getProductSellingPrice(myProduct.getId(), shopCode));
             text_product_selling_price.setText(Utility.numberFormat(dbHelper.getProductSellingPrice(myProduct.getId(), shopCode)));
 

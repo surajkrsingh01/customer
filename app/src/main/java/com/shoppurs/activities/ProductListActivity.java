@@ -310,7 +310,7 @@ public class ProductListActivity extends NetworkBaseActivity {
                 }
             }if(apiName.equals("addtocart")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.addProductToCart(myProduct);
+                    dbHelper.addProductToCart(myProduct, "normal");
                     updateCartCount();
                     Log.d(TAG, "added o cart" );
                 }else {
@@ -318,7 +318,7 @@ public class ProductListActivity extends NetworkBaseActivity {
                 }
             }else if(apiName.equals("updatCart")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.updateCartData(myProduct);
+                    dbHelper.updateCartData(myProduct, "normal");
                     updateCartCount();
                     Log.d(TAG, "updated cart" );
                 }else {
@@ -427,7 +427,7 @@ public class ProductListActivity extends NetworkBaseActivity {
                 }
             });
             List<MyProduct> cartItemList = new ArrayList<>();
-            cartItemList = dbHelper.getCartProducts();
+            cartItemList = dbHelper.getCartProducts("normal");
             float total_amount =0;
             for (MyProduct cartItem: cartItemList) {
                 total_amount = total_amount + cartItem.getTotalAmount();

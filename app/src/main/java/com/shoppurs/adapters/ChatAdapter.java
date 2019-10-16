@@ -138,7 +138,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                             .into(myViewHolder.imageViewImage);
                     myViewHolder.progressBar.setVisibility(View.GONE);
                 }else{
-                    if(chatMessage.getMessageStatus().equals("uploaded")){
+                    if(chatMessage.getMessageStatus().equals("downloaded")){
                         Glide.with(context)
                                 .load(chatMessage.getFileUrl())
                                 .centerCrop()

@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.shoppurs.models.CartItem;
 import com.shoppurs.models.Coupon;
 import com.shoppurs.models.DeliveryAddress;
 import com.shoppurs.models.MyProduct;
@@ -16,6 +15,7 @@ import com.shoppurs.models.ProductColor;
 import com.shoppurs.models.ProductComboDetails;
 import com.shoppurs.models.ProductComboOffer;
 import com.shoppurs.models.ProductDiscountOffer;
+import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.models.ProductPriceDetails;
 import com.shoppurs.models.ProductPriceOffer;
 import com.shoppurs.models.ProductSize;
@@ -86,6 +86,12 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String PROD_IMAGE_3 = "PROD_IMAGE_3";
     public static final String TOTAL_AMOUNT = "totalAmount";
     public static final String TOTAL_MRP_AMOUNT = "totalMRPAmount";
+    public static final String CART_TYPE = "cartType";
+    public static final String  FREQUENCY = "frequency";
+    public static final String  FREQUENCY_START_DATE = "frequencyStartDate";
+    public static final String  FREQUENCY_END_DATE = "frequencyEndDate";
+    public static final String  FREQUENCY_QTY = "frequencyQty";
+    public static final String  FREQUENCY_VALUE = "frequencyValue";
     public static final String TOTAL_QTY = "totalQty";
     public static final String SIZE = "size";
     public static final String COLOR = "color";
@@ -146,6 +152,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String CREATE_SHOP_DELIVERY_DETAILS_TABLE = "create table "+SHOP_DELIVERY_DETAILS_TABLE +
             "("+SHOP_CODE+" TEXT UNIQUE, " +
             " "+RET_LAT+" TEXT, " +
+            " "+CART_TYPE+" TEXT, " +
             " "+RET_LONG+" TEXT, " +
             " "+DELIVERY_CHARGES+" TEXT, " +
             " "+IS_DELIVERY_AVAILABLE+" TEXT, " +
@@ -243,6 +250,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static final String CREATE_COUPON_TABLE = "create table "+COUPON_TABLE +
             "("+ID+" TEXT NOT NULL, " +
+            " "+CART_TYPE+" TEXT, " +
             " "+COUPON_PER+" TEXT NOT NULL, " +
             " "+COUPON_MAX_AMOUNT+" TEXT NOT NULL, " +
             " "+COUPON_AMOUNT+" TEXT NOT NULL, " +
@@ -300,6 +308,14 @@ public class DbHelper extends SQLiteOpenHelper {
             " "+UNIT+" TEXT, " +
             " "+COLOR+" TEXT, " +
             " "+SIZE+" TEXT, " +
+
+            " "+ CART_TYPE +" TEXT, " +
+            " "+FREQUENCY+" TEXT, " +
+            " "+FREQUENCY_START_DATE+" TEXT, " +
+            " "+FREQUENCY_END_DATE+" TEXT, " +
+            " "+FREQUENCY_QTY+" TEXT, " +
+            " "+FREQUENCY_VALUE+" TEXT, " +
+
             " "+IS_BARCODE_AVAILABLE+" TEXT, " +
             " "+PROD_IMAGE_1+" TEXT, " +
             " "+PROD_IMAGE_2+" TEXT, " +
@@ -328,7 +344,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public DbHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, 16);
+        super(context, DATABASE_NAME, null, 18);
         this.context=context;
     }
 
@@ -379,7 +395,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_SHOP_DELIVERY_DETAILS_TABLE);
     }
 
-    public boolean addProductToCart(MyProduct item){
+    public boolean addProductToCart(MyProduct item, String cartType){
         if(item.getProductPriceOffer() != null ) {
             ProductPriceOffer productPriceOffer = item.getProductPriceOffer();
             addProductPriceOffer(productPriceOffer, Utility.getTimeStamp(),Utility.getTimeStamp(), item.getShopCode());
@@ -421,6 +437,15 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(PROD_MRP, item.getMrp());
         contentValues.put(PROD_SP, item.getSellingPrice());
         contentValues.put(PROD_HSN_CODE, item.getProdHsnCode());
+        if(cartType.equals("frequency")){
+            ProductFrequency frequency = item.getFrequency();
+            contentValues.put(CART_TYPE, "frequency");
+            contentValues.put(FREQUENCY, frequency.getName());
+            contentValues.put(FREQUENCY_START_DATE, frequency.getStartDate());
+            contentValues.put(FREQUENCY_END_DATE, frequency.getEndDate());
+            contentValues.put(FREQUENCY_QTY, frequency.getQyantity());
+            contentValues.put(FREQUENCY_VALUE, frequency.getNoOfDays());
+        }else  contentValues.put(CART_TYPE, "normal");
         if(item.getComboProductIds() != null){
             contentValues.put(PROD_CGST, item.getProdCgst());
             contentValues.put(PROD_IGST, item.getProdIgst());
@@ -541,8 +566,8 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(MIN_DELIVERY_TIME, shopDeliveryModel.getMinDeliverytime());
         contentValues.put(MIN_DELIVERY_DISTANCE, shopDeliveryModel.getMinDeliverydistance());
         contentValues.put(CHARGE_AFTER_MIN_DISTANCE, shopDeliveryModel.getChargesAfterMinDistance());
-        db.insert(SHOP_DELIVERY_DETAILS_TABLE, null, contentValues);
-        Log.d(TAG, "added shopDeliveryModel");
+        double status = db.insert(SHOP_DELIVERY_DETAILS_TABLE, null, contentValues);
+        Log.d(TAG, "added shopDeliveryModel status "+status);
     }
 
     public void updateShopDeliveryDetails(ShopDeliveryModel shopDeliveryModel){
@@ -555,7 +580,6 @@ public class DbHelper extends SQLiteOpenHelper {
         Log.d("DELIVERY_CHARGES ", shopDeliveryModel.getNetDeliveryCharge() +"");
         Log.d("Shop Code ", shopDeliveryModel.getShopCode() +"");
         Log.d("update Status ", val +"");
-
     }
 
     public ShopDeliveryModel getShopDeliveryDetails(String shopCode){
@@ -621,12 +645,12 @@ public class DbHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public int getProductQuantity(String itemId, String shopCode){
+    public int getProductQuantity(String itemId, String shopCode, String cartType){
         Log.d("getting itemId", itemId);
         Log.d("getting shopId", shopCode);
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(CART_TABLE, new String[] { TOTAL_QTY }, ID + "=?" + " AND " + SHOP_CODE + "=?",
-                new String[] { itemId, shopCode}, null, null, null, null);
+        Cursor cursor = db.query(CART_TABLE, new String[] { TOTAL_QTY }, ID + "=?" + " AND " + SHOP_CODE + "=?"  + " AND " + CART_TYPE + "=?",
+                new String[] { itemId, shopCode, cartType}, null, null, null, null);
         if (cursor != null && cursor.getCount()>0) {
             cursor.moveToFirst();
             int qty = cursor.getInt(cursor.getColumnIndex(TOTAL_QTY));
@@ -635,12 +659,12 @@ public class DbHelper extends SQLiteOpenHelper {
         return 0;
     }
 
-    public int getTotalAmount(String itemId, String shopCode){
+    public int getTotalAmount(String itemId, String shopCode, String cartType){
         Log.d("getting itemId", itemId);
         Log.d("getting shopId", shopCode);
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(CART_TABLE, new String[] { TOTAL_AMOUNT }, ID + "=?" + " AND " + SHOP_CODE + "=?",
-                new String[] { itemId, shopCode}, null, null, null, null);
+        Cursor cursor = db.query(CART_TABLE, new String[] { TOTAL_AMOUNT }, ID + "=?" + " AND " + SHOP_CODE + "=?"   + " AND " + CART_TYPE + "=?",
+                new String[] { itemId, shopCode, cartType}, null, null, null, null);
         if (cursor != null && cursor.getCount()>0) {
             cursor.moveToFirst();
             int qty = cursor.getInt(cursor.getColumnIndex(TOTAL_AMOUNT));
@@ -694,10 +718,10 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
 
-    public ArrayList<MyProduct> getCartProducts(){
+    public ArrayList<MyProduct> getCartProducts(String cartType){
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select * from "+CART_TABLE;
-        Cursor res =  db.rawQuery(query, null);
+        final String query="select * from "+CART_TABLE +" where "+ CART_TYPE + "=?";
+        Cursor res =  db.rawQuery(query, new String[]{cartType});
         ArrayList<MyProduct> itemList=new ArrayList<>();
         MyProduct productItem = null;
         if(res.moveToFirst()){
@@ -733,6 +757,15 @@ public class DbHelper extends SQLiteOpenHelper {
                 productItem.setSize(res.getString(res.getColumnIndex(SIZE)));
                 productItem.setProductUnitList(getProductUnitList(db, Integer.parseInt(productItem.getId())));
                 productItem.setProductSizeList(getProductSizeList(db, Integer.parseInt(productItem.getId())));
+                if(res.getString(res.getColumnIndex(CART_TYPE)).equals("frequency")){
+                    ProductFrequency frequency = new ProductFrequency();
+                    frequency.setName(res.getString(res.getColumnIndex(FREQUENCY)));
+                    frequency.setQyantity(res.getString(res.getColumnIndex(FREQUENCY_QTY)));
+                    frequency.setStartDate(res.getString(res.getColumnIndex(FREQUENCY_START_DATE)));
+                    frequency.setEndDate(res.getString(res.getColumnIndex(FREQUENCY_END_DATE)));
+                    frequency.setNoOfDays(res.getString(res.getColumnIndex(FREQUENCY_VALUE)));
+                 productItem.setFrequency(frequency);
+                }
                 if(productItem.getSellingPrice() == 0f){
                     if(itemList.size()>productItem.getFreeProductPosition())
                     itemList.add(productItem.getFreeProductPosition(),productItem);
@@ -753,24 +786,25 @@ public class DbHelper extends SQLiteOpenHelper {
                     }
                     itemList.add(productItem);
                 }
-
-
-
             }while (res.moveToNext());
         }
 
         return itemList;
     }
 
-    public void updateCartData(MyProduct item){
+    public void updateCartData(MyProduct item, String cartType){
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues contentValues = new ContentValues();
+        Log.i("dbhelper","product "+item.getName());
         Log.i("dbhelper","qty "+item.getQuantity());
         Log.i("dbhelper","total amount "+item.getTotalAmount());
         Log.i("dbhelper","shopCode "+item.getShopCode());
         Log.i("dbhelper","SP "+item.getSellingPrice());
         Log.i("dbhelper","CGST "+item.getProdCgst());
         Log.i("dbhelper","SGST "+item.getProdSgst());
+        if(cartType.equals("frequency"))
+        contentValues.put(CART_TYPE, "frequency");
+        else contentValues.put(CART_TYPE, "normal");
         contentValues.put(TOTAL_QTY, item.getQuantity());
         contentValues.put(TOTAL_AMOUNT, item.getTotalAmount());
         contentValues.put(PROD_SP, item.getSellingPrice());
@@ -789,15 +823,17 @@ public class DbHelper extends SQLiteOpenHelper {
             contentValues.put(PROD_SGST, rate / 2);
         }
 
-        db.update(CART_TABLE, contentValues, ID + " = ?" + " AND " + SHOP_CODE + "=?" + " AND " + PROD_SP+" != ?",
+        double status = db.update(CART_TABLE, contentValues, ID + " = ?" + " AND " + SHOP_CODE + "=?" + " AND " + PROD_SP+" != ?",
                 new String[] { String.valueOf(item.getId()),  String.valueOf(item.getShopCode()), String.valueOf(0)});
 
+        Log.d("Cart updated status ", ""+status);
+
         //if(!item.getShopCode().equals("SHP1"))
-        updateShopCouponDiscount(item);
-        updateShoppursCouponDiscount();
+        updateShopCouponDiscount(item, cartType);
+        updateShoppursCouponDiscount(cartType);
     }
 
-    private void updateShopCouponDiscount(MyProduct item){
+    private void updateShopCouponDiscount(MyProduct item, String cartType){
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues contentValues = new ContentValues();
         float tAmount = getTotalAmount(item.getShopCode());
@@ -805,19 +841,19 @@ public class DbHelper extends SQLiteOpenHelper {
         Log.i("dbhelper","after coupon total amount "+(tAmount - couponDiscount));
         Log.i("dbhelper","after coupon  discount"+couponDiscount);
         contentValues.put(DISCOUNT, couponDiscount);
-        db.update(CART_TABLE, contentValues, SHOP_CODE + "=?",
-                new String[] { item.getShopCode() });
+        db.update(CART_TABLE, contentValues, SHOP_CODE + "=?"  + " AND " + PROD_SP+" != ?",
+                new String[] { item.getShopCode(), cartType });
     }
-    private void updateShoppursCouponDiscount(){
+    private void updateShoppursCouponDiscount(String cartType){
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues contentValues = new ContentValues();
-        float tAmount = getTotalPriceCart();
+        float tAmount = getTotalPriceCart("normal");
         float couponDiscount = getCouponAmount(tAmount, "SHP1");
         Log.i("dbhelper","after coupon total amount "+(tAmount - couponDiscount));
         Log.i("dbhelper","after coupon  discount"+couponDiscount);
         contentValues.put(SHOPPURS_DISCOUNT, couponDiscount);
-        db.update(CART_TABLE, contentValues, SHOP_CODE + "=?",
-                new String[] {"SHP1"});
+        db.update(CART_TABLE, contentValues, SHOP_CODE + "=?"  + " AND " + CART_TYPE+" != ?",
+                new String[] {"SHP1", cartType});
     }
 
     public float getCouponAmount(float totalAmount, String shopCode) {
@@ -907,11 +943,11 @@ public class DbHelper extends SQLiteOpenHelper {
         return totalAmount;
     }
 
-    public float getTotalShopCouponDiscount(){
+    public float getTotalShopCouponDiscount(String cartType){
         float totalDiscount=0;
-        String countQuery = "SELECT  sum("+DISCOUNT+") as discount FROM " +  CART_TABLE;
+        String countQuery = "SELECT  sum("+DISCOUNT+") as discount FROM " +  CART_TABLE +" where "+CART_TYPE+" = ?";
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
+        Cursor cursor = db.rawQuery(countQuery, new String[]{cartType});
         if(cursor.moveToFirst()) {
             totalDiscount = cursor.getFloat(cursor.getColumnIndex(DISCOUNT));
             cursor.close();
@@ -919,11 +955,11 @@ public class DbHelper extends SQLiteOpenHelper {
         return totalDiscount;
     }
 
-    public float getTotalShoppursCouponDiscount(){
+    public float getTotalShoppursCouponDiscount(String cartType){
         float totalDiscount=0;
-        String countQuery = "SELECT "+SHOPPURS_DISCOUNT+" FROM " +  CART_TABLE;
+        String countQuery = "SELECT "+SHOPPURS_DISCOUNT+" FROM " +  CART_TABLE +" where "+CART_TYPE+" = ?";
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
+        Cursor cursor = db.rawQuery(countQuery, new String[]{cartType});
         if(cursor.moveToFirst()) {
             totalDiscount = cursor.getFloat(cursor.getColumnIndex(SHOPPURS_DISCOUNT));
             cursor.close();
@@ -931,11 +967,11 @@ public class DbHelper extends SQLiteOpenHelper {
         return totalDiscount;
     }
 
-    public float getTotalShopCouponDiscount(String shopCode){
+    public float getTotalShopCouponDiscount(String shopCode, String cartType){
         float totalDiscount=0;
-        String countQuery = "SELECT "+DISCOUNT+" FROM " +  CART_TABLE +" where SHOP_CODE =?";
+        String countQuery = "SELECT "+DISCOUNT+" FROM " +  CART_TABLE +" where SHOP_CODE =?" +" AND "+CART_TYPE+" = ?";
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, new String[]{shopCode});
+        Cursor cursor = db.rawQuery(countQuery, new String[]{shopCode, cartType});
         if(cursor.moveToFirst()) {
             totalDiscount = cursor.getFloat(cursor.getColumnIndex(DISCOUNT));
             cursor.close();
@@ -1400,10 +1436,10 @@ public class DbHelper extends SQLiteOpenHelper {
         return exist;
     }
 
-    public float getTotalPriceCart(String shopCode){
+    public float getTotalPriceCart(String shopCode, String cartType){
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select sum("+TOTAL_AMOUNT+") as totalAmount from "+CART_TABLE +" where SHOP_CODE = ?";
-        Cursor res =  db.rawQuery(query, new String[]{ shopCode });
+        final String query="select sum("+TOTAL_AMOUNT+") as totalAmount from "+CART_TABLE +" where SHOP_CODE = ?" +" AND "+CART_TYPE+" = ?";
+        Cursor res =  db.rawQuery(query, new String[]{ shopCode, cartType });
         float amount = 0f;
         if(res.moveToFirst()){
             do{
@@ -1415,10 +1451,10 @@ public class DbHelper extends SQLiteOpenHelper {
         return amount;
     }
 
-    public float getTotalPriceCart(){
+    public float getTotalPriceCart(String cartType){
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select sum("+TOTAL_AMOUNT+") as totalAmount from "+CART_TABLE;
-        Cursor res =  db.rawQuery(query, null);
+        final String query="select sum("+TOTAL_AMOUNT+") as totalAmount from "+CART_TABLE +" where "+CART_TYPE+" = ?";
+        Cursor res =  db.rawQuery(query, new String[]{cartType});
         float amount = 0f;
         if(res.moveToFirst()){
             do{
@@ -1432,10 +1468,10 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
 
-    public float getTotalMrpPriceCart(String shopCode){
+    public float getTotalMrpPriceCart(String shopCode, String cartType){
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select sum("+PROD_MRP+" * "+TOTAL_QTY+") as totalAmount from "+CART_TABLE +" where SHOP_CODE = ?";
-        Cursor res =  db.rawQuery(query, new String[]{shopCode});
+        final String query="select sum("+PROD_MRP+" * "+TOTAL_QTY+") as totalAmount from "+CART_TABLE +" where SHOP_CODE = ?" +" AND "+CART_TYPE+" = ?";
+        Cursor res =  db.rawQuery(query, new String[]{shopCode, cartType});
         float amount = 0f;
         if(res.moveToFirst()){
             do{
@@ -1447,10 +1483,10 @@ public class DbHelper extends SQLiteOpenHelper {
         return amount;
     }
 
-    public float getTotalMrpPriceCart(){
+    public float getTotalMrpPriceCart(String cartType){
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select sum("+PROD_MRP+" * "+TOTAL_QTY+") as totalAmount from "+CART_TABLE;
-        Cursor res =  db.rawQuery(query, null);
+        final String query="select sum("+PROD_MRP+" * "+TOTAL_QTY+") as totalAmount from "+CART_TABLE +" where "+CART_TYPE+" = ?";
+        Cursor res =  db.rawQuery(query, new String[]{cartType});
         float amount = 0f;
         if(res.moveToFirst()){
             do{
@@ -1462,10 +1498,10 @@ public class DbHelper extends SQLiteOpenHelper {
         return amount;
     }
 
-    public float getTotalTaxesart(){
+    public float getTotalTaxesart(String cartType){
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select sum(("+PROD_CGST+" + "+PROD_SGST+")*"+TOTAL_QTY+") as totalAmount from "+CART_TABLE;
-        Cursor res =  db.rawQuery(query, null);
+        final String query="select sum(("+PROD_CGST+" + "+PROD_SGST+")*"+TOTAL_QTY+") as totalAmount from "+CART_TABLE +" where "+CART_TYPE+" = ?";
+        Cursor res =  db.rawQuery(query, new String[]{cartType});
         float amount = 0f;
         if(res.moveToFirst()){
             do{
@@ -1477,10 +1513,10 @@ public class DbHelper extends SQLiteOpenHelper {
         return amount;
     }
 
-    public float getTotalTaxesart(String shopCode){
+    public float getTotalTaxesart(String shopCode, String cartType){
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select sum(("+PROD_CGST+" + "+PROD_SGST+")*"+TOTAL_QTY+") as totalAmount from "+CART_TABLE  +" where SHOP_CODE = ?";
-        Cursor res =  db.rawQuery(query, new String[]{ shopCode });
+        final String query="select sum(("+PROD_CGST+" + "+PROD_SGST+")*"+TOTAL_QTY+") as totalAmount from "+CART_TABLE  +" where SHOP_CODE = ?"  +" AND "+CART_TYPE+" = ?";
+        Cursor res =  db.rawQuery(query, new String[]{ shopCode, cartType });
         float amount = 0f;
         if(res.moveToFirst()){
             do{

@@ -115,7 +115,7 @@ public class CartShopListActivity extends NetworkBaseActivity {
     }
 
     private void getShopList(){
-        List<MyProduct> cartItemList = dbHelper.getCartProducts();
+        List<MyProduct> cartItemList = dbHelper.getCartProducts("normal");
         String shopCodes ="";
         for(MyProduct myProduct: cartItemList) {
 
