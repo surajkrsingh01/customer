@@ -154,7 +154,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
             i.setType("text/plain");
             i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name));
             String sAux = "\n Download "+getResources().getString(R.string.app_name)+" app from below link \n\n";
-            sAux = sAux + "https://app.box.com/s/ky40pmzmzuf0e5aiifpan0illv1pavou \n\n";
+            sAux = sAux + "https://play.google.com/store/apps/details?id=com.shoppurs \n\n";
             i.putExtra(Intent.EXTRA_TEXT, sAux);
             startActivity(Intent.createChooser(i, "Choose one"));
         } catch(Exception e) {
