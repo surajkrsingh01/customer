@@ -301,9 +301,11 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
             relative_unit = itemView.findViewById(R.id.relative_unit);
             text_offer = itemView.findViewById(R.id.text_offer);
             text_frequency = itemView.findViewById(R.id.text_frequency);
-            text_frequency.setVisibility(View.VISIBLE);
-            text_frequency.setTypeface(typeface);
-            text_frequency.setOnClickListener(this);
+            if(callingActivityName.equals("ShopProductListActivity")) {
+                text_frequency.setVisibility(View.VISIBLE);
+                text_frequency.setTypeface(typeface);
+                text_frequency.setOnClickListener(this);
+            }
             rootView.setOnClickListener(this);
             text_offer.setOnClickListener(this);
             imageView.setOnClickListener(this);

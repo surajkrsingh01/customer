@@ -309,7 +309,7 @@ public class ScannarActivity extends NetworkBaseActivity {
                                     List<ProductColor> productColorList = new ArrayList<>();
                                     tempObject = tempArray.getJSONObject(unitCounter);
                                     productSize = new ProductSize();
-                                    productSize.setId(tempObject.getInt("id"));
+                                    productSize.setId(tempObject.getString("id"));
                                     productSize.setSize(tempObject.getString("size"));
                                     productSize.setStatus(tempObject.getString("status"));
                                     productSize.setProductColorList(productColorList);

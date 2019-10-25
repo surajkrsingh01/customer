@@ -69,7 +69,7 @@ public class FrequencyProductsActivity extends HandleCartActivity {
     private List<MyProduct> myProductList;
     private DbHelper dbHelper;
     private ImageView image_view_shop, image_fav, image_search, image_scan;
-    private String shopName, shopCode, shopdbname, custdbname;
+    private String shopName, shopCode, shopdbname,dbuser, dbpassword, custdbname;
 
     private int position, type, productDetailsType;
     private int counter;
@@ -82,9 +82,11 @@ public class FrequencyProductsActivity extends HandleCartActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frequency_products);
         dbHelper = new DbHelper(this);
-        shopCode = sharedPreferences.getString(Constants.SHOP_INSIDE_CODE,"");
-        shopName = sharedPreferences.getString(Constants.SHOP_INSIDE_NAME,"");
-        shopdbname = sharedPreferences.getString(Constants.SHOP_DBNAME,"");
+        shopCode = getIntent().getStringExtra("shop_code");
+        shopName = getIntent().getStringExtra("name");
+        shopdbname = getIntent().getStringExtra("dbname");
+        dbuser = getIntent().getStringExtra("dbuser");
+        dbpassword = getIntent().getStringExtra("dbpassword");
         shopDeliveryModel = new ShopDeliveryModel();
         shopDeliveryModel = (ShopDeliveryModel) getIntent().getSerializableExtra("shopDeliveryModel");
         custdbname = sharedPreferences.getString(Constants.DB_NAME, "");
@@ -94,6 +96,7 @@ public class FrequencyProductsActivity extends HandleCartActivity {
     private void initViews(){
         myProductList = new ArrayList<>();
         text_shop_name = findViewById(R.id.text_shop_name);
+        text_shop_name.setText(shopName);
         tv_shortName = findViewById(R.id.tv_shortName);
         image_view_shop = findViewById(R.id.image_view_shop);
         image_fav = findViewById(R.id.image_fav);

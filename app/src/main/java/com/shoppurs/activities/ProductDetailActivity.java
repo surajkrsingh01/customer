@@ -58,6 +58,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
     private TextView cartItemCount,cartItemPrice, viewCart, text_left_label, text_right_label;
     private MyProduct myProduct;
     private ShopDeliveryModel shopDeliveryModel;
+    private String flag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,8 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         myProduct = (MyProduct) getIntent().getSerializableExtra("MyProduct");
         shopDeliveryModel = new ShopDeliveryModel();
         shopDeliveryModel = (ShopDeliveryModel) getIntent().getSerializableExtra("shopDeliveryModel");
+        flag = getIntent().getStringExtra("flag");
+
         Log.d("myProduct ", myProduct.getName()+" name");
         Log.d("myProduct ", myProduct.getShopCode()+" shopCode");
         Log.d("myProduct ", myProduct.getId()+"  id");
@@ -141,6 +144,25 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         linear_qty = findViewById(R.id.linear_qty);
         tv_cartCount = findViewById(R.id.tv_cartCount);
 
+        /*imageView2.setImageResource(myProduct.getProdImage1());
+        imageView3.setImageResource(myProduct.getProdImage2());
+        imageView4.setImageResource(myProduct.getProdImage3());
+*/
+
+        rlfooterviewcart = findViewById(R.id.rlfooterviewcart);
+        cartItemCount = findViewById(R.id.itemCount);
+        cartItemPrice = findViewById(R.id.itemPrice);
+        viewCart = findViewById(R.id.viewCart);
+
+        if(!TextUtils.isEmpty(flag) && flag.equals("ChatProduct")){
+            productDetailsType = 5;
+            getProductDetails(myProduct.getId());
+        }else {
+            setProductDetails();
+        }
+    }
+
+    private void setProductDetails(){
         textViewSubCatName.setText(myProduct.getSubCatName());
         textViewProductName.setText(myProduct.getName());
         text_product_name_top.setText(myProduct.getName());
@@ -194,10 +216,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                 .apply(requestOptions)
                 .error(R.drawable.ic_photo_black_192dp)
                 .into(imageView4);
-        /*imageView2.setImageResource(myProduct.getProdImage1());
-        imageView3.setImageResource(myProduct.getProdImage2());
-        imageView4.setImageResource(myProduct.getProdImage3());
-*/
+
         myReviewList = new ArrayList<>();
         recyclerViewReview= findViewById(R.id.recycler_view_review);
         recyclerViewReview.setItemAnimator(new DefaultItemAnimator());
@@ -209,10 +228,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         recyclerViewReview.setNestedScrollingEnabled(false);
         setReviews();
 
-        rlfooterviewcart = findViewById(R.id.rlfooterviewcart);
-        cartItemCount = findViewById(R.id.itemCount);
-        cartItemPrice = findViewById(R.id.itemPrice);
-        viewCart = findViewById(R.id.viewCart);
+
 
         if(dbHelper.checkProdExistInCart(myProduct.getId(), shopCode)){
             btnAddCart.setVisibility(View.GONE);
@@ -235,8 +251,8 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         btnAddCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              //  linear_plus_minus.setVisibility(View.VISIBLE);
-               // btnAddCart.setVisibility(View.GONE);
+                //  linear_plus_minus.setVisibility(View.VISIBLE);
+                // btnAddCart.setVisibility(View.GONE);
                 int count = Integer.parseInt(tv_cartCount.getText().toString());
                 updateCart(2);
             }
@@ -270,7 +286,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
 
     private void getProductRatings(){
         Map<String,String> params=new HashMap<>();
-        params.put("code",""+myProduct.getCode());
+        params.put("code",""+myProduct.getId());
         params.put("dbName",sharedPreferences.getString(Constants.SHOP_DBNAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.SHOP_DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.SHOP_DB_PASSWORD,""));
@@ -412,11 +428,10 @@ public class ProductDetailActivity extends NetworkBaseActivity {
     }
 
     private void getProductDetails(String prodId){
-        if(productDetailsType==1)
+        if(productDetailsType==1 || productDetailsType ==5)
             showProgress(true);
         Map<String,String> params=new HashMap<>();
-        params.put("id", prodId); // as per user selected category from top horizontal categories list
-        params.put("code", shopCode);
+        params.put("code", prodId);
         params.put("dbName",shopCode);
         Log.d(TAG, params.toString());
         String url=getResources().getString(R.string.url)+"/products/ret_products_details";
@@ -626,9 +641,39 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     if (productDetailsType == 1) {
                         myProduct.setQoh(jsonObject.getInt("prodQoh"));
                         checkFreeProductOffer();
-                    } else {
+                    }else if(productDetailsType ==5){
+                        myProduct = new MyProduct();
+                        myProduct.setId(jsonObject.getString("prodCode"));
+                        myProduct.setCatId(jsonObject.getString("prodCatId"));
+                        myProduct.setSubCatId(jsonObject.getString("prodSubCatId"));
+                        myProduct.setName(jsonObject.getString("prodName"));
+                        myProduct.setQoh(jsonObject.getInt("prodQoh"));
+                        myProduct.setQuantity(1);
+                        myProduct.setFreeProductPosition(myProduct.getFreeProductPosition() + 1);
+                        myProduct.setMrp(Float.parseFloat(jsonObject.getString("prodMrp")));
+                        myProduct.setSellingPrice(Float.parseFloat(jsonObject.getString("prodSp")));
+                        myProduct.setCode(jsonObject.getString("prodCode"));
+                        myProduct.setIsBarcodeAvailable(jsonObject.getString("isBarcodeAvailable"));
+                        //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
+                        myProduct.setDesc(jsonObject.getString("prodDesc"));
+                        myProduct.setLocalImage(R.drawable.thumb_16);
+                        myProduct.setProdImage1(jsonObject.getString("prodImage1"));
+                        myProduct.setProdImage2(jsonObject.getString("prodImage2"));
+                        myProduct.setProdImage3(jsonObject.getString("prodImage3"));
+                        myProduct.setProdHsnCode(jsonObject.getString("prodHsnCode"));
+                        myProduct.setProdMfgDate(jsonObject.getString("prodMfgDate"));
+                        myProduct.setProdExpiryDate(jsonObject.getString("prodExpiryDate"));
+                        myProduct.setProdMfgBy(jsonObject.getString("prodMfgBy"));
+                        myProduct.setProdExpiryDate(jsonObject.getString("prodExpiryDate"));
+                        myProduct.setOfferId(jsonObject.getString("offerId"));
+                        myProduct.setProdCgst(Float.parseFloat(jsonObject.getString("prodCgst")));
+                        myProduct.setProdIgst(Float.parseFloat(jsonObject.getString("prodIgst")));
+                        myProduct.setProdSgst(Float.parseFloat(jsonObject.getString("prodSgst")));
+                        myProduct.setProdWarranty(jsonObject.getString("prodWarranty"));
+                        setProductDetails();
+                    }else {
                         freeProdut = new MyProduct();
-                        freeProdut.setId(jsonObject.getString("prodId"));
+                        freeProdut.setId(jsonObject.getString("prodCode"));
                         freeProdut.setCatId(jsonObject.getString("prodCatId"));
                         freeProdut.setSubCatId(jsonObject.getString("prodSubCatId"));
                         freeProdut.setName(jsonObject.getString("prodName"));

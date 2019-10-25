@@ -4,19 +4,17 @@ import java.io.Serializable;
 import java.util.List;
 
 public class ProductSize implements Serializable {
-
-	private int id;
-	private String size,status;
+	private String id, size,status;
 	
 	private List<ProductColor> productColorList;
 	
 	
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

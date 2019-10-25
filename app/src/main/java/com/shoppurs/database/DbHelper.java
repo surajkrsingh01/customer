@@ -414,7 +414,7 @@ public class DbHelper extends SQLiteOpenHelper {
         }
         if(item.getProductSizeList()!=null) {
             for (int i = 0; i < item.getProductSizeList().size(); i++) {
-                addProductSize(item.getProductSizeList().get(i), Integer.parseInt(item.getId()));
+                addProductSize(item.getProductSizeList().get(i), item.getId());
                 for (int j = 0; j < item.getProductSizeList().get(i).getProductColorList().size(); j++) {
                     addProductColor(item.getProductSizeList().get(i).getProductColorList().get(j), item.getProductSizeList().get(i).getId());
                 }
@@ -755,8 +755,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 productItem.setUnit(res.getString(res.getColumnIndex(UNIT)));
                 productItem.setColor(res.getString(res.getColumnIndex(COLOR)));
                 productItem.setSize(res.getString(res.getColumnIndex(SIZE)));
-                productItem.setProductUnitList(getProductUnitList(db, Integer.parseInt(productItem.getId())));
-                productItem.setProductSizeList(getProductSizeList(db, Integer.parseInt(productItem.getId())));
+                productItem.setProductUnitList(getProductUnitList(db, productItem.getId()));
+                productItem.setProductSizeList(getProductSizeList(db, productItem.getId()));
                 if(res.getString(res.getColumnIndex(CART_TYPE)).equals("frequency")){
                     ProductFrequency frequency = new ProductFrequency();
                     frequency.setName(res.getString(res.getColumnIndex(FREQUENCY)));
@@ -1189,7 +1189,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean addProductSize(ProductSize item, int prodId){
+    public boolean addProductSize(ProductSize item, String prodId){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
@@ -1201,7 +1201,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean addProductColor(ProductColor item, int prodId){
+    public boolean addProductColor(ProductColor item, String prodId){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
@@ -1215,9 +1215,9 @@ public class DbHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public List<ProductUnit> getProductUnitList(SQLiteDatabase db,int prodId){
+    public List<ProductUnit> getProductUnitList(SQLiteDatabase db,String prodId){
         String unitSql="select * from "+PRODUCT_UNIT_TABLE+" WHERE "+PROD_ID+" = ? AND "+STATUS+" = 'N'";
-        Cursor res =  db.rawQuery(unitSql, new String[]{String.valueOf(prodId)});
+        Cursor res =  db.rawQuery(unitSql, new String[]{prodId});
         ArrayList<ProductUnit> itemList=new ArrayList<>();
         ProductUnit item = null;
         if(res.moveToFirst()){
@@ -1234,15 +1234,15 @@ public class DbHelper extends SQLiteOpenHelper {
         return itemList;
     }
 
-    public List<ProductSize> getProductSizeList(SQLiteDatabase db,int prodId){
+    public List<ProductSize> getProductSizeList(SQLiteDatabase db,String prodId){
         String unitSql="select * from "+PRODUCT_SIZE_TABLE+" WHERE "+PROD_ID+" = ? AND "+STATUS+" = 'N'";
-        Cursor res =  db.rawQuery(unitSql, new String[]{String.valueOf(prodId)});
+        Cursor res =  db.rawQuery(unitSql, new String[]{prodId});
         ArrayList<ProductSize> itemList=new ArrayList<>();
         ProductSize item = null;
         if(res.moveToFirst()){
             do{
                 item=new ProductSize();
-                item.setId(res.getInt(res.getColumnIndex(ID)));
+                item.setId(res.getString(res.getColumnIndex(ID)));
                 item.setSize(res.getString(res.getColumnIndex(SIZE)));
                 item.setStatus(res.getString(res.getColumnIndex(STATUS)));
                 item.setProductColorList(getProductColorList(db,item.getId()));
@@ -1252,9 +1252,9 @@ public class DbHelper extends SQLiteOpenHelper {
         return itemList;
     }
 
-    public List<ProductColor> getProductColorList(SQLiteDatabase db,int sizeId){
+    public List<ProductColor> getProductColorList(SQLiteDatabase db,String sizeId){
         String unitSql="select * from "+PRODUCT_COLOR_TABLE+" WHERE "+SIZE_ID+" = ? AND "+STATUS+" = 'N'";
-        Cursor res =  db.rawQuery(unitSql, new String[]{String.valueOf(sizeId)});
+        Cursor res =  db.rawQuery(unitSql, new String[]{sizeId});
         ArrayList<ProductColor> itemList=new ArrayList<>();
         ProductColor item = null;
         if(res.moveToFirst()){
@@ -2001,16 +2001,16 @@ public class DbHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean removeSize(int id){
+    public boolean removeSize(String id){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(PRODUCT_SIZE_TABLE, ID+" = ?",new String[]{String.valueOf(id)});
-        db.delete(PRODUCT_COLOR_TABLE, SIZE_ID+" = ?",new String[]{String.valueOf(id)});
+        db.delete(PRODUCT_SIZE_TABLE, ID+" = ?",new String[]{id});
+        db.delete(PRODUCT_COLOR_TABLE, SIZE_ID+" = ?",new String[]{id});
         return true;
     }
 
-    public boolean removeColor(int id){
+    public boolean removeColor(String  id){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(PRODUCT_COLOR_TABLE, ID+" = ?",new String[]{String.valueOf(id)});
+        db.delete(PRODUCT_COLOR_TABLE, ID+" = ?",new String[]{id});
         return true;
     }
 

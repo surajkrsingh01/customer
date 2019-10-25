@@ -322,6 +322,10 @@ public class ChatActivity extends BaseImageActivity implements MyItemClickListen
     public void selectProduct(){
         isSearchingProduct = true;
         BottomSearchFragment bottomSearchFragment = new BottomSearchFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("shopCode", shopCode);
+        Log.d("shopCode", shopCode);
+        bottomSearchFragment.setArguments(bundle);
         bottomSearchFragment.setCallingActivityName("ChatActivity", sharedPreferences, isDarkTheme);
         bottomSearchFragment.setMyItemClickListener(this);
         bottomSearchFragment.show(getSupportFragmentManager(), bottomSearchFragment.getTag());
@@ -335,7 +339,7 @@ public class ChatActivity extends BaseImageActivity implements MyItemClickListen
             String imageUrl = item.getProdImage1();
             Map<String, String> params = new HashMap<>();
             params.put("message", item.getName());
-            params.put("messageFileCode", item.getBarCode());
+            params.put("messageFileCode", item.getCode());
             params.put("messageFileUrl", item.getProdImage1());
             String timestamp = Utility.getTimeStamp();
             //timestamp =timestamp.replaceAll(" ","").replaceAll(":","").replaceAll("-","");
@@ -381,9 +385,12 @@ public class ChatActivity extends BaseImageActivity implements MyItemClickListen
     public void onItemClicked(int pos) {
             ChatMessage chatMessage = itemList.get(pos);
             Log.i(TAG,"code "+chatMessage.getProdCode());
+            MyProduct item = new MyProduct();
+            item.setId(chatMessage.getProdCode());
+            item.setName(chatMessage.getMessageText());
             Intent intent = new Intent(ChatActivity.this, ProductDetailActivity.class);
-            intent.putExtra("code",chatMessage.getProdCode());
-            intent.putExtra("flag","chatProduct");
+            intent.putExtra("flag", "ChatProduct");
+            intent.putExtra("MyProduct", item);
             startActivity(intent);
     }
 

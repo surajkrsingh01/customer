@@ -5,8 +5,9 @@ import java.util.List;
 
 public class MyProduct implements Serializable {
     private String id, shopCode,catId, subCatId,name,code, unit, isBarcodeAvailable, comboProductIds, barCode,prodHsnCode, prodMfgDate, prodExpiryDate, prodMfgBy, offerId, offerType,
-            prodWarranty, desc,image,subCatName, prodImage1, prodImage2, prodImage3, size, color, custCode;
-    private int offerItemCounter, freeProductPosition, localImage, quantity, qoh;
+            prodWarranty, desc,image,subCatName, prodImage1, prodImage2, prodImage3, size, color, custCode,
+            invNo, transId, srId;
+    private int offerItemCounter, freeProductPosition, localImage, quantity, qoh, returnStatus;
     private float discount, mrp, sellingPrice, prodCgst, prodIgst, prodSgst, totalAmount ;
     private ProductDiscountOffer productDiscountOffer;
     private ProductPriceOffer productPriceOffer;
@@ -16,6 +17,38 @@ public class MyProduct implements Serializable {
     private List<Barcode> barcodeList;
     private Object productOffer;
     private ProductFrequency frequency;
+
+    public String getSrId() {
+        return srId;
+    }
+
+    public void setSrId(String srId) {
+        this.srId = srId;
+    }
+
+    public String getInvNo() {
+        return invNo;
+    }
+
+    public void setInvNo(String invNo) {
+        this.invNo = invNo;
+    }
+
+    public String getTransId() {
+        return transId;
+    }
+
+    public void setTransId(String transId) {
+        this.transId = transId;
+    }
+
+    public int getReturnStatus() {
+        return returnStatus;
+    }
+
+    public void setReturnStatus(int returnStatus) {
+        this.returnStatus = returnStatus;
+    }
 
     public ProductFrequency getFrequency() {
         return frequency;

@@ -70,6 +70,7 @@ public class ChatUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ChatUser item = (ChatUser) itemList.get(getAdapterPosition());
             Intent intent = new Intent(context, ChatActivity.class);
             intent.putExtra("messageTo",item.getUserCode());
+            intent.putExtra("shopCode",item.getUserCode());
             intent.putExtra("messageToName",item.getUserName());
             intent.putExtra("messageToMobile",item.getUserMobile());
             intent.putExtra("messageToPic",item.getUserPic());

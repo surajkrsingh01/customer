@@ -45,6 +45,7 @@ public class Constants {
     public static String LOCATION="location";
     public static String FULL_NAME="fullName";
     public static String JWT_TOKEN="jwt_token";
+    public static String DB_VERSION="db_version";
     public static String OTP="otp";
     public static String USERNAME="username";
     public static String ROLE="role";

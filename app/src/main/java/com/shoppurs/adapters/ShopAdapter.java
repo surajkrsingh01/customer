@@ -25,6 +25,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.shoppurs.R;
 import com.shoppurs.activities.SearchActivity;
 import com.shoppurs.activities.Settings.FrequencyProductsActivity;
+import com.shoppurs.activities.Settings.ReturnProductsActivity;
 import com.shoppurs.activities.ShopAddressActivity;
 import com.shoppurs.activities.ShopListActivity;
 import com.shoppurs.activities.ShopProductListActivity;
@@ -199,6 +200,9 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                     Intent intent;
                     if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency"))
                         intent = new Intent(context, FrequencyProductsActivity.class);
+                    else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product")) {
+                        intent = new Intent(context, ReturnProductsActivity.class);
+                    }
                     else
                     intent = new Intent(context, ShopProductListActivity.class);
 

@@ -142,12 +142,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(message.split("=")[1]);
-                NotificationService.displayNotification(this, jsonObject.getString("message"));
+                NotificationService.displayNotification(this,jsonObject.getString("message"),  jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }else {
-                NotificationService.displayNotification(this, message);
+                NotificationService.displayNotification(this, message, null);
             }
 
            // sendNotification(message);

@@ -281,7 +281,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                         for (int i = 0; i < productJArray.length(); i++) {
                             MyProduct myProduct = new MyProduct();
                             myProduct.setShopCode(shopCode);
-                            myProduct.setId(productJArray.getJSONObject(i).getString("prodId"));
+                            myProduct.setId(productJArray.getJSONObject(i).getString("prodCode"));
                             myProduct.setCatId(productJArray.getJSONObject(i).getString("prodCatId"));
                             myProduct.setSubCatId(productJArray.getJSONObject(i).getString("prodSubCatId"));
                             myProduct.setName(productJArray.getJSONObject(i).getString("prodName"));
@@ -356,7 +356,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                                     List<ProductColor> productColorList = new ArrayList<>();
                                     tempObject = tempArray.getJSONObject(unitCounter);
                                     productSize = new ProductSize();
-                                    productSize.setId(tempObject.getInt("id"));
+                                    productSize.setId(tempObject.getString("id"));
                                     productSize.setSize(tempObject.getString("size"));
                                     productSize.setStatus(tempObject.getString("status"));
                                     productSize.setProductColorList(productColorList);
@@ -486,7 +486,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                         checkFreeProductOffer();
                     }else {
                         freeProdut = new MyProduct();
-                        freeProdut.setId(jsonObject.getString("prodId"));
+                        freeProdut.setId(jsonObject.getString("prodCode"));
                         freeProdut.setCatId(jsonObject.getString("prodCatId"));
                         freeProdut.setSubCatId(jsonObject.getString("prodSubCatId"));
                         freeProdut.setName(jsonObject.getString("prodName"));
@@ -584,7 +584,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
             Bundle bundle = new Bundle();
             bundle.putString("shopMobile",shop.getMobile());
             bundle.putString("shopName",shop.getName());
-            bundle.putString("shoptCode", shop.getCode());
+            bundle.putString("shopCode", shop.getCode());
             bundle.putString("shopImage",shop.getShopimage());
             //bundle.putString("shopUserCreateStatus",shop.getCustUserCreateStatus());
             myListItemClickListener.onItemClicked(bundle);

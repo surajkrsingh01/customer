@@ -103,7 +103,7 @@ public class ShopListActivity extends NetworkBaseActivity {
         });
 
         text_left_label = findViewById(R.id.text_left_label);
-        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency"))
+        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency")  || !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product"))
             text_left_label.setText("Settings");
         text_right_label = findViewById(R.id.text_right_label);
         text_left_label.setOnClickListener(new View.OnClickListener() {
@@ -115,7 +115,7 @@ public class ShopListActivity extends NetworkBaseActivity {
         });
 
         initFooter(this,1);
-        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency"))
+        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency") || !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product"))
             getNormalShops();
         else
         getFavoriteShops();
@@ -127,7 +127,7 @@ public class ShopListActivity extends NetworkBaseActivity {
         myFavoriteitemList.clear();
         myNormalitemList.clear();
         myfavoriteLists.clear();
-        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency"))
+        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency") || !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product"))
             getNormalShops();
         else
         getFavoriteShops();
@@ -193,14 +193,20 @@ public class ShopListActivity extends NetworkBaseActivity {
         recyclerViewNormalshop.setAdapter(myNormalshopAdapter);
 
         Map<String,String> params=new HashMap<>();
-        params.put("subcatid",subCatId);
-        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
-        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=null;
         if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency"))
          url=getResources().getString(R.string.root_url)+"order/get_frequency_order_shop_list";
-        else url=getResources().getString(R.string.url)+"/shoplist";
+        else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product")) {
+            url = getResources().getString(R.string.root_url) + "customers/shop/sales_return_shops";
+            //url=getResources().getString(R.string.root_url)+"order/get_frequency_order_shop_list";
+        }
+        else{
+            params.put("subcatid",subCatId);
+            params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
+            params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+            url=getResources().getString(R.string.url)+"/shoplist";
+        }
         //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }
@@ -210,6 +216,7 @@ public class ShopListActivity extends NetworkBaseActivity {
     public void onJsonObjectResponse(JSONObject response, String apiName) {
        // showProgress(false);
         try {
+
             // JSONObject jsonObject=response.getJSONObject("response");
             Log.d("response", response.toString());
             if(apiName.equals("NormalShops")){
@@ -218,7 +225,7 @@ public class ShopListActivity extends NetworkBaseActivity {
                     if(!response.getString("result").equals("null")){
                         JSONArray shopJArray = null;
 
-                        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency")){
+                        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency") || !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product")){
                             shopJArray = response.getJSONArray("result");
                         }else{
                             JSONObject jsonObject = response.getJSONObject("result");

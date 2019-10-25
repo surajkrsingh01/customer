@@ -235,7 +235,7 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
                        submitButton.setText("Submit");
                        editTextCode.setText(response.getString("result"));
                        DialogAndToast.showDialog("Otp has been sent to your mobile, please check your notification", ForgotPasswordActivity.this);
-                       NotificationService.displayNotification( this, response.getInt("result")+" is your verification code");
+                       NotificationService.displayNotification( this, response.getInt("result")+" is your verification code", response);
                    }
                 }else {
                     if(response.getInt("result")==0) {

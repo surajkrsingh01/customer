@@ -227,8 +227,7 @@ public class HandleCartActivity extends NetworkBaseActivity{
         if(productDetailsType==1)
             showProgress(true);
         Map<String,String> params=new HashMap<>();
-        params.put("id", prodId); // as per user selected category from top horizontal categories list
-        params.put("code", shopCode);
+        params.put("code", prodId);
         params.put("dbName",shopCode);
         Log.d(TAG, params.toString());
         String url=getResources().getString(R.string.url)+"/products/ret_products_details";

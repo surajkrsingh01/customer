@@ -19,7 +19,12 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.shoppurs.R;
 import com.shoppurs.activities.ForgotPasswordActivity;
+import com.shoppurs.activities.Settings.ChatActivity;
 import com.shoppurs.activities.SplashActivity;
+import com.shoppurs.activities.UserListForChatActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class NotificationService {
@@ -36,12 +41,23 @@ public class NotificationService {
 
 
     @SuppressWarnings({ "deprecation" })
-    public static void displayNotification(Context context, String message) {
-        Intent intent;
+    public static void displayNotification(Context context, String message, JSONObject jsonObject) {
+        Intent intent = null;
         // Create an explicit intent for an Activity in your app
-       /* if(startActivity instanceof ForgotPasswordActivity)
-            intent = new Intent(context, ForgotPasswordActivity.class);
-        else*/
+        if(jsonObject!=null) {
+            try {
+                if(jsonObject.getString("flag").equals("chat")){
+                    intent = new Intent(context, ChatActivity.class);
+                    intent.putExtra("messageTo",jsonObject.getString("code"));
+                    intent.putExtra("messageToName",jsonObject.getString("from"));
+                    intent.putExtra("messageToMobile",jsonObject.getString("mobile"));
+                    intent.putExtra("messageToPic",jsonObject.getString("pic"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        else
             intent = new Intent(context, SplashActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
@@ -77,6 +93,7 @@ public class NotificationService {
         adminChannel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH);
         adminChannel.setDescription(channelDescription);
         adminChannel.enableLights(true);
+        adminChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         adminChannel.setLightColor(Color.RED);
         adminChannel.enableVibration(true);
 

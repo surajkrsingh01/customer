@@ -26,7 +26,7 @@ import com.shoppurs.utilities.CountDrawable;
 public class SettingActivity extends BaseActivity implements View.OnClickListener {
 
     private RelativeLayout relative_personalInfo, relative_my_cart, relative_display, relative_my_order, relative_delivery_address, relative_invite,
-            relative_frequency_product_list, relative_chat,relative_change_password, relative_logout;
+            relative_frequency_product_list,relative_return_product, relative_chat,relative_change_password, relative_logout;
     private Toolbar toolbar;
     private Menu myMenu;
     private int cartCount;
@@ -93,6 +93,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         relative_my_order = findViewById(R.id.relative_my_order);
         relative_delivery_address = findViewById(R.id.relative_delivery_address);
         relative_frequency_product_list = findViewById(R.id.relative_frequency_product_list);
+        relative_return_product  = findViewById(R.id.relative_return_product);
         relative_invite = findViewById(R.id.relative_invite);
         relative_change_password = findViewById(R.id.relative_change_password);
         relative_chat = findViewById(R.id.relative_chat);
@@ -104,6 +105,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         relative_my_order.setOnClickListener(this);
         relative_delivery_address.setOnClickListener(this);
         relative_frequency_product_list.setOnClickListener(this);
+        relative_return_product.setOnClickListener(this);
         relative_invite.setOnClickListener(this);
         relative_change_password.setOnClickListener(this);
         relative_chat.setOnClickListener(this);
@@ -144,6 +146,10 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         }else if(view == relative_frequency_product_list){
             Intent intent = new Intent( SettingActivity.this, ShopListActivity.class);
             intent.putExtra("flag", "Frequency");
+            startActivity(intent);
+        }else if(view == relative_return_product){
+            Intent intent = new Intent( SettingActivity.this, ShopListActivity.class);
+            intent.putExtra("flag", "Return Product");
             startActivity(intent);
         }
     }
