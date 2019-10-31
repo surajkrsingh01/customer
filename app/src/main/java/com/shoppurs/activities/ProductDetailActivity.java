@@ -156,6 +156,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
 
         if(!TextUtils.isEmpty(flag) && flag.equals("ChatProduct")){
             productDetailsType = 5;
+            shopCode = myProduct.getShopCode();
             getProductDetails(myProduct.getId());
         }else {
             setProductDetails();

@@ -607,7 +607,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
                     productObject.put("prodCode", cartItem.getCode());
                     productObject.put("prodHsnCode", cartItem.getProdHsnCode());
-                    productObject.put("prodId", cartItem.getId());
+                    productObject.put("prodId", cartItem.getProdId());
 
                     if(cartItem.getComboProductIds() != null)
                     productObject.put("comboProdIds", cartItem.getComboProductIds());
@@ -654,7 +654,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     productObject.put("comboProdIds", cartItem.getComboProductIds());
                     productObject.put("prodCode", cartItem.getCode());
                     productObject.put("prodHsnCode", cartItem.getProdHsnCode());
-                    productObject.put("prodId", cartItem.getId());
+                    productObject.put("prodId", cartItem.getProdId());
                     /*if(cartItem.getIsBarcodeAvailable().equals("Y")){
                         productObject.put("prodBarCode", cartItem.getBarcodeList().get(0).getBarcode());
                         productObject.put("barcodeList",  tempbarcodeArray);

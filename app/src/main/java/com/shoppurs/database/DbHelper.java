@@ -52,6 +52,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
     public static final String ID = "id";
+    public static final String PRODID = "prod_id";
     public static final String SHOP_CODE = "shop_code";
     public static final String DISCOUNT = "discount";
     public static final String SHOPPURS_DISCOUNT = "shoppurs_discount";
@@ -267,6 +268,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static final String CREATE_CART_TABLE = "create table "+CART_TABLE +
             "("+ID+" TEXT, " +
+            " "+PRODID+" TEXT, " +
             //" "+CUST_CODE+" TEXT, " +
             " "+SHOP_CODE+" TEXT, " +
             " "+COUPON_ID+" TEXT, " +
@@ -344,7 +346,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public DbHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, 18);
+        super(context, DATABASE_NAME, null, 19);
         this.context=context;
     }
 
@@ -424,6 +426,7 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());
+        contentValues.put(PRODID, item.getProdId());
         //contentValues.put(CUST_CODE, item.getCustCode());
         contentValues.put(SHOP_CODE, item.getShopCode());
         contentValues.put(OFFER_ID, item.getOfferId());
@@ -729,6 +732,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 productItem=new MyProduct();
                 productItem.setShopCode(res.getString(res.getColumnIndex(SHOP_CODE)));
                 productItem.setId(res.getString(res.getColumnIndex(ID)));
+                productItem.setProdId(res.getInt(res.getColumnIndex(PRODID)));
                 productItem.setOfferId(res.getString(res.getColumnIndex(OFFER_ID)));
                 productItem.setOfferType(res.getString(res.getColumnIndex(OFFER_TYPE)));
                 productItem.setCatId(res.getString(res.getColumnIndex(PROD_CAT_ID)));

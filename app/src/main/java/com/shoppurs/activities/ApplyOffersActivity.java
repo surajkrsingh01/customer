@@ -188,7 +188,8 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                         for (int i = 0; i < productJArray.length(); i++) {
                             MyProduct myProduct = new MyProduct();
                             myProduct.setShopCode(shopCode);
-                            myProduct.setId(productJArray.getJSONObject(i).getString("prodId"));
+                            myProduct.setId(productJArray.getJSONObject(i).getString("prodCode"));
+                            myProduct.setProdId(productJArray.getJSONObject(i).getInt("prodId"));
                             myProduct.setCatId(productJArray.getJSONObject(i).getString("prodCatId"));
                             myProduct.setSubCatId(productJArray.getJSONObject(i).getString("prodSubCatId"));
                             myProduct.setName(productJArray.getJSONObject(i).getString("prodName"));

@@ -24,6 +24,7 @@ import com.shoppurs.database.DbHelper;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.models.ShopDeliveryModel;
+import com.shoppurs.services.NotificationService;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
@@ -46,6 +47,8 @@ public class ReturnProductsActivity extends NetworkBaseActivity {
     private ReturnProductListAdapter returnProductListAdapter;
     private String shopCode, shopName,shopAddress, shopdbname,dbuser,dbpassword;
     private List<MyProduct> myProductList;
+    private MyProduct myProduct;
+    private int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +118,7 @@ public class ReturnProductsActivity extends NetworkBaseActivity {
     public void onJsonObjectResponse(JSONObject response, String apiName) {
         showProgressBar(false, "");
         try {
-            // JSONObject jsonObject=response.getJSONObject("response");
+
             Log.d("response", response.toString());
             if(apiName.equals("getProducts")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
@@ -162,9 +165,16 @@ public class ReturnProductsActivity extends NetworkBaseActivity {
                     DialogAndToast.showDialog(response.getString("message"),ReturnProductsActivity.this);
                 }
             }else if(apiName.equals("AcceptReturn")){
-
+                if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
+                    myProduct.setReturnStatus(3);
+                    NotificationService.displayNotification(this, "Your Product has been Returned", null);
+                    returnProductListAdapter.notifyItemChanged(position);
+                }
             }else if(apiName.equals("RejectReturn")){
-
+                if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
+                    myProduct.setReturnStatus(0);
+                    returnProductListAdapter.notifyItemChanged(position);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -205,7 +215,9 @@ public class ReturnProductsActivity extends NetworkBaseActivity {
         intent.putExtra("MyProduct",product);
         startActivity(intent);
     }
-    public void acceptRequest(MyProduct product){
+    public void acceptRequest(MyProduct product, int position){
+        this.myProduct = product;
+        this.position = position;
         Map<String,String> params=new HashMap<>();
         params.put("id", product.getSrId());
         params.put("custCode", sharedPreferences.getString(Constants.USER_ID, ""));
@@ -222,7 +234,9 @@ public class ReturnProductsActivity extends NetworkBaseActivity {
         showProgressBar(true,"");
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"AcceptReturn");
     }
-    public void rejectRequest(MyProduct product){
+    public void rejectRequest(MyProduct product, int position){
+        this.position = position;
+        this.myProduct = product;
         Map<String,String> params=new HashMap<>();
         params.put("id", product.getSrId());
         params.put("custCode", sharedPreferences.getString(Constants.USER_ID, ""));

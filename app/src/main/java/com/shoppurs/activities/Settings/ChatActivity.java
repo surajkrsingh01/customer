@@ -386,6 +386,7 @@ public class ChatActivity extends BaseImageActivity implements MyItemClickListen
             ChatMessage chatMessage = itemList.get(pos);
             Log.i(TAG,"code "+chatMessage.getProdCode());
             MyProduct item = new MyProduct();
+            item.setShopCode(shopCode);
             item.setId(chatMessage.getProdCode());
             item.setName(chatMessage.getMessageText());
             Intent intent = new Intent(ChatActivity.this, ProductDetailActivity.class);

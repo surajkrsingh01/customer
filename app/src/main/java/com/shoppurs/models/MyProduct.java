@@ -7,7 +7,7 @@ public class MyProduct implements Serializable {
     private String id, shopCode,catId, subCatId,name,code, unit, isBarcodeAvailable, comboProductIds, barCode,prodHsnCode, prodMfgDate, prodExpiryDate, prodMfgBy, offerId, offerType,
             prodWarranty, desc,image,subCatName, prodImage1, prodImage2, prodImage3, size, color, custCode,
             invNo, transId, srId;
-    private int offerItemCounter, freeProductPosition, localImage, quantity, qoh, returnStatus;
+    private int prodId, offerItemCounter, freeProductPosition, localImage, quantity, qoh, returnStatus;
     private float discount, mrp, sellingPrice, prodCgst, prodIgst, prodSgst, totalAmount ;
     private ProductDiscountOffer productDiscountOffer;
     private ProductPriceOffer productPriceOffer;
@@ -17,6 +17,14 @@ public class MyProduct implements Serializable {
     private List<Barcode> barcodeList;
     private Object productOffer;
     private ProductFrequency frequency;
+
+    public int getProdId() {
+        return prodId;
+    }
+
+    public void setProdId(int prodId) {
+        this.prodId = prodId;
+    }
 
     public String getSrId() {
         return srId;

@@ -282,6 +282,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                             MyProduct myProduct = new MyProduct();
                             myProduct.setShopCode(shopCode);
                             myProduct.setId(productJArray.getJSONObject(i).getString("prodCode"));
+                            myProduct.setProdId(productJArray.getJSONObject(i).getInt("prodId"));
                             myProduct.setCatId(productJArray.getJSONObject(i).getString("prodCatId"));
                             myProduct.setSubCatId(productJArray.getJSONObject(i).getString("prodSubCatId"));
                             myProduct.setName(productJArray.getJSONObject(i).getString("prodName"));
@@ -721,8 +722,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         if(productDetailsType==1)
             showProgress(true);
         Map<String,String> params=new HashMap<>();
-        params.put("id", prodId); // as per user selected category from top horizontal categories list
-        params.put("code", shopCode);
+        params.put("code", prodId);
         params.put("dbName",shopCode);
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));

@@ -80,7 +80,7 @@ public class ReturnProductListAdapter extends RecyclerView.Adapter<ReturnProduct
                     myViewHolder.relative_return_product.setVisibility(View.GONE);
                     if (item.getReturnStatus() == 0)
                         myViewHolder.text_return_status.setText("Cancelled");
-                    else myViewHolder.text_return_status.setText("Accepted");
+                    else myViewHolder.text_return_status.setText("Returned");
                 }
 
             float diff = Float.valueOf(item.getMrp()) - Float.valueOf(item.getSellingPrice());
@@ -150,9 +150,9 @@ public class ReturnProductListAdapter extends RecyclerView.Adapter<ReturnProduct
             }else if(v == rootView){
                 ((ReturnProductsActivity)context).showProductDetails(item);
             }else if(v == btn_accept){
-                ((ReturnProductsActivity)context).acceptRequest(item);
+                ((ReturnProductsActivity)context).acceptRequest(item, getAdapterPosition());
             }else if(v == btn_reject){
-                ((ReturnProductsActivity)context).rejectRequest(item);
+                ((ReturnProductsActivity)context).rejectRequest(item, getAdapterPosition());
             }
         }
     }

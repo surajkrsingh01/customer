@@ -20,6 +20,10 @@ import androidx.core.app.NotificationManagerCompat;
 import com.shoppurs.R;
 import com.shoppurs.activities.ForgotPasswordActivity;
 import com.shoppurs.activities.Settings.ChatActivity;
+import com.shoppurs.activities.Settings.ReturnProductsActivity;
+import com.shoppurs.activities.Settings.SettingActivity;
+import com.shoppurs.activities.ShopListActivity;
+import com.shoppurs.activities.ShopProductListActivity;
 import com.shoppurs.activities.SplashActivity;
 import com.shoppurs.activities.UserListForChatActivity;
 
@@ -52,13 +56,19 @@ public class NotificationService {
                     intent.putExtra("messageToName",jsonObject.getString("from"));
                     intent.putExtra("messageToMobile",jsonObject.getString("mobile"));
                     intent.putExtra("messageToPic",jsonObject.getString("pic"));
+                }else if(jsonObject.getString("flag").equals("productReturn")) {
+                    intent = new Intent( context, ShopListActivity.class);
+                    intent.putExtra("flag", "Return Product");
+                }else {
+                    intent = new Intent(context, SplashActivity.class);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        else
+        else {
             intent = new Intent(context, SplashActivity.class);
+        }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
