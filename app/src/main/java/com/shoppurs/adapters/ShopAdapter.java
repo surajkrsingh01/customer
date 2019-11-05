@@ -150,6 +150,9 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                             }else if (item.getTitle().equals("Location")) {
                                 if(shop.getLatitude()!=0) {
                                     Intent intent = new Intent(context, ShopAddressActivity.class);
+                                    intent.putExtra("address", shop.getAddress());
+                                    intent.putExtra("name", shop.getName());
+                                    intent.putExtra("mobile", shop.getMobile());
                                     intent.putExtra("flag", "shopAddress");
                                     intent.putExtra("lat", shop.getLatitude());
                                     intent.putExtra("long", shop.getLongitude());
@@ -168,6 +171,9 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                             }else if (item.getTitle().equals("Location")) {
                                 if(shop.getLatitude()!=0) {
                                     Intent intent = new Intent(context, ShopAddressActivity.class);
+                                    intent.putExtra("address", shop.getAddress());
+                                    intent.putExtra("name", shop.getName());
+                                    intent.putExtra("mobile", shop.getMobile());
                                     intent.putExtra("flag", "shopAddress");
                                     intent.putExtra("lat", shop.getLatitude());
                                     intent.putExtra("long", shop.getLongitude());

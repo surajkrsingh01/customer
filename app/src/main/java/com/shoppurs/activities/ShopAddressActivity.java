@@ -1,8 +1,12 @@
 package com.shoppurs.activities;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
@@ -27,7 +31,7 @@ public class ShopAddressActivity extends NetworkBaseActivity implements OnMapRea
     private Marker marker;
     private LatLng shopLatLng;
     private double latitude = 0, longitude = 0;
-    private String flag;
+    private String flag, name, address, mobile;
     private TextView text_left_label, text_right_label;
 
     @Override
@@ -55,6 +59,9 @@ public class ShopAddressActivity extends NetworkBaseActivity implements OnMapRea
         flag = getIntent().getStringExtra("flag");
         latitude = getIntent().getDoubleExtra("lat", 0);
         longitude = getIntent().getDoubleExtra("long", 0);
+        name = getIntent().getStringExtra("name");
+        mobile = getIntent().getStringExtra("mobile");
+        address = getIntent().getStringExtra("address");
 
         Log.i(TAG, "lat " + latitude + " long " + longitude);
 
@@ -100,11 +107,42 @@ public class ShopAddressActivity extends NetworkBaseActivity implements OnMapRea
             marker = mMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                    .title("Shop Location"));
+                    .title(name)
+                    .snippet(address +"\n"+ mobile));
+            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
+                @Override
+                public View getInfoWindow(Marker arg0) {
+                    return null;
+                }
+
+                @Override
+                public View getInfoContents(Marker marker) {
+
+                    LinearLayout info = new LinearLayout(ShopAddressActivity.this);
+                    info.setOrientation(LinearLayout.VERTICAL);
+
+                    TextView title = new TextView(ShopAddressActivity.this);
+                    title.setTextColor(Color.BLACK);
+                    title.setGravity(Gravity.CENTER);
+                    title.setTypeface(null, Typeface.BOLD);
+                    title.setText(marker.getTitle());
+
+                    TextView snippet = new TextView(ShopAddressActivity.this);
+                    snippet.setTextColor(Color.GRAY);
+                    snippet.setGravity(Gravity.CENTER);
+                    snippet.setText(marker.getSnippet());
+
+                    info.addView(title);
+                    info.addView(snippet);
+
+                    return info;
+                }
+            });
             mMap.getUiSettings().setZoomControlsEnabled(false); // true to enable
             mMap.setTrafficEnabled(true);
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
 
         }else{
             marker.setPosition(latLng);

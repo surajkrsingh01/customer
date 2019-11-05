@@ -20,6 +20,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.ObjectKey;
 import com.shoppurs.R;
 import com.shoppurs.activities.BaseImageActivity;
+import com.shoppurs.interfaces.FirebaseImageUploadListener;
+import com.shoppurs.services.FirebaseImageUploadService;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
@@ -35,13 +37,14 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class BasicProfileActivity extends BaseImageActivity {
+public class BasicProfileActivity extends BaseImageActivity implements FirebaseImageUploadListener {
 
     private EditText etUsername,etGstNo,etEmail,etMobile;
     private CircleImageView profileImage;
     private String imageBase64;
     private TextView tv_top_parent, tv_parent;
     private ImageView btn_camera;
+    FirebaseImageUploadService firebaseImageUploadService;
 
 
     @Override
@@ -51,6 +54,7 @@ public class BasicProfileActivity extends BaseImageActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        firebaseImageUploadService = FirebaseImageUploadService.getInstance();
        // initFooterAction(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         init();
@@ -183,6 +187,7 @@ public class BasicProfileActivity extends BaseImageActivity {
                    editor.putString(Constants.FULL_NAME,etUsername.getText().toString());
                    editor.putString(Constants.MOBILE_NO,etMobile.getText().toString());
                    editor.putString(Constants.EMAIL,etEmail.getText().toString());
+                   uploadImagesToFirebase();
                    if(!imageBase64.equals("no")) {
                        String timestamp = Utility.getTimeStamp();
                        requestOptions.signature(new ObjectKey(timestamp));
@@ -193,7 +198,7 @@ public class BasicProfileActivity extends BaseImageActivity {
                    }
                    editor.commit();
                    DialogAndToast.showToast(response.getString("message"),this);
-                   finish();
+                  // finish();
                }else{
                    DialogAndToast.showDialog(response.getString("message"),this);
                }
@@ -229,4 +234,24 @@ public class BasicProfileActivity extends BaseImageActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void uploadImagesToFirebase(){
+        Log.i(TAG,"uploading images to firebase..");
+            showProgress(true);
+            firebaseImageUploadService.setFirebaseImageUploadListener(this);
+            imageBase64 = convertToBase64(new File(imagePath));
+            firebaseImageUploadService.uploadImage("Customer ", imageBase64);
+    }
+
+    @Override
+    public void onImageUploaded(String position, String url) {
+        String timestamp = Utility.getTimeStamp();
+        requestOptions.signature(new ObjectKey(timestamp));
+        editor.putString(Constants.PROFILE_PIC, url);
+        editor.putString("profile_image_signature",timestamp);
+    }
+
+    @Override
+    public void onImageFailed(String position) {
+
+    }
 }

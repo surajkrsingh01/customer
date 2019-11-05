@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "64119517741-e3ajpq3ks2oten0s3u8aduubt6ghu4i9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shoppurs",
+            "certificate_hash": "2169bc7f19b157769645a44e37decc06e6c9ab7e"
+          }
+        },
+        {
           "client_id": "64119517741-mhu5b4jmfja7jttvbt98l1a7bnqnvrg7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -41,7 +49,48 @@
           "package_name": "com.shoppursshop"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "64119517741-0f67umo5nsb7p1mjuokdej88s6neqdsi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shoppursshop",
+            "certificate_hash": "897f243f751d59d057c3df6b61377d2605d609a4"
+          }
+        },
+        {
+          "client_id": "64119517741-3ojthj72qom6b1k4fnlvkesoc1a61g7j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shoppursshop",
+            "certificate_hash": "d07c25441151f933d0c928370ddac90da358ad2d"
+          }
+        },
+        {
+          "client_id": "64119517741-8gl3ionpl6r3a3vr2ac430k0nin69aqp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shoppursshop",
+            "certificate_hash": "707afabcf086db6f33640a3f95c24ae01c148877"
+          }
+        },
+        {
+          "client_id": "64119517741-r8jvtqh7ptb7r8ei9kumb8c8e3h51u5d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shoppursshop",
+            "certificate_hash": "2169bc7f19b157769645a44e37decc06e6c9ab7e"
+          }
+        },
+        {
+          "client_id": "64119517741-qrhq5gndgg21ck8gan9h7ev06rgeoer7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shoppursshop",
+            "certificate_hash": "b79af5fec65de8fa6596d83f53b0532bca7ab0f9"
+          }
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB-GKvcnqqzEBxT6OvmVPfNs7FBppblo-s"
