@@ -32,6 +32,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +43,7 @@ public class BasicProfileActivity extends BaseImageActivity implements FirebaseI
 
     private EditText etUsername,etGstNo,etEmail,etMobile;
     private CircleImageView profileImage;
-    private String imageBase64;
+    private String imageBase64, firebaseUrl;
     private TextView tv_top_parent, tv_parent;
     private ImageView btn_camera;
     FirebaseImageUploadService firebaseImageUploadService;
@@ -163,48 +165,65 @@ public class BasicProfileActivity extends BaseImageActivity implements FirebaseI
         params.put("name",username);
         params.put("email",email);
         params.put("mobile",sharedPreferences.getString(Constants.MOBILE_NO,""));
-        params.put("profileImage",imageBase64);
+        params.put("profileImage","");
         params.put("id","0");
         params.put("code",sharedPreferences.getString(Constants.USER_ID,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
         Log.d(TAG, params.toString());
-        JSONArray dataArray = new JSONArray();
-        JSONObject dataObject = new JSONObject(params);
-        dataArray.put(dataObject);
         String url=getResources().getString(R.string.url)+Constants.UPDATE_BASIC_PROFILE;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updateBasicProfile");
 
     }
 
+    private void updateProfileImage(){
+        Map<String,String> params=new HashMap<>();
+        params.put("profileImage",firebaseUrl);
+        params.put("id","0");
+        params.put("code",sharedPreferences.getString(Constants.USER_ID,""));
+        params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
+        params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
+        params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+        Log.d(TAG, params.toString());
+        String url=getResources().getString(R.string.url)+Constants.UPDATE_BASIC_PROFILE;
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updateProfileImage");
+    }
+
     @Override
     public void onJsonObjectResponse(JSONObject response, String apiName) {
+        try{
         if (apiName.equals("updateBasicProfile")) {
-           try{
                if(response.getBoolean("status")){
                    editor.putString(Constants.FULL_NAME,etUsername.getText().toString());
                    editor.putString(Constants.MOBILE_NO,etMobile.getText().toString());
                    editor.putString(Constants.EMAIL,etEmail.getText().toString());
-                   uploadImagesToFirebase();
-                   if(!imageBase64.equals("no")) {
-                       String timestamp = Utility.getTimeStamp();
-                       requestOptions.signature(new ObjectKey(timestamp));
-                       editor.putString(Constants.PROFILE_PIC, getResources().getString(R.string.base_image_url) +
-                               "/customers/" + sharedPreferences.getString(Constants.USER_ID, "") + "/photo.jpg");
-                       editor.putString("profile_image_signature",timestamp);
-
-                   }
                    editor.commit();
-                   DialogAndToast.showToast(response.getString("message"),this);
-                  // finish();
+                   if(!TextUtils.isEmpty(imagePath))
+                   uploadImagesToFirebase();
+                   else {
+                       DialogAndToast.showToast(response.getString("message"),this);
+                       finish();
+                   }
                }else{
                    DialogAndToast.showDialog(response.getString("message"),this);
                }
-           }catch (JSONException e){
-               e.printStackTrace();
-           }
+
+        }else if(apiName.equals("updateProfileImage")){
+            if(response.getBoolean("status")){
+                    String timestamp = Utility.getTimeStamp();
+                    requestOptions.signature(new ObjectKey(timestamp));
+                    editor.putString(Constants.PROFILE_PIC, firebaseUrl);
+                    editor.putString("profile_image_signature",timestamp);
+                    editor.commit();
+                    DialogAndToast.showToast(response.getString("message"),this);
+                    finish();
+            }
+        }
+        }catch (JSONException e){
+            e.printStackTrace();
         }
     }
 
@@ -235,19 +254,18 @@ public class BasicProfileActivity extends BaseImageActivity implements FirebaseI
     }
 
     private void uploadImagesToFirebase(){
-        Log.i(TAG,"uploading images to firebase..");
+            Log.i(TAG, "uploading images to firebase..");
             showProgress(true);
             firebaseImageUploadService.setFirebaseImageUploadListener(this);
-            imageBase64 = convertToBase64(new File(imagePath));
-            firebaseImageUploadService.uploadImage("Customer ", imageBase64);
+            //imageBase64 = convertToBase64(new File(imagePath));
+            String custCode = sharedPreferences.getString(Constants.USER_ID, "");
+            firebaseImageUploadService.uploadImage("Customes/" + custCode + "/photo.jpg", imagePath);
     }
 
     @Override
     public void onImageUploaded(String position, String url) {
-        String timestamp = Utility.getTimeStamp();
-        requestOptions.signature(new ObjectKey(timestamp));
-        editor.putString(Constants.PROFILE_PIC, url);
-        editor.putString("profile_image_signature",timestamp);
+        firebaseUrl = url;
+        updateProfileImage();
     }
 
     @Override

@@ -49,6 +49,7 @@ public class FirebaseImageUploadService {
     }
 
     public void uploadImage(String dir,final String path){
+        Log.d("dir "+dir, " path "+path);
         //sharedPreferences = context.getSharedPreferences(Constants.MYPREFERENCEKEY,context.MODE_PRIVATE);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
@@ -85,7 +86,7 @@ public class FirebaseImageUploadService {
                     Log.i(TAG,"url "+downloadUri.getPath());
                 } else {
                     firebaseImageUploadListener.onImageFailed("0");
-                    Log.i(TAG,"failed "+task.getResult());
+                   // Log.i(TAG,"failed "+task.getResult());
                 }
             }
         });
