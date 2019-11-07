@@ -13,6 +13,7 @@
     <string name="image_root">http://api.shoppurs.in:8085/</string>
 
     <string name="google_maps_key">AIzaSyB-GKvcnqqzEBxT6OvmVPfNs7FBppblo-s</string>
+    <string name="scandit_license_key">AUqNnwlEFwxTGIN5mAKlgV8h39u5OGnoKA0A4ZZelEYDEYri5ndBjv8cVx9NRsE10npJnexhvlMUWjjmTWV88VoayiMVTwJdniehkSN9nP/vN3Q2KCY4ke4ObsDiJkILZJM5XV5hztrPAKccFI4ribQdpnPraIdEwHTeHwm3Joz+gAFQrEeZ0nmRZp48izvjvjujJ+iGH6O5IBZhV6Zh2MZRrmvA9x2dUKJJRPiRNygSq5j1FhYAGe8uaJNFoz5VZYSmuThCBEaNtIWLKlYtYHAG8j2MODD8jQQsX52nGvlAGQcsNukJBka1E/jHBP7VVEJ5Yoo1f2jMxr0a5V7Q7Xzo76IJBKsbQqj9vS+9pwJyQemV01R3Tl46O4KlfM6eYZl8eBQxySL299qem0D7hUUJlX9jc7k7Cx5bgAfgtrQVlUuMVUdlE8ak4ydMcjAXNubA5ZQv1zPDa97uVQk0SBhxQ7nB+SMoWtdaB3WOcWHVj4GLJomqzaRDwVcHb45gE/m6u5zpUSlxx2AVcgr3XZat/Q9yHhpPCpky4Bz/wXQeHOGL/yfsrAHCQ2RxpI5LBUXjbEgmceXrp7fuVwkR8ZHy7Mn8NDsWkyIra8ynwPHb6lSRXV/bl8CO9ZEWZFCV8Db4RAj9kAZedD2Zx1ZK1N+WXsm6DqYzmUtjEhJ1Mq4oaXc/KM3pAynSSmjBVDf2xkYEKnpYehFjj1Z6Kl6FtUB8W+HYhtNupz5oUnvU4oGYwgpalRxFiLJu/BlzpOZl7uruoaIIBPQB7UaOJIU9smbR5F3CZM0r5zSblORYIQ==</string>
 
     <!-- Error. -->
     <string name="no_internet">Internet connection is not available.</string>
