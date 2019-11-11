@@ -26,7 +26,7 @@ import com.shoppurs.utilities.CountDrawable;
 public class SettingActivity extends BaseActivity implements View.OnClickListener {
 
     private RelativeLayout relative_personalInfo, relative_my_cart, relative_display, relative_my_order, relative_delivery_address, relative_invite,
-            relative_frequency_product_list,relative_return_product, relative_chat,relative_change_password, relative_logout;
+            relative_frequency_product_list,relative_return_product, relative_chat,relative_change_password, relative_logout, relative_todo_list;
     private Toolbar toolbar;
     private Menu myMenu;
     private int cartCount;
@@ -98,6 +98,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         relative_change_password = findViewById(R.id.relative_change_password);
         relative_chat = findViewById(R.id.relative_chat);
         relative_logout = findViewById(R.id.relative_logout);
+        relative_todo_list = findViewById(R.id.relative_todo_list);
 
         relative_personalInfo.setOnClickListener(this);
         relative_my_cart.setOnClickListener(this);
@@ -110,6 +111,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         relative_change_password.setOnClickListener(this);
         relative_chat.setOnClickListener(this);
         relative_logout.setOnClickListener(this);
+        relative_todo_list.setOnClickListener(this);
     }
 
     @Override
@@ -150,6 +152,10 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         }else if(view == relative_return_product){
             Intent intent = new Intent( SettingActivity.this, ShopListActivity.class);
             intent.putExtra("flag", "Return Product");
+            startActivity(intent);
+        }else if(view == relative_todo_list){
+            Intent intent = new Intent( SettingActivity.this, ShopListActivity.class);
+            intent.putExtra("flag", "ToDo List");
             startActivity(intent);
         }
     }

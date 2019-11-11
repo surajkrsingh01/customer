@@ -3,17 +3,17 @@ package com.shoppurs.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.bumptech.glide.Glide;
@@ -42,7 +42,7 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class StoresListActivity extends NetworkBaseActivity {
+public class StoresListActivity extends BaseLocation {
 
     private RecyclerView recyclerView;
     private StoreAdapter myItemAdapter;
@@ -55,6 +55,7 @@ public class StoresListActivity extends NetworkBaseActivity {
     List<String> myfavoriteShopIds = new ArrayList<>();
     private TextView text_customer_address;
     private CircleImageView customer_profile;
+
 
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
 
@@ -91,6 +92,8 @@ public class StoresListActivity extends NetworkBaseActivity {
         });
 
         text_customer_address = findViewById(R.id.text_customer_address);
+        if(!TextUtils.isEmpty(mAddress))
+            text_customer_address.setText(mAddress);
         if(TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_ADDRESS, "")))
             text_customer_address.setText("Update Your Location");
         else
@@ -102,6 +105,8 @@ public class StoresListActivity extends NetworkBaseActivity {
                 startActivity(intent);
             }
         });
+
+
         customer_profile= findViewById(R.id.profile_image);
         customer_profile.setCircleBackgroundColor(colorTheme);
         RequestOptions requestOptions = new RequestOptions();
@@ -123,12 +128,14 @@ public class StoresListActivity extends NetworkBaseActivity {
             }
         });
 
-
-        getAllCategories();
+        if(!TextUtils.isEmpty(mAddress))
+            getAllCategories();
+        else showProgress(true);
 
         if(!sharedPreferences.getBoolean(Constants.IS_TOKEN_SAVED, false)){
             saveToken();
         }
+
     }
 
     public void saveToken(){
@@ -143,8 +150,13 @@ public class StoresListActivity extends NetworkBaseActivity {
 
     public void getAllCategories(){
         Map<String,String> params=new HashMap<>();
-        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
-        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+        if(mLatLong!=null){
+            params.put("lattitude", ""+mLatLong.latitude);
+            params.put("longitude", ""+mLatLong.longitude);
+        }else {
+            params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT, ""));
+            params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG, ""));
+        }
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
         String url=getResources().getString(R.string.url)+"/cat_subcat";
         showProgress(true);
@@ -161,9 +173,13 @@ public class StoresListActivity extends NetworkBaseActivity {
 
     private void getNormalStores(){
         Map<String,String> params=new HashMap<>();
-       // params.put("subcatid","1");
-        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
-        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+        if(mLatLong!=null){
+            params.put("lattitude", ""+mLatLong.latitude);
+            params.put("longitude", ""+mLatLong.longitude);
+        }else {
+            params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT, ""));
+            params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG, ""));
+        }
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url)+"/allshoplist";
         //showProgress(true);
@@ -347,6 +363,7 @@ public class StoresListActivity extends NetworkBaseActivity {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
                 String contents = intent.getStringExtra("SCAN_RESULT");
@@ -437,5 +454,13 @@ public class StoresListActivity extends NetworkBaseActivity {
     }
     public void showLargeImageDialog(MyShop shop,  View view){
         showImageDialog(shop.getShopimage(), view);
+    }
+
+    @Override
+    public void updateUi() {
+        super.updateUi();
+        showProgress(false);
+        text_customer_address.setText(mAddress);
+        getAllCategories();
     }
 }

@@ -25,6 +25,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.shoppurs.R;
 import com.shoppurs.interfaces.OnLocationReceivedListener;
 import com.shoppurs.utilities.AppController;
@@ -63,6 +64,7 @@ public class GpsLocationProvider {
         this.context = context;
         this.isReturnResult = isReturnResult;
         sharedPreferences = context.getSharedPreferences(Constants.MYPREFERENCEKEY,context.MODE_PRIVATE);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
     }
 
     public void buildLocationProviderInstance() {
@@ -235,6 +237,16 @@ public class GpsLocationProvider {
             super.onPostExecute(result);
             saveLocationUpdate();
         }
+    }
+
+
+    public void getlastLocation(){
+        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                onLocationReceivedListener.onLocationReceived(location);
+            }
+        });
     }
 
 }
