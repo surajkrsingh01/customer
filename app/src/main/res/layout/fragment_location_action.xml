@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/backgroundColor"
+    android:layout_alignParentBottom="true"
+    android:elevation="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:paddingLeft="@dimen/view_horizontal_margin"
+            android:paddingRight="@dimen/view_horizontal_margin"
+            android:id="@+id/relative_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_alignParentRight="true"
+            android:id="@+id/iv_clear"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_margin="16dp"
+            android:tint="?attr/primaryTextColor"
+            app:srcCompat="@drawable/clear" />
+
+        <TextView
+            android:id="@+id/text_top_header"
+            android:textColor="?attr/secondaryTextColor"
+            android:text="Set Your Current Location"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/view_horizontal_margin"
+            android:paddingRight="@dimen/view_horizontal_margin"
+            android:textSize="@dimen/home_list_header_text_size"
+            android:textAllCaps="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/text_header"
+            android:layout_marginTop="@dimen/view_vertical_margin"
+            android:paddingLeft="@dimen/view_horizontal_margin"
+            android:paddingRight="@dimen/view_horizontal_margin"
+            android:layout_below="@+id/text_top_header"
+            android:textColor="?attr/primaryTextColor"
+            android:text="Location"
+            android:textStyle="bold"
+            android:textSize="@dimen/product_list_very_large_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:textAllCaps="false"
+            android:id="@+id/btn_search_location"
+            android:layout_below="@+id/text_header"
+            android:text="Search Location"
+            android:textColor="@color/white"
+            android:textSize="@dimen/login_page_text_size"
+            android:background="@color/accent_color_2"
+            android:layout_marginTop="@dimen/login_view_vertical_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:textAllCaps="false"
+            android:id="@+id/btn_current_location"
+            android:layout_below="@+id/btn_search_location"
+            android:text="Get Current Location"
+            android:textColor="@color/white"
+            android:textSize="@dimen/login_page_text_size"
+            android:background="@color/accent_color_2"
+            android:layout_marginTop="@dimen/login_view_vertical_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:gravity="bottom"
+            android:id="@+id/linear_edit_location"
+            android:layout_below="@+id/relative_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textinput_no_of_days"
+                android:textColorHint="?attr/secondaryTextColor"
+                android:paddingLeft="@dimen/view_horizontal_margin"
+                android:paddingRight="@dimen/view_horizontal_margin"
+                android:layout_marginTop="@dimen/register_container_margin_top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:textColorHint="?attr/secondaryTextColor"
+                    android:textColor="?attr/primaryTextColor"
+                    android:id="@+id/et_address"
+                    android:hint="Type Your Address"
+                    android:inputType="textPostalAddress"
+                    android:imeOptions="actionNext"
+                    android:textSize="@dimen/edit_text_small_text_size"
+                    android:paddingBottom="@dimen/edit_text_small_vertical_padding"
+                    android:paddingTop="@dimen/edit_text_small_vertical_padding"
+                    android:paddingLeft="@dimen/edit_text_horizontal_padding"
+                    android:paddingRight="@dimen/edit_text_horizontal_padding"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:paddingLeft="@dimen/view_horizontal_margin"
+                android:paddingRight="@dimen/view_horizontal_margin"
+                android:id="@+id/btn_update_location"
+                android:text="Update"
+                android:textColor="@color/white"
+                android:textSize="@dimen/login_page_text_size"
+                android:background="@color/accent_color_2"
+                android:layout_marginTop="@dimen/login_view_vertical_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</androidx.core.widget.NestedScrollView>

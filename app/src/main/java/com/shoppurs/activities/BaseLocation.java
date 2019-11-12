@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -24,6 +25,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AddressComponent;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.shoppurs.R;
 import com.shoppurs.activities.Settings.AddressActivity;
 import com.shoppurs.interfaces.OnLocationReceivedListener;
 import com.shoppurs.location.GeocodingLocation;
@@ -34,6 +43,7 @@ import com.shoppurs.utilities.Utility;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,16 +53,58 @@ public class BaseLocation extends NetworkBaseActivity implements OnLocationRecei
     public LatLng mLatLong;
     public String mAddress;
     private boolean isUiUpdated;
+    private final int SEARCH_LOCATION = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+    }
+
+    public void getCurrentLocation(){
         if(Utility.checkLocationPermission(this)){
             locationProvider = new GpsLocationProvider(this, true);
             locationProvider.setOnLocationReceivedListener(this);
             locationProvider.getlastLocation();
             createLocationRequest();
+        }
+    }
+
+    public void searchPlaces(){
+        Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key));
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(this);
+// Set the fields to specify which types of place data to return.
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.ADDRESS,
+                Place.Field.LAT_LNG,Place.Field.ADDRESS_COMPONENTS);
+        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN,fields).build(this);
+        startActivityForResult(intent, SEARCH_LOCATION);
+    }
+
+    public void updateCurrentLocation(String mAddress){
+        this.mAddress = mAddress;
+        GeocodingLocation locationAddress = new GeocodingLocation();
+        locationAddress.getAddressFromLocation(mAddress,
+                getApplicationContext(), new BaseLocation.GeocoderHandler());
+    }
+
+    private class GeocoderHandler extends Handler {
+        @Override
+        public void handleMessage(Message message) {
+            switch (message.what) {
+                case 1:
+                    Bundle bundle = message.getData();
+                    //mAddress = bundle.getString("address");
+                    mLatLong = new LatLng(bundle.getDouble("lat"), bundle.getDouble("long"));
+                    editor.putString(Constants.CUST_CURRENT_ADDRESS, mAddress);
+                    editor.putString(Constants.CUST_CURRENT_LAT, mLatLong.latitude+"");
+                    editor.putString(Constants.CUST_CURRENT_LONG, mLatLong.longitude+"");
+                    editor.commit();
+                    break;
+                default:
+            }
+            Log.d("LatLong from Address ", " "+mLatLong);
+            updateUi();
         }
     }
 
@@ -129,10 +181,34 @@ public class BaseLocation extends NetworkBaseActivity implements OnLocationRecei
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK)
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
             getLocation(true);
+        } else if (requestCode == SEARCH_LOCATION) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(intent);
+                Log.i(TAG, "Place: " + place.getName()
+                        + ", " + place.getId()+ ", " + place.getAddress());
+                List<AddressComponent> componentList = place.getAddressComponents().asList();
+
+                mAddress = place.getAddress();
+                mLatLong = place.getLatLng();
+                editor.putString(Constants.CUST_CURRENT_ADDRESS, mAddress);
+                editor.putString(Constants.CUST_CURRENT_LAT, mLatLong.latitude+"");
+                editor.putString(Constants.CUST_CURRENT_LONG, mLatLong.longitude+"");
+                editor.commit();
+
+                updateUi();
+
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(intent);
+                Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
     }
 
     @Override
@@ -163,19 +239,15 @@ public class BaseLocation extends NetworkBaseActivity implements OnLocationRecei
                 addressFragments.add(address.getAddressLine(i));
             }
             mAddress = address.getAddressLine(0);
-            editor.putString(Constants.CUST_ADDRESS, mAddress);
-            editor.putString(Constants.CUST_LAT, mLatLong.latitude+"");
-            editor.putString(Constants.CUST_LONG, mLatLong.longitude+"");
-            editor.putString(Constants.CUST_LOCALITY, address.getLocality());
-            editor.putString(Constants.STATE, address.getAdminArea()+"");
-            editor.putString(Constants.CITY, address.getCountryName()+"");
-            editor.putString(Constants.CUST_PINCODE, address.getPostalCode()+"");
+            editor.putString(Constants.CUST_CURRENT_ADDRESS, mAddress);
+            editor.putString(Constants.CUST_CURRENT_LAT, mLatLong.latitude+"");
+            editor.putString(Constants.CUST_CURRENT_LONG, mLatLong.longitude+"");
 
             editor.commit();
-            if(!isUiUpdated){
-                isUiUpdated = true;
+           // if(!isUiUpdated){
+           //     isUiUpdated = true;
                 updateUi();
-            }
+            //}
 
         }
         else{

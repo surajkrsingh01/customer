@@ -180,6 +180,7 @@ public class BaseActivity extends AppCompatActivity {
                     //DialogAndToast.showToast("Profile clicked in profile",BaseActivity.this);
                 } else {
                     Intent intent = new Intent(BaseActivity.this, CategoryListActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 }
             }
@@ -191,6 +192,7 @@ public class BaseActivity extends AppCompatActivity {
                     //DialogAndToast.showToast("Profile clicked in profile",BaseActivity.this);
                 } else {
                     Intent intent = new Intent(BaseActivity.this, StoresListActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 }
             }
@@ -204,6 +206,7 @@ public class BaseActivity extends AppCompatActivity {
                 } else {
                   //  DialogAndToast.showToast("Profile clicked in Search ",BaseActivity.this);
                     Intent intent = new Intent(BaseActivity.this, SearchActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 }
             }
@@ -214,6 +217,7 @@ public class BaseActivity extends AppCompatActivity {
             public void onClick(View view) {
               //DialogAndToast.showDialog("Instant Pay", context);
                 Intent intent = new Intent(BaseActivity.this,InstantScannarActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.putExtra("flag","scan");
                 intent.putExtra("type","InstantPay");
                 startActivity(intent);

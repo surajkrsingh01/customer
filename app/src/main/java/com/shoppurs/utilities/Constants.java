@@ -40,6 +40,10 @@ public class Constants {
     public static String CUST_COUNTRY="CUST_COUNTRY";
     public static String CUST_PINCODE="CUST_PINCODE";
 
+    public static String CUST_CURRENT_ADDRESS="CUST_CURRENT_ADDRESS";
+    public static String CUST_CURRENT_LAT="CUST_CURRENT_LAT";
+    public static String CUST_CURRENT_LONG="CUST_CURRENT_LONG";
+
 
    // public static String DOB="dob";
     public static String LOCATION="location";

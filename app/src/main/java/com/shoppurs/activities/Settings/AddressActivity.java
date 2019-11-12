@@ -314,6 +314,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             switch (resultCode) {
                 case Activity.RESULT_OK:
@@ -321,27 +322,27 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
                 case Activity.RESULT_CANCELED:
                     break;
             }
-        }else if (requestCode == SEARCH_LOCATION) {
+        } else if (requestCode == SEARCH_LOCATION) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 Log.i(TAG, "Place: " + place.getName()
-                        + ", " + place.getId()+ ", " + place.getAddress());
+                        + ", " + place.getId() + ", " + place.getAddress());
                 List<AddressComponent> componentList = place.getAddressComponents().asList();
-                for(AddressComponent component : componentList){
-                    Log.i(TAG,"component "+component.getName());
+                for (AddressComponent component : componentList) {
+                    Log.i(TAG, "component " + component.getName());
                     List<String> typeList = component.getTypes();
-                    for(String type : typeList){
-                        Log.i(TAG,"type "+type);
-                        if(type.equals("country")){
+                    for (String type : typeList) {
+                        Log.i(TAG, "type " + type);
+                        if (type.equals("country")) {
                             country = component.getName();
                             editCountry.setText(country);
-                        }else if(type.equals("administrative_area_level_1")){
+                        } else if (type.equals("administrative_area_level_1")) {
                             state = component.getName();
                             editState.setText(state);
-                        }else if(type.equals("locality")|| type.equals("neighborhood")){
+                        } else if (type.equals("locality") || type.equals("neighborhood")) {
                             city = component.getName();
                             editCity.setText(city);
-                        }else if(type.equals("postal_code")){
+                        } else if (type.equals("postal_code")) {
                             pin = component.getName();
                             editPincode.setText(pin);
                         }

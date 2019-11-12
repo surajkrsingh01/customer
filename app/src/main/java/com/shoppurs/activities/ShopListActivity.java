@@ -103,7 +103,7 @@ public class ShopListActivity extends NetworkBaseActivity {
         });
 
         text_left_label = findViewById(R.id.text_left_label);
-        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency")  || !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product") || shopListType.equals("ToDo List"))
+        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency")  || !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product") || !TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List"))
             text_left_label.setText("Settings");
         text_right_label = findViewById(R.id.text_right_label);
         text_left_label.setOnClickListener(new View.OnClickListener() {

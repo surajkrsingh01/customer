@@ -21,9 +21,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.ObjectKey;
 import com.shoppurs.R;
-import com.shoppurs.activities.Settings.AddressActivity;
 import com.shoppurs.activities.Settings.SettingActivity;
 import com.shoppurs.adapters.StoreAdapter;
+import com.shoppurs.fragments.BottomLocationFragment;
+import com.shoppurs.interfaces.LocationActionListener;
 import com.shoppurs.models.CatListItem;
 import com.shoppurs.models.Category;
 import com.shoppurs.models.MyShop;
@@ -42,7 +43,7 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class StoresListActivity extends BaseLocation {
+public class StoresListActivity extends BaseLocation implements LocationActionListener {
 
     private RecyclerView recyclerView;
     private StoreAdapter myItemAdapter;
@@ -53,8 +54,8 @@ public class StoresListActivity extends BaseLocation {
     List<Object> favoriteShopList = new ArrayList<>();
     List<Object> normalShopList = new ArrayList<>();
     List<String> myfavoriteShopIds = new ArrayList<>();
-    private TextView text_customer_address;
     private CircleImageView customer_profile;
+    private TextView text_customer_address;
 
 
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
@@ -81,6 +82,18 @@ public class StoresListActivity extends BaseLocation {
         myItemAdapter.setColorTheme(colorTheme);
         recyclerView.setAdapter(myItemAdapter);
 
+        text_customer_address = findViewById(R.id.text_customer_address);
+        if(TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, "")))
+            text_customer_address.setText("Update Your Location");
+        else
+            text_customer_address.setText(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, ""));
+        text_customer_address.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLocationBottomShet();
+            }
+        });
+
         initFooter(this,2);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -90,22 +103,6 @@ public class StoresListActivity extends BaseLocation {
                 getItemList();
             }
         });
-
-        text_customer_address = findViewById(R.id.text_customer_address);
-        if(!TextUtils.isEmpty(mAddress))
-            text_customer_address.setText(mAddress);
-        if(TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_ADDRESS, "")))
-            text_customer_address.setText("Update Your Location");
-        else
-            text_customer_address.setText(sharedPreferences.getString(Constants.CUST_ADDRESS, ""));
-        text_customer_address.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(StoresListActivity.this, AddressActivity.class);
-                startActivity(intent);
-            }
-        });
-
 
         customer_profile= findViewById(R.id.profile_image);
         customer_profile.setCircleBackgroundColor(colorTheme);
@@ -128,9 +125,12 @@ public class StoresListActivity extends BaseLocation {
             }
         });
 
-        if(!TextUtils.isEmpty(mAddress))
+        if(!TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, "")))
             getAllCategories();
-        else showProgress(true);
+        else {
+            getCurrentLocation();
+            showProgress(true);
+        }
 
         if(!sharedPreferences.getBoolean(Constants.IS_TOKEN_SAVED, false)){
             saveToken();
@@ -456,11 +456,30 @@ public class StoresListActivity extends BaseLocation {
         showImageDialog(shop.getShopimage(), view);
     }
 
+    public void showLocationBottomShet(){
+        BottomLocationFragment locationFragment = new BottomLocationFragment();
+        locationFragment.setListener(this);
+        locationFragment.initFragment(colorTheme, isDarkTheme, "Choose Location", sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, ""));
+        locationFragment.show(getSupportFragmentManager(), "Location Action Bottom Sheet");
+    }
+
     @Override
     public void updateUi() {
         super.updateUi();
         showProgress(false);
-        text_customer_address.setText(mAddress);
-        getAllCategories();
+        text_customer_address.setText(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, ""));
+        swipeRefreshLayout.setRefreshing(true);
+        getItemList();
+    }
+
+    @Override
+    public void onLocationAction(String type, String address) {
+        if(type.equals("Search Location")){
+            searchPlaces();
+        }else if(type.equals("Get Current Location")){
+            getCurrentLocation();
+        }else if(type.equals("Update Location")){
+            updateCurrentLocation(address);
+        }
     }
 }
