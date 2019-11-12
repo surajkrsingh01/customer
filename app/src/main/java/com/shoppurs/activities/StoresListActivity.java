@@ -56,6 +56,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     List<String> myfavoriteShopIds = new ArrayList<>();
     private CircleImageView customer_profile;
     private TextView text_customer_address;
+    private boolean loadingComplete;
 
 
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
@@ -136,6 +137,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
             saveToken();
         }
 
+        getCurrentLocation();
     }
 
     public void saveToken(){
@@ -149,6 +151,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     }
 
     public void getAllCategories(){
+        loadingComplete = false;
         Map<String,String> params=new HashMap<>();
         if(mLatLong!=null){
             params.put("lattitude", ""+mLatLong.latitude);
@@ -228,6 +231,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
                     showProgress(false);
                 }
             } else if(apiName.equals("NormalShops")){
+                loadingComplete = true;
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                     showProgress(false);
                     if(!response.getString("result").equals("null")) {
@@ -466,10 +470,12 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     @Override
     public void updateUi() {
         super.updateUi();
-        showProgress(false);
         text_customer_address.setText(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, ""));
-        swipeRefreshLayout.setRefreshing(true);
-        getItemList();
+        if(loadingComplete) {
+            showProgress(false);
+            swipeRefreshLayout.setRefreshing(true);
+            getItemList();
+        }
     }
 
     @Override

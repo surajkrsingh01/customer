@@ -102,6 +102,13 @@ public class BottomLocationFragment extends BottomSheetDialogFragment {
         }else{
             tv.setTextColor(getResources().getColor(R.color.white));
         }*/
+        iv_clear = rootView.findViewById(R.id.iv_clear);
+        iv_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
 
         linear_edit_location = rootView.findViewById(R.id.linear_edit_location);
         btn_search_location = rootView.findViewById(R.id.btn_search_location);

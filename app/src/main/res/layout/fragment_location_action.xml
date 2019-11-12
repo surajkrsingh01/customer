@@ -31,7 +31,7 @@
         <TextView
             android:id="@+id/text_top_header"
             android:textColor="?attr/secondaryTextColor"
-            android:text="Set Your Current Location"
+            android:text="Set your current Location"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/view_horizontal_margin"
             android:paddingRight="@dimen/view_horizontal_margin"
