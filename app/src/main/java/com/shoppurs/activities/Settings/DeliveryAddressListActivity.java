@@ -114,6 +114,11 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
 
     }
 
+    @Override
+    public void onItemClicked(int pos, String type) {
+
+    }
+
 
     public void showAlert(String title, String msg, final String action, final DeliveryAddress deliveryAddress){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

@@ -382,6 +382,11 @@ public class ChatActivity extends BaseImageActivity implements MyItemClickListen
     }
 
     @Override
+    public void onItemClicked(int pos, String type) {
+
+    }
+
+    @Override
     public void onItemClicked(int pos) {
             ChatMessage chatMessage = itemList.get(pos);
             Log.i(TAG,"code "+chatMessage.getProdCode());

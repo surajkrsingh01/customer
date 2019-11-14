@@ -49,6 +49,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String PROD_COMBO_TABLE = "PROD_COMBO_TABLE";
     public static final String PROD_COMBO_DETAIL_TABLE = "PROD_COMBO_DETAIL_TABLE";
     public static final String COUPON_TABLE = "COUPON_TABLE";
+    public static final String TODOLIST_TABLE = "TODOLIST_TABLE";
 
 
     public static final String ID = "id";
@@ -323,6 +324,37 @@ public class DbHelper extends SQLiteOpenHelper {
             " "+PROD_IMAGE_2+" TEXT, " +
             " "+PROD_IMAGE_3+" TEXT)";
 
+
+    public static final String CREATE_TODOLIST_TABLE = "create table "+TODOLIST_TABLE +
+            "("+ID+" TEXT, " +
+            " "+PRODID+" TEXT, " +
+            //" "+CUST_CODE+" TEXT, " +
+            " "+SHOP_CODE+" TEXT, " +
+            " "+PROD_NAME+" TEXT NOT NULL, " +
+            " "+PROD_CODE+" TEXT UNIQUE, " +
+            " "+PROD_BARCODE+" TEXT, " +
+            " "+PROD_DESC+" TEXT, " +
+            " "+PROD_MRP+" TEXT, " +
+            " "+PROD_SP+" TEXT, " +
+            " "+PROD_HSN_CODE+" TEXT, " +
+            " "+PROD_CGST+" TEXT, " +
+            " "+PROD_IGST+" TEXT, " +
+            " "+PROD_SGST+" TEXT, " +
+            " "+PROD_CGST_PER+" TEXT, " +
+            " "+PROD_IGST_PER+" TEXT, " +
+            " "+PROD_SGST_PER+" TEXT, " +
+            " "+TOTAL_QTY+" TEXT, " +
+            " "+TOTAL_AMOUNT+" TEXT, " +
+            " "+UNIT+" TEXT, " +
+            " "+COLOR+" TEXT, " +
+            " "+SIZE+" TEXT, " +
+            " "+IS_BARCODE_AVAILABLE+" TEXT, " +
+            " "+PROD_IMAGE_1+" TEXT, " +
+            " "+PROD_IMAGE_2+" TEXT, " +
+            " "+PROD_IMAGE_3+" TEXT)";
+
+
+
     public static final String CREATE_FAVORITE_SHOP = "create table "+FAVORITE_TABLE +
             "("+SHOP_CODE+" TEXT NOT NULL)";
 
@@ -343,10 +375,9 @@ public class DbHelper extends SQLiteOpenHelper {
             " "+DELIVERY_PIN+" TEXT)";
 
 
-
     public DbHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, 19);
+        super(context, DATABASE_NAME, null, 22);
         this.context=context;
     }
 
@@ -365,6 +396,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_PROD_COMBO_DETAIL_TABLE);
         db.execSQL(CREATE_COUPON_TABLE);
         db.execSQL(CREATE_SHOP_DELIVERY_DETAILS_TABLE);
+        db.execSQL(CREATE_TODOLIST_TABLE);
     }
 
     @Override
@@ -395,6 +427,8 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_DELIVERY_ADDRESS);
         db.execSQL("DROP TABLE IF EXISTS "+SHOP_DELIVERY_DETAILS_TABLE);
         db.execSQL(CREATE_SHOP_DELIVERY_DETAILS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS "+TODOLIST_TABLE);
+        db.execSQL(CREATE_TODOLIST_TABLE);
     }
 
     public boolean addProductToCart(MyProduct item, String cartType){
@@ -550,11 +584,92 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
         // contentValues.put(UNIT, item.getUnit());
-        db.insert(CART_TABLE, null, contentValues);
-        Log.i("DbHelper","Product added in cart"+item.getName());
+        double status = db.insert(CART_TABLE, null, contentValues);
+        Log.i("DbHelper",item.getName()+" added in cart status "+status);
         return true;
     }
 
+    public boolean addProductInTODOList(MyProduct item){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ID, item.getId());
+        contentValues.put(PRODID, item.getProdId());
+        //contentValues.put(CUST_CODE, item.getCustCode());
+        contentValues.put(SHOP_CODE, item.getShopCode());
+        contentValues.put(PROD_CODE, item.getCode());
+        contentValues.put(PROD_BARCODE, item.getBarCode());
+        contentValues.put(PROD_NAME, item.getName());
+        contentValues.put(PROD_DESC, item.getDesc());
+        contentValues.put(PROD_MRP, item.getMrp());
+        contentValues.put(PROD_SP, item.getSellingPrice());
+        contentValues.put(PROD_HSN_CODE, item.getProdHsnCode());
+        contentValues.put(PROD_IMAGE_1, item.getProdImage1());
+        contentValues.put(PROD_IMAGE_2, item.getProdImage2());
+        contentValues.put(PROD_IMAGE_3, item.getProdImage3());
+        contentValues.put(IS_BARCODE_AVAILABLE, item.getIsBarcodeAvailable());
+        contentValues.put(TOTAL_AMOUNT, item.getTotalAmount());
+        contentValues.put(TOTAL_QTY, item.getQuantity());
+
+        double status = db.insert(TODOLIST_TABLE, null, contentValues);
+        Log.i("DbHelper",item.getName()+" added in ToDo List status "+status);
+        return true;
+    }
+
+    public ArrayList<MyProduct> getToDoListProducts(String shopCode){
+        SQLiteDatabase db = this.getReadableDatabase();
+        final String query="select * from "+TODOLIST_TABLE +" WHERE "+SHOP_CODE+" = ?";
+        Cursor res =  db.rawQuery(query, new String[]{shopCode});
+        ArrayList<MyProduct> itemList=new ArrayList<>();
+        MyProduct productItem = null;
+        if(res.moveToFirst()){
+            do{
+                productItem=new MyProduct();
+                productItem.setShopCode(res.getString(res.getColumnIndex(SHOP_CODE)));
+                productItem.setId(res.getString(res.getColumnIndex(ID)));
+                productItem.setProdId(res.getInt(res.getColumnIndex(PRODID)));
+                productItem.setName(res.getString(res.getColumnIndex(PROD_NAME)));
+                productItem.setCode(res.getString(res.getColumnIndex(PROD_CODE)));
+                productItem.setBarCode(res.getString(res.getColumnIndex(PROD_BARCODE)));
+                productItem.setDesc(res.getString(res.getColumnIndex(PROD_DESC)));
+                productItem.setProdHsnCode(res.getString(res.getColumnIndex(PROD_HSN_CODE)));
+                productItem.setProdImage1(res.getString(res.getColumnIndex(PROD_IMAGE_1)));
+                productItem.setProdImage2(res.getString(res.getColumnIndex(PROD_IMAGE_2)));
+                productItem.setProdImage3(res.getString(res.getColumnIndex(PROD_IMAGE_3)));
+                productItem.setIsBarcodeAvailable(res.getString(res.getColumnIndex(IS_BARCODE_AVAILABLE)));
+                productItem.setMrp(res.getFloat(res.getColumnIndex(PROD_MRP)));
+                productItem.setSellingPrice(res.getFloat(res.getColumnIndex(PROD_SP)));
+                productItem.setTotalAmount(res.getFloat(res.getColumnIndex(TOTAL_AMOUNT)));
+                productItem.setQuantity(res.getInt(res.getColumnIndex(TOTAL_QTY)));
+                itemList.add(productItem);
+            }while (res.moveToNext());
+        }
+
+        return itemList;
+    }
+
+    public boolean removeProductFromTODoList(String id, String shopCode){
+        SQLiteDatabase db = this.getWritableDatabase();
+        long val = db.delete(TODOLIST_TABLE, ID+" = ? AND "+PROD_SP+" != ?"  + " AND " + SHOP_CODE + "=?",new String[]{String.valueOf(id),String.valueOf(0f),shopCode});
+        Log.d(TAG, "removed product from ToDo List status "+val + "id  "+id);
+        return true;
+    }
+
+    public boolean checkProdExistInToDoList(String prodId, String shopCode){
+        Log.d("prodId "+prodId, "shopCode "+shopCode);
+        SQLiteDatabase db = this.getReadableDatabase();
+        final String query="select * from "+TODOLIST_TABLE+" WHERE "+ID+" = ?" + " AND " + SHOP_CODE + "=?"  + " AND " + PROD_SP + "!=? ";
+        Cursor res =  db.rawQuery(query, new String[]{ prodId, shopCode, String.valueOf(0f)});
+        boolean exist = false;
+        if(res.moveToFirst()){
+            //prodCode = res.getString(res.getColumnIndex(PROD_BARCODE));
+            exist = true;
+
+        }else{
+            // prodCode =  "no";
+        }
+        return exist;
+    }
 
 
     // code to add the new contact

@@ -11,7 +11,6 @@
     <TextView
         android:layout_centerInParent="true"
         android:id="@+id/text_name"
-        android:layout_toLeftOf="@+id/image_selected"
         android:textColor="?attr/primaryTextColor"
         android:textSize="@dimen/simple_list_text_view_size"
         android:paddingLeft="@dimen/simple_list_text_view_horizontal_margin"
@@ -75,7 +74,6 @@
 
                 <Spinner
                     android:id="@+id/spinner_bank"
-                    android:layout_toLeftOf="@+id/image_spinner_3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@null">

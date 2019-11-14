@@ -235,6 +235,11 @@ public class UserListForChatActivity extends NetworkBaseActivity implements MyIt
 
     }
 
+    @Override
+    public void onItemClicked(int pos, String type) {
+
+    }
+
 
     @Override
     public void onItemClicked(Bundle bundle) {

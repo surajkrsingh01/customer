@@ -134,4 +134,9 @@ public class PersonalProfileActivity extends NetworkBaseActivity implements MyIt
     public void onProductSearch(MyProduct myProduct) {
 
     }
+
+    @Override
+    public void onItemClicked(int pos, String type) {
+
+    }
 }

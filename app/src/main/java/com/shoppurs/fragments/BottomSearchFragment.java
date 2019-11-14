@@ -210,11 +210,8 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(getActivity());
         recyclerView_Search.setLayoutManager(layoutManager);
         recyclerView_Search.setItemAnimator(new DefaultItemAnimator());
-        productAdapter = new SearchProductAdapter(getContext(),myProductList, callingActivityName);
-        productAdapter.setTypeFace(typeface);
+        productAdapter = new SearchProductAdapter(getContext(), shopCode,myProductList, callingActivityName, typeface, isDarkTheme);
         productAdapter.setMyItemClickListener(this);
-        productAdapter.setDarkTheme(isDarkTheme);
-        productAdapter.setShopCode(shopCode);
         recyclerView_Search.setAdapter(productAdapter);
 
         //"code":"SHP4","dbName":"SHP4","id":"3","dbUserName":"SHPC1","dbPassword":"SHPC1"

@@ -52,7 +52,6 @@
             android:layout_height="wrap_content">
 
             <RelativeLayout
-                android:layout_toLeftOf="@+id/text_frequency"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <TextView

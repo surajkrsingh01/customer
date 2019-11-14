@@ -1315,6 +1315,11 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
     }
 
+    @Override
+    public void onItemClicked(int pos, String type) {
+
+    }
+
     private void setOffer(MyProduct item){
         List<ProductPriceOffer> productPriceOfferList = dbHelper.getProductPriceOffer(""+item.getId(), item.getShopCode());
         List<ProductDiscountOffer> productDiscountOfferList = dbHelper.getProductFreeOffer(""+item.getId(), item.getShopCode());

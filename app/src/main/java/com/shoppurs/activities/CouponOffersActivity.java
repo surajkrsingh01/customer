@@ -217,4 +217,9 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
     public void onProductSearch(MyProduct myProduct) {
 
     }
+
+    @Override
+    public void onItemClicked(int pos, String type) {
+
+    }
 }
