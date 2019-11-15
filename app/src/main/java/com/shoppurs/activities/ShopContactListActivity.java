@@ -105,8 +105,10 @@ public class ShopContactListActivity extends NetworkBaseActivity {
         recycler_viewShops.setAdapter(shopContactsAdapter);
 
         Map<String,String> params=new HashMap<>();
-        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
-        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+        params.put("limit", "10");
+        params.put("offset", ""+myShopList.size());
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url)+"/allshoplist";
         //showProgress(true);
@@ -128,6 +130,8 @@ public class ShopContactListActivity extends NetworkBaseActivity {
         params.put("query",query);
         params.put("limit", "10");
         params.put("offset", ""+myShopList.size());
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));

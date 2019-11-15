@@ -199,6 +199,8 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
         String url=getResources().getString(R.string.root_url)+"search/shops";
         //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"searchShops");

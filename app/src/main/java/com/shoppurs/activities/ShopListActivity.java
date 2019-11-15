@@ -200,16 +200,16 @@ public class ShopListActivity extends NetworkBaseActivity {
         else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product"))
             url = getResources().getString(R.string.root_url) + "customers/shop/sales_return_shops";
         else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List")) {
-            params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
-            params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+            params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
+            params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
             params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
             url=getResources().getString(R.string.url)+"/allshoplist";
         }
 
         else{
             params.put("subcatid",subCatId);
-            params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
-            params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+            params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
+            params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
             url=getResources().getString(R.string.url)+"/shoplist";
         }
         //showProgress(true);

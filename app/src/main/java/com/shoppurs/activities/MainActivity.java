@@ -247,8 +247,8 @@ public class MainActivity extends NetworkBaseActivity {
 
     public void getBanners(){
         Map<String,String> params=new HashMap<>();
-        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
-        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url_offer)+"get_banner_offers";
         showProgress(true);
@@ -257,8 +257,8 @@ public class MainActivity extends NetworkBaseActivity {
 
     public void getCategories(){
         Map<String,String> params=new HashMap<>();
-        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
-        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url_offer)+"get_active_offer_categories";
         //showProgress(true);
@@ -267,8 +267,8 @@ public class MainActivity extends NetworkBaseActivity {
 
     public void getShops(){
         Map<String,String> params=new HashMap<>();
-        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
-        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url_offer)+"get_active_offer_shops";
         //showProgress(true);
@@ -407,6 +407,8 @@ public class MainActivity extends NetworkBaseActivity {
                         Log.d("itemList Size ", itemList.size()+" ");
 
                         if(itemList.size()>0){
+                            if(shopJArray.length()==0)
+                                itemList.remove(itemList.size()-1);
                             myItemAdapter.notifyDataSetChanged();
                         }
 

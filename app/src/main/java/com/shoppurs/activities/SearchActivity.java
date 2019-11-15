@@ -280,7 +280,9 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
         Map<String,String> params=new HashMap<>();
         params.put("id",catId);
         params.put("limit","10");
-        params.put("offset","0");
+        params.put("offset", ""+shopList.size());
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.root_url)+"search/cat/shops";
         showProgressBar(true);
@@ -308,8 +310,8 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
-        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
         if(isSearchByProduct){
             params.put("id", selectedSubCategory.getSubCatId());
             url=getResources().getString(R.string.root_url)+"search/product/shops";

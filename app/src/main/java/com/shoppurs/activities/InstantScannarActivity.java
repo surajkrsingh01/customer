@@ -136,6 +136,8 @@ public class InstantScannarActivity extends NetworkBaseActivity {
         params.put("query",query);
         params.put("limit", "10");
         params.put("offset", ""+myShopList.size());
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));

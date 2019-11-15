@@ -22,6 +22,7 @@
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
         <activity android:name=".activities.Settings.ToDoListActivity"></activity>
+        <activity android:name=".activities.Settings.ToDoListDetailsActivity" />
         <activity android:name=".activities.Settings.ReturnProductsActivity" />
         <activity android:name=".activities.Settings.FrequencyProductsActivity" />
         <activity android:name=".activities.RateAndReviewActivity" />

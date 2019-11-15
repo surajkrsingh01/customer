@@ -21,16 +21,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurs.R;
-import com.shoppurs.activities.Settings.ToDoListActivity;
-import com.shoppurs.activities.ShopProductListActivity;
+import com.shoppurs.activities.Settings.ToDoListDetailsActivity;
 import com.shoppurs.database.DbHelper;
 import com.shoppurs.interfaces.MyItemClickListener;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductDiscountOffer;
-import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.models.ProductPriceOffer;
 import com.shoppurs.models.ProductUnit;
-import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
 
 import java.util.ArrayList;
@@ -73,7 +70,7 @@ public class ToDoProductListAdapter extends RecyclerView.Adapter<ToDoProductList
     public void onBindViewHolder(final ToDoProductListAdapter.MyViewHolder myViewHolder, final int position) {
         {
             final MyProduct item = (MyProduct) myProductsList.get(position);
-            if(dbHelper.checkProdExistInCart(item.getId(), shopCode)){
+            /*if(dbHelper.checkProdExistInCart(item.getId(), shopCode)){
                 myViewHolder.btnAddCart.setVisibility(View.GONE);
                 myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
                 myViewHolder.tv_cartCount.setText(String.valueOf(dbHelper.getProductQuantity(item.getId(), shopCode, "normal")));
@@ -88,7 +85,7 @@ public class ToDoProductListAdapter extends RecyclerView.Adapter<ToDoProductList
                 myViewHolder.tv_cartCount.setText(String.valueOf(0));
                 myViewHolder.linear_plus_minus.setVisibility(View.GONE);
                 myViewHolder.btnAddCart.setVisibility(View.VISIBLE);
-            }
+            }*/
 
             myViewHolder.btnAddCart.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -96,7 +93,7 @@ public class ToDoProductListAdapter extends RecyclerView.Adapter<ToDoProductList
                     // myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
                     //myViewHolder.btnAddCart.setVisibility(View.GONE);
                     int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
-                    ((ToDoListActivity)context).updateCart(2, position);
+                    ((ToDoListDetailsActivity)context).updateCart(2, position);
                     //((ShopProductListActivity)context).add_toCart(item);
                     // DialogAndToast.showToast("Add to Cart ", context);
                 }
@@ -105,14 +102,14 @@ public class ToDoProductListAdapter extends RecyclerView.Adapter<ToDoProductList
                 @Override
                 public void onClick(View v) {
                     int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
-                    ((ToDoListActivity)context).updateCart(1, position);
+                    ((ToDoListDetailsActivity)context).updateCart(1, position);
                 }
             });
             myViewHolder.image_plus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
-                    ((ToDoListActivity)context).updateCart(2, position);
+                    ((ToDoListDetailsActivity)context).updateCart(2, position);
                 }
             });
 
@@ -254,9 +251,11 @@ public class ToDoProductListAdapter extends RecyclerView.Adapter<ToDoProductList
             textStatus=itemView.findViewById(R.id.text_status);
             imageView=itemView.findViewById(R.id.image_view);
             btnAddCart = itemView.findViewById(R.id.btn_addCart);
+            btnAddCart.setVisibility(View.GONE);
             btn_remove = itemView.findViewById(R.id.btn_remove);
             btn_remove.setVisibility(View.VISIBLE);
             linear_plus_minus = itemView.findViewById(R.id.linear_plus_minus);
+            linear_plus_minus.setVisibility(View.GONE);
             image_plus = itemView.findViewById(R.id.image_plus);
             image_minus = itemView.findViewById(R.id.image_minus);
             tv_cartCount = itemView.findViewById(R.id.tv_cartCount);
@@ -279,7 +278,7 @@ public class ToDoProductListAdapter extends RecyclerView.Adapter<ToDoProductList
             if(v==text_offer){
                 itemClickListener.onItemClicked(getAdapterPosition(), "showOffer");
             }else if(v == imageView){
-                ((ToDoListActivity)context).showLargeImageDialog(myProductsList.get(getAdapterPosition()), imageView);
+                ((ToDoListDetailsActivity)context).showLargeImageDialog(myProductsList.get(getAdapterPosition()), imageView);
             }else if(v == rootView){
                 itemClickListener.onItemClicked(getAdapterPosition(), "showDetails");
             }else if(v == btn_remove){

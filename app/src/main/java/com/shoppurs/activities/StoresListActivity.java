@@ -157,8 +157,8 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
             params.put("lattitude", ""+mLatLong.latitude);
             params.put("longitude", ""+mLatLong.longitude);
         }else {
-            params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT, ""));
-            params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG, ""));
+            params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
+            params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
         }
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
         String url=getResources().getString(R.string.url)+"/cat_subcat";
@@ -176,9 +176,9 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
 
     private void getNormalStores(){
         Map<String,String> params=new HashMap<>();
-        if(mLatLong!=null){
-            params.put("lattitude", ""+mLatLong.latitude);
-            params.put("longitude", ""+mLatLong.longitude);
+        if(!TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS,""))){
+            params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
+            params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
         }else {
             params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT, ""));
             params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG, ""));

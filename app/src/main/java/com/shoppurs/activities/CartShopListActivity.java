@@ -103,8 +103,10 @@ public class CartShopListActivity extends NetworkBaseActivity {
     private void getShopListbyCategory(){
         Map<String,String> params=new HashMap<>();
         params.put("id",getIntent().getStringExtra("catId"));
-        params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT,""));
-        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+        params.put("limit", "10");
+        params.put("offset", ""+itemList.size());
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
@@ -128,8 +130,10 @@ public class CartShopListActivity extends NetworkBaseActivity {
 
         Map<String,String> params=new HashMap<>();
         params.put("code", shopCodes);
-        params.put("latitude", sharedPreferences.getString(Constants.CUST_LAT,""));
-        params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG,""));
+        params.put("limit", "10");
+        params.put("offset", ""+itemList.size());
+        params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
+        params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
