@@ -217,7 +217,7 @@ public class BaseActivity extends AppCompatActivity {
             public void onClick(View view) {
               //DialogAndToast.showDialog("Instant Pay", context);
                 Intent intent = new Intent(BaseActivity.this,InstantScannarActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.putExtra("flag","scan");
                 intent.putExtra("type","InstantPay");
                 startActivity(intent);

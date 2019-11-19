@@ -43,7 +43,7 @@ public class BasicProfileActivity extends BaseImageActivity implements FirebaseI
 
     private EditText etUsername,etGstNo,etEmail,etMobile;
     private CircleImageView profileImage;
-    private String imageBase64, firebaseUrl;
+    private String imageBase64, firebaseUrl, username, email;
     private TextView tv_top_parent, tv_parent;
     private ImageView btn_camera;
     FirebaseImageUploadService firebaseImageUploadService;
@@ -133,10 +133,10 @@ public class BasicProfileActivity extends BaseImageActivity implements FirebaseI
     }
 
     private void updateProfile(){
-        String username = etUsername.getText().toString();
+        username = etUsername.getText().toString();
         String gstNo = etGstNo.getText().toString();
        String mobile = etMobile.getText().toString();
-       String email = etEmail.getText().toString();
+       email = etEmail.getText().toString();
 
         if(TextUtils.isEmpty(username)){
             DialogAndToast.showDialog("Please enter name",this);
@@ -181,6 +181,9 @@ public class BasicProfileActivity extends BaseImageActivity implements FirebaseI
     private void updateProfileImage(){
         Map<String,String> params=new HashMap<>();
         params.put("profileImage",firebaseUrl);
+        params.put("mobile",sharedPreferences.getString(Constants.MOBILE_NO,""));
+        params.put("name",username);
+        params.put("email",email);
         params.put("id","0");
         params.put("code",sharedPreferences.getString(Constants.USER_ID,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
@@ -259,7 +262,7 @@ public class BasicProfileActivity extends BaseImageActivity implements FirebaseI
             firebaseImageUploadService.setFirebaseImageUploadListener(this);
             //imageBase64 = convertToBase64(new File(imagePath));
             String custCode = sharedPreferences.getString(Constants.USER_ID, "");
-            firebaseImageUploadService.uploadImage("Customes/" + custCode + "/photo.jpg", imagePath);
+            firebaseImageUploadService.uploadImage("Customers/" + custCode + "/photo.jpg", imagePath);
     }
 
     @Override

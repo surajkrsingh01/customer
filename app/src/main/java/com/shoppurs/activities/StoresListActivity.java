@@ -126,18 +126,12 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
             }
         });
 
-        if(!TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, "")))
-            getAllCategories();
-        else {
-            getCurrentLocation();
-            showProgress(true);
-        }
+        getCurrentLocation();
+        showProgress(true);
 
         if(!sharedPreferences.getBoolean(Constants.IS_TOKEN_SAVED, false)){
             saveToken();
         }
-
-        getCurrentLocation();
     }
 
     public void saveToken(){
@@ -153,12 +147,12 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     public void getAllCategories(){
         loadingComplete = false;
         Map<String,String> params=new HashMap<>();
-        if(mLatLong!=null){
-            params.put("lattitude", ""+mLatLong.latitude);
-            params.put("longitude", ""+mLatLong.longitude);
-        }else {
+        if(!TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS,""))){
             params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
             params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
+        }else {
+            params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT, ""));
+            params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG, ""));
         }
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
         String url=getResources().getString(R.string.url)+"/cat_subcat";
@@ -468,14 +462,23 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if(TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, "")))
+            text_customer_address.setText("Update Your Location");
+        else
+            text_customer_address.setText(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, ""));
+    }
+
+    @Override
     public void updateUi() {
         super.updateUi();
         text_customer_address.setText(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, ""));
-        if(loadingComplete) {
+        //if(loadingComplete) {
             showProgress(false);
             swipeRefreshLayout.setRefreshing(true);
             getItemList();
-        }
+        //}
     }
 
     @Override
@@ -484,6 +487,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
             searchPlaces();
         }else if(type.equals("Get Current Location")){
             getCurrentLocation();
+            showProgress(true);
         }else if(type.equals("Update Location")){
             updateCurrentLocation(address);
         }

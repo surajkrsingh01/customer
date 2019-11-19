@@ -136,6 +136,7 @@ public class BottomSearchProductsFragment extends BottomSheetDialogFragment impl
 
     private void searchProducts(String query){
         myProductList = new ArrayList<>();
+        myProductList.clear();
         recyclerView_Search.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(getActivity());
         recyclerView_Search.setLayoutManager(layoutManager);

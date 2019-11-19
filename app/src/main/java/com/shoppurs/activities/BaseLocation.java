@@ -244,10 +244,10 @@ public class BaseLocation extends NetworkBaseActivity implements OnLocationRecei
             editor.putString(Constants.CUST_CURRENT_LONG, mLatLong.longitude+"");
 
             editor.commit();
-           if(!isUiUpdated){
-               isUiUpdated = true;
+           /*if(!isUiUpdated){
+               isUiUpdated = true;*/
                 updateUi();
-            }
+            //}
 
         }
         else{

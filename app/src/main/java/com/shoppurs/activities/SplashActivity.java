@@ -15,6 +15,7 @@ import android.util.Log;
 import com.android.volley.Request;
 import com.shoppurs.R;
 import com.shoppurs.activities.Settings.ReturnProductsActivity;
+import com.shoppurs.activities.Settings.ToDoListActivity;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.utilities.Constants;
@@ -50,8 +51,6 @@ public class SplashActivity extends NetworkBaseActivity {
                 }
             }, 2000);
         }
-
-        /**/
     }
 
     private void checkVersion(){

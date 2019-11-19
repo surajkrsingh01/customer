@@ -25,6 +25,7 @@ import com.shoppurs.fragments.BottomSearchProductsFragment;
 import com.shoppurs.fragments.OfferDescriptionFragment;
 import com.shoppurs.interfaces.MyItemClickListener;
 import com.shoppurs.models.MyProduct;
+import com.shoppurs.models.MyToDo;
 import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
@@ -48,6 +49,7 @@ public class ToDoListDetailsActivity extends HandleCartActivity implements MyIte
     private ShopDeliveryModel shopDeliveryModel;
     private String custCode, custdbname;
     private RelativeLayout relative_footer_action;
+    private MyToDo myToDo;
 
 
     @Override
@@ -64,6 +66,7 @@ public class ToDoListDetailsActivity extends HandleCartActivity implements MyIte
         dbpassword = getIntent().getStringExtra("dbpassword");
         shopDeliveryModel = new ShopDeliveryModel();
         shopDeliveryModel = (ShopDeliveryModel) getIntent().getSerializableExtra("shopDeliveryModel");
+        myToDo = (MyToDo) getIntent().getSerializableExtra("todo_item");
         custCode = sharedPreferences.getString(Constants.USER_ID,"");
         custdbname = sharedPreferences.getString(Constants.DB_NAME, "");
         initViews();
@@ -81,6 +84,8 @@ public class ToDoListDetailsActivity extends HandleCartActivity implements MyIte
             }
         });
         TextView text_left_label = findViewById(R.id.text_left_label);
+        TextView text_right_label = findViewById(R.id.text_right_label);
+        text_right_label.setText(myToDo.getName());
         TextView text_shop_name = findViewById(R.id.text_shop_name);
         text_shop_name.setText(shopName);
         text_left_label.setOnClickListener(new View.OnClickListener() {
@@ -125,7 +130,7 @@ public class ToDoListDetailsActivity extends HandleCartActivity implements MyIte
         myProductList.clear();
         if(swipeRefreshLayout.isRefreshing())
             swipeRefreshLayout.setRefreshing(false);
-        myProductList.addAll(dbHelper.getToDoListProducts(shopCode));
+        myProductList.addAll(dbHelper.getToDoListProducts(shopCode, myToDo.getId()));
         Log.d("List Size ", ""+myProductList.size());
         if(myProductList.size()==0){
             showNoData(true);
@@ -196,7 +201,7 @@ public class ToDoListDetailsActivity extends HandleCartActivity implements MyIte
         myProductList.add(myProduct);
         showNoData(false);
         toDoProductListAdapter.notifyItemInserted(myProductList.size()-1);
-        dbHelper.addProductInTODOList(myProduct);
+        dbHelper.addProductInTODOList(myProduct, myToDo.getId());
     }
 
     @Override

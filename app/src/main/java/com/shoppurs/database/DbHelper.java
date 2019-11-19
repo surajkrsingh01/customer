@@ -11,6 +11,7 @@ import android.util.Log;
 import com.shoppurs.models.Coupon;
 import com.shoppurs.models.DeliveryAddress;
 import com.shoppurs.models.MyProduct;
+import com.shoppurs.models.MyToDo;
 import com.shoppurs.models.ProductColor;
 import com.shoppurs.models.ProductComboDetails;
 import com.shoppurs.models.ProductComboOffer;
@@ -49,12 +50,14 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String PROD_COMBO_TABLE = "PROD_COMBO_TABLE";
     public static final String PROD_COMBO_DETAIL_TABLE = "PROD_COMBO_DETAIL_TABLE";
     public static final String COUPON_TABLE = "COUPON_TABLE";
+    public static final String TODOLIST_PRODUCT_TABLE = "TODOLIST_PRODUCT_TABLE";
     public static final String TODOLIST_TABLE = "TODOLIST_TABLE";
 
 
     public static final String ID = "id";
     public static final String PRODID = "prod_id";
     public static final String SHOP_CODE = "shop_code";
+    public static final String TODO_NAME = "todo_name";
     public static final String DISCOUNT = "discount";
     public static final String SHOPPURS_DISCOUNT = "shoppurs_discount";
     public static final String CUST_CODE = "cust_code";
@@ -325,7 +328,7 @@ public class DbHelper extends SQLiteOpenHelper {
             " "+PROD_IMAGE_3+" TEXT)";
 
 
-    public static final String CREATE_TODOLIST_TABLE = "create table "+TODOLIST_TABLE +
+    public static final String CREATE_TODOLIST_PRODUCT_TABLE = "create table "+TODOLIST_PRODUCT_TABLE +
             "("+ID+" TEXT, " +
             " "+PRODID+" TEXT, " +
             //" "+CUST_CODE+" TEXT, " +
@@ -354,6 +357,11 @@ public class DbHelper extends SQLiteOpenHelper {
             " "+PROD_IMAGE_3+" TEXT)";
 
 
+    public static final String CREATE_TODOLIST_TABLE = "create table "+TODOLIST_TABLE +
+            "("+ID+" TEXT, " +
+            " "+TODO_NAME+" TEXT, " +
+            " "+SHOP_CODE+" TEXT)";
+
 
     public static final String CREATE_FAVORITE_SHOP = "create table "+FAVORITE_TABLE +
             "("+SHOP_CODE+" TEXT NOT NULL)";
@@ -377,7 +385,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public DbHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, 22);
+        super(context, DATABASE_NAME, null, 23);
         this.context=context;
     }
 
@@ -396,6 +404,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_PROD_COMBO_DETAIL_TABLE);
         db.execSQL(CREATE_COUPON_TABLE);
         db.execSQL(CREATE_SHOP_DELIVERY_DETAILS_TABLE);
+        db.execSQL(CREATE_TODOLIST_PRODUCT_TABLE);
         db.execSQL(CREATE_TODOLIST_TABLE);
     }
 
@@ -427,6 +436,8 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_DELIVERY_ADDRESS);
         db.execSQL("DROP TABLE IF EXISTS "+SHOP_DELIVERY_DETAILS_TABLE);
         db.execSQL(CREATE_SHOP_DELIVERY_DETAILS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS "+TODOLIST_PRODUCT_TABLE);
+        db.execSQL(CREATE_TODOLIST_PRODUCT_TABLE);
         db.execSQL("DROP TABLE IF EXISTS "+TODOLIST_TABLE);
         db.execSQL(CREATE_TODOLIST_TABLE);
     }
@@ -589,11 +600,11 @@ public class DbHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean addProductInTODOList(MyProduct item){
+    public boolean addProductInTODOList(MyProduct item, String todoId){
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(ID, item.getId());
+        contentValues.put(ID, todoId);
         contentValues.put(PRODID, item.getProdId());
         //contentValues.put(CUST_CODE, item.getCustCode());
         contentValues.put(SHOP_CODE, item.getShopCode());
@@ -611,15 +622,15 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(TOTAL_AMOUNT, item.getTotalAmount());
         contentValues.put(TOTAL_QTY, item.getQuantity());
 
-        double status = db.insert(TODOLIST_TABLE, null, contentValues);
+        double status = db.insert(TODOLIST_PRODUCT_TABLE, null, contentValues);
         Log.i("DbHelper",item.getName()+" added in ToDo List status "+status);
         return true;
     }
 
-    public ArrayList<MyProduct> getToDoListProducts(String shopCode){
+    public ArrayList<MyProduct> getToDoListProducts(String shopCode, String todoId){
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select * from "+TODOLIST_TABLE +" WHERE "+SHOP_CODE+" = ?";
-        Cursor res =  db.rawQuery(query, new String[]{shopCode});
+        final String query="select * from "+TODOLIST_PRODUCT_TABLE +" WHERE "+SHOP_CODE+" = ? AND "+ID+"=?";
+        Cursor res =  db.rawQuery(query, new String[]{shopCode, todoId});
         ArrayList<MyProduct> itemList=new ArrayList<>();
         MyProduct productItem = null;
         if(res.moveToFirst()){
@@ -650,7 +661,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public boolean removeProductFromTODoList(String id, String shopCode){
         SQLiteDatabase db = this.getWritableDatabase();
-        long val = db.delete(TODOLIST_TABLE, ID+" = ? AND "+PROD_SP+" != ?"  + " AND " + SHOP_CODE + "=?",new String[]{String.valueOf(id),String.valueOf(0f),shopCode});
+        long val = db.delete(TODOLIST_PRODUCT_TABLE, ID+" = ? AND "+PROD_SP+" != ?"  + " AND " + SHOP_CODE + "=?",new String[]{String.valueOf(id),String.valueOf(0f),shopCode});
         Log.d(TAG, "removed product from ToDo List status "+val + "id  "+id);
         return true;
     }
@@ -658,7 +669,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public boolean checkProdExistInToDoList(String prodId, String shopCode){
         Log.d("prodId "+prodId, "shopCode "+shopCode);
         SQLiteDatabase db = this.getReadableDatabase();
-        final String query="select * from "+TODOLIST_TABLE+" WHERE "+ID+" = ?" + " AND " + SHOP_CODE + "=?"  + " AND " + PROD_SP + "!=? ";
+        final String query="select * from "+TODOLIST_PRODUCT_TABLE+" WHERE "+ID+" = ?" + " AND " + SHOP_CODE + "=?"  + " AND " + PROD_SP + "!=? ";
         Cursor res =  db.rawQuery(query, new String[]{ prodId, shopCode, String.valueOf(0f)});
         boolean exist = false;
         if(res.moveToFirst()){
@@ -669,6 +680,46 @@ public class DbHelper extends SQLiteOpenHelper {
             // prodCode =  "no";
         }
         return exist;
+    }
+
+
+    public boolean addTODOList(MyToDo item){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ID, item.getId());
+        contentValues.put(TODO_NAME, item.getName());
+        contentValues.put(SHOP_CODE, item.getShopCode());
+
+        double status = db.insert(TODOLIST_TABLE, null, contentValues);
+        Log.i("DbHelper",item.getName()+" added in ToDo List status "+status);
+        return true;
+    }
+
+    public ArrayList<MyToDo> getToDoList(String shopCode){
+        SQLiteDatabase db = this.getReadableDatabase();
+        final String query="select * from "+TODOLIST_TABLE +" WHERE "+SHOP_CODE+" = ?";
+        Cursor res =  db.rawQuery(query, new String[]{shopCode});
+        ArrayList<MyToDo> itemList=new ArrayList<>();
+        MyToDo item = null;
+        if(res.moveToFirst()){
+            do{
+                item=new MyToDo();
+                item.setShopCode(res.getString(res.getColumnIndex(SHOP_CODE)));
+                item.setId(res.getString(res.getColumnIndex(ID)));
+                item.setName(res.getString(res.getColumnIndex(TODO_NAME)));
+                itemList.add(item);
+            }while (res.moveToNext());
+        }
+
+        return itemList;
+    }
+
+    public boolean removeTODoList(String id, String shopCode){
+        SQLiteDatabase db = this.getWritableDatabase();
+        long val = db.delete(TODOLIST_TABLE, ID+" = ?"  + " AND " + SHOP_CODE + "=?",new String[]{String.valueOf(id),shopCode});
+        Log.d(TAG, "removed ToDo List status "+val + "id  "+id);
+        return true;
     }
 
 

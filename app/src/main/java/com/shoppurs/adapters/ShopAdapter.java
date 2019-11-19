@@ -26,6 +26,7 @@ import com.shoppurs.R;
 import com.shoppurs.activities.SearchActivity;
 import com.shoppurs.activities.Settings.FrequencyProductsActivity;
 import com.shoppurs.activities.Settings.ReturnProductsActivity;
+import com.shoppurs.activities.Settings.ToDoListActivity;
 import com.shoppurs.activities.Settings.ToDoListDetailsActivity;
 import com.shoppurs.activities.ShopAddressActivity;
 import com.shoppurs.activities.ShopListActivity;
@@ -210,7 +211,7 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                     else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product")) {
                         intent = new Intent(context, ReturnProductsActivity.class);
                     }else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List")) {
-                        intent = new Intent(context, ToDoListDetailsActivity.class);
+                        intent = new Intent(context, ToDoListActivity.class);
                     }
                     else
                     intent = new Intent(context, ShopProductListActivity.class);
