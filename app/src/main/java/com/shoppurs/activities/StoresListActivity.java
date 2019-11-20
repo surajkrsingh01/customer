@@ -475,8 +475,8 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
         super.updateUi();
         text_customer_address.setText(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, ""));
         //if(loadingComplete) {
-            showProgress(false);
-            swipeRefreshLayout.setRefreshing(true);
+           // showProgress(false);
+            //swipeRefreshLayout.setRefreshing(true);
             getItemList();
         //}
     }

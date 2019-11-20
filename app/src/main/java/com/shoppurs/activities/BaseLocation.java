@@ -174,7 +174,6 @@ public class BaseLocation extends NetworkBaseActivity implements OnLocationRecei
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     createLocationRequest();
                 } else {
-
                 }
                 break;
         }
@@ -183,9 +182,11 @@ public class BaseLocation extends NetworkBaseActivity implements OnLocationRecei
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        if (requestCode == 1 && resultCode == RESULT_OK) {
+        if (requestCode == 1 ) {
+            if(resultCode == RESULT_OK)
             getLocation(true);
-        } else if (requestCode == SEARCH_LOCATION) {
+            else updateUi();
+        }else if (requestCode == SEARCH_LOCATION) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(intent);
                 Log.i(TAG, "Place: " + place.getName()
@@ -207,6 +208,7 @@ public class BaseLocation extends NetworkBaseActivity implements OnLocationRecei
                 Log.i(TAG, status.getStatusMessage());
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
+                updateUi();
             }
         }
     }
@@ -252,6 +254,7 @@ public class BaseLocation extends NetworkBaseActivity implements OnLocationRecei
         }
         else{
             Log.e(TAG, "There is some problem in fetching address.");
+            updateUi();
         }
     }
 

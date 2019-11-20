@@ -146,11 +146,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+            <EditText
+                android:layout_below="@+id/edit_conf_password"
+                android:id="@+id/edit_affilate_code"
+                android:hint="@string/affilate_code"
+                android:drawableLeft="@drawable/affilate_icon"
+                android:drawableTint="?attr/primaryTextColor"
+                android:drawablePadding="@dimen/drawable_padding"
+                android:inputType="textPersonName"
+                android:imeOptions="actionNext"
+                android:textColorHint="?attr/secondaryTextColor"
+                android:textColor="?attr/primaryTextColor"
+                android:layout_marginTop="@dimen/register_container_margin_top"
+                android:paddingBottom="@dimen/edit_text_vertical_padding"
+                android:paddingTop="@dimen/edit_text_vertical_padding"
+                android:paddingLeft="@dimen/edit_text_horizontal_padding"
+                android:paddingRight="@dimen/edit_text_horizontal_padding"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
 
         <RelativeLayout
             android:id="@+id/relative_term_condition"
             android:layout_marginTop="@dimen/register_view_margin_top"
-            android:layout_below="@+id/edit_conf_password"
+            android:layout_below="@+id/edit_affilate_code"
             android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">

@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class RegisterActivity extends NetworkBaseActivity{
 
-    private EditText editFullName,editEmail,editMobile,editPassword,editConfPassword;
+    private EditText editFullName,editEmail,editMobile,editPassword,editConfPassword, edit_affilate_code;
     private CheckBox checkBoxTerms;
     private String fullName,email,mobile,password,confPassword;
     private RelativeLayout relative_footer_action;
@@ -44,6 +44,7 @@ public class RegisterActivity extends NetworkBaseActivity{
         editMobile=(EditText)findViewById(R.id.edit_mobile);
         editPassword=(EditText)findViewById(R.id.edit_password);
         editConfPassword=(EditText)findViewById(R.id.edit_conf_password);
+        edit_affilate_code = findViewById(R.id.edit_affilate_code);
         checkBoxTerms=(CheckBox)findViewById(R.id.checkbox_terms_condition);
 
         if(!sharedPreferences.getBoolean(Constants.IS_DATABASE_CREATED,false)){
@@ -152,6 +153,7 @@ public class RegisterActivity extends NetworkBaseActivity{
         params.put("mobile",mobile);
         params.put("user_email",email);
         params.put("mpassword",password);
+        params.put("affilateCode", edit_affilate_code.getText().toString());
         params.put("photo","");
         params.put("city","");
         params.put("province","");

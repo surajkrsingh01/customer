@@ -43,6 +43,7 @@
     <string name="back">back</string>
     <string name="register">Register</string>
     <string name="full_name">Full Name</string>
+    <string name="affilate_code">Affilate Code</string>
     <string name="email">Email</string>
     <string name="mobile">Mobile</string>
     <string name="conf_password">Confirm Password</string>
