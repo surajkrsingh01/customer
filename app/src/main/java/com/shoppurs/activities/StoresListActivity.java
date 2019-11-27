@@ -1,5 +1,6 @@
 package com.shoppurs.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -56,7 +57,9 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     List<String> myfavoriteShopIds = new ArrayList<>();
     private CircleImageView customer_profile;
     private TextView text_customer_address;
-    private boolean loadingComplete;
+    private boolean isVisible,loadingComplete;
+    protected ProgressDialog progressDialog;
+
 
 
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
@@ -70,6 +73,12 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
 
         itemList = new ArrayList<>();
         //getDemoLists();
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Loading..");
 
         swipeRefreshLayout=findViewById(R.id.swipe_refresh);
         progressBar=findViewById(R.id.progress_bar);
@@ -127,7 +136,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
         });
 
         getCurrentLocation();
-        showProgress(true);
+        showProgressBar(true);
 
         if(!sharedPreferences.getBoolean(Constants.IS_TOKEN_SAVED, false)){
             saveToken();
@@ -156,7 +165,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
         }
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
         String url=getResources().getString(R.string.url)+"/cat_subcat";
-        showProgress(true);
+        showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"categories");
     }
 
@@ -164,7 +173,6 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
         Map<String,String> params=new HashMap<>();
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url)+"/shop/favourite_shops";
-        //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"FavoriteShops");
     }
 
@@ -179,14 +187,12 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
         }
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url)+"/allshoplist";
-        //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }
 
 
     @Override
     public void onJsonObjectResponse(JSONObject response, String apiName) {
-        //showProgress(false);
         try {
             // JSONObject jsonObject=response.getJSONObject("response");
             Log.d("response", response.toString());
@@ -217,17 +223,17 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
                         itemList.add(myItem);
                         getFavoriteStores();
                     }else{
-                        showProgress(false);
+                        showProgressBar(false);
                     }
 
                 }else {
                     DialogAndToast.showDialog(response.getString("message"),StoresListActivity.this);
-                    showProgress(false);
+                    showProgressBar(false);
                 }
             } else if(apiName.equals("NormalShops")){
                 loadingComplete = true;
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    showProgress(false);
+                    showProgressBar(false);
                     if(!response.getString("result").equals("null")) {
                         JSONObject jsonObject = response.getJSONObject("result");
                         JSONArray shopJArray = jsonObject.getJSONArray("shoplist");
@@ -290,13 +296,13 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
                         }else  myItemAdapter.notifyDataSetChanged();
                     }else {
                         //DialogAndToast.showDialog(response.getString("message"),StoresListActivity.this);
-                        showProgress(false);
+                        showProgressBar(false);
                         myItemAdapter.notifyDataSetChanged();
                     }
 
                 }else {
                     DialogAndToast.showDialog(response.getString("message"),StoresListActivity.this);
-                    showProgress(false);
+                    showProgressBar(false);
                 }
             }else if(apiName.equals("FavoriteShops")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
@@ -307,7 +313,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
                     }
                     getNormalStores();
                 }else {
-                    showProgress(false);
+                    showProgressBar(false);
                 }
             }else if(apiName.equals("saveToken")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
@@ -343,11 +349,8 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
 
     private void showProgressBar(boolean show){
         if(show){
-            recyclerView.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
-            textViewError.setVisibility(View.GONE);
         }else{
-            recyclerView.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
         }
     }
@@ -464,6 +467,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     @Override
     public void onResume() {
         super.onResume();
+        isVisible = true;
         if(TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, "")))
             text_customer_address.setText("Update Your Location");
         else
@@ -473,12 +477,14 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     @Override
     public void updateUi() {
         super.updateUi();
-        text_customer_address.setText(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, ""));
-        //if(loadingComplete) {
-           // showProgress(false);
+        if(isVisible) {
+            text_customer_address.setText(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, ""));
+            //if(loadingComplete) {
+            // showProgress(false);
             //swipeRefreshLayout.setRefreshing(true);
             getItemList();
-        //}
+            //}
+        }
     }
 
     @Override
@@ -487,9 +493,16 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
             searchPlaces();
         }else if(type.equals("Get Current Location")){
             getCurrentLocation();
-            showProgress(true);
+            showProgressBar(true);
         }else if(type.equals("Update Location")){
             updateCurrentLocation(address);
         }
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isVisible = false;
+    }
+
 }

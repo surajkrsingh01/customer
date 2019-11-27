@@ -87,9 +87,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public MyHomeHeaderViewHolder(View itemView) {
             super(itemView);
             textHeader=itemView.findViewById(R.id.text_date_range);
-            textHeader.setVisibility(View.GONE);
-            textDesc=itemView.findViewById(R.id.text_desc);
+            //textHeader.setVisibility(View.GONE);
+            //textDesc=itemView.findViewById(R.id.text_desc);
             recyclerView=itemView.findViewById(R.id.recycler_view);
+            recyclerView.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -510,7 +511,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             CatListItem item = (CatListItem) itemList.get(position);
             MyHomeHeaderViewHolder myViewHolder = (MyHomeHeaderViewHolder)holder;
             //myViewHolder.textHeader.setText(item.getTitle());
-            myViewHolder.textDesc.setText(item.getDesc());
+            //myViewHolder.textDesc.setText(item.getDesc());
 
            // Log.d("title ",item.getTitle());
             //Log.d("title ",item.getDesc());
@@ -522,8 +523,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             CategoryAdapter myItemAdapter = new CategoryAdapter(context,item.getItemList(),"catList");
             myViewHolder.recyclerView.setAdapter(myItemAdapter);
 
-          //  StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
-          //  layoutParams.setFullSpan(true);
+            //StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)myViewHolder.itemView.getLayoutParams();
+            //layoutParams.setFullSpan(true);
 
 
         }else if(holder instanceof MyHomeHeader1ViewHolder){
@@ -552,7 +553,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             RequestOptions requestOptions = new RequestOptions();
             requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
-            requestOptions.dontTransform();
+            //requestOptions.dontTransform();
             // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
             // requestOptions.centerCrop();
             requestOptions.skipMemoryCache(false);

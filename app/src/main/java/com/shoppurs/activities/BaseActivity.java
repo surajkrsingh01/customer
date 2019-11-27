@@ -74,6 +74,9 @@ public class BaseActivity extends AppCompatActivity {
             }
         };
         progressDialog.setOnKeyListener(keyListener);
+
+        this.overridePendingTransition(R.anim.slide_in_left,
+                R.anim.slide_out_left);
     }
 
     @Override
@@ -168,7 +171,7 @@ public class BaseActivity extends AppCompatActivity {
                 } else {
                     //DialogAndToast.showToast("clicked in Offer ",BaseActivity.this);
                     Intent intent = new Intent(BaseActivity.this, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 }
             }
@@ -206,7 +209,7 @@ public class BaseActivity extends AppCompatActivity {
                 } else {
                   //  DialogAndToast.showToast("Profile clicked in Search ",BaseActivity.this);
                     Intent intent = new Intent(BaseActivity.this, SearchActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 }
             }

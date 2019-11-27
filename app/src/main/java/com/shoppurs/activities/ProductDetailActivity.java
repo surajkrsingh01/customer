@@ -227,7 +227,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         myReviewAdapter=new MyReviewAdapter(this,myReviewList,"productReview");
         recyclerViewReview.setAdapter(myReviewAdapter);
         recyclerViewReview.setNestedScrollingEnabled(false);
-        setReviews();
+        //setReviews();
 
 
 
@@ -287,7 +287,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
 
     private void getProductRatings(){
         Map<String,String> params=new HashMap<>();
-        params.put("code",""+myProduct.getId());
+        params.put("code",""+myProduct.getCode());
         params.put("dbName",sharedPreferences.getString(Constants.SHOP_DBNAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.SHOP_DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.SHOP_DB_PASSWORD,""));
@@ -296,6 +296,21 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"productRatingsData");
     }
 
+
+    public void getProductRevies(MyProduct cartItem){
+        Map<String,String> params=new HashMap<>();
+        params.put("prodCode",""+myProduct.getId());
+        params.put("limit",""+limit);
+        params.put("offset",""+offset);
+        params.put("dbName",sharedPreferences.getString(Constants.SHOP_DBNAME,""));
+        params.put("dbUserName",sharedPreferences.getString(Constants.SHOP_DB_USER_NAME,""));
+        params.put("dbPassword",sharedPreferences.getString(Constants.SHOP_DB_PASSWORD,""));
+        Log.d(TAG, params.toString());
+
+        String url=getResources().getString(R.string.root_url)+"api/order/getReview";
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"productReviews");
+    }
 
     private void add_toCart(MyProduct cartItem){
         Map<String,String> params=new HashMap<>();
@@ -594,7 +609,6 @@ public class ProductDetailActivity extends NetworkBaseActivity {
 
 
 
-
     @Override
     public void onJsonObjectResponse(JSONObject response, String apiName) {
         showProgress(false);
@@ -635,6 +649,10 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                         tvStarRatings.setText(String.format("%.01f", 0.0f));
                         tvNumRatings.setText(0 + " Ratings");
                     }
+                }
+            }else if(apiName.equals("productReviews")){
+                if(!response.getString("result").equals("null")) {
+
                 }
             }else if(apiName.equals("productDetails")) {
                 if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
@@ -784,6 +802,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
     public void onResume() {
         super.onResume();
         updateCartCount();
+
     }
 
     public void updateAddButtons(){

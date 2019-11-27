@@ -53,6 +53,7 @@ public class MainActivity extends NetworkBaseActivity {
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
     private TextView text_customer_address;
     private CircleImageView customer_profile;
+    private boolean bannerLoaded, categoryLoaded, shopLoaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,11 +197,11 @@ public class MainActivity extends NetworkBaseActivity {
         progressBar=findViewById(R.id.progress_bar);
         textViewError = findViewById(R.id.text_error);
         recyclerView=findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
        // RecyclerView.LayoutManager layoutManagerHomeMenu=new LinearLayoutManager(this);
         staggeredGridLayoutManager = new StaggeredGridLayoutManager(2,
                 StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(staggeredGridLayoutManager);
+        recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
       /*  int resId = R.anim.layout_animation_slide_from_bottom;
         LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(this, resId);
@@ -251,7 +252,7 @@ public class MainActivity extends NetworkBaseActivity {
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url_offer)+"get_banner_offers";
-        showProgress(true);
+       // showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"offer_banners");
     }
 
@@ -358,11 +359,12 @@ public class MainActivity extends NetworkBaseActivity {
                     Log.d("catList size ", itemList.size() + "");
                     if(itemList.size()>0) {
                         //myItemAdapter.notifyDataSetChanged();
-                        getShops();
+
                     }else{
-                        showProgress(false);
+                        //showProgress(false);
                     }
 
+                    getShops();
                 }else {
                     DialogAndToast.showDialog(response.getString("message"),MainActivity.this);
                     showProgress(false);
@@ -372,6 +374,7 @@ public class MainActivity extends NetworkBaseActivity {
                     showProgress(false);
                     if(!response.getString("result").equals("null")) {
                         JSONArray shopJArray = response.getJSONArray("result");
+                        if(shopJArray.length()>0){
                         HomeListItem myItem = new HomeListItem();
                         myItem.setTitle("Offers");
                         myItem.setDesc("Store Offers");
@@ -403,15 +406,17 @@ public class MainActivity extends NetworkBaseActivity {
                             myShop.setImage(R.drawable.thumb_21);
                             itemList.add(myShop);
                         }
-                        myItemAdapter.notifyDataSetChanged();
-                        Log.d("itemList Size ", itemList.size()+" ");
+                        //myItemAdapter.notifyDataSetChanged();
+                        Log.d("itemList Size ", itemList.size() + " ");
 
-                        if(itemList.size()>0){
-                            if(shopJArray.length()==0)
-                                itemList.remove(itemList.size()-1);
+                        if (itemList.size() > 0) {
+                            if (shopJArray.length() == 0)
+                                itemList.remove(itemList.size() - 1);
                             myItemAdapter.notifyDataSetChanged();
                         }
-
+                    }
+                        if(itemList.size()>0)
+                            myItemAdapter.notifyDataSetChanged();
                     }else {
                         //DialogAndToast.showDialog(response.getString("message"),StoresListActivity.this);
                         showProgress(false);

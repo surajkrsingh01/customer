@@ -1,6 +1,7 @@
 package com.shoppurs.activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -12,6 +13,8 @@ import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -75,34 +78,6 @@ public class CategoryListActivity extends BaseLocation implements LocationAction
         progressBar=findViewById(R.id.progress_bar);
         textViewError = findViewById(R.id.text_error);
         recyclerView=findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
-        staggeredGridLayoutManager = new StaggeredGridLayoutManager(2,
-                StaggeredGridLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-      /*  int resId = R.anim.layout_animation_slide_from_bottom;
-        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(this, resId);
-        recyclerView.setLayoutAnimation(animation);*/
-            myItemAdapter = new CategoryAdapter(this, itemList, "catList");
-             myItemAdapter.setColorTheme(colorTheme);
-            recyclerView.setAdapter(myItemAdapter);
-
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(true);
-                getItemList();
-            }
-        });
-
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(R.color.blue700));
-        }*/
-
-        initFooter(this,1);
 
         text_customer_address = findViewById(R.id.text_customer_address);
         if(TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, "")))
@@ -136,6 +111,33 @@ public class CategoryListActivity extends BaseLocation implements LocationAction
             }
         });
 
+        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
+        //staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+      /*  int resId = R.anim.layout_animation_slide_from_bottom;
+        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(this, resId);
+        recyclerView.setLayoutAnimation(animation);*/
+        myItemAdapter = new CategoryAdapter(this, itemList, "catList");
+        myItemAdapter.setColorTheme(colorTheme);
+        recyclerView.setAdapter(myItemAdapter);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.blue700));
+        }
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(true);
+                volleyRequest();
+            }
+        });
+        initFooter(this,1);
+
         volleyRequest();
     }
 
@@ -165,6 +167,14 @@ public class CategoryListActivity extends BaseLocation implements LocationAction
         }
     }
 
+    public void showProgress(boolean show){
+        if(show){
+            progressBar.setVisibility(View.VISIBLE);
+        }else{
+            progressBar.setVisibility(View.GONE);
+        }
+    }
+
 
     public void volleyRequest(){
         Map<String,String> params=new HashMap<>();
@@ -175,14 +185,18 @@ public class CategoryListActivity extends BaseLocation implements LocationAction
     }
 
 
+
+
     @Override
     public void onJsonObjectResponse(JSONObject response, String apiName) {
         showProgress(false);
+        swipeRefreshLayout.setRefreshing(false);
         try {
             Log.d("response", response.toString());
             if(apiName.equals("categories")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                     isCategoriesLoaded = true;
+                    itemList.clear();
                     JSONObject jsonObject = response.getJSONObject("result");
                     JSONArray catJArray = jsonObject.getJSONArray("categories");
 
@@ -262,9 +276,9 @@ public class CategoryListActivity extends BaseLocation implements LocationAction
     @Override
     public void updateUi() {
         super.updateUi();
-        showProgress(false);
+        //showProgress(false);
         text_customer_address.setText(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, ""));
-        swipeRefreshLayout.setRefreshing(true);
+        //swipeRefreshLayout.setRefreshing(true);
         getItemList();
     }
 

@@ -17,7 +17,7 @@
         <TextView
             android:layout_toLeftOf="@+id/profile_image"
             android:maxLines="1"
-            android:text="AB 7 Safdarjan Enclave Behind Kamal Cinema"
+            android:text=""
             android:id="@+id/text_customer_address"
             android:textColor="?attr/secondaryTextColor"
             android:layout_marginTop="@dimen/activity_vertical_margin"

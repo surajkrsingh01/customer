@@ -75,7 +75,7 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             super(itemView);
             textHeader=itemView.findViewById(R.id.text_date_range);
             textDesc=itemView.findViewById(R.id.text_desc);
-            recyclerView=itemView.findViewById(R.id.recycler_view);
+            //recyclerView=itemView.findViewById(R.id.recycler_view);
             profile_image = itemView.findViewById(R.id.profile_image);
             profile_image.setOnClickListener(this);
         }
@@ -424,23 +424,31 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public int getItemViewType(int position) {
         if(type.equals("homeList")){
             if(itemList.get(position) instanceof  MyShop){
+                Log.d("return shop ", "+4");
                 return  4;
             }else {
                 HomeListItem item = (HomeListItem)itemList.get(position);
                 if(item.getType() == 0){
+                    Log.d("return header ", "+0");
                     return 0;
                 }else if(item.getType() == 1){
+                    Log.d("return ", "+1");
                     return 1;
                 }else if(item.getType() == 2){
+                    Log.d("return ", "+2");
                     return 2;
                 }else if(item.getType() == 3){
+                    Log.d("return category", "+3");
                     return 3;
                 }else if(item.getType() == 4){
+                    Log.d("return ", "+4");
                     return 4;
                 }else if(item.getType() == 5){
+                    Log.d("return banner ", "+5");
                     return 5;
                 }
                 else{
+                    Log.d("return ", "+10");
                     return 10;
                 }
             }
@@ -538,7 +546,7 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
               RequestOptions requestOptions = new RequestOptions();
               requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
-              requestOptions.dontTransform();
+              //requestOptions.dontTransform();
               // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
              // requestOptions.centerCrop();
               requestOptions.skipMemoryCache(false);
@@ -556,10 +564,11 @@ public class MyItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
           }else if(holder instanceof BannerListViewHolder){
               HomeListItem item = (HomeListItem) itemList.get(position);
               BannerListViewHolder myViewHolder = (BannerListViewHolder)holder;
-              myViewHolder.recyclerView.setHasFixedSize(true);
-              RecyclerView.LayoutManager layoutManagerHomeMenu=new LinearLayoutManager(context,
-                      LinearLayoutManager.HORIZONTAL,false);
+              Log.d("banner ListSize ", item.getItemList().size()+"");
+
+              RecyclerView.LayoutManager layoutManagerHomeMenu=new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false);
               myViewHolder.recyclerView.setLayoutManager(layoutManagerHomeMenu);
+              myViewHolder.recyclerView.setHasFixedSize(true);
               myViewHolder.recyclerView.setItemAnimator(new DefaultItemAnimator());
               MyItemAdapter myItemAdapter=new MyItemAdapter(context,item.getItemList(),"homeList");
               myViewHolder.recyclerView.setAdapter(myItemAdapter);
