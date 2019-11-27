@@ -34,6 +34,7 @@ import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,6 +47,8 @@ public class ProductDetailActivity extends NetworkBaseActivity {
 
     private final String TAG ="ProductDetailActivity";
     private RecyclerView recyclerViewReview;
+    private TextView tvNoReviews;
+    private Button btn_load_more_review;
     private MyReviewAdapter myReviewAdapter;
     private List<MyReview> myReviewList;
     private TextView textViewSubCatName,textViewProductName, text_product_name_top,
@@ -220,6 +223,8 @@ public class ProductDetailActivity extends NetworkBaseActivity {
 
         myReviewList = new ArrayList<>();
         recyclerViewReview= findViewById(R.id.recycler_view_review);
+        tvNoReviews = findViewById(R.id.tvNoReviews);
+        btn_load_more_review = findViewById(R.id.btn_load_more_review);
         recyclerViewReview.setItemAnimator(new DefaultItemAnimator());
         recyclerViewReview.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManagerReview=new LinearLayoutManager(this);
@@ -283,6 +288,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         }
 
         getProductRatings();
+        getProductRevies();
     }
 
     private void getProductRatings(){
@@ -297,7 +303,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
     }
 
 
-    public void getProductRevies(MyProduct cartItem){
+    public void getProductRevies(){
         Map<String,String> params=new HashMap<>();
         params.put("prodCode",""+myProduct.getId());
         params.put("limit",""+limit);
@@ -307,7 +313,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         params.put("dbPassword",sharedPreferences.getString(Constants.SHOP_DB_PASSWORD,""));
         Log.d(TAG, params.toString());
 
-        String url=getResources().getString(R.string.root_url)+"api/order/getReview";
+        String url=getResources().getString(R.string.root_url)+"order/getReview";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"productReviews");
     }
@@ -652,7 +658,25 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                 }
             }else if(apiName.equals("productReviews")){
                 if(!response.getString("result").equals("null")) {
-
+                    JSONArray jsonArray = response.getJSONArray("result");
+                    MyReview myReview = null;
+                    myReviewList.clear();
+                    for(int i=0;i<jsonArray.length();i++){
+                        myReview = new MyReview();
+                        myReview.setUserName(jsonArray.getJSONObject(i).getString("customerName"));
+                        myReview.setDateTime(Utility.parseDate(jsonArray.getJSONObject(i).getString("createdDate"), "YYYY-MM-dd HH:mm:ss", "dd MMM yyyy HH:mm:ss"));
+                        myReview.setRating(jsonArray.getJSONObject(i).getInt("rating"));
+                        myReview.setReview(jsonArray.getJSONObject(i).getString("reviewMessage"));
+                        if(myReview.getReview()!=null)
+                        myReviewList.add(myReview);
+                    }
+                    if(myReviewList.size()>0)
+                    myReviewAdapter.notifyDataSetChanged();
+                    else {
+                        recyclerViewReview.setVisibility(View.GONE);
+                        btn_load_more_review.setVisibility(View.GONE);
+                        tvNoReviews.setVisibility(View.VISIBLE);
+                    }
                 }
             }else if(apiName.equals("productDetails")) {
                 if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
