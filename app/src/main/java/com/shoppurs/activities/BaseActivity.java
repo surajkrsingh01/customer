@@ -41,6 +41,7 @@ public class BaseActivity extends AppCompatActivity {
     protected int smallLimit = 4,smallOffset = 0;
     protected int visibleItemCount,pastVisibleItems,totalItemCount;
     protected boolean loading=false,isScroll = true;
+    private boolean isSplash ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +56,10 @@ public class BaseActivity extends AppCompatActivity {
 
 
         if(isDarkTheme){
+            if(!isSplash)
             setTheme(R.style.Dark);
         }else{
+            if(!isSplash)
             setTheme(R.style.Light);
         }
 
@@ -75,8 +78,8 @@ public class BaseActivity extends AppCompatActivity {
         };
         progressDialog.setOnKeyListener(keyListener);
 
-        this.overridePendingTransition(R.anim.slide_in_left,
-                R.anim.slide_out_left);
+        if(!isSplash)
+        this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
     }
 
     @Override
@@ -84,10 +87,14 @@ public class BaseActivity extends AppCompatActivity {
         super.onResume();
 
         boolean isDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARK_THEME,false);
-        if(this.isDarkTheme != isDarkTheme)
+        if(this.isDarkTheme != isDarkTheme && !isSplash)
             recreate();
     }
 
+
+    public void setIsSplash(boolean status){
+        this.isSplash = status;
+    }
 
     int backColor=0,textColor = 0;
     public void initFooter(final Context context, int type) {

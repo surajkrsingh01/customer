@@ -35,8 +35,10 @@ public class SplashActivity extends NetworkBaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setIsSplash(true);
         super.onCreate(savedInstanceState);
 
+        //setContentView(R.layout.splash_layout);
         sharedPreferences=getSharedPreferences(Constants.MYPREFERENCEKEY,MODE_PRIVATE);
         if(sharedPreferences.getBoolean(Constants.IS_LOGGED_IN,false)){
             checkVersion();
@@ -58,7 +60,7 @@ public class SplashActivity extends NetworkBaseActivity {
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.root_url)+"db_version/get";
         Log.d(TAG, params.toString());
-        showProgress(true);
+        //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"getVersions");
     }
 
@@ -70,7 +72,7 @@ public class SplashActivity extends NetworkBaseActivity {
         params.put("dbVersion",sharedPreferences.getString(Constants.DB_VERSION, ""));
         String url=getResources().getString(R.string.root_url)+"db_version/handle_change_version";
         Log.d(TAG, params.toString());
-        showProgress(true);
+        //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"updateDbVersion");
     }
 
@@ -103,6 +105,7 @@ public class SplashActivity extends NetworkBaseActivity {
                                 intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.shoppurs"));
                                 startActivity(intent);
                             }else if(!TextUtils.isEmpty(previousDbVersion) && !TextUtils.isEmpty(dbVersion)) {
+                                Log.d("previousDbVersion "+previousDbVersion, "dbVersion "+dbVersion);
                                 if (!previousDbVersion.equals(dbVersion)) {
                                     updateDb();
                                 } else {

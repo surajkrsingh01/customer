@@ -18,6 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.shoppurs.R;
 import com.shoppurs.activities.HandleCartActivity;
+import com.shoppurs.activities.ManageToDoListProducts;
 import com.shoppurs.activities.ProductDetailActivity;
 import com.shoppurs.adapters.ToDoProductListAdapter;
 import com.shoppurs.database.DbHelper;
@@ -34,7 +35,7 @@ import com.shoppurs.utilities.Utility;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ToDoListDetailsActivity extends HandleCartActivity implements MyItemClickListener{
+public class ToDoListDetailsActivity extends ManageToDoListProducts implements MyItemClickListener{
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
@@ -107,6 +108,7 @@ public class ToDoListDetailsActivity extends HandleCartActivity implements MyIte
             @Override
             public void onClick(View v) {
                 DialogAndToast.showToast("please wait..", ToDoListDetailsActivity.this);
+                //init(2, shopCode, myProductList, shopDeliveryModel, ToDoListDetailsActivity.this);
             }
         });
 
@@ -187,7 +189,7 @@ public class ToDoListDetailsActivity extends HandleCartActivity implements MyIte
         Log.d("clicked Position ", position+"");
         this.position = position;
         this.type = type;
-        updateCart(type, position, shopCode, myProductList.get(position), shopDeliveryModel, this);
+        //updateCart(type, position, shopCode, myProductList.get(position), shopDeliveryModel, this);
     }
 
     @Override
@@ -218,17 +220,13 @@ public class ToDoListDetailsActivity extends HandleCartActivity implements MyIte
             myProductList.remove(pos);
             toDoProductListAdapter.notifyItemRemoved(pos);
         }
-
-
     }
 
-    @Override
-    public void updateUi(MyProduct product, int position) {
-        Log.d("return position ", position+"");
-        Log.d("return product ", product.getId()+"");
-        myProductList.set(position, product);
-        toDoProductListAdapter.notifyItemChanged(position);
-        toDoProductListAdapter.notifyDataSetChanged();
-       // updateCartCount();
+    public void showProgress(boolean show){
+        if(show){
+            progressDialog.show();
+        }else{
+            progressDialog.dismiss();
+        }
     }
 }
