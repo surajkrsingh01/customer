@@ -110,7 +110,7 @@ public class CartShopListActivity extends NetworkBaseActivity {
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.root_url)+"offers/get_active_offer_shops_by_cat";
+        String url=getResources().getString(R.string.url_shop)+"offers/get_active_offer_shops_by_cat";
         Log.i(TAG, params.toString());
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url, new JSONObject(params),"shopList");

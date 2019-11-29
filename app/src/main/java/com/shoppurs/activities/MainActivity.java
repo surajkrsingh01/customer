@@ -251,7 +251,7 @@ public class MainActivity extends NetworkBaseActivity {
         params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.url_offer)+"get_banner_offers";
+        String url=getResources().getString(R.string.url_shop)+"offers/get_banner_offers";
        // showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"offer_banners");
     }
@@ -261,7 +261,7 @@ public class MainActivity extends NetworkBaseActivity {
         params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.url_offer)+"get_active_offer_categories";
+        String url=getResources().getString(R.string.url_shop)+"offers/get_active_offer_categories";
         //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"offer_categories");
     }
@@ -271,7 +271,7 @@ public class MainActivity extends NetworkBaseActivity {
         params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.url_offer)+"get_active_offer_shops";
+        String url=getResources().getString(R.string.url_shop)+"offers/get_active_offer_shops";
         //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"offer_shops");
     }
