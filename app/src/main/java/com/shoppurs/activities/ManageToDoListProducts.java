@@ -44,12 +44,15 @@ public class ManageToDoListProducts extends NetworkBaseActivity{
         this.shopCode = shopCode;
         myProductList = productList;
         shopDeliveryModel = deliveryModel;
+        Log.d("myProductList Size ", myProductList.size()+"");
         updateCart();
     }
 
     public void updateCart() {
+        Log.d("position "+position, " myProductList Size "+myProductList.size());
         if (position < myProductList.size()) {
             myProduct = myProductList.get(position);
+            Log.d("myProduct ", myProduct.getQoh() +" "+myProduct.getQuantity());
             myProduct.setShopCode(shopCode);
             if (type == 2)
                 checkFreeProductOffer();
@@ -198,8 +201,10 @@ public class ManageToDoListProducts extends NetworkBaseActivity{
                 if(qty == 1){
                     counter++;
                     myProduct.setFreeProductPosition(counter);
-                    dbHelper.addProductToCart(myProduct , "normal");
-                    dbHelper.addShopDeliveryDetails(shopDeliveryModel);
+                    if(!dbHelper.checkProdExistInCart(myProduct.getId(), myProduct.getShopCode())) {
+                        dbHelper.addProductToCart(myProduct, "normal");
+                        dbHelper.addShopDeliveryDetails(shopDeliveryModel);
+                    }
                 }
                 float netSellingPrice = getOfferAmount(myProduct,type);
                 float amount = 0;
@@ -216,7 +221,7 @@ public class ManageToDoListProducts extends NetworkBaseActivity{
                 dbHelper.updateCartData(myProduct,"normal");
                 //updateUi(myProduct, position);
 
-                position ++;
+                this.position++;
                 updateCart();
             }
         }

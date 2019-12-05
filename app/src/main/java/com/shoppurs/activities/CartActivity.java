@@ -946,8 +946,8 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
     private void getProductDetails(String prodId, String shopcode){
         Map<String,String> params=new HashMap<>();
-        params.put("id", prodId); // as per user selected category from top horizontal categories list
-        params.put("code", shopcode);
+        //params.put("id", prodId); // as per user selected category from top horizontal categories list
+        params.put("code", prodId);
         params.put("dbName",shopcode);
         Log.d(TAG, params.toString());
         String url=getResources().getString(R.string.url)+"/products/ret_products_details";

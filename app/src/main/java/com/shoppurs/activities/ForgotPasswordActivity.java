@@ -165,10 +165,15 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
 
 
     private void verifyVerificationCode(String code) {
+        Log.d("mVerificationId "+mVerificationId, "code "+code);
         //creating the credential
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
-        //signing the user
-        signInWithPhoneAuthCredential(credential);
+        try {
+            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
+            //signing the user
+            signInWithPhoneAuthCredential(credential);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
@@ -235,7 +240,7 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
                        submitButton.setText("Submit");
                        editTextCode.setText(response.getString("result"));
                        DialogAndToast.showDialog("Otp has been sent to your mobile, please check your notification", ForgotPasswordActivity.this);
-                       NotificationService.displayNotification( this, response.getInt("result")+" is your verification code", response);
+                       NotificationService.displayNotification( this, response.getInt("result")+" is your verification code", null);
                    }
                 }else {
                     if(response.getInt("result")==0) {

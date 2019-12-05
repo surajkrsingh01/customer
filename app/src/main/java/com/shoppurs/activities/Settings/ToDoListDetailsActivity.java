@@ -284,7 +284,7 @@ public class ToDoListDetailsActivity extends ManageToDoListProducts implements M
                     JSONObject dataObject;
                     if (!response.getString("result").equals("null")) {
                         JSONArray productJArray = response.getJSONArray("result");
-
+                        Log.d("productJArray ", productJArray.length()+"");
                         for (int i = 0; i < productJArray.length(); i++) {
                             MyProduct myProduct = new MyProduct();
                             myProduct.setShopCode(shopCode);
@@ -477,7 +477,7 @@ public class ToDoListDetailsActivity extends ManageToDoListProducts implements M
                         }
                         if (myTempProductList.size() > 0) {
                             DialogAndToast.showToast("please wait..", ToDoListDetailsActivity.this);
-                            //init(2, shopCode, myTempProductList, shopDeliveryModel, ToDoListDetailsActivity.this);
+                            init(2, shopCode, myTempProductList, shopDeliveryModel, ToDoListDetailsActivity.this);
                         }
                     }else {
                         showNoData(true);
