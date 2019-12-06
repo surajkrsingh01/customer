@@ -34,18 +34,18 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <!--<com.journeyapps.barcodescanner.DecoratedBarcodeView
+    <com.journeyapps.barcodescanner.DecoratedBarcodeView
         android:id="@+id/zxing_barcode_scanner"
         android:layout_below="@+id/linear_top"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:zxing_scanner_layout="@layout/custom_scanner" />-->
+        app:zxing_scanner_layout="@layout/custom_scanner" />
 
-    <FrameLayout
+   <!-- <FrameLayout
         android:id="@+id/scanner_container"
         android:layout_centerInParent="true"
         android:layout_below="@+id/linear_top"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </FrameLayout>
+    </FrameLayout>-->
 </RelativeLayout>
