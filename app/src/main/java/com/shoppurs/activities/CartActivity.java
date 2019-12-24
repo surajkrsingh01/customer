@@ -560,6 +560,8 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                         shopObject.put("deliveryAddress", deliveryAddress.getAddress());
                         shopObject.put("deliveryCountry",deliveryAddress.getCountry());
                         shopObject.put("deliveryState",deliveryAddress.getState());
+                        shopObject.put("deliveryLat",deliveryAddress.getDelivery_lat());
+                        shopObject.put("deliveryLong",deliveryAddress.getDelivery_long());
                         shopObject.put("deliveryCity", deliveryAddress.getCity());
                         shopObject.put("pinCode", deliveryAddress.getPinCode());
                     }else {
