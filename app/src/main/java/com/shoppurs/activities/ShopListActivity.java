@@ -196,9 +196,9 @@ public class ShopListActivity extends NetworkBaseActivity {
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=null;
         if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency"))
-         url=getResources().getString(R.string.url_customer)+"order/get_frequency_order_shop_list";
+         url=getResources().getString(R.string.url_customer)+"/api/order/get_frequency_order_shop_list";
         else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product"))
-            url = getResources().getString(R.string.url_customer) + "/customers/shop/sales_return_shops";
+            url = getResources().getString(R.string.url_customer) + "/api/customers/shop/sales_return_shops";
         else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List")) {
             params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
             params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));

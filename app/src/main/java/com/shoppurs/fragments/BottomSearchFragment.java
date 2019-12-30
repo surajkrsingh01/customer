@@ -201,7 +201,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
         params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
-        String url=getResources().getString(R.string.url_customer)+"search/shops";
+        String url=getResources().getString(R.string.url_customer)+"/api/search/shops";
         //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"searchShops");
     }
@@ -226,7 +226,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.url_customer)+"search/shop_products";
+        String url=getResources().getString(R.string.url_customer)+"/api/search/shop_products";
         //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"searchProducts");
     }

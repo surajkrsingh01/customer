@@ -184,7 +184,7 @@ public class FrequencyProductsActivity extends HandleCartActivity {
         params.put("offset", myProductList.size()+"");
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url_customer)+"order/get_frequency_order";
+        String url=getResources().getString(R.string.url_customer)+"/api/order/get_frequency_order";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"getProducts");
     }

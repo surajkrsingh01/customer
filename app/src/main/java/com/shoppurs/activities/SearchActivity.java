@@ -280,7 +280,7 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
         params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.url_customer)+"/search/cat/shops";
+        String url=getResources().getString(R.string.url_customer)+"/api/search/cat/shops";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }
@@ -310,9 +310,9 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
         if(isSearchByProduct){
             params.put("id", selectedSubCategory.getSubCatId());
-            url=getResources().getString(R.string.url_customer)+"search/product/shops";
+            url=getResources().getString(R.string.url_customer)+"/api/search/product/shops";
         }else
-            url=getResources().getString(R.string.url_customer)+"search/shops";
+            url=getResources().getString(R.string.url_customer)+"/api/search/shops";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }

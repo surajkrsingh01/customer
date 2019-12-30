@@ -153,7 +153,7 @@ public class BottomSearchProductsFragment extends BottomSheetDialogFragment impl
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.url_customer)+"search/shop_products";
+        String url=getResources().getString(R.string.url_customer)+"/api/search/shop_products";
         //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"searchProducts");
     }

@@ -135,7 +135,7 @@ public class ShopContactListActivity extends NetworkBaseActivity {
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.url_customer)+"search/shops";
+        String url=getResources().getString(R.string.url_customer)+"/api/search/shops";
         //String url=getResources().getString(R.string.root_url)+"search/shops_by_mobile";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"contactList");

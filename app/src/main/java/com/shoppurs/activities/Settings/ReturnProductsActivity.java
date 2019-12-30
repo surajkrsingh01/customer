@@ -105,7 +105,7 @@ public class ReturnProductsActivity extends NetworkBaseActivity {
         params.put("offset", "0");
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url_customer)+"return/sales_return_list";
+        String url=getResources().getString(R.string.url_customer)+"/api/return/sales_return_list";
         showProgressBar(true, "RefreshList");
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"getProducts");
     }
@@ -226,7 +226,7 @@ public class ReturnProductsActivity extends NetworkBaseActivity {
         params.put("amount", String.valueOf(product.getSellingPrice()));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url_customer)+"return/accept_return_request";
+        String url=getResources().getString(R.string.url_customer)+"/api/return/accept_return_request";
         showProgressBar(true,"");
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"AcceptReturn");
     }
@@ -245,7 +245,7 @@ public class ReturnProductsActivity extends NetworkBaseActivity {
         params.put("amount", String.valueOf(product.getSellingPrice()));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url_customer)+"return/cancel_return_request";
+        String url=getResources().getString(R.string.url_customer)+"/api/return/cancel_return_request";
         showProgressBar(true,"");
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"RejectReturn");
     }

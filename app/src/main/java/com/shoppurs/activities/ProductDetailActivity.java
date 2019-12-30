@@ -297,7 +297,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         params.put("dbName",sharedPreferences.getString(Constants.SHOP_DBNAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.SHOP_DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.SHOP_DB_PASSWORD,""));
-        String url=getResources().getString(R.string.url_customer)+"products/product_ratings";
+        String url=getResources().getString(R.string.url_shop)+"products/product_ratings";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"productRatingsData");
     }
@@ -313,7 +313,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         params.put("dbPassword",sharedPreferences.getString(Constants.SHOP_DB_PASSWORD,""));
         Log.d(TAG, params.toString());
 
-        String url=getResources().getString(R.string.url_customer)+"order/getReview";
+        String url=getResources().getString(R.string.url_customer)+"/api/order/getReview";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"productReviews");
     }
