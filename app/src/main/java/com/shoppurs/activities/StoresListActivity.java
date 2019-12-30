@@ -149,7 +149,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
         params.put("userType", "customer");
         params.put("token",sharedPreferences.getString(Constants.FCM_TOKEN, ""));
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
-        String url=getResources().getString(R.string.url_web)+"/api/user/save_fcm_token";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/save_fcm_token";
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"saveToken");
     }
 
@@ -164,7 +164,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
             params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG, ""));
         }
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
-        String url=getResources().getString(R.string.url)+"/cat_subcat";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/cat_subcat";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"categories");
     }
@@ -172,7 +172,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     private void getFavoriteStores(){
         Map<String,String> params=new HashMap<>();
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.url)+"/shop/favourite_shops";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/shop/favourite_shops";
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"FavoriteShops");
     }
 
@@ -186,7 +186,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
             params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG, ""));
         }
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.url)+"/allshoplist";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/allshoplist";
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }
 

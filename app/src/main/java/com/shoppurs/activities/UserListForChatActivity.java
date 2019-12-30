@@ -151,7 +151,7 @@ public class UserListForChatActivity extends NetworkBaseActivity implements MyIt
         params.put("offset",""+offset);
         params.put("mobile",sharedPreferences.getString(Constants.MOBILE_NO,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
-        String url=getResources().getString(R.string.root_url)+Constants.GET_CHAT_USERS;
+        String url=getResources().getString(R.string.url_customer)+Constants.GET_CHAT_USERS;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"getChatUsers");
     }

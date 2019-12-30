@@ -22,7 +22,6 @@ import com.shoppurs.adapters.DeliveryAddressListAdapter;
 import com.shoppurs.interfaces.MyItemClickListener;
 import com.shoppurs.models.DeliveryAddress;
 import com.shoppurs.models.MyProduct;
-import com.shoppurs.utilities.ConnectionDetector;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 
@@ -169,7 +168,7 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
         if(!TextUtils.isEmpty(address.getIsDefaultAddress()) && address.getIsDefaultAddress().equals("Yes"))
             params.put("isDefault","1");
         else params.put("isDefault","0");
-        String url=getResources().getString(R.string.root_url)+"customers/update_delivery_address";
+        String url=getResources().getString(R.string.url_customer)+"customers/update_delivery_address";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updateAddress");
     }
@@ -181,7 +180,7 @@ public class DeliveryAddressListActivity extends NetworkBaseActivity implements 
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
         params.put("id", address.getId());
-        String url=getResources().getString(R.string.root_url)+"customers/delete_delivery_address";
+        String url=getResources().getString(R.string.url_customer)+"customers/delete_delivery_address";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"deleteAddress");
     }

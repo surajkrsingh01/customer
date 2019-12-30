@@ -141,7 +141,7 @@ public class InstantScannarActivity extends NetworkBaseActivity {
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.root_url)+"search/shops_by_mobile";
+        String url=getResources().getString(R.string.url_customer)+"search/shops_by_mobile";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"shopList");
     }
@@ -214,7 +214,7 @@ public class InstantScannarActivity extends NetworkBaseActivity {
 
     public void scanStoresToPay(String mobile) {
         Map<String, String> params = new HashMap<>();
-        String url = getResources().getString(R.string.url) + "/shop/shop_details_by_qrcode";
+        String url = getResources().getString(R.string.url_customer) + "/api/customers/shop/shop_details_by_qrcode";
         params.put("mobile", mobile);
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         params.put("dbUserName", sharedPreferences.getString(Constants.DB_USER_NAME, ""));

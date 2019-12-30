@@ -20,7 +20,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.TextureView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -30,16 +29,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.shoppurs.R;
-import com.shoppurs.activities.Settings.AddressActivity;
 import com.shoppurs.activities.Settings.SettingActivity;
 import com.shoppurs.adapters.PopulatCategoriesAdapter;
 import com.shoppurs.adapters.ShopAdapter;
 import com.shoppurs.fragments.BottomLocationFragment;
 import com.shoppurs.interfaces.LocationActionListener;
-import com.shoppurs.models.CatListItem;
 import com.shoppurs.models.Category;
 import com.shoppurs.models.MyShop;
-import com.shoppurs.models.SubCategory;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
@@ -252,7 +248,7 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
         Map<String,String> params=new HashMap<>();
         params.put("id",String.valueOf(selectedCategory.getId()));
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.url)+"/subcategories";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/subcategories";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"subcategories");
     }
@@ -260,7 +256,7 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
     public void getCategories(){
         Map<String,String> params=new HashMap<>();
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
-        String url=getResources().getString(R.string.url)+"/cat_subcat";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/cat_subcat";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"categories");
     }
@@ -284,7 +280,7 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
         params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.root_url)+"search/cat/shops";
+        String url=getResources().getString(R.string.url_customer)+"/search/cat/shops";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }
@@ -314,9 +310,9 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
         if(isSearchByProduct){
             params.put("id", selectedSubCategory.getSubCatId());
-            url=getResources().getString(R.string.root_url)+"search/product/shops";
+            url=getResources().getString(R.string.url_customer)+"search/product/shops";
         }else
-            url=getResources().getString(R.string.root_url)+"search/shops";
+            url=getResources().getString(R.string.url_customer)+"search/shops";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
     }

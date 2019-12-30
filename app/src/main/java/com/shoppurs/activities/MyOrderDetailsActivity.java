@@ -138,7 +138,7 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
         params.put("dbName",dbName);
         params.put("dbUserName",dbUserName);
         params.put("dbPassword",dbPassword);
-        String url=getResources().getString(R.string.root_url)+"order/get_order_details";
+        String url=getResources().getString(R.string.url_customer)+"/api/order/get_order_details";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"getOrders");
     }

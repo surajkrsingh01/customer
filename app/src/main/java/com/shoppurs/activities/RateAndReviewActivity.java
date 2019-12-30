@@ -71,7 +71,7 @@ public class RateAndReviewActivity extends NetworkBaseActivity {
             return;
         }else {
             Map<String,String> params=new HashMap<>();
-            String url=getResources().getString(R.string.url_web)+"/api/order/rate_review";
+            String url=getResources().getString(R.string.url_customer)+"/api/order/rate_review";
             params.put("rating", String.valueOf(rating));
             params.put("reviewMessage", review);
             params.put("shopList", shopCodes);

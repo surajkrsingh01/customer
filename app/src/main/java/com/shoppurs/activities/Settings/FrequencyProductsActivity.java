@@ -19,10 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
-import com.google.gson.JsonObject;
 import com.shoppurs.R;
 import com.shoppurs.activities.CartActivity;
 import com.shoppurs.activities.HandleCartActivity;
@@ -32,15 +28,8 @@ import com.shoppurs.adapters.FrequencyProductListAdapter;
 import com.shoppurs.database.DbHelper;
 import com.shoppurs.fragments.BottomSearchFragment;
 import com.shoppurs.fragments.FrequencyFragment;
-import com.shoppurs.models.Barcode;
 import com.shoppurs.models.MyProduct;
-import com.shoppurs.models.ProductColor;
-import com.shoppurs.models.ProductDiscountOffer;
 import com.shoppurs.models.ProductFrequency;
-import com.shoppurs.models.ProductPriceDetails;
-import com.shoppurs.models.ProductPriceOffer;
-import com.shoppurs.models.ProductSize;
-import com.shoppurs.models.ProductUnit;
 import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
@@ -195,7 +184,7 @@ public class FrequencyProductsActivity extends HandleCartActivity {
         params.put("offset", myProductList.size()+"");
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.root_url)+"order/get_frequency_order";
+        String url=getResources().getString(R.string.url_customer)+"order/get_frequency_order";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"getProducts");
     }
@@ -219,7 +208,7 @@ public class FrequencyProductsActivity extends HandleCartActivity {
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME, ""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD, ""));
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+"/shop/favourite";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/shop/favourite";
         //showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"shopFavorite");
     }

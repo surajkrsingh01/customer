@@ -21,7 +21,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.shoppurs.R;
-import com.shoppurs.activities.CartActivity;
 import com.shoppurs.activities.NetworkBaseActivity;
 import com.shoppurs.activities.RateAndReviewActivity;
 import com.shoppurs.activities.TransactionDetailsActivity;
@@ -31,7 +30,6 @@ import com.shoppurs.activities.payment.ccavenue.utility.LoadingDialog;
 import com.shoppurs.activities.payment.ccavenue.utility.RSAUtility;
 import com.shoppurs.activities.payment.ccavenue.utility.ServiceUtility;
 import com.shoppurs.database.DbHelper;
-import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.MyShop;
 import com.shoppurs.utilities.DialogAndToast;
 
@@ -40,11 +38,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CCAvenueWebViewActivity extends NetworkBaseActivity {
@@ -134,8 +130,8 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
         }
 
 
-        REDIRECT_URL = getResources().getString(R.string.url_web)+"/web/payment/paymentResponseHandler";
-        CANCEL_URL = getResources().getString(R.string.url_web)+"/web/payment/paymentResponseHandler";
+        REDIRECT_URL = getResources().getString(R.string.url_customer)+"/web/payment/paymentResponseHandler";
+        CANCEL_URL = getResources().getString(R.string.url_customer)+"/web/payment/paymentResponseHandler";
 
       //  REDIRECT_URL = getResources().getString(R.string.url)+"/api/paymentResponseHandler";
      //   CANCEL_URL = getResources().getString(R.string.url)+"/api/paymentResponseHandler";
@@ -287,7 +283,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
     public void get_RSA() {
 
         Log.i(TAG,"Getting RSA...");
-        String url=getResources().getString(R.string.url_web)+"/api/getRSAKey?orderId="+orderId+"&accessCode="+ACCESS_CODE;
+        String url=getResources().getString(R.string.url_customer)+"/api/getRSAKey?orderId="+orderId+"&accessCode="+ACCESS_CODE;
         progressDialog.setMessage("Loading...");
         showProgress(true);
         // Log.i(TAG,"params "+params.toString());
@@ -456,7 +452,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
             shopArray.getJSONObject(i).put("transactionId", dataObject.getString("transactionId"));
         }
         Log.d(TAG, shopArray.toString());
-        String url=getResources().getString(R.string.root_url)+ com.shoppurs.utilities.Constants.PLACE_ORDER;
+        String url=getResources().getString(R.string.url_customer)+ com.shoppurs.utilities.Constants.PLACE_ORDER;
         showProgress(true);
         jsonArrayV2ApiRequest(Request.Method.POST,url, shopArray,"place_order");
     }
@@ -523,7 +519,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
                 e.printStackTrace();
                 CCAvenueWebViewActivity.this.finish();
             }
-            String url=getResources().getString(R.string.url_web)+ com.shoppurs.utilities.Constants.ADD_TRANS_DATA;
+            String url=getResources().getString(R.string.url_customer)+ com.shoppurs.utilities.Constants.ADD_TRANS_DATA;
             showProgress(true);
             jsonObjectApiRequest(Request.Method.POST,url,dataObject,"updatePaymentStatus");
 

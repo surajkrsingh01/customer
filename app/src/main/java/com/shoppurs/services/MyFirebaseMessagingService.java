@@ -68,7 +68,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbPassword", sharedPreferences.getString(Constants.DB_PASSWORD,""));
         params.put("dbUserName", sharedPreferences.getString(Constants.DB_USER_NAME,""));
-        String url=getResources().getString(R.string.url_web)+"/api/user/save_fcm_token";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/save_fcm_token";
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"saveToken");
     }
 

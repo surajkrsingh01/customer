@@ -172,7 +172,7 @@ public class BasicProfileActivity extends BaseImageActivity implements FirebaseI
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+Constants.UPDATE_BASIC_PROFILE;
+        String url=getResources().getString(R.string.url_customer)+Constants.UPDATE_BASIC_PROFILE;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updateBasicProfile");
 
@@ -190,7 +190,7 @@ public class BasicProfileActivity extends BaseImageActivity implements FirebaseI
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+Constants.UPDATE_BASIC_PROFILE;
+        String url=getResources().getString(R.string.url_customer)+Constants.UPDATE_BASIC_PROFILE;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updateProfileImage");
     }

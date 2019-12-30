@@ -297,7 +297,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         params.put("dbName",sharedPreferences.getString(Constants.SHOP_DBNAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.SHOP_DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.SHOP_DB_PASSWORD,""));
-        String url=getResources().getString(R.string.root_url)+"products/product_ratings";
+        String url=getResources().getString(R.string.url_customer)+"products/product_ratings";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"productRatingsData");
     }
@@ -313,7 +313,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         params.put("dbPassword",sharedPreferences.getString(Constants.SHOP_DB_PASSWORD,""));
         Log.d(TAG, params.toString());
 
-        String url=getResources().getString(R.string.root_url)+"order/getReview";
+        String url=getResources().getString(R.string.url_customer)+"order/getReview";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"productReviews");
     }
@@ -328,7 +328,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         params.put("dbPassword", dbPassword);
         Log.d(TAG, params.toString());
 
-        String url=getResources().getString(R.string.root_url)+"cart/add";
+        String url=getResources().getString(R.string.url_customer)+"cart/add";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"addtocart");
     }
@@ -456,7 +456,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         params.put("code", prodId);
         params.put("dbName",shopCode);
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+"/products/ret_products_details";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/products/ret_products_details";
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"productDetails");
     }
 
@@ -608,7 +608,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
         params.put("dbPassword", dbPassword);
         Log.d(TAG, params.toString());
 
-        String url=getResources().getString(R.string.root_url)+"cart/remove_product";
+        String url=getResources().getString(R.string.url_customer)+"cart/remove_product";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"removeCart");
     }

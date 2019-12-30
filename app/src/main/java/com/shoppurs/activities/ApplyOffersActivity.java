@@ -114,7 +114,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
         params.put("offset", "0");
         params.put("dbName",sharedPreferences.getString(Constants.SHOP_DBNAME,""));
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+"/products/ret_productslist_with_offers";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/products/ret_productslist_with_offers";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"activeOfferList");
     }
@@ -765,7 +765,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
         params.put("code", shopCode);
         params.put("dbName",shopCode);
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+"/products/ret_products_details";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/products/ret_products_details";
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"productDetails");
     }
 

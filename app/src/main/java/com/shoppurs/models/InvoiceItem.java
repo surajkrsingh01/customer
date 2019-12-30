@@ -4,7 +4,47 @@ public class InvoiceItem {
 
     private String unit,color,size,itemName,hsn,offerId,offerType;
     private int qty,freeItems;
-    private float gst,mrp,rate,amount;
+    private float gst,mrp,rate,amount, cgst,sgst,igst,sp,disAmt;
+
+    public float getCgst() {
+        return cgst;
+    }
+
+    public void setCgst(float cgst) {
+        this.cgst = cgst;
+    }
+
+    public float getSgst() {
+        return sgst;
+    }
+
+    public void setSgst(float sgst) {
+        this.sgst = sgst;
+    }
+
+    public float getIgst() {
+        return igst;
+    }
+
+    public void setIgst(float igst) {
+        this.igst = igst;
+    }
+
+    public float getSp() {
+        return sp;
+    }
+
+    public void setSp(float sp) {
+        this.sp = sp;
+    }
+
+    public float getDisAmt() {
+        return disAmt;
+    }
+
+    public void setDisAmt(float disAmt) {
+        this.disAmt = disAmt;
+    }
 
     public String getUnit() {
         return unit;

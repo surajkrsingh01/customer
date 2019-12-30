@@ -450,19 +450,19 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
     }
 
     private void getCountries() {
-        String url = getResources().getString(R.string.url) + Constants.GET_COUNTRIES;
+        String url = getResources().getString(R.string.url_customer) + Constants.GET_COUNTRIES;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url, new JSONObject(), "countries");
     }
 
     private void getStates(String countryId) {
-        String url = getResources().getString(R.string.url) + Constants.GET_STATES + countryId;
+        String url = getResources().getString(R.string.url_customer) + Constants.GET_STATES + countryId;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url, new JSONObject(), "states");
     }
 
     private void getCities(String stateId) {
-        String url = getResources().getString(R.string.url) + Constants.GET_CITIES + stateId;
+        String url = getResources().getString(R.string.url_customer) + Constants.GET_CITIES + stateId;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url, new JSONObject(), "cities");
     }
@@ -565,7 +565,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
             JSONArray dataArray = new JSONArray();
             JSONObject dataObject = new JSONObject(params);
             dataArray.put(dataObject);
-            String url=getResources().getString(R.string.url)+Constants.UPDATE_ADDRESS;
+            String url=getResources().getString(R.string.url_customer)+Constants.UPDATE_ADDRESS;
             showProgress(true);
             jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updateAddress");
         }

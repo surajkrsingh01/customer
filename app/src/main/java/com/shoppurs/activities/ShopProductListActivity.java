@@ -320,7 +320,7 @@ public class ShopProductListActivity extends HandleCartActivity {
         params.put("limit", ""+limit);
         params.put("offset", ""+offset);
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+"/products/ret_productslist";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/products/ret_productslist";
         showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"productfromshop");
     }
@@ -350,7 +350,7 @@ public class ShopProductListActivity extends HandleCartActivity {
         params.put("dbUserName",dbuser);
         params.put("dbPassword",dbpassword);
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+"/shop/favourite";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/shop/favourite";
         //showProgressBar(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"shopFavorite");
     }

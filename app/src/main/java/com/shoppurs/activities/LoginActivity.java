@@ -274,7 +274,7 @@ public class LoginActivity extends NetworkBaseActivity{
         params.put("mobile",mobile);
         params.put("password",password);
         //String url=getResources().getString(R.string.url)+"/loginCustomer";
-        String url=getResources().getString(R.string.url_web)+"/useradmin/customers/loginCustomer";
+        String url=getResources().getString(R.string.url_customer)+"/useradmin/customers/loginCustomer";
         showProgress(true);
         jsonObjectApiRequestForLoginReg(Request.Method.POST,url,new JSONObject(params),"loginCustomer");
     }
@@ -292,7 +292,7 @@ public class LoginActivity extends NetworkBaseActivity{
         params.put("created_by",fullName);
         params.put("updated_by",fullName);
         params.put("action","1");
-        String url=getResources().getString(R.string.url)+"/registerCustomer";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/registerCustomer";
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"registerCustomer");
     }
 
@@ -302,7 +302,7 @@ public class LoginActivity extends NetworkBaseActivity{
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
 
-        String url=getResources().getString(R.string.url)+"/shop/favourite_shops";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/shop/favourite_shops";
         Log.i(TAG,params.toString());
         //showProgress(true);
         jsonObjectFavShopApiRequest(Request.Method.POST,url,new JSONObject(params),"getfavoriteshop");
@@ -314,7 +314,7 @@ public class LoginActivity extends NetworkBaseActivity{
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
 
-        String url=getResources().getString(R.string.url)+"/get_delivery_address";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/get_delivery_address";
         Log.i(TAG,params.toString());
         //showProgress(true);
         jsonObjectFavShopApiRequest(Request.Method.POST,url,new JSONObject(params),"getDeliveryAddress");
@@ -340,7 +340,7 @@ public class LoginActivity extends NetworkBaseActivity{
                 Log.i(TAG,"Json Error "+error.toString());
                 showProgress(false);
                 onServerErrorResponse(error,apiName);
-                // DialogAndToast.showDialog(getResources().getString(R.string.connection_error),BaseActivity.this);
+                DialogAndToast.showDialog(getResources().getString(R.string.common_error_message), LoginActivity.this);
             }
         }) {
             @Override
@@ -387,9 +387,9 @@ public class LoginActivity extends NetworkBaseActivity{
                     editor.putString(Constants.CUST_LONG, dataObject.getString("userLong"));
                     editor.putString(Constants.EMAIL, dataObject.getString("user_email"));
                     editor.putString(Constants.MOBILE_NO, dataObject.getString("mobile"));
-                    editor.putString(Constants.DB_NAME, dataObject.getString("dbname"));
-                    editor.putString(Constants.DB_USER_NAME, dataObject.getString("dbusername"));
-                    editor.putString(Constants.DB_PASSWORD, dataObject.getString("dbpassword"));
+                    editor.putString(Constants.DB_NAME, dataObject.getString("dbName"));
+                    editor.putString(Constants.DB_USER_NAME, dataObject.getString("dbUserName"));
+                    editor.putString(Constants.DB_PASSWORD, dataObject.getString("dbPassword"));
                     //editor.putBoolean(Constants.IS_LOGGED_IN, true);
                     editor.commit();
                     //DialogAndToast.showToast("Logged In",LoginActivity.this);
@@ -480,7 +480,7 @@ public class LoginActivity extends NetworkBaseActivity{
             }
         }catch (JSONException e) {
             e.printStackTrace();
-            DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),LoginActivity.this);
+           // DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),LoginActivity.this);
         }
     }
 

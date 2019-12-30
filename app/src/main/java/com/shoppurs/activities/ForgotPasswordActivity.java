@@ -205,7 +205,8 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
         if(!isOtpGenerated)
         params.put("otp", "-1");
         else params.put("otp", otp);
-        String url=getResources().getString(R.string.url_web)+"/useradmin/validate_otp";
+        String url=getResources().getString(R.string.url_customer)+"/useradmin/validate_otp";
+        Log.d("params", params.toString());
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"validate_otp");
     }
@@ -216,7 +217,7 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
         if(TextUtils.isEmpty(otp))
             params.put("otp", "-1");
         else params.put("otp", otp);
-        String url=getResources().getString(R.string.url_web)+"/useradmin/save_otp";
+        String url=getResources().getString(R.string.url_customer)+"/useradmin/save_otp";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"save_otp");
     }
@@ -265,7 +266,7 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
             }
         }catch (JSONException e) {
             e.printStackTrace();
-            DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),ForgotPasswordActivity.this);
+            //DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),ForgotPasswordActivity.this);
         }
     }
 
@@ -292,7 +293,7 @@ public class ForgotPasswordActivity extends NetworkBaseActivity {
                 Log.i(TAG,"Json Error "+error.toString());
                 showProgress(false);
                 onServerErrorResponse(error,apiName);
-                // DialogAndToast.showDialog(getResources().getString(R.string.connection_error),BaseActivity.this);
+                DialogAndToast.showDialog(getResources().getString(R.string.common_error_message), ForgotPasswordActivity.this);
             }
         }){
             @Override

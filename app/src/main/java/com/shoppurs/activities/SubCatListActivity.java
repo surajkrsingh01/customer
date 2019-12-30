@@ -192,7 +192,7 @@ public class SubCatListActivity extends NetworkBaseActivity {
         params.put("id",catId);
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
 
-        String url=getResources().getString(R.string.url)+"/subcategories";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/subcategories";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"subcategories");
     }

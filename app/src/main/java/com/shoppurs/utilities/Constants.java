@@ -88,17 +88,17 @@ public class Constants {
 
 
     //apis
-    public static String UPDATE_BASIC_PROFILE="/profile/update_basic_details";
-    public static String UPDATE_ADDRESS="/profile/update_address";
-    public static String GENERATE_ORDER="order/generate_order";
-    public static String PLACE_ORDER="order/place_order";
+    public static String UPDATE_BASIC_PROFILE="/api/customers/profile/update_basic_details";
+    public static String UPDATE_ADDRESS="/api/customers/profile/update_address";
+    public static String GENERATE_ORDER="/api/order/generate_order";
+    public static String PLACE_ORDER="/api/order/place_order";
     public static String ADD_TRANS_DATA="/api/trans/add_trans_data";
-    public static String ADD_INVOICE_DATA="trans/generate_invoice";
-    public static String GET_COUNTRIES="countries";
-    public static String GET_STATES="states?countryId=";
-    public static String GET_CITIES="cities?stateId=";
+    public static String ADD_INVOICE_DATA="/api/trans/generate_invoice";
+    public static String GET_COUNTRIES="/api/customers/countries";
+    public static String GET_STATES="/api/customers/states?countryId=";
+    public static String GET_CITIES="/api/customers/cities?stateId=";
     public static String GET_INVOICE="trans/get_invoice";
-    public static String GET_COUPON_OFFER="offers/get_coupon_offer";
+    public static String GET_COUPON_OFFER="/api/offers/get_coupon_offer";
 
     public static String IS_HOME_DELIVERY_SELECTED ="isHomeDeliverySelected";
     public static String MIN_DELIVERY_DISTANCE="minDeliveryDistance";
@@ -107,5 +107,5 @@ public class Constants {
     public static String CHARGE_AFTER_MIN_DISTANCE="chargeAfterMinDistance";
     public static String SEND_MESSAGE="/api/chat/chat_for_support";
     public static String GET_MESSAGE="/api/chat/get_chat_for_support";
-    public static String GET_CHAT_USERS="chat/get_chat_users";
+    public static String GET_CHAT_USERS="/api/hat/get_chat_users";
 }

@@ -266,7 +266,7 @@ public class ToDoListDetailsActivity extends ManageToDoListProducts implements M
         params.put("code", prodCodes);
         //params.put("shopCode", shopCode);
         params.put("dbName",shopdbname);
-        String url=getResources().getString(R.string.url)+"/multiproducts/ret_products_details";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/multiproducts/ret_products_details";
         Log.d(TAG, params.toString());
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"getProductDetails");

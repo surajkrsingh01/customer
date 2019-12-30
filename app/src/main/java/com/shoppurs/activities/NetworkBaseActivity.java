@@ -9,8 +9,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.shoppurs.R;
 import com.shoppurs.utilities.AppController;
 import com.shoppurs.utilities.Constants;
+import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.JsonArrayRequest;
 import com.shoppurs.utilities.JsonArrayRequestV2;
 
@@ -102,7 +104,7 @@ public class NetworkBaseActivity extends BaseActivity {
                 Log.i(TAG,"Json Error "+error.toString());
                 showProgress(false);
                 onServerErrorResponse(error,apiName);
-                // DialogAndToast.showDialog(getResources().getString(R.string.connection_error),BaseActivity.this);
+                DialogAndToast.showDialog(getResources().getString(R.string.common_error_message), NetworkBaseActivity.this);
             }
         }){
             @Override
@@ -148,7 +150,7 @@ public class NetworkBaseActivity extends BaseActivity {
                 Log.i(TAG,"Json Error "+error.toString());
                 showProgress(false);
                 onServerErrorResponse(error,apiName);
-                // DialogAndToast.showDialog(getResources().getString(R.string.connection_error),BaseActivity.this);
+                DialogAndToast.showDialog(getResources().getString(R.string.common_error_message), NetworkBaseActivity.this);
             }
         });
 
@@ -219,7 +221,7 @@ public class NetworkBaseActivity extends BaseActivity {
                 AppController.getInstance().getRequestQueue().getCache().clear();
                 showProgress(false);
                 onServerErrorResponse(error,apiName);
-                //  DialogAndToast.showDialog(getResources().getString(R.string.connection_error),BaseActivity.this);
+                DialogAndToast.showDialog(getResources().getString(R.string.common_error_message), NetworkBaseActivity.this);
             }
         }){
             @Override

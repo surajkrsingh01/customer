@@ -148,7 +148,7 @@ public class SplashActivity extends NetworkBaseActivity {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),SplashActivity.this);
+            //DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),SplashActivity.this);
         }
     }
 }

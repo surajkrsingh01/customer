@@ -13,18 +13,14 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.android.volley.Request;
 import com.shoppurs.R;
-import com.shoppurs.models.MyProduct;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
-import com.shoppurs.utilities.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class TransactionDetailsActivity extends NetworkBaseActivity {
@@ -131,7 +127,7 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.root_url)+"order/get_order_status_details";
+        String url=getResources().getString(R.string.url_customer)+"/api/order/get_order_status_details";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"orderDetails");
     }

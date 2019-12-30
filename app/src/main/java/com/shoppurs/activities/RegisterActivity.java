@@ -149,23 +149,23 @@ public class RegisterActivity extends NetworkBaseActivity{
     // {"user_email":"vivek@gmail.com","user_type":"Customer","mpassword":"1234","updated_by":"vivek","photo":"photo.jpg","action":"1","created_by":"vivek","username":"vivek"}
     public void volleyRequest(){
         Map<String,String> params=new HashMap<>();
-        params.put("username",fullName);
+        params.put("name",fullName);
         params.put("mobile",mobile);
-        params.put("user_email",email);
-        params.put("mpassword",password);
+        params.put("email",email);
+        params.put("password",password);
         params.put("affilateCode", edit_affilate_code.getText().toString());
         params.put("photo","");
         params.put("city","");
         params.put("province","");
         params.put("country","");
-        params.put("zip","");
+        params.put("pin","");
         params.put("address", "");
-        params.put("user_type","Customer");
-        params.put("created_by",fullName);
-        params.put("updated_by",fullName);
+        params.put("userType","Customer");
+        params.put("createdBy",fullName);
+        params.put("updatedBy",fullName);
         params.put("action","1");
         //String url=getResources().getString(R.string.url)+"/registerCustomer";
-        String url=getResources().getString(R.string.url_web)+"/useradmin/customers/registerCustomer";
+        String url=getResources().getString(R.string.url_customer)+"/useradmin/customers/registerCustomer";
         jsonObjectApiRequestForLoginReg(Request.Method.POST,url,new JSONObject(params),"registerCustomer");
     }
 
@@ -207,7 +207,7 @@ public class RegisterActivity extends NetworkBaseActivity{
 
         } catch (JSONException e) {
             e.printStackTrace();
-            DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),RegisterActivity.this);
+            //DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),RegisterActivity.this);
         }
     }
 

@@ -179,7 +179,7 @@ public class CategoryListActivity extends BaseLocation implements LocationAction
     public void volleyRequest(){
         Map<String,String> params=new HashMap<>();
         params.put("dbName", dbname);
-        String url=getResources().getString(R.string.url)+"/cat_subcat";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/cat_subcat";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"categories");
     }

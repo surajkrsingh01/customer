@@ -230,7 +230,7 @@ public class HandleCartActivity extends NetworkBaseActivity{
         params.put("code", prodId);
         params.put("dbName",shopCode);
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+"/products/ret_products_details";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/products/ret_products_details";
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"HandleCartproductDetails");
     }
 

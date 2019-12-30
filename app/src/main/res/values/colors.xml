@@ -329,4 +329,9 @@
     <color name="dialog_background_color">#fafafa</color>
     <color name="dialog_background_scrim">#99323232</color>
 
+    <color name="separator_color">@color/grey400</color>
+    <color name="primary_sub_text_color">@color/grey700</color>
+
+    <color name="indigo_20">#F2F3F8</color>
+
 </resources>

@@ -178,7 +178,7 @@ public class ScannarActivity extends NetworkBaseActivity {
 
     private void scanStores(String mobile){
         Map<String,String> params=new HashMap<>();
-        String url=getResources().getString(R.string.url)+"/shop/shop_details_by_mobile";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/shop/shop_details_by_mobile";
         params.put("mobile", mobile);
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         params.put("dbUserName", sharedPreferences.getString(Constants.DB_USER_NAME, ""));
@@ -190,7 +190,7 @@ public class ScannarActivity extends NetworkBaseActivity {
 
     private void scanProducts(String barCode){
         Map<String,String> params=new HashMap<>();
-        String url=getResources().getString(R.string.url)+"/products/barcode/ret_products_details";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/products/barcode/ret_products_details";
         params.put("code", barCode);
         params.put("dbName", sharedPreferences.getString(Constants.SHOP_INSIDE_CODE, ""));
         params.put("dbUserName", sharedPreferences.getString(Constants.DB_USER_NAME, ""));

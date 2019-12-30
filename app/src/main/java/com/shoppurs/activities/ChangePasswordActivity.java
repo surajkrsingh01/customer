@@ -110,7 +110,7 @@ public class ChangePasswordActivity extends NetworkBaseActivity {
 
     private void changePassword(String oldPwd, String newPwd){
         Map<String,String> params=new HashMap<>();
-        String url=getResources().getString(R.string.url)+"/profile/change_password";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/profile/change_password";
         params.put("currentPassword", oldPwd);
         params.put("newPassword", newPwd);
         params.put("mobile", sharedPreferences.getString(Constants.MOBILE_NO, ""));
@@ -125,7 +125,7 @@ public class ChangePasswordActivity extends NetworkBaseActivity {
 
     private void resetPassword(String newPwd){
         Map<String,String> params=new HashMap<>();
-        String url=getResources().getString(R.string.url_web)+"/useradmin/customer/reset_password";
+        String url=getResources().getString(R.string.url_customer)+"/useradmin/customer/reset_password";
         params.put("newPssword", newPwd);
         params.put("mobile", getIntent().getStringExtra("mobile"));
         Log.d(TAG, params.toString());
@@ -154,7 +154,7 @@ public class ChangePasswordActivity extends NetworkBaseActivity {
             }
         }catch (JSONException e) {
             e.printStackTrace();
-            DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),ChangePasswordActivity.this);
+           // DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),ChangePasswordActivity.this);
         }
     }
 
@@ -176,7 +176,7 @@ public class ChangePasswordActivity extends NetworkBaseActivity {
                 Log.i(TAG,"Json Error "+error.toString());
                 showProgress(false);
                 onServerErrorResponse(error,apiName);
-                // DialogAndToast.showDialog(getResources().getString(R.string.connection_error),BaseActivity.this);
+                DialogAndToast.showDialog(getResources().getString(R.string.common_error_message), ChangePasswordActivity.this);
             }
         }){
             @Override

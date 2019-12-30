@@ -36,7 +36,6 @@ import com.shoppurs.interfaces.MyItemClickListener;
 import com.shoppurs.interfaces.MyItemTypeClickListener;
 import com.shoppurs.models.Coupon;
 import com.shoppurs.models.DeliveryAddress;
-import com.shoppurs.models.FrequencyType;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductDiscountOffer;
 import com.shoppurs.models.ProductFrequency;
@@ -500,7 +499,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
     private void generateOrder(JSONArray shopArray){
         Log.d(TAG, shopArray.toString());
-        String url=getResources().getString(R.string.root_url)+Constants.GENERATE_ORDER;
+        String url=getResources().getString(R.string.url_customer)+Constants.GENERATE_ORDER;
         showProgress(true);
         jsonArrayV2ApiRequest(Request.Method.POST,url, shopArray,"generate_order");
     }
@@ -508,7 +507,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     private void placeOrder(JSONArray shopArray, String orderId) throws JSONException {
         shopArray.getJSONObject(0).put("orderId", orderId );
         Log.d(TAG, shopArray.toString());
-        String url=getResources().getString(R.string.root_url)+Constants.PLACE_ORDER;
+        String url=getResources().getString(R.string.url_customer)+Constants.PLACE_ORDER;
         showProgress(true);
         jsonArrayV2ApiRequest(Request.Method.POST,url, shopArray,"place_order");
     }
@@ -952,7 +951,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         params.put("code", prodId);
         params.put("dbName",shopcode);
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+"/products/ret_products_details";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/products/ret_products_details";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"productDetails");
     }

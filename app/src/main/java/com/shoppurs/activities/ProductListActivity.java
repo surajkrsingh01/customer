@@ -181,7 +181,7 @@ public class ProductListActivity extends NetworkBaseActivity {
         params.put("dbPassword", dbpassword);
         Log.d(TAG, params.toString());
 
-        String url=getResources().getString(R.string.root_url)+"cart/add";
+        String url=getResources().getString(R.string.url_customer)+"cart/add";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"addtocart");
     }
@@ -201,7 +201,7 @@ public class ProductListActivity extends NetworkBaseActivity {
         params.put("dbPassword", dbpassword);
         Log.d(TAG, params.toString());
 
-        String url=getResources().getString(R.string.root_url)+"cart/update";
+        String url=getResources().getString(R.string.url_customer)+"cart/update";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updatCart");
     }
@@ -217,7 +217,7 @@ public class ProductListActivity extends NetworkBaseActivity {
         params.put("dbPassword", dbpassword);
         Log.d(TAG, params.toString());
 
-        String url=getResources().getString(R.string.root_url)+"cart/remove_product";
+        String url=getResources().getString(R.string.url_customer)+"cart/remove_product";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"removeCart");
     }
@@ -230,7 +230,7 @@ public class ProductListActivity extends NetworkBaseActivity {
         params.put("dbUserName",dbuser);
         params.put("dbPassword",dbpassword);
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+"/products/ret_productslist";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/products/ret_productslist";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"productfromshop");
     }
@@ -243,7 +243,7 @@ public class ProductListActivity extends NetworkBaseActivity {
         params.put("dbUserName",dbuser);
         params.put("dbPassword",dbpassword);
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+"/shop/favourite";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/shop/favourite";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"shopFavorite");
     }
@@ -256,7 +256,7 @@ public class ProductListActivity extends NetworkBaseActivity {
         params.put("dbUserName",dbuser);
         params.put("dbPassword",dbpassword);
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url)+"/shop/ratings";
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/shop/ratings";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"shopRating");
     }

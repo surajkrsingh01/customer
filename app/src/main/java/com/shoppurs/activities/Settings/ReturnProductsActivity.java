@@ -1,7 +1,5 @@
 package com.shoppurs.activities.Settings;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,12 +16,10 @@ import com.android.volley.Request;
 import com.shoppurs.R;
 import com.shoppurs.activities.NetworkBaseActivity;
 import com.shoppurs.activities.ProductDetailActivity;
-import com.shoppurs.adapters.FrequencyProductListAdapter;
 import com.shoppurs.adapters.ReturnProductListAdapter;
 import com.shoppurs.database.DbHelper;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductFrequency;
-import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.services.NotificationService;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
@@ -109,7 +105,7 @@ public class ReturnProductsActivity extends NetworkBaseActivity {
         params.put("offset", "0");
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.root_url)+"return/sales_return_list";
+        String url=getResources().getString(R.string.url_customer)+"return/sales_return_list";
         showProgressBar(true, "RefreshList");
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"getProducts");
     }
@@ -230,7 +226,7 @@ public class ReturnProductsActivity extends NetworkBaseActivity {
         params.put("amount", String.valueOf(product.getSellingPrice()));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.root_url)+"return/accept_return_request";
+        String url=getResources().getString(R.string.url_customer)+"return/accept_return_request";
         showProgressBar(true,"");
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"AcceptReturn");
     }
@@ -249,7 +245,7 @@ public class ReturnProductsActivity extends NetworkBaseActivity {
         params.put("amount", String.valueOf(product.getSellingPrice()));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
         Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.root_url)+"return/cancel_return_request";
+        String url=getResources().getString(R.string.url_customer)+"return/cancel_return_request";
         showProgressBar(true,"");
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"RejectReturn");
     }

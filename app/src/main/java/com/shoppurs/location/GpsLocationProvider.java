@@ -128,7 +128,7 @@ public class GpsLocationProvider {
         params.put("longitude",""+mLocation.getLongitude());
         params.put("device","Android");
         params.put("address",mAddress);
-        String url=context.getResources().getString(R.string.url)+"/user/location";
+        String url=context.getResources().getString(R.string.url_customer)+"/api/customers/user/location";
         JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.POST,url,new JSONObject(params),new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {

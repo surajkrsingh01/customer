@@ -611,7 +611,7 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
         if(!TextUtils.isEmpty(address.getIsDefaultAddress())  && address.getIsDefaultAddress().equals("Yes"))
         params.put("isDefault","1");
         else params.put("isDefault","0");
-        String url=getResources().getString(R.string.root_url)+"customers/add_delivery_address";
+        String url=getResources().getString(R.string.url_customer)+"customers/add_delivery_address";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"addAddress");
     }
@@ -638,7 +638,7 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
         if(!TextUtils.isEmpty(address.getIsDefaultAddress()) && address.getIsDefaultAddress().equals("Yes"))
             params.put("isDefault","1");
         else params.put("isDefault","0");
-        String url=getResources().getString(R.string.root_url)+"customers/update_delivery_address";
+        String url=getResources().getString(R.string.url_customer)+"customers/update_delivery_address";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"updateAddress");
     }
@@ -648,7 +648,7 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.root_url)+Constants.GET_COUPON_OFFER;
+        String url=getResources().getString(R.string.url_customer)+Constants.GET_COUPON_OFFER;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"removeAddress");
     }
