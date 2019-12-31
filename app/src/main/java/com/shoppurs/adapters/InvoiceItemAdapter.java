@@ -107,7 +107,7 @@ public class InvoiceItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
 
             if(position % 2 == 0){
-                myViewHolder.rlContainer.setBackgroundColor(context.getResources().getColor(R.color.indigo_20));
+                myViewHolder.rlContainer.setBackgroundColor(context.getResources().getColor(R.color.invoice_light_color_3));
             }else{
                 myViewHolder.rlContainer.setBackgroundColor(context.getResources().getColor(R.color.white));
             }

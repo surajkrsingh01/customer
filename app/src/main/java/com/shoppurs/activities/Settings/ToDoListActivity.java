@@ -216,7 +216,7 @@ public class ToDoListActivity extends NetworkBaseActivity implements MyItemClick
             intent.putExtra("dbname",shopdbname);
             intent.putExtra("dbuser",dbuser);
             intent.putExtra("dbpassword", dbpassword);
-            intent.putExtra("shop_code", dbpassword);
+            intent.putExtra("shop_code", shopCode);
             intent.putExtra("shopDeliveryModel", shopDeliveryModel);
             intent.putExtra("todo_item", myToDo);
             startActivity(intent);

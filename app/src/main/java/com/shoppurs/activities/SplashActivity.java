@@ -58,7 +58,7 @@ public class SplashActivity extends NetworkBaseActivity {
     private void checkVersion(){
         Map<String,String> params=new HashMap<>();
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.url_shop)+"db_version/get";
+        String url=getResources().getString(R.string.url_customer)+"/api/db_version/get";
         Log.d(TAG, params.toString());
         //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"getVersions");
@@ -70,7 +70,7 @@ public class SplashActivity extends NetworkBaseActivity {
         params.put("code",sharedPreferences.getString(Constants.USER_ID, ""));
         params.put("userName",sharedPreferences.getString(Constants.USERNAME, ""));
         params.put("dbVersion",sharedPreferences.getString(Constants.DB_VERSION, ""));
-        String url=getResources().getString(R.string.url_shop)+"db_version/handle_change_version";
+        String url=getResources().getString(R.string.url_customer)+"/api/db_version/handle_change_version";
         Log.d(TAG, params.toString());
         //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST, url,new JSONObject(params),"updateDbVersion");

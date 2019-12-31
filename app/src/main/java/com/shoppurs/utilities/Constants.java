@@ -98,7 +98,7 @@ public class Constants {
     public static String GET_STATES="/api/customers/states?countryId=";
     public static String GET_CITIES="/api/customers/cities?stateId=";
     public static String GET_INVOICE="trans/get_invoice";
-    public static String GET_COUPON_OFFER="/api/offers/get_coupon_offer";
+    public static String GET_COUPON_OFFER="offers/get_coupon_offer";
 
     public static String IS_HOME_DELIVERY_SELECTED ="isHomeDeliverySelected";
     public static String MIN_DELIVERY_DISTANCE="minDeliveryDistance";
@@ -107,5 +107,5 @@ public class Constants {
     public static String CHARGE_AFTER_MIN_DISTANCE="chargeAfterMinDistance";
     public static String SEND_MESSAGE="/api/chat/chat_for_support";
     public static String GET_MESSAGE="/api/chat/get_chat_for_support";
-    public static String GET_CHAT_USERS="/api/hat/get_chat_users";
+    public static String GET_CHAT_USERS="/api/chat/get_chat_users";
 }

@@ -396,16 +396,17 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if(requestCode ==101 && intent!=null){
-           deliveryAddress  =  (DeliveryAddress)intent.getSerializableExtra("object");
-           if(deliveryAddress!=null) {
-               tv_address_label.setVisibility(View.VISIBLE);
-               tv_address.setVisibility(View.VISIBLE);
-               tv_address.setText(deliveryAddress.getAddress().concat(deliveryAddress.getPinCode()));
-               shopIndexforCalculatingDistance = 0;
-               calculateDistance(deliveryAddress);
-           }
-           // seperator_delivery_address.setVisibility(View.VISIBLE);
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == 101 && intent != null) {
+            deliveryAddress = (DeliveryAddress) intent.getSerializableExtra("object");
+            if (deliveryAddress != null) {
+                tv_address_label.setVisibility(View.VISIBLE);
+                tv_address.setVisibility(View.VISIBLE);
+                tv_address.setText(deliveryAddress.getAddress().concat(deliveryAddress.getPinCode()));
+                shopIndexforCalculatingDistance = 0;
+                calculateDistance(deliveryAddress);
+            }
+            // seperator_delivery_address.setVisibility(View.VISIBLE);
         }
     }
 
@@ -552,10 +553,12 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     shopObject.put("shopCode", shopCode);
                     shopObject.put("orderDate", Utility.getTimeStamp());
                     ShopDeliveryModel deliveryModel = dbHelper.getShopDeliveryDetails(shopCode);
+                    String orderMode ="";
                     if(deliveryModel!=null && !TextUtils.isEmpty(deliveryModel.getIsDeliveryAvailable()) && deliveryModel.getIsDeliveryAvailable().equals("Y") && sharedPreferences.getBoolean(Constants.IS_HOME_DELIVERY_SELECTED,false)) {
                         shopObject.put("deliveryCharges", deliveryModel.getNetDeliveryCharge());
                         shopObject.put("orderDeliveryNote", "Note");
                         shopObject.put("orderDeliveryMode", "home");
+                        orderMode = "home";
                         shopObject.put("deliveryAddress", deliveryAddress.getAddress());
                         shopObject.put("deliveryCountry",deliveryAddress.getCountry());
                         shopObject.put("deliveryState",deliveryAddress.getState());
@@ -567,6 +570,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                         shopObject.put("deliveryCharges", 0);
                         shopObject.put("orderDeliveryNote", "Note");
                         shopObject.put("orderDeliveryMode", "self");
+                        orderMode = "self";
                         shopObject.put("deliveryAddress", "");
                         shopObject.put("deliveryCountry","");
                         shopObject.put("deliveryState","");
@@ -577,7 +581,9 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     shopObject.put("createdBy",sharedPreferences.getString(Constants.FULL_NAME,""));
                     shopObject.put("updateBy",sharedPreferences.getString(Constants.FULL_NAME,""));
                     if(paymentMode.equals("Cash")){
-                        shopObject.put("orderStatus","Delivered");
+                        if(orderMode.equals("home"))
+                        shopObject.put("orderStatus","Accepted");
+                        else shopObject.put("orderStatus","Delivered");
                         shopObject.put("orderPaymentStatus", "Done");
                     }else{
                         shopObject.put("orderStatus","pending");

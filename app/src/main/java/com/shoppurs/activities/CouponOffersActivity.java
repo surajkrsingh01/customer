@@ -94,7 +94,7 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
         params.put("dbName",shopDbName);
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.url_customer)+Constants.GET_COUPON_OFFER;
+        String url=getResources().getString(R.string.url_shop)+Constants.GET_COUPON_OFFER;
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"offerList");
     }
@@ -106,7 +106,7 @@ public class CouponOffersActivity extends NetworkBaseActivity implements MyItemC
         params.put("dbName",shopDbName);
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
-        String url=getResources().getString(R.string.url_customer)+"offers/validate_coupon_offer";
+        String url=getResources().getString(R.string.url_shop)+"offers/validate_coupon_offer";
         showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"applyCoupon");
     }

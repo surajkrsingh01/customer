@@ -456,7 +456,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         if(item.getProductUnitList()!=null) {
             for (int i = 0; i < item.getProductUnitList().size(); i++) {
-                addProductUnit(item.getProductUnitList().get(i), Integer.parseInt(item.getId()));
+                addProductUnit(item.getProductUnitList().get(i), item.getId());
             }
         }
         if(item.getProductSizeList()!=null) {
@@ -1346,7 +1346,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
 
-    public boolean addProductUnit(ProductUnit item,int prodId){
+    public boolean addProductUnit(ProductUnit item, String prodId){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, item.getId());

@@ -334,4 +334,10 @@
 
     <color name="indigo_20">#F2F3F8</color>
 
+
+    <color name="invoice_primary_color">@color/blue600</color>
+    <color name="invoice_light_color_1">@color/blue50</color>
+    <color name="invoice_light_color_2">@color/grey100</color>
+    <color name="invoice_light_color_3">@color/grey50</color>
+
 </resources>
