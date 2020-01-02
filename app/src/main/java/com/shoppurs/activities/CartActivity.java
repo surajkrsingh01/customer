@@ -574,6 +574,8 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                         shopObject.put("deliveryAddress", "");
                         shopObject.put("deliveryCountry","");
                         shopObject.put("deliveryState","");
+                       // shopObject.put("deliveryLat","");
+                       // shopObject.put("deliveryLong","");
                         shopObject.put("deliveryCity", "");
                         shopObject.put("pinCode", "");
                     }
@@ -604,7 +606,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
                     shopObject.put("totIgst",String.valueOf(dbHelper.getTaxesCart("igst", shopCode)));
                     shopObject.put("totTax",String.valueOf(dbHelper.getTotalTaxesart(shopCode, cartType)));
                     float t_sp = (getTotalAmount(shopCode));
-                    if(deliveryModel!=null)
+                    if(deliveryModel!=null && sharedPreferences.getBoolean(Constants.IS_HOME_DELIVERY_SELECTED,false))
                     t_sp =  (float) (t_sp - deliveryModel.getNetDeliveryCharge());
                     float dis = dbHelper.getTotalMrpPriceCart(shopCode, cartType) - t_sp + dbHelper.getTotalShopCouponDiscount(shopCode, cartType);
                     shopObject.put("totDiscount",String.valueOf(dis));
@@ -720,8 +722,10 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
 
         Log.i(TAG, " Taxes " + dbHelper.getTotalTaxesart(shopCode, cartType));
 
-        ShopDeliveryModel deliveryModel = dbHelper.getShopDeliveryDetails(shopCode);
-        totalPrice = (float) (totalPrice + deliveryModel.getNetDeliveryCharge());
+        if(sharedPreferences.getBoolean(Constants.IS_HOME_DELIVERY_SELECTED,false)) {
+            ShopDeliveryModel deliveryModel = dbHelper.getShopDeliveryDetails(shopCode);
+            totalPrice = (float) (totalPrice + deliveryModel.getNetDeliveryCharge());
+        }
         return  totalPrice;
     }
 
