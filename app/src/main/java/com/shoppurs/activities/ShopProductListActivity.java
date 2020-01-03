@@ -42,6 +42,7 @@ import com.shoppurs.models.ProductSize;
 import com.shoppurs.models.ProductUnit;
 import com.shoppurs.models.ShopDeliveryModel;
 import com.shoppurs.models.SubCategory;
+import com.shoppurs.utilities.AppController;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.Utility;
@@ -198,7 +199,7 @@ public class ShopProductListActivity extends HandleCartActivity {
         viewCart = findViewById(R.id.viewCart);
 
         myProductList = new ArrayList<>();
-        recyclerViewProduct.setHasFixedSize(true);
+       // recyclerViewProduct.setHasFixedSize(true);
         final RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerViewProduct.setLayoutManager(linearLayoutManager);
         recyclerViewProduct.setItemAnimator(new DefaultItemAnimator());
@@ -218,7 +219,7 @@ public class ShopProductListActivity extends HandleCartActivity {
             public void onRefresh() {
                 offset = 0;
                 if(subCategoryList.size()>0)
-                getProducts(selectdSubCatId, "");
+                getProducts(selectdSubCatId, "onRefreshProduct");
             }
         });
 
@@ -308,8 +309,13 @@ public class ShopProductListActivity extends HandleCartActivity {
 
 
     public void getProducts(String subCatId, String action){
+        if(action.equals("onSubCategorySelected") || action.equals("onRefreshProduct")){
+            AppController.getInstance().getRequestQueue().cancelAll("MyRequstTag");
+            offset=0;
+            myProductList.clear();
+            shopProductAdapter.notifyDataSetChanged();
+        }
         selectdSubCatId = subCatId;
-        myProductList.clear();
         if(swipeRefreshLayout.isRefreshing())
             swipeRefreshLayout.setRefreshing(false);
 
@@ -366,214 +372,214 @@ public class ShopProductListActivity extends HandleCartActivity {
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
                     JSONObject dataObject;
                     if (!response.getString("result").equals("null")) {
-                        JSONArray productJArray = response.getJSONArray("result");
+                        final JSONArray productJArray = response.getJSONArray("result");
+                        if (productJArray.length() > 0 && selectdSubCatId.equals(response.getJSONArray("result")
+                                .getJSONObject(0).getString("prodSubCatId"))){
+                            for (int i = 0; i < productJArray.length(); i++) {
+                                MyProduct myProduct = new MyProduct();
+                                myProduct.setShopCode(shopCode);
+                                myProduct.setId(productJArray.getJSONObject(i).getString("prodCode"));
+                                myProduct.setProdId(productJArray.getJSONObject(i).getInt("prodId"));
+                                myProduct.setCatId(productJArray.getJSONObject(i).getString("prodCatId"));
+                                myProduct.setSubCatId(productJArray.getJSONObject(i).getString("prodSubCatId"));
+                                myProduct.setName(productJArray.getJSONObject(i).getString("prodName"));
+                                myProduct.setQoh(productJArray.getJSONObject(i).getInt("prodQoh"));
+                                Log.d("Qoh ", myProduct.getQoh() + "");
+                                myProduct.setMrp(Float.parseFloat(productJArray.getJSONObject(i).getString("prodMrp")));
+                                myProduct.setSellingPrice(Float.parseFloat(productJArray.getJSONObject(i).getString("prodSp")));
+                                myProduct.setCode(productJArray.getJSONObject(i).getString("prodCode"));
+                                myProduct.setIsBarcodeAvailable(productJArray.getJSONObject(i).getString("isBarcodeAvailable"));
+                                //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
+                                myProduct.setDesc(productJArray.getJSONObject(i).getString("prodDesc"));
+                                myProduct.setLocalImage(R.drawable.thumb_16);
+                                myProduct.setProdImage1(productJArray.getJSONObject(i).getString("prodImage1"));
+                                myProduct.setProdImage2(productJArray.getJSONObject(i).getString("prodImage2"));
+                                myProduct.setProdImage3(productJArray.getJSONObject(i).getString("prodImage3"));
+                                myProduct.setProdHsnCode(productJArray.getJSONObject(i).getString("prodHsnCode"));
+                                myProduct.setProdMfgDate(productJArray.getJSONObject(i).getString("prodMfgDate"));
+                                myProduct.setProdExpiryDate(productJArray.getJSONObject(i).getString("prodExpiryDate"));
+                                myProduct.setProdMfgBy(productJArray.getJSONObject(i).getString("prodMfgBy"));
+                                myProduct.setProdExpiryDate(productJArray.getJSONObject(i).getString("prodExpiryDate"));
+                                myProduct.setOfferId(productJArray.getJSONObject(i).getString("offerId"));
+                                myProduct.setProdCgst(Float.parseFloat(productJArray.getJSONObject(i).getString("prodCgst")));
+                                myProduct.setProdIgst(Float.parseFloat(productJArray.getJSONObject(i).getString("prodIgst")));
+                                myProduct.setProdSgst(Float.parseFloat(productJArray.getJSONObject(i).getString("prodSgst")));
+                                myProduct.setProdWarranty(productJArray.getJSONObject(i).getString("prodWarranty"));
+                                //myProduct.setSubCatName(subcatname);
 
-                        for (int i = 0; i < productJArray.length(); i++) {
-                            MyProduct myProduct = new MyProduct();
-                            myProduct.setShopCode(shopCode);
-                            myProduct.setId(productJArray.getJSONObject(i).getString("prodCode"));
-                            myProduct.setProdId(productJArray.getJSONObject(i).getInt("prodId"));
-                            myProduct.setCatId(productJArray.getJSONObject(i).getString("prodCatId"));
-                            myProduct.setSubCatId(productJArray.getJSONObject(i).getString("prodSubCatId"));
-                            myProduct.setName(productJArray.getJSONObject(i).getString("prodName"));
-                            myProduct.setQoh(productJArray.getJSONObject(i).getInt("prodQoh"));
-                            Log.d("Qoh ", myProduct.getQoh() + "");
-                            myProduct.setMrp(Float.parseFloat(productJArray.getJSONObject(i).getString("prodMrp")));
-                            myProduct.setSellingPrice(Float.parseFloat(productJArray.getJSONObject(i).getString("prodSp")));
-                            myProduct.setCode(productJArray.getJSONObject(i).getString("prodCode"));
-                            myProduct.setIsBarcodeAvailable(productJArray.getJSONObject(i).getString("isBarcodeAvailable"));
-                            //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
-                            myProduct.setDesc(productJArray.getJSONObject(i).getString("prodDesc"));
-                            myProduct.setLocalImage(R.drawable.thumb_16);
-                            myProduct.setProdImage1(productJArray.getJSONObject(i).getString("prodImage1"));
-                            myProduct.setProdImage2(productJArray.getJSONObject(i).getString("prodImage2"));
-                            myProduct.setProdImage3(productJArray.getJSONObject(i).getString("prodImage3"));
-                            myProduct.setProdHsnCode(productJArray.getJSONObject(i).getString("prodHsnCode"));
-                            myProduct.setProdMfgDate(productJArray.getJSONObject(i).getString("prodMfgDate"));
-                            myProduct.setProdExpiryDate(productJArray.getJSONObject(i).getString("prodExpiryDate"));
-                            myProduct.setProdMfgBy(productJArray.getJSONObject(i).getString("prodMfgBy"));
-                            myProduct.setProdExpiryDate(productJArray.getJSONObject(i).getString("prodExpiryDate"));
-                            myProduct.setOfferId(productJArray.getJSONObject(i).getString("offerId"));
-                            myProduct.setProdCgst(Float.parseFloat(productJArray.getJSONObject(i).getString("prodCgst")));
-                            myProduct.setProdIgst(Float.parseFloat(productJArray.getJSONObject(i).getString("prodIgst")));
-                            myProduct.setProdSgst(Float.parseFloat(productJArray.getJSONObject(i).getString("prodSgst")));
-                            myProduct.setProdWarranty(productJArray.getJSONObject(i).getString("prodWarranty"));
-                            //myProduct.setSubCatName(subcatname);
-
-                            if (!TextUtils.isEmpty(productJArray.getJSONObject(i).getString("frequency")) && !productJArray.getJSONObject(i).getString("frequency").equals("null")) {
-                                Log.d("Frequency  ", "Available");
-                                ProductFrequency frequency = new ProductFrequency();
-                                frequency.setName(productJArray.getJSONObject(i).getString("frequency"));
-                                frequency.setQyantity(productJArray.getJSONObject(i).getString("frequencyQty"));
-                                frequency.setNoOfDays(productJArray.getJSONObject(i).getString("frequencyValue"));
-                                frequency.setNextOrderDate(productJArray.getJSONObject(i).getString("nextOrderDate"));
-                                frequency.setEndDate(productJArray.getJSONObject(i).getString("frequencyEndDate"));
-                                frequency.setStartDate(productJArray.getJSONObject(i).getString("frequencyStartDate"));
-                                frequency.setStatus(productJArray.getJSONObject(i).getString("freqStatus"));
-                                myProduct.setFrequency(frequency);
-                            }
-
-                            int innerLen = 0;
-                            int len = 0;
-
-                            JSONArray tempArray = null;
-                            JSONObject jsonObject = null, tempObject = null;
-                            ProductUnit productUnit = null;
-                            ProductSize productSize = null;
-                            ProductColor productColor = null;
-
-                            if (!productJArray.getJSONObject(i).getString("productUnitList").equals("null")) {
-                                tempArray = productJArray.getJSONObject(i).getJSONArray("productUnitList");
-                                int tempLen = tempArray.length();
-                                List<ProductUnit> productUnitList = new ArrayList<>();
-
-                                for (int unitCounter = 0; unitCounter < tempLen; unitCounter++) {
-                                    tempObject = tempArray.getJSONObject(unitCounter);
-                                    productUnit = new ProductUnit();
-                                    productUnit.setId(tempObject.getInt("id"));
-                                    productUnit.setUnitName(tempObject.getString("unitName"));
-                                    productUnit.setUnitValue(tempObject.getString("unitValue"));
-                                    productUnit.setStatus(tempObject.getString("status"));
-                                    productUnitList.add(productUnit);
+                                if (!TextUtils.isEmpty(productJArray.getJSONObject(i).getString("frequency")) && !productJArray.getJSONObject(i).getString("frequency").equals("null")) {
+                                    Log.d("Frequency  ", "Available");
+                                    ProductFrequency frequency = new ProductFrequency();
+                                    frequency.setName(productJArray.getJSONObject(i).getString("frequency"));
+                                    frequency.setQyantity(productJArray.getJSONObject(i).getString("frequencyQty"));
+                                    frequency.setNoOfDays(productJArray.getJSONObject(i).getString("frequencyValue"));
+                                    frequency.setNextOrderDate(productJArray.getJSONObject(i).getString("nextOrderDate"));
+                                    frequency.setEndDate(productJArray.getJSONObject(i).getString("frequencyEndDate"));
+                                    frequency.setStartDate(productJArray.getJSONObject(i).getString("frequencyStartDate"));
+                                    frequency.setStatus(productJArray.getJSONObject(i).getString("freqStatus"));
+                                    myProduct.setFrequency(frequency);
                                 }
-                                myProduct.setProductUnitList(productUnitList);
-                            }
 
-                            if (!productJArray.getJSONObject(i).getString("productSizeList").equals("null")) {
-                                tempArray = productJArray.getJSONObject(i).getJSONArray("productSizeList");
-                                int tempLen = tempArray.length();
-                                List<ProductSize> productSizeList = new ArrayList<>();
+                                int innerLen = 0;
+                                int len = 0;
 
-                                for (int unitCounter = 0; unitCounter < tempLen; unitCounter++) {
-                                    List<ProductColor> productColorList = new ArrayList<>();
-                                    tempObject = tempArray.getJSONObject(unitCounter);
-                                    productSize = new ProductSize();
-                                    productSize.setId(tempObject.getString("id"));
-                                    productSize.setSize(tempObject.getString("size"));
-                                    productSize.setStatus(tempObject.getString("status"));
-                                    productSize.setProductColorList(productColorList);
+                                JSONArray tempArray = null;
+                                JSONObject jsonObject = null, tempObject = null;
+                                ProductUnit productUnit = null;
+                                ProductSize productSize = null;
+                                ProductColor productColor = null;
 
-                                    if (!productJArray.getJSONObject(i).getString("productSizeList").equals("null")) {
-                                        JSONArray colorArray = tempObject.getJSONArray("productColorList");
-                                        for (int colorCounter = 0; colorCounter < colorArray.length(); colorCounter++) {
-                                            tempObject = colorArray.getJSONObject(colorCounter);
-                                            productColor = new ProductColor();
-                                            productColor.setId(tempObject.getInt("id"));
-                                            productColor.setSizeId(tempObject.getInt("sizeId"));
-                                            productColor.setColorName(tempObject.getString("colorName"));
-                                            productColor.setColorValue(tempObject.getString("colorValue"));
-                                            productColor.setStatus(tempObject.getString("status"));
-                                            productColorList.add(productColor);
+                                if (!productJArray.getJSONObject(i).getString("productUnitList").equals("null")) {
+                                    tempArray = productJArray.getJSONObject(i).getJSONArray("productUnitList");
+                                    int tempLen = tempArray.length();
+                                    List<ProductUnit> productUnitList = new ArrayList<>();
+
+                                    for (int unitCounter = 0; unitCounter < tempLen; unitCounter++) {
+                                        tempObject = tempArray.getJSONObject(unitCounter);
+                                        productUnit = new ProductUnit();
+                                        productUnit.setId(tempObject.getInt("id"));
+                                        productUnit.setUnitName(tempObject.getString("unitName"));
+                                        productUnit.setUnitValue(tempObject.getString("unitValue"));
+                                        productUnit.setStatus(tempObject.getString("status"));
+                                        productUnitList.add(productUnit);
+                                    }
+                                    myProduct.setProductUnitList(productUnitList);
+                                }
+
+                                if (!productJArray.getJSONObject(i).getString("productSizeList").equals("null")) {
+                                    tempArray = productJArray.getJSONObject(i).getJSONArray("productSizeList");
+                                    int tempLen = tempArray.length();
+                                    List<ProductSize> productSizeList = new ArrayList<>();
+
+                                    for (int unitCounter = 0; unitCounter < tempLen; unitCounter++) {
+                                        List<ProductColor> productColorList = new ArrayList<>();
+                                        tempObject = tempArray.getJSONObject(unitCounter);
+                                        productSize = new ProductSize();
+                                        productSize.setId(tempObject.getString("id"));
+                                        productSize.setSize(tempObject.getString("size"));
+                                        productSize.setStatus(tempObject.getString("status"));
+                                        productSize.setProductColorList(productColorList);
+
+                                        if (!productJArray.getJSONObject(i).getString("productSizeList").equals("null")) {
+                                            JSONArray colorArray = tempObject.getJSONArray("productColorList");
+                                            for (int colorCounter = 0; colorCounter < colorArray.length(); colorCounter++) {
+                                                tempObject = colorArray.getJSONObject(colorCounter);
+                                                productColor = new ProductColor();
+                                                productColor.setId(tempObject.getInt("id"));
+                                                productColor.setSizeId(tempObject.getInt("sizeId"));
+                                                productColor.setColorName(tempObject.getString("colorName"));
+                                                productColor.setColorValue(tempObject.getString("colorValue"));
+                                                productColor.setStatus(tempObject.getString("status"));
+                                                productColorList.add(productColor);
+                                            }
+
                                         }
-
+                                        productSizeList.add(productSize);
                                     }
-                                    productSizeList.add(productSize);
+                                    myProduct.setProductSizeList(productSizeList);
                                 }
-                                myProduct.setProductSizeList(productSizeList);
-                            }
 
 
-                            if (!productJArray.getJSONObject(i).getString("barcodeList").equals("null")) {
-                                JSONArray productBarCodeArray = productJArray.getJSONObject(i).getJSONArray("barcodeList");
-                                len = productBarCodeArray.length();
-                                JSONObject barcodeJsonObject = null;
-                                List<Barcode> barcodeList = new ArrayList<>();
-                                for (int j = 0; j < len; j++) {
-                                    barcodeJsonObject = productBarCodeArray.getJSONObject(j);
-                                    barcodeList.add(new Barcode(barcodeJsonObject.getString("barcode")));
-                                    // dbHelper.addProductBarcode(jsonObject.getInt("prodId"),jsonObject.getString("prodBarCode"));
-                                }
-                                myProduct.setBarcodeList(barcodeList);
-                            }
-
-                            if (!productJArray.getJSONObject(i).getString("productDiscountOfferList").equals("null")) {
-                                JSONArray freeArray = productJArray.getJSONObject(i).getJSONArray("productDiscountOfferList");
-                                len = freeArray.length();
-                                ProductDiscountOffer productDiscountOffer = null;
-                                for (int k = 0; k < len; k++) {
-                                    dataObject = freeArray.getJSONObject(k);
-                                    Log.d("index ", "" + len);
-                                    productDiscountOffer = new ProductDiscountOffer();
-                                    productDiscountOffer.setId(dataObject.getInt("id"));
-                                    productDiscountOffer.setOfferName(dataObject.getString("offerName"));
-                                    productDiscountOffer.setProdBuyId(dataObject.getInt("prodBuyId"));
-                                    productDiscountOffer.setProdFreeId(dataObject.getInt("prodFreeId"));
-                                    productDiscountOffer.setProdBuyQty(dataObject.getInt("prodBuyQty"));
-                                    productDiscountOffer.setProdFreeQty(dataObject.getInt("prodFreeQty"));
-                                    productDiscountOffer.setStatus(dataObject.getString("status"));
-                                    productDiscountOffer.setStartDate(dataObject.getString("startDate"));
-                                    productDiscountOffer.setEndDate(dataObject.getString("endDate"));
-
-                                    //myProduct.setproductoffer
-                                    myProduct.setOfferId(String.valueOf(productDiscountOffer.getId()));
-                                    myProduct.setOfferType("free");
-                                    myProduct.setProductOffer(productDiscountOffer);
-
-                                    //  dbHelper.addProductFreeOffer(productDiscountOffer, Utility.getTimeStamp(),Utility.getTimeStamp());
-                                }
-                                myProduct.setProductDiscountOffer(productDiscountOffer);
-                            }
-
-
-                            if (!productJArray.getJSONObject(i).getString("productPriceOffer").equals("null")) {
-                                JSONArray priceArray = productJArray.getJSONObject(i).getJSONArray("productPriceOffer");
-                                len = priceArray.length();
-                                JSONArray productPriceArray = null;
-                                ProductPriceOffer productPriceOffer = null;
-                                ProductPriceDetails productPriceDetails;
-                                List<ProductPriceDetails> productPriceOfferDetails = null;
-                                for (int l = 0; l < len; l++) {
-                                    dataObject = priceArray.getJSONObject(l);
-                                    productPriceOffer = new ProductPriceOffer();
-                                    productPriceOffer.setId(dataObject.getInt("id"));
-                                    productPriceOffer.setProdId(dataObject.getInt("prodId"));
-                                    productPriceOffer.setOfferName(dataObject.getString("offerName"));
-                                    productPriceOffer.setStatus(dataObject.getString("status"));
-                                    productPriceOffer.setStartDate(dataObject.getString("startDate"));
-                                    productPriceOffer.setEndDate(dataObject.getString("endDate"));
-                                    productPriceArray = dataObject.getJSONArray("productComboOfferDetails");
-
-                                    myProduct.setOfferId(String.valueOf(productPriceOffer.getId()));
-                                    myProduct.setOfferType("price");
-                                    myProduct.setProductOffer(productPriceOffer);
-
-
-                                    productPriceOfferDetails = new ArrayList<>();
-                                    innerLen = productPriceArray.length();
-                                    for (int k = 0; k < innerLen; k++) {
-                                        dataObject = productPriceArray.getJSONObject(k);
-                                        productPriceDetails = new ProductPriceDetails();
-                                        productPriceDetails.setId(dataObject.getInt("id"));
-                                        productPriceDetails.setPcodPcoId(dataObject.getInt("pcodPcoId"));
-                                        productPriceDetails.setPcodProdQty(dataObject.getInt("pcodProdQty"));
-                                        productPriceDetails.setPcodPrice((float) dataObject.getDouble("pcodPrice"));
-                                        if (k == 0)
-                                            myProduct.setSellingPrice(productPriceDetails.getPcodPrice());
-                                        productPriceDetails.setStatus(dataObject.getString("status"));
-                                        productPriceOfferDetails.add(productPriceDetails);
+                                if (!productJArray.getJSONObject(i).getString("barcodeList").equals("null")) {
+                                    JSONArray productBarCodeArray = productJArray.getJSONObject(i).getJSONArray("barcodeList");
+                                    len = productBarCodeArray.length();
+                                    JSONObject barcodeJsonObject = null;
+                                    List<Barcode> barcodeList = new ArrayList<>();
+                                    for (int j = 0; j < len; j++) {
+                                        barcodeJsonObject = productBarCodeArray.getJSONObject(j);
+                                        barcodeList.add(new Barcode(barcodeJsonObject.getString("barcode")));
+                                        // dbHelper.addProductBarcode(jsonObject.getInt("prodId"),jsonObject.getString("prodBarCode"));
                                     }
-                                    productPriceOffer.setProductPriceDetails(productPriceOfferDetails);
+                                    myProduct.setBarcodeList(barcodeList);
                                 }
-                                myProduct.setProductPriceOffer(productPriceOffer);
+
+                                if (!productJArray.getJSONObject(i).getString("productDiscountOfferList").equals("null")) {
+                                    JSONArray freeArray = productJArray.getJSONObject(i).getJSONArray("productDiscountOfferList");
+                                    len = freeArray.length();
+                                    ProductDiscountOffer productDiscountOffer = null;
+                                    for (int k = 0; k < len; k++) {
+                                        dataObject = freeArray.getJSONObject(k);
+                                        Log.d("index ", "" + len);
+                                        productDiscountOffer = new ProductDiscountOffer();
+                                        productDiscountOffer.setId(dataObject.getInt("id"));
+                                        productDiscountOffer.setOfferName(dataObject.getString("offerName"));
+                                        productDiscountOffer.setProdBuyId(dataObject.getInt("prodBuyId"));
+                                        productDiscountOffer.setProdFreeId(dataObject.getInt("prodFreeId"));
+                                        productDiscountOffer.setProdBuyQty(dataObject.getInt("prodBuyQty"));
+                                        productDiscountOffer.setProdFreeQty(dataObject.getInt("prodFreeQty"));
+                                        productDiscountOffer.setStatus(dataObject.getString("status"));
+                                        productDiscountOffer.setStartDate(dataObject.getString("startDate"));
+                                        productDiscountOffer.setEndDate(dataObject.getString("endDate"));
+
+                                        //myProduct.setproductoffer
+                                        myProduct.setOfferId(String.valueOf(productDiscountOffer.getId()));
+                                        myProduct.setOfferType("free");
+                                        myProduct.setProductOffer(productDiscountOffer);
+
+                                        //  dbHelper.addProductFreeOffer(productDiscountOffer, Utility.getTimeStamp(),Utility.getTimeStamp());
+                                    }
+                                    myProduct.setProductDiscountOffer(productDiscountOffer);
+                                }
+
+
+                                if (!productJArray.getJSONObject(i).getString("productPriceOffer").equals("null")) {
+                                    JSONArray priceArray = productJArray.getJSONObject(i).getJSONArray("productPriceOffer");
+                                    len = priceArray.length();
+                                    JSONArray productPriceArray = null;
+                                    ProductPriceOffer productPriceOffer = null;
+                                    ProductPriceDetails productPriceDetails;
+                                    List<ProductPriceDetails> productPriceOfferDetails = null;
+                                    for (int l = 0; l < len; l++) {
+                                        dataObject = priceArray.getJSONObject(l);
+                                        productPriceOffer = new ProductPriceOffer();
+                                        productPriceOffer.setId(dataObject.getInt("id"));
+                                        productPriceOffer.setProdId(dataObject.getInt("prodId"));
+                                        productPriceOffer.setOfferName(dataObject.getString("offerName"));
+                                        productPriceOffer.setStatus(dataObject.getString("status"));
+                                        productPriceOffer.setStartDate(dataObject.getString("startDate"));
+                                        productPriceOffer.setEndDate(dataObject.getString("endDate"));
+                                        productPriceArray = dataObject.getJSONArray("productComboOfferDetails");
+
+                                        myProduct.setOfferId(String.valueOf(productPriceOffer.getId()));
+                                        myProduct.setOfferType("price");
+                                        myProduct.setProductOffer(productPriceOffer);
+
+
+                                        productPriceOfferDetails = new ArrayList<>();
+                                        innerLen = productPriceArray.length();
+                                        for (int k = 0; k < innerLen; k++) {
+                                            dataObject = productPriceArray.getJSONObject(k);
+                                            productPriceDetails = new ProductPriceDetails();
+                                            productPriceDetails.setId(dataObject.getInt("id"));
+                                            productPriceDetails.setPcodPcoId(dataObject.getInt("pcodPcoId"));
+                                            productPriceDetails.setPcodProdQty(dataObject.getInt("pcodProdQty"));
+                                            productPriceDetails.setPcodPrice((float) dataObject.getDouble("pcodPrice"));
+                                            if (k == 0)
+                                                myProduct.setSellingPrice(productPriceDetails.getPcodPrice());
+                                            productPriceDetails.setStatus(dataObject.getString("status"));
+                                            productPriceOfferDetails.add(productPriceDetails);
+                                        }
+                                        productPriceOffer.setProductPriceDetails(productPriceOfferDetails);
+                                    }
+                                    myProduct.setProductPriceOffer(productPriceOffer);
+                                }
+                                myProductList.add(myProduct);
+                            }
+                        if (myProductList.size() > 0) {
+                            if (productJArray.length() > 0) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        shopProductAdapter.notifyItemRangeInserted(offset, myProductList.size());
+                                    }
+                                });
+                            } else {
+                                Log.d(TAG, "NO ITEMS FOUND");
                             }
 
-
-                            myProductList.add(myProduct);
-                    }
-                    if (myProductList.size() > 0) {
-                        offset = myProductList.size();
-                        if (productJArray.length() < limit) {
-                            isScroll = false;
-                        }
-                        if (productJArray.length() > 0) {
-                            recyclerViewProduct.post(new Runnable() {
-                                public void run() {
-                                    shopProductAdapter.notifyItemRangeInserted(offset, limit);
-                                }
-                            });
-                            Log.d(TAG, "NEXT ITEMS LOADED");
-                        } else {
-                            Log.d(TAG, "NO ITEMS FOUND");
+                            if (productJArray.length() != limit) {
+                                isScroll = false;
+                            }
                         }
                     }
                 }else {
@@ -789,8 +795,9 @@ public class ShopProductListActivity extends HandleCartActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.d("requestCode "+requestCode, "intent "+intent);
-        if(requestCode ==102 ){
+        super.onActivityResult(requestCode, resultCode, intent);
+        Log.d("requestCode " + requestCode, "intent " + intent);
+        if (requestCode == 102) {
             myProductList.get(position).setFrequency(null);
             //myProductList.get(getIntent().getIntExtra("position", 0)).setFrequency(null);
         }

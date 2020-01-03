@@ -472,9 +472,22 @@ public class InvoiceActivity extends NetworkBaseActivity {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 logo.compress(Bitmap.CompressFormat.JPEG, 100 , stream);
                 Image myImg = Image.getInstance(stream.toByteArray());
-                myImg.setWidthPercentage(50);
                 myImg.setAlignment(Image.MIDDLE);
-                //document.add(myImg);
+               // document.add(myImg);
+
+                PdfPTable pdfImageTable = new PdfPTable(1);
+                pdfImageTable.setHorizontalAlignment(Element.ALIGN_CENTER);
+                pdfImageTable.setWidthPercentage(100);
+
+                PdfPCell pdfPCell = new PdfPCell();
+                pdfPCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                pdfPCell.setVerticalAlignment(Element.ALIGN_CENTER);
+                pdfPCell.setBorder(Rectangle.NO_BORDER);
+                pdfPCell.setPaddingLeft(30);
+                pdfPCell.setPaddingRight(30);
+                pdfPCell.addElement(myImg);
+                pdfImageTable.addCell(pdfPCell);
+                document.add(pdfImageTable);
 
                 Chunk chunkVerticalMark = new Chunk(new VerticalPositionMark());
                 Chunk chunk2 = new Chunk(tvDate.getText().toString(), descFont);
