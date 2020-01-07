@@ -1,10 +1,12 @@
 package com.shoppurs.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -53,6 +55,7 @@ public class MainActivity extends NetworkBaseActivity {
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
     private TextView text_customer_address;
     private CircleImageView customer_profile;
+    private ImageView iv_cart;
     private boolean bannerLoaded, categoryLoaded, shopLoaded;
 
     @Override
@@ -64,7 +67,15 @@ public class MainActivity extends NetworkBaseActivity {
 
         text_customer_address = findViewById(R.id.text_customer_address);
         text_customer_address.setText(Utility.getTimeStamp("EEE dd MMM, yyyy"));
-
+        iv_cart = findViewById(R.id.iv_cart);
+        iv_cart.setColorFilter(colorTheme,
+                android.graphics.PorterDuff.Mode.SRC_IN);
+        iv_cart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, CartActivity.class));
+            }
+        });
         customer_profile= findViewById(R.id.profile_image);
         customer_profile.setCircleBackgroundColor(colorTheme);
         RequestOptions requestOptions = new RequestOptions();

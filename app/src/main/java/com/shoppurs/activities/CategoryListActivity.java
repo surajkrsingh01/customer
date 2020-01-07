@@ -1,6 +1,7 @@
 package com.shoppurs.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -60,6 +62,7 @@ public class CategoryListActivity extends BaseLocation implements LocationAction
     private float MIN_WIDTH = 200,MIN_HEIGHT = 230,MAX_WIDTH = 200,MAX_HEIGHT = 290;
     private TextView text_customer_address;
     private CircleImageView customer_profile;
+    private ImageView iv_cart;
 
 
     @Override
@@ -88,6 +91,15 @@ public class CategoryListActivity extends BaseLocation implements LocationAction
             @Override
             public void onClick(View v) {
                 showLocationBottomShet();
+            }
+        });
+        iv_cart = findViewById(R.id.iv_cart);
+        iv_cart.setColorFilter(colorTheme,
+                android.graphics.PorterDuff.Mode.SRC_IN);
+        iv_cart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(CategoryListActivity.this, CartActivity.class));
             }
         });
         customer_profile= findViewById(R.id.profile_image);

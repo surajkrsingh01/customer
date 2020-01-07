@@ -65,6 +65,7 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
     private TextView text_customer_address, text_shops, text_popular_category, text_popular_tags,
                      text_search_by_product, text_error;
     private CircleImageView customer_profile;
+    private ImageView iv_cart;
     private ProgressBar progress_bar;
     String searchCatId;
     private boolean isCategorySearch, isSearchByProduct;
@@ -197,6 +198,15 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
             @Override
             public void onClick(View v) {
                 showLocationBottomShet();
+            }
+        });
+        iv_cart = findViewById(R.id.iv_cart);
+        iv_cart.setColorFilter(colorTheme,
+                android.graphics.PorterDuff.Mode.SRC_IN);
+        iv_cart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SearchActivity.this, CartActivity.class));
             }
         });
         customer_profile= findViewById(R.id.profile_image);

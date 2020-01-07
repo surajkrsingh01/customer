@@ -2,15 +2,18 @@ package com.shoppurs.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -56,6 +59,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     List<Object> normalShopList = new ArrayList<>();
     List<String> myfavoriteShopIds = new ArrayList<>();
     private CircleImageView customer_profile;
+    private ImageView iv_cart;
     private TextView text_customer_address;
     private boolean isVisible,loadingComplete;
     protected ProgressDialog progressDialog;
@@ -113,7 +117,15 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
                 getItemList();
             }
         });
-
+        iv_cart = findViewById(R.id.iv_cart);
+        iv_cart.setColorFilter(colorTheme,
+                android.graphics.PorterDuff.Mode.SRC_IN);
+        iv_cart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(StoresListActivity.this, CartActivity.class));
+            }
+        });
         customer_profile= findViewById(R.id.profile_image);
         customer_profile.setCircleBackgroundColor(colorTheme);
         RequestOptions requestOptions = new RequestOptions();
