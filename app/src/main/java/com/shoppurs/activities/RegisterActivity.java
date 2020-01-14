@@ -180,7 +180,7 @@ public class RegisterActivity extends NetworkBaseActivity{
                     JSONObject dataObject=response.getJSONObject("result");
 
                     editor.putString(Constants.JWT_TOKEN, dataObject.getString("token"));
-                    //editor.putString(Constants.GOOGLE_MAP_API_KEY,dataObject.getString("googleMapApiKey"));
+                    editor.putString(Constants.GOOGLE_MAP_API_KEY,dataObject.getString("googleMapApiKey"));
                     editor.putString(Constants.DB_VERSION, dataObject.getString("dbVersion"));
                     editor.putString(Constants.FULL_NAME,dataObject.getString("username"));
                     editor.putString(Constants.USER_ID,dataObject.getString("userid"));
@@ -191,16 +191,10 @@ public class RegisterActivity extends NetworkBaseActivity{
                     editor.putString(Constants.DB_PASSWORD,dataObject.getString("dbpassword"));
                     editor.putBoolean(Constants.IS_LOGGED_IN,true);
                     editor.commit();
-                    editor.putBoolean(Constants.IS_LOGGED_IN,true);
-                    editor.commit();
                     DialogAndToast.showToast("Account created",RegisterActivity.this);
                     Intent intent=new Intent(RegisterActivity.this,StoresListActivity.class);
                     startActivity(intent);
                     finish();
-
-                    editor.putBoolean(Constants.IS_LOGGED_IN,true);
-                    editor.commit();
-                    DialogAndToast.showToast("Account created",RegisterActivity.this);
                 }else {
                     DialogAndToast.showDialog(response.getString("message"),RegisterActivity.this);
                 }
