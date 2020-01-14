@@ -108,7 +108,7 @@ public class AddressActivity extends NetworkBaseActivity implements OnMapReadyCa
         flag = getIntent().getStringExtra("flag");
 
         // Initialize Places.
-        Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key));
+        Places.initialize(getApplicationContext(), sharedPreferences.getString(Constants.GOOGLE_MAP_API_KEY,""));
 
         double latitude = 0, longitude = 0;
         String cl = sharedPreferences.getString(Constants.CUST_LAT,"0.0");

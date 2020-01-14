@@ -71,7 +71,7 @@ public class BaseLocation extends NetworkBaseActivity implements OnLocationRecei
     }
 
     public void searchPlaces(){
-        Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key));
+        Places.initialize(getApplicationContext(), sharedPreferences.getString(Constants.GOOGLE_MAP_API_KEY,""));
         // Create a new Places client instance.
         PlacesClient placesClient = Places.createClient(this);
 // Set the fields to specify which types of place data to return.

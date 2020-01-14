@@ -113,7 +113,7 @@ public class AddDeliveryAddressActivity extends NetworkBaseActivity implements O
 
 
         // Initialize Places.
-        Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key));
+        Places.initialize(getApplicationContext(), sharedPreferences.getString(Constants.GOOGLE_MAP_API_KEY,""));
 
 
         double latitude = 0, longitude =0;

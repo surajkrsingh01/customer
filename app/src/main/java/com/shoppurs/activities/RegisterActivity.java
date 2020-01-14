@@ -180,6 +180,7 @@ public class RegisterActivity extends NetworkBaseActivity{
                     JSONObject dataObject=response.getJSONObject("result");
 
                     editor.putString(Constants.JWT_TOKEN, dataObject.getString("token"));
+                    //editor.putString(Constants.GOOGLE_MAP_API_KEY,dataObject.getString("googleMapApiKey"));
                     editor.putString(Constants.DB_VERSION, dataObject.getString("dbVersion"));
                     editor.putString(Constants.FULL_NAME,dataObject.getString("username"));
                     editor.putString(Constants.USER_ID,dataObject.getString("userid"));
