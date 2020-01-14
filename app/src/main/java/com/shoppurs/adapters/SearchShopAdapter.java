@@ -115,17 +115,41 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
                 myViewHolder.textStateCity.setVisibility(View.VISIBLE);
                 myViewHolder.textStateCity.setText(item.getState()+", "+item.getCity());
             }*/
-            RequestOptions requestOptions = new RequestOptions();
-            requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
-            requestOptions.dontTransform();
-            // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
-            // requestOptions.centerCrop();
-            requestOptions.skipMemoryCache(false);
 
-            Glide.with(context)
-                    .load(item.getShopimage())
-                    .apply(requestOptions)
-                    .into(myViewHolder.imageView);
+            if(item.getName().length()>1) {
+                myViewHolder.tv_shortName.setText(item.getName().substring(0, 1));
+                //image_view_shop .setText(shopName);
+                String initials = "";
+                if (item.getName().contains(" ")) {
+                    String[] nameArray = item.getName().split(" ");
+                    initials = nameArray[0].substring(0, 1) + nameArray[1].substring(0, 1);
+                } else {
+                    initials = item.getName().substring(0, 2);
+                }
+
+                myViewHolder.tv_shortName.setText(initials);
+            }
+            Log.d("shopImage ", item.getShopimage());
+            Log.d("shopName ", item.getName());
+            if(item.getShopimage() !=null && item.getShopimage().contains("http")){
+                myViewHolder.tv_shortName.setVisibility(View.GONE);
+                myViewHolder.imageView.setVisibility(View.VISIBLE);
+                RequestOptions requestOptions = new RequestOptions();
+                requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+                requestOptions.dontTransform();
+                // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
+                // requestOptions.centerCrop();
+                requestOptions.skipMemoryCache(false);
+
+                Glide.with(context)
+                        .load(item.getShopimage())
+                        .apply(requestOptions)
+                        .error(R.drawable.ic_photo_black_192dp)
+                        .into(myViewHolder.imageView);
+            }else{
+                myViewHolder.tv_shortName.setVisibility(View.VISIBLE);
+                myViewHolder.imageView.setVisibility(View.GONE);
+            }
 
 
         }
@@ -140,7 +164,7 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnTouchListener{
-        private TextView textInitial, textShopName,text_shop_mobile, textAddress, textStateCity;
+        private TextView tv_shortName, textShopName,text_shop_mobile, textAddress, textStateCity;
         private ImageView imageView, imageMenu;
         private View rootView;
 
@@ -149,7 +173,7 @@ public class SearchShopAdapter extends RecyclerView.Adapter<SearchShopAdapter.My
             super(itemView);
             rootView = itemView;
             rootView = itemView;
-            textInitial=itemView.findViewById(R.id.tv_initial);
+            tv_shortName=itemView.findViewById(R.id.tv_shortName);
             textShopName=itemView.findViewById(R.id.text_name);
             text_shop_mobile = itemView.findViewById(R.id.text_mobile);
             textAddress=itemView.findViewById(R.id.text_address);

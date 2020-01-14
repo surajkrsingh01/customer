@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -222,19 +224,48 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
                 myViewHolder.relative_unit.setVisibility(View.GONE);
             }
 
+            Log.d("shopImage ", item.getProdImage1());
+            Log.d("shopName ", item.getName());
+            if(item.getName().length()>1) {
+                myViewHolder.tv_shortName.setText(item.getName().substring(0, 1));
+                //image_view_shop .setText(shopName);
+                String initials = "";
+                if (item.getName().contains(" ")) {
+                    String[] nameArray = item.getName().split(" ");
+                    Log.d("nameArray ", item.getName());
+                    String firstChar = nameArray[0].substring(0, 1);
+                    String secondChar = "";
+                    if(nameArray.length>2 && nameArray[1].length()>0) {
+                        secondChar = nameArray[1].substring(0, 1);
+                        if(secondChar.contains("-") || secondChar.contains("("))
+                            secondChar ="";
+                    }
+                    initials = firstChar + secondChar;
+                } else if(item.getName().length()>2){
+                    initials = item.getName().substring(0, 2);
+                }
 
-            RequestOptions requestOptions = new RequestOptions();
-            requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
-            // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
-            requestOptions.centerCrop();
-            requestOptions.skipMemoryCache(false);
+                myViewHolder.tv_shortName.setText(initials);
+            }
+            if(item.getProdImage1() !=null && item.getProdImage1().contains("http")){
+                myViewHolder.tv_shortName.setVisibility(View.GONE);
+                myViewHolder.imageView.setVisibility(View.VISIBLE);
+                RequestOptions requestOptions = new RequestOptions();
+                requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+                requestOptions.dontTransform();
+                // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
+                // requestOptions.centerCrop();
+                requestOptions.skipMemoryCache(false);
 
-            Glide.with(context)
-                    .load(item.getProdImage1())
-                    .apply(requestOptions)
-                    .error(R.drawable.ic_photo_black_192dp)
-                    .into(myViewHolder.imageView);
-
+                Glide.with(context)
+                        .load(item.getProdImage1())
+                        .apply(requestOptions)
+                        .error(R.drawable.ic_photo_black_192dp)
+                        .into(myViewHolder.imageView);
+            }else{
+                myViewHolder.tv_shortName.setVisibility(View.VISIBLE);
+                myViewHolder.imageView.setVisibility(View.GONE);
+            }
 
         }
     }
@@ -248,7 +279,7 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private TextView textName,textMrp, textSp, textOffPer, textStatus, textbarcode, tv_cartCount, text_frequency;
+        private TextView textName,tv_shortName, textMrp, textSp, textOffPer, textStatus, textbarcode, tv_cartCount, text_frequency;
         private ImageView imageView, image_minus, image_plus;
         private View rootView;
         private Button btnAddCart;
@@ -262,6 +293,7 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
             rootView = itemView;
             textbarcode = itemView.findViewById(R.id.text_bar_code);
             textName=itemView.findViewById(R.id.text_name);
+            tv_shortName = itemView.findViewById(R.id.tv_shortName);
             textMrp=itemView.findViewById(R.id.text_mrp);
             textSp=itemView.findViewById(R.id.text_sp);
             textOffPer=itemView.findViewById(R.id.text_off_percentage);

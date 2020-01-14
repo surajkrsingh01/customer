@@ -34,6 +34,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
+            <TextView
+                android:id="@+id/tv_shortName"
+                android:text=""
+                android:textSize="25sp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:background="@color/blue500"
+                android:layout_width="@dimen/customer_list_image_width"
+                android:layout_height="@dimen/customer_list_image_height" />
+
         </androidx.cardview.widget.CardView>
 
 

@@ -203,7 +203,7 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     public class MyStoreListType1ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener {
 
-        private TextView textName,textAddress,textMobile;
+        private TextView textName,tv_shortName, textAddress,textMobile;
         private ImageView imageView,imageMenu;
         private View rootView;
 
@@ -211,6 +211,7 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             super(itemView);
             rootView = itemView;
             textName = itemView.findViewById(R.id.text_name);
+            tv_shortName = itemView.findViewById(R.id.tv_shortName);
             textAddress=itemView.findViewById(R.id.text_address);
             textMobile=itemView.findViewById(R.id.text_mobile);
             imageView=itemView.findViewById(R.id.image_view);
@@ -472,15 +473,41 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             myViewHolder.textName.setText(item.getName());
             myViewHolder.textAddress.setText(item.getAddress());
             myViewHolder.textMobile.setText(item.getMobile());
-            RequestOptions requestOptions = new RequestOptions();
-            requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
-            requestOptions.centerCrop();
-            requestOptions.skipMemoryCache(false);
-            Glide.with(context)
-                    .load(item.getShopimage())
-                    .apply(requestOptions)
-                    .error(R.drawable.ic_photo_black_192dp)
-                    .into(myViewHolder.imageView);
+
+            if(item.getName().length()>1) {
+                myViewHolder.tv_shortName.setText(item.getName().substring(0, 1));
+                //image_view_shop .setText(shopName);
+                String initials = "";
+                if (item.getName().contains(" ")) {
+                    String[] nameArray = item.getName().split(" ");
+                    initials = nameArray[0].substring(0, 1) + nameArray[1].substring(0, 1);
+                } else {
+                    initials = item.getName().substring(0, 2);
+                }
+
+                myViewHolder.tv_shortName.setText(initials);
+            }
+            Log.d("shopImage ", item.getShopimage());
+            Log.d("shopName ", item.getName());
+            if(item.getShopimage() !=null && item.getShopimage().contains("http")){
+                myViewHolder.tv_shortName.setVisibility(View.GONE);
+                myViewHolder.imageView.setVisibility(View.VISIBLE);
+                RequestOptions requestOptions = new RequestOptions();
+                requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+                requestOptions.dontTransform();
+                // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
+                // requestOptions.centerCrop();
+                requestOptions.skipMemoryCache(false);
+
+                Glide.with(context)
+                        .load(item.getShopimage())
+                        .apply(requestOptions)
+                        .error(R.drawable.ic_photo_black_192dp)
+                        .into(myViewHolder.imageView);
+            }else{
+                myViewHolder.tv_shortName.setVisibility(View.VISIBLE);
+                myViewHolder.imageView.setVisibility(View.GONE);
+            }
         }
     }
 

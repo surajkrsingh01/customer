@@ -61,7 +61,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     private CircleImageView customer_profile;
     private ImageView iv_cart;
     private TextView text_customer_address;
-    private boolean isVisible,loadingComplete;
+    private boolean isVisible,loadingComplete, isUpdateAvailable;
     protected ProgressDialog progressDialog;
 
 
@@ -484,11 +484,17 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
             text_customer_address.setText("Update Your Location");
         else
             text_customer_address.setText(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, ""));
+
+        if(isUpdateAvailable){
+            getItemList();
+            isUpdateAvailable = false;
+        }
     }
 
     @Override
     public void updateUi() {
         super.updateUi();
+        isUpdateAvailable = true;
         if(isVisible) {
             text_customer_address.setText(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS, ""));
             //if(loadingComplete) {
