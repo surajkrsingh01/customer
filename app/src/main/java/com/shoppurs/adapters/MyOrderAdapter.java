@@ -160,8 +160,15 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.MyViewHo
                         Intent intent = new Intent(context, MyOrderDetailsActivity.class);
 
                         intent.putExtra("orderId",String.valueOf(item.getOrderId()));
+                        intent.putExtra("partnerOrderId",String.valueOf(item.getPartnerOrderId()));
                         intent.putExtra("orderNumber",item.getOrderNumber());
                         intent.putExtra("shopName",item.getShopName());
+
+                        intent.putExtra("shopLat","55.222");
+                        intent.putExtra("shopLong", "22.244");
+                        intent.putExtra("shopAddress","Mayur Vihar New Delhi");
+                        intent.putExtra("shopMobile", "9871178522");
+
                         intent.putExtra("orderDate",item.getOrderDate());
                         intent.putExtra("orderAmount",item.getToalAmount());
                         intent.putExtra("deliveryMode",item.getOrderDeliveryMode());

@@ -9,16 +9,21 @@ import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
+import com.google.gson.Gson;
 import com.shoppurs.R;
 import com.shoppurs.activities.Settings.SettingActivity;
 import com.shoppurs.adapters.MyOrderDetailsAdapter;
+import com.shoppurs.models.AssignedOrder;
 import com.shoppurs.models.MyOrderDetail;
 import com.shoppurs.models.MyProduct;
+import com.shoppurs.models.ShoppursPartner;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 
@@ -51,6 +56,9 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
     private ImageView imageView2,imageView4;
     private View view1, view2;
     private TextView text_left_label, text_right_label;
+    private LinearLayout linearTrackOrder;
+    private String partnerOrderId;
+    private ShoppursPartner partner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +67,8 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        partnerOrderId = getIntent().getStringExtra("partnerOrderId");
+        Log.d("partnerOrderId ", partnerOrderId);
         orderStatus = getIntent().getStringExtra("orderStatus");
         shopName = getIntent().getStringExtra("shopName");
         orderNumber = getIntent().getStringExtra("orderNumber");
@@ -96,6 +106,9 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
         recycler_order.setAdapter(myOrderDetailsAdapter);
         getOrderDetails();
 
+        if(!partnerOrderId.equals("0"))
+            assignStatus();
+
         tv_footer = findViewById(R.id.text_action);
         tv_footer.setText("View Invoice");
         rl_footer_action = findViewById(R.id.relative_footer_action);
@@ -129,6 +142,31 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
                 finish();
             }
         });
+
+        linearTrackOrder = findViewById(R.id.linear_bottom);
+        linearTrackOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyOrderDetailsActivity.this,TrackOrderActivity.class);
+                intent.putExtra("partner",partner);
+                intent.putExtra("shopLat",getIntent().getStringExtra("shopLat"));
+                intent.putExtra("shopLong",getIntent().getStringExtra("shopLong"));
+                intent.putExtra("shopName",getIntent().getStringExtra("shopName"));
+                intent.putExtra("shopAddress",getIntent().getStringExtra("shopAddress"));
+                intent.putExtra("shopMobile",getIntent().getStringExtra("shopMobile"));
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void assignStatus(){
+        Map<String,String> params=new HashMap<>();
+        params.put("orderId", partnerOrderId);
+        params.put("shopCode","");
+        String url=getResources().getString(R.string.url_partner)+Constants.ASSIGN_STATUS;
+        Log.d("params ", params.toString());
+        showProgress(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"assignStatus");
     }
 
     public void getOrderDetails(){
@@ -178,6 +216,27 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
 
                 }else {
                     DialogAndToast.showDialog(response.getString("message"),MyOrderDetailsActivity.this);
+                }
+            }else if (apiName.equals("assignStatus")) {
+                if (response.getBoolean("status")) {
+                    int responseCode = response.getInt("statusCode");
+                    if(responseCode == 1){
+                        Gson gson = new Gson();
+                        partner = gson.fromJson(response.getString("result"), ShoppursPartner.class);
+                        AssignedOrder order  = gson.fromJson(response.getJSONObject("result").getString("deliveryOrder"), AssignedOrder.class);
+                        partner.setAssignedOrder(order);
+                        linearTrackOrder.setVisibility(View.VISIBLE);
+                       // buttonOrderDelivered.setVisibility(View.GONE);
+                        //rlPartnerDetails.setVisibility(View.VISIBLE);
+                        //tvPartnerName.setText(partner.getName());
+                        //tvPartnerMobile.setText(partner.getMobile());
+                    }else if(responseCode == 3){
+                        //progressBar.setVisibility(View.GONE);
+                        //btnAssign.setVisibility(View.GONE);
+                        linearTrackOrder.setVisibility(View.GONE);
+                        // buttonOrderDelivered.setVisibility(View.VISIBLE);
+                        //tvLabel1.setText("Partner has delivered the order");
+                    }
                 }
             }
 

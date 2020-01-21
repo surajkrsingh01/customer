@@ -154,6 +154,7 @@ public class MyOrderActivity extends NetworkBaseActivity{
                         for (int i = 0; i < jsonArray.length(); i++) {
                             MyOrder myOrder = new MyOrder();
                             myOrder.setOrderNumber(jsonArray.getJSONObject(i).getString("orderNumber"));
+                            myOrder.setPartnerOrderId(jsonArray.getJSONObject(i).getString("partnerOrderId"));
                             myOrder.setShopName(jsonArray.getJSONObject(i).getString("shopName"));
                             myOrder.setOrderDate(jsonArray.getJSONObject(i).getString("orderDate"));
                             myOrder.setOrderDeliveryNote(jsonArray.getJSONObject(i).getString("orderDeliveryNote"));

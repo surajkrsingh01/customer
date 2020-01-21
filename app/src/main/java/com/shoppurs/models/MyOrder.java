@@ -5,11 +5,19 @@ package com.shoppurs.models;
  */
 
 public class MyOrder {
-    private String orderNumber, shopName, orderDate, orderDeliveryNote, orderDeliveryMode, paymentMode,
+    private String orderNumber,partnerOrderId, shopName, orderDate, orderDeliveryNote, orderDeliveryMode, paymentMode,
     custName, deliveryAddress, createdBy, updateBy, createdDate, updatedDate,
     orderStatus, prodIds, orderImage;
     private int pinCode, mobileNo, action, orderId, shopId, custId, totalQuantity;
     private double toalAmount;
+
+    public String getPartnerOrderId() {
+        return partnerOrderId;
+    }
+
+    public void setPartnerOrderId(String partnerOrderId) {
+        this.partnerOrderId = partnerOrderId;
+    }
 
     public String getShopName() {
         return shopName;

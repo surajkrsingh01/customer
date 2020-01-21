@@ -248,6 +248,12 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
+            android:name=".activities.TrackOrderActivity"
+            android:label="Track Order"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
             android:name=".activities.Settings.ChatActivity"
             android:label="ChatActivity"
             android:launchMode="singleTask"

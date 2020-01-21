@@ -5,6 +5,7 @@
     <string name="action_settings">Settings</string>
     <string name="url_shop">http://api.shoppurs.in:8085/ShoppursShopApp/api/</string>
     <string name="url_customer">http://api.shoppurs.in:8085/ShoppursCustomerApp</string>
+    <string name="url_partner">http://api.shoppurs.in:8085/ShoppursPartnerApp</string>
 
     <string name="local_url">http://192.168.1.6:8888/api/customers</string>
     <string name="base_image_url">http://www.shoppurs.in/images</string>

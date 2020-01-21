@@ -108,4 +108,5 @@ public class Constants {
     public static String SEND_MESSAGE="/api/chat/chat_for_support";
     public static String GET_MESSAGE="/api/chat/get_chat_for_support";
     public static String GET_CHAT_USERS="/api/chat/get_chat_users";
+    public static String ASSIGN_STATUS="/api/delivery/order/get_shop_order_Status";
 }

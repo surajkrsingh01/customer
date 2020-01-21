@@ -664,7 +664,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                     for(int i=0;i<jsonArray.length();i++){
                         myReview = new MyReview();
                         myReview.setUserName(jsonArray.getJSONObject(i).getString("customerName"));
-                        myReview.setDateTime(Utility.parseDate(jsonArray.getJSONObject(i).getString("createdDate"), "YYYY-MM-dd HH:mm:ss", "dd MMM yyyy HH:mm:ss"));
+                        myReview.setDateTime(Utility.parseDate(jsonArray.getJSONObject(i).getString("createdDate"), "yyyy-MM-dd HH:mm:ss", "dd MMM yyyy HH:mm:ss"));
                         myReview.setRating(jsonArray.getJSONObject(i).getInt("rating"));
                         myReview.setReview(jsonArray.getJSONObject(i).getString("reviewMessage"));
                         if(myReview.getReview()!=null)
