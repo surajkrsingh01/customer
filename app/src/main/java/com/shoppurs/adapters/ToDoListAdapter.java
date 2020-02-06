@@ -3,6 +3,7 @@ package com.shoppurs.adapters;
 import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,11 +43,13 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.MyView
     private List<MyToDo> myItems = new ArrayList<>();
     private Context context;
     private MyItemClickListener itemClickListener;
+    private int colorTheme;
 
-    public ToDoListAdapter(Context context, List<MyToDo> myItems, String shopCode, boolean isDarkTheme, Typeface typeface) {
+    public ToDoListAdapter(Context context, List<MyToDo> myItems, String shopCode, boolean isDarkTheme, Typeface typeface, int colorTheme) {
         super();
         this.context = context;
         this.myItems = myItems;
+        this.colorTheme = colorTheme;
     }
 
     public void setItemClickListener(MyItemClickListener itemClickListener) {
@@ -84,6 +87,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.MyView
             super(itemView);
             rootView = itemView;
             textName=itemView.findViewById(R.id.text_name);
+            ((GradientDrawable)textName.getBackground()).setColor(colorTheme);
             btn_remove = itemView.findViewById(R.id.btn_remove);
             rootView.setOnClickListener(this);
             rootView.setOnClickListener(this);

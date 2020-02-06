@@ -26,6 +26,7 @@ import com.shoppurs.R;
 import com.shoppurs.activities.CartActivity;
 import com.shoppurs.activities.ProductDetailActivity;
 import com.shoppurs.activities.ShopProductListActivity;
+import com.shoppurs.activities.ShoppursProductActivity;
 import com.shoppurs.database.DbHelper;
 import com.shoppurs.interfaces.MyItemTypeClickListener;
 import com.shoppurs.models.MyProduct;
@@ -116,7 +117,7 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
             public void onClick(View v) {
                 // myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
                 //int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
-                if(flag.equals("ShopProductListActivity") || flag.equals("CartActivity"))
+                if(flag.equals("ShopProductListActivity") || flag.equals("ShoppursProductActivity") || flag.equals("CartActivity"))
                     myItemClickListener.onItemClicked(position, 2);
                 //((ShopProductListActivity) context).updateCart( 2, position);
             }
@@ -125,7 +126,7 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
             @Override
             public void onClick(View v) {
                 int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
-                if(flag.equals("ShopProductListActivity")  || flag.equals("CartActivity"))
+                if(flag.equals("ShopProductListActivity")  || flag.equals("ShoppursProductActivity") ||  flag.equals("CartActivity"))
                     myItemClickListener.onItemClicked(position, 1);
                 //((ShopProductListActivity) context).updateCart(1, position);
             }
@@ -134,7 +135,7 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
             @Override
             public void onClick(View v) {
                 int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
-                if(flag.equals("ShopProductListActivity") || flag.equals("CartActivity"))
+                if(flag.equals("ShopProductListActivity") || flag.equals("ShoppursProductActivity") || flag.equals("CartActivity"))
                     myItemClickListener.onItemClicked(position, 2);
                 //((ShopProductListActivity) context).updateCart(2, position);
             }
@@ -333,7 +334,7 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
             text_offer = itemView.findViewById(R.id.text_offer);
             text_frequency = itemView.findViewById(R.id.text_frequency);
             tv_todo_status = itemView.findViewById(R.id.tv_todo_status);
-            if(flag.equals("ShopProductListActivity")) {
+            if(flag.equals("ShopProductListActivity") ||flag.equals("ShoppursProductActivity")) {
                 text_frequency.setVisibility(View.VISIBLE);
                 text_frequency.setTypeface(typeface);
                 text_frequency.setOnClickListener(this);
@@ -346,20 +347,28 @@ public class SearchProductAdapter extends RecyclerView.Adapter<SearchProductAdap
         @Override
         public void onClick(View v) {
             if(v==imageView){
-               // if(flag.equals("ShopProductListActivity"))
+                if(flag.equals("ShopProductListActivity"))
                     ((ShopProductListActivity)context).showLargeImageDialog(myProductsList.get(getAdapterPosition()), imageView);
+                else if(flag.equals("ShoppursProductActivity"))
+                    ((ShoppursProductActivity)context).showLargeImageDialog(myProductsList.get(getAdapterPosition()), imageView);
             }
             if(v==text_offer){
-                if(flag.equals("ShopProductListActivity"))
+                if(flag.equals("ShopProductListActivity") )
                 ((ShopProductListActivity)context).showOfferDescription(myProductsList.get(getAdapterPosition()));
+                else if(flag.equals("ShoppursProductActivity"))
+                    ((ShoppursProductActivity)context).showOfferDescription(myProductsList.get(getAdapterPosition()));
                 else if(flag.equals("CartActivity"))
                     ((CartActivity)context).showOfferDescription(myProductsList.get(getAdapterPosition()));
             }else if(v == text_frequency){
                 ProductFrequency frequency = myProductsList.get(getAdapterPosition()).getFrequency();
                 if(frequency!=null && frequency.getStatus().equals("1"))
                     DialogAndToast.showDialog("Product Frequency is already Active", context);
-                else
+                else{
+                    if(flag.equals("ShopProductListActivity") )
                     ((ShopProductListActivity)context).showFrequencyBottomShet(myProductsList.get(getAdapterPosition()), getAdapterPosition());
+                    else if(flag.equals("ShoppursProductActivity"))
+                        ((ShoppursProductActivity)context).showFrequencyBottomShet(myProductsList.get(getAdapterPosition()), getAdapterPosition());
+                }
             }else if (v == rootView) {
                 MyProduct item = (MyProduct) myProductsList.get(getAdapterPosition());
                 if(flag.equals("ChatActivity")){

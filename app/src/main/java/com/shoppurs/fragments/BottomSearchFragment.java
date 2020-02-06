@@ -29,6 +29,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.shoppurs.R;
 import com.shoppurs.activities.CartActivity;
 import com.shoppurs.activities.ShopProductListActivity;
+import com.shoppurs.activities.ShoppursProductActivity;
 import com.shoppurs.adapters.SearchProductAdapter;
 import com.shoppurs.adapters.SearchShopAdapter;
 import com.shoppurs.database.DbHelper;
@@ -168,7 +169,8 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
             public void afterTextChanged(Editable s) {
                 if(callingActivityName.equals("ShopListActivity") || callingActivityName.equals("shopInfoActivity"))
                     searchShops(s.toString());
-                else if(callingActivityName.equals("ShopProductListActivity") || callingActivityName.equals("CartActivity") || callingActivityName.equals("ChatActivity")) {
+                else if(callingActivityName.equals("ShopProductListActivity") || callingActivityName.equals("CartActivity")
+                        || callingActivityName.equals("ChatActivity") || callingActivityName.equals("ShoppursProductActivity")) {
                     Bundle bundle = getArguments();
                     shopCode = bundle.getString("shopCode");
                     searchProducts(s.toString());
@@ -593,7 +595,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         if(callingActivityName.equals("ChatActivity")){
             myItemClickListener.onProductSearch(myProductList.get(position));
         }
-        if(callingActivityName.equals("ShopProductListActivity")){
+        if(callingActivityName.equals("ShopProductListActivity") || callingActivityName.equals("ShoppursProductActivity")){
             if(type==2) {
                 productDetailsType = 1;
                 getProductDetails(myProductList.get(position).getId());
@@ -630,6 +632,8 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     productAdapter.notifyItemChanged(position);
                     if(callingActivityName.equals("ShopProductListActivity"))
                         ((ShopProductListActivity)getContext()).updateCartCount();
+                    if(callingActivityName.equals("ShoppursProductActivity"))
+                        ((ShoppursProductActivity)getContext()).updateCartCount();
                     else if(callingActivityName.equals("CartActivity"))
                         ((CartActivity)getContext()).setFooterValues();
                 }else{
@@ -649,6 +653,8 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     productAdapter.notifyItemChanged(position);
                     if(callingActivityName.equals("ShopProductListActivity"))
                         ((ShopProductListActivity)getContext()).updateCartCount();
+                    else if(callingActivityName.equals("ShoppursProductActivity"))
+                        ((ShoppursProductActivity)getContext()).updateCartCount();
                     else if(callingActivityName.equals("CartActivity"))
                         ((CartActivity)getContext()).setFooterValues();
                 }
@@ -710,6 +716,8 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                     productAdapter.notifyItemChanged(position);
                     if(callingActivityName.equals("ShopProductListActivity"))
                         ((ShopProductListActivity)getContext()).updateCartCount();
+                    else if(callingActivityName.equals("ShoppursProductActivity"))
+                        ((ShoppursProductActivity)getContext()).updateCartCount();
                     else if(callingActivityName.equals("CartActivity"))
                         ((CartActivity)getContext()).setFooterValues();
                 }

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activities.ShoppursProductActivity"
+    tools:showIn="@layout/activity_shoppurs_product">
+
+        <RelativeLayout
+            android:id="@+id/relatvive_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_toLeftOf="@+id/linear_cart_profile"
+                android:id="@+id/linear_back_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/activity_vertical_margin">
+                <TextView
+                    android:maxLines="1"
+                    android:text="Grocery"
+                    android:id="@+id/text_left_label"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:paddingLeft="@dimen/view_horizontal_margin"
+                    android:paddingRight="@dimen/view_horizontal_margin"
+                    android:textSize="@dimen/home_list_header_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:id="@+id/view_seperator"
+                    android:layout_width="2dp"
+                    android:layout_height="20dp"
+                    android:background="?attr/separatorColor"/>
+                <TextView
+                    android:maxLines="1"
+                    android:paddingLeft="@dimen/view_horizontal_margin"
+                    android:paddingRight="@dimen/view_horizontal_margin"
+                    android:id="@+id/text_right_label"
+                    android:text="Products"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="@dimen/small_text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <TextView
+                android:text="Shoppurs Products"
+                android:id="@+id/text_desc"
+                android:layout_marginTop="@dimen/view_vertical_margin"
+                android:layout_marginBottom="5dp"
+                android:paddingLeft="@dimen/view_horizontal_margin"
+                android:paddingRight="@dimen/view_horizontal_margin"
+                android:layout_below="@+id/linear_back_header"
+                android:textColor="?attr/primaryTextColor"
+                android:textStyle="bold"
+                android:textSize="@dimen/product_list_very_large_text_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:id="@+id/linear_cart_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginRight="@dimen/view_horizontal_margin"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/linear_back_header">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:id="@+id/iv_search"
+                    android:src="@drawable/ic_search_black_24dp"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin"
+                    android:layout_marginRight="@dimen/activity_vertical_margin"/>
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:id="@+id/iv_cart"
+                    android:src="@drawable/cart"
+                    android:layout_marginRight="@dimen/activity_vertical_margin"/>
+                <de.hdodenhof.circleimageview.CircleImageView
+                    app:civ_fill_color="@color/green700"
+                    android:id="@+id/profile_image"
+                    android:src="@drawable/thumb_2"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:tint="@color/white"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_above="@+id/rlfooterviewcart"
+        android:layout_below="@+id/relatvive_header"
+        android:id="@+id/swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.core.widget.NestedScrollView
+            android:scrollbars="none"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/linear_header"
+            android:descendantFocusability="blocksDescendants"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="@dimen/view_vertical_margin"
+            android:id="@+id/recycler_view"
+            android:scrollbars="none"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </androidx.recyclerview.widget.RecyclerView>
+
+            <View
+                android:id="@+id/view_top_sub_cat"
+                android:visibility="gone"
+                android:layout_marginTop="@dimen/view_vertical_margin"
+                android:background="?attr/separatorColor"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/recycler_viewCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </androidx.recyclerview.widget.RecyclerView>
+
+                <View
+                    android:visibility="gone"
+                    android:id="@+id/seperator_1"
+                    android:layout_below="@+id/recycler_viewCategory"
+                    android:layout_marginTop="@dimen/view_vertical_margin"
+                    android:background="?attr/separatorColor"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+
+                <ProgressBar
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="50dp"
+                    android:id="@+id/progress_bar"
+                    android:visibility="gone"
+                    android:layout_below="@+id/seperator_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="50dp"
+                    android:id="@+id/tvNoData"
+                    android:visibility="gone"
+                    android:layout_below="@+id/seperator_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/primaryTextColor"
+                    android:text="No Data Available"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:layout_marginTop="10dp"
+                    android:layout_below="@+id/seperator_1"
+                    android:id="@+id/recycler_viewProduct"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                </androidx.recyclerview.widget.RecyclerView>
+            </RelativeLayout>
+
+        </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <include layout="@layout/footer_viewcart_layout"/>
+</RelativeLayout>

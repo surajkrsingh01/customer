@@ -164,10 +164,10 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.MyViewHo
                         intent.putExtra("orderNumber",item.getOrderNumber());
                         intent.putExtra("shopName",item.getShopName());
 
-                        intent.putExtra("shopLat","55.222");
+                       /* intent.putExtra("shopLat","55.222");
                         intent.putExtra("shopLong", "22.244");
                         intent.putExtra("shopAddress","Mayur Vihar New Delhi");
-                        intent.putExtra("shopMobile", "9871178522");
+                        intent.putExtra("shopMobile", "9871178522");*/
 
                         intent.putExtra("orderDate",item.getOrderDate());
                         intent.putExtra("orderAmount",item.getToalAmount());

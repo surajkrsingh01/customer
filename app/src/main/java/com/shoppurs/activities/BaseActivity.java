@@ -211,11 +211,11 @@ public class BaseActivity extends AppCompatActivity {
         relativeLayoutFooter4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (context instanceof SearchActivity) {
+                if (context instanceof ShoppursProductActivity) {
                     //DialogAndToast.showToast("Profile clicked in profile",BaseActivity.this);
                 } else {
                   //  DialogAndToast.showToast("Profile clicked in Search ",BaseActivity.this);
-                    Intent intent = new Intent(BaseActivity.this, SearchActivity.class);
+                    Intent intent = new Intent(BaseActivity.this, ShoppursProductActivity.class);
                     //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 }

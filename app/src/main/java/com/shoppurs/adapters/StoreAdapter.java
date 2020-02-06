@@ -30,6 +30,7 @@ import com.shoppurs.R;
 import com.shoppurs.activities.Settings.SettingActivity;
 import com.shoppurs.activities.ShopAddressActivity;
 import com.shoppurs.activities.ShopProductListActivity;
+import com.shoppurs.activities.ShoppursProductActivity;
 import com.shoppurs.activities.StoresListActivity;
 import com.shoppurs.activities.SubCatListActivity;
 import com.shoppurs.models.CatListItem;
@@ -148,12 +149,15 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 case MotionEvent.ACTION_UP:
                     zoomAnimation(false,rootView);
                     Category item = (Category) itemList.get(getAdapterPosition());
-                    //DialogAndToast.showDialog("item Name "+item.getName(), context );
-                    Intent intent = new Intent(context,SubCatListActivity.class);
-                    intent.putExtra("catName",item.getName());
-                    Log.d("catName called", item.getName());
-                    intent.putExtra("catId",item.getId());
-                    context.startActivity(intent);
+                    if(context instanceof StoresListActivity) {
+                        Intent intent = new Intent(context, SubCatListActivity.class);
+                        intent.putExtra("catName", item.getName());
+                        Log.d("catName called", item.getName());
+                        intent.putExtra("catId", item.getId());
+                        context.startActivity(intent);
+                    }else if(context instanceof ShoppursProductActivity){
+                        ((ShoppursProductActivity)(context)).selectCategory(item);
+                    }
                     break;
                 case MotionEvent.ACTION_CANCEL:
                     zoomAnimation(false,rootView);
@@ -190,7 +194,9 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
                 case MotionEvent.ACTION_UP:
                     zoomAnimation(false,rootView);
+                    if(context instanceof StoresListActivity)
                     ((StoresListActivity)(context)).scanBarCode();
+                    else ((ShoppursProductActivity)(context)).scanBarCode();
                     break;
                 case MotionEvent.ACTION_CANCEL:
                     zoomAnimation(false,rootView);
@@ -435,6 +441,7 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             MyStoreHeader1ViewHolder myViewHolder = (MyStoreHeader1ViewHolder)holder;
             myViewHolder.textHeader.setText(item.getTitle());
             myViewHolder.recyclerView.setHasFixedSize(true);
+           // myViewHolder.recyclerView.setNestedScrollingEnabled(false);
             if(item.getItemList().get(0) instanceof  MyShop) { //call catList section type 8 layout
                 Log.d("itemType 8",""+item.getType());
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);

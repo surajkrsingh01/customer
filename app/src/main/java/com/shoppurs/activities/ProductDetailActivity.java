@@ -427,6 +427,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                         counter++;
                         myProduct.setFreeProductPosition(counter);
                         dbHelper.addProductToCart(myProduct, "normal");
+                        if(shopDeliveryModel!=null)
                         dbHelper.addShopDeliveryDetails(shopDeliveryModel);
                     }
                     float netSellingPrice = getOfferAmount(myProduct,type);

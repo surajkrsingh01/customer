@@ -149,11 +149,12 @@ public class MyOrderDetailsActivity extends NetworkBaseActivity{
             public void onClick(View v) {
                 Intent intent = new Intent(MyOrderDetailsActivity.this,TrackOrderActivity.class);
                 intent.putExtra("partner",partner);
-                intent.putExtra("shopLat",getIntent().getStringExtra("shopLat"));
-                intent.putExtra("shopLong",getIntent().getStringExtra("shopLong"));
-                intent.putExtra("shopName",getIntent().getStringExtra("shopName"));
-                intent.putExtra("shopAddress",getIntent().getStringExtra("shopAddress"));
-                intent.putExtra("shopMobile",getIntent().getStringExtra("shopMobile"));
+                AssignedOrder order = partner.getAssignedOrder();
+                intent.putExtra("shopLat", order.getShopLat());
+                intent.putExtra("shopLong", order.getShopLong());
+                intent.putExtra("shopName", order.getShopName());
+                intent.putExtra("shopAddress", order.getShopAddress());
+                intent.putExtra("shopMobile", order.getShopMobile());
                 startActivity(intent);
             }
         });

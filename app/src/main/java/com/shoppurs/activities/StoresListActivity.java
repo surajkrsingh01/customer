@@ -2,7 +2,6 @@ package com.shoppurs.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,12 +12,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.android.volley.Request;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -59,7 +56,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     List<Object> normalShopList = new ArrayList<>();
     List<String> myfavoriteShopIds = new ArrayList<>();
     private CircleImageView customer_profile;
-    private ImageView iv_cart;
+    private ImageView iv_cart, iv_search;
     private TextView text_customer_address;
     private boolean isVisible,loadingComplete, isUpdateAvailable;
     protected ProgressDialog progressDialog;
@@ -115,6 +112,15 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
             public void onRefresh() {
                 swipeRefreshLayout.setRefreshing(true);
                 getItemList();
+            }
+        });
+        iv_search = findViewById(R.id.iv_search);
+        iv_search.setColorFilter(colorTheme,
+                android.graphics.PorterDuff.Mode.SRC_IN);
+        iv_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(StoresListActivity.this, SearchActivity.class));
             }
         });
         iv_cart = findViewById(R.id.iv_cart);
@@ -292,7 +298,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
                             myItem1.setType(1);
                             myItem1.setItemList(favoriteShopList);
                             itemList.add(myItem1);
-                            myItemAdapter.notifyDataSetChanged();
+                          //  myItemAdapter.notifyDataSetChanged();
                         }//else tv_myfav.setVisibility(View.GONE);
 
                         if (normalShopList.size() > 0) {
@@ -301,7 +307,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
                             myItem1.setType(1);
                             myItem1.setItemList(normalShopList);
                             itemList.add(myItem1);
-                            myItemAdapter.notifyDataSetChanged();
+                            //myItemAdapter.notifyDataSetChanged();
                         }
                         if (itemList.size() == 0) {
                             showNoData(true);

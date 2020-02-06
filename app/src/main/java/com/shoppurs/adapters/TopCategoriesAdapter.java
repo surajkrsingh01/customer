@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.shoppurs.R;
 import com.shoppurs.activities.ShopProductListActivity;
+import com.shoppurs.activities.ShoppursProductActivity;
 import com.shoppurs.models.SubCategory;
 
 import java.util.List;
@@ -91,8 +92,12 @@ public class TopCategoriesAdapter extends RecyclerView.Adapter<TopCategoriesAdap
                     item.setSelected(true);
                     selectedIndex = getAdapterPosition();
                    // DialogAndToast.showToast(item.getName(), context);
+                    if(context instanceof  ShopProductListActivity)
                     ((ShopProductListActivity) (context)).getProducts(String.valueOf(item.getSubcatid()), "onSubCategorySelected");
+                    else  if(context instanceof ShoppursProductActivity)
+                        ((ShoppursProductActivity) (context)).getProducts(String.valueOf(item.getSubcatid()), "onSubCategorySelected");
                     notifyDataSetChanged();
+
                 }
             }
         }

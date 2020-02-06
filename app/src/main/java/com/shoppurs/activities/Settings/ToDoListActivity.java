@@ -111,7 +111,7 @@ public class ToDoListActivity extends NetworkBaseActivity implements MyItemClick
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        toDoListAdapter = new ToDoListAdapter(this, myToDoList, shopCode, isDarkTheme, typeface);
+        toDoListAdapter = new ToDoListAdapter(this, myToDoList, shopCode, isDarkTheme, typeface, colorTheme);
         toDoListAdapter.setItemClickListener(this);
         recyclerView.setAdapter(toDoListAdapter);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

@@ -23,9 +23,11 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.signature.ObjectKey;
 import com.shoppurs.R;
 import com.shoppurs.activities.ProductDetailActivity;
 import com.shoppurs.activities.ShopProductListActivity;
+import com.shoppurs.activities.ShoppursProductActivity;
 import com.shoppurs.database.DbHelper;
 import com.shoppurs.models.MyProduct;
 import com.shoppurs.models.ProductDiscountOffer;
@@ -112,7 +114,9 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
                     // myViewHolder.linear_plus_minus.setVisibility(View.VISIBLE);
                     //myViewHolder.btnAddCart.setVisibility(View.GONE);
                     int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
-                    ((ShopProductListActivity)context).updateCart(2, position);
+                    if(context instanceof ShoppursProductActivity)
+                    ((ShoppursProductActivity)context).updateCart(2, position);
+                    else ((ShopProductListActivity)context).updateCart(2, position);
                     //((ShopProductListActivity)context).add_toCart(item);
                     // DialogAndToast.showToast("Add to Cart ", context);
                 }
@@ -121,6 +125,9 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
                 @Override
                 public void onClick(View v) {
                     int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
+                    if(context instanceof ShoppursProductActivity)
+                        ((ShoppursProductActivity)context).updateCart(1, position);
+                    else
                     ((ShopProductListActivity)context).updateCart(1, position);
                 }
             });
@@ -128,7 +135,9 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
                 @Override
                 public void onClick(View v) {
                     int count = Integer.parseInt(myViewHolder.tv_cartCount.getText().toString());
-                    ((ShopProductListActivity)context).updateCart(2, position);
+                    if(context instanceof ShoppursProductActivity)
+                    ((ShoppursProductActivity)context).updateCart(2, position);
+                    else ((ShopProductListActivity)context).updateCart(2, position);
                 }
             });
 
@@ -230,11 +239,13 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
                 myViewHolder.tv_shortName.setText(item.getName().substring(0, 1));
                 //image_view_shop .setText(shopName);
                 String initials = "";
+                Log.d("nameArray ", item.getName());
                 if (item.getName().contains(" ")) {
                     String[] nameArray = item.getName().split(" ");
-                    Log.d("nameArray ", item.getName());
-                    String firstChar = nameArray[0].substring(0, 1);
-                    String secondChar = "";
+                   // Log.d("nameArray ", item.getName());
+                    String secondChar = "", firstChar = "";
+                    if(nameArray[0].length()>0)
+                    firstChar = nameArray[0].substring(0, 1);
                     if(nameArray.length>2 && nameArray[1].length()>0) {
                         secondChar = nameArray[1].substring(0, 1);
                         if(secondChar.contains("-") || secondChar.contains("("))
@@ -247,6 +258,7 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
 
                 myViewHolder.tv_shortName.setText(initials);
             }
+            Log.d("prodName "+item.getName(), "image "+item.getProdImage1());
             if(item.getProdImage1() !=null && item.getProdImage1().contains("http")){
                 myViewHolder.tv_shortName.setVisibility(View.GONE);
                 myViewHolder.imageView.setVisibility(View.VISIBLE);
@@ -256,6 +268,7 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
                 // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
                 // requestOptions.centerCrop();
                 requestOptions.skipMemoryCache(false);
+                requestOptions.signature(new ObjectKey(item.getCode()));
 
                 Glide.with(context)
                         .load(item.getProdImage1())
@@ -319,18 +332,33 @@ public class ShopProductListAdapter extends RecyclerView.Adapter<ShopProductList
         @Override
         public void onClick(View v) {
             if(v==text_offer){
+                if(context instanceof ShoppursProductActivity)
+                    ((ShoppursProductActivity)context).showOfferDescription(myProductsList.get(getAdapterPosition()));
+                else
                 ((ShopProductListActivity)context).showOfferDescription(myProductsList.get(getAdapterPosition()));
             }else if(v == imageView){
+                if(context instanceof ShoppursProductActivity)
+                    ((ShoppursProductActivity)context).showLargeImageDialog(myProductsList.get(getAdapterPosition()), imageView);
+                else
                 ((ShopProductListActivity)context).showLargeImageDialog(myProductsList.get(getAdapterPosition()), imageView);
             }else if(v == rootView){
                 MyProduct item = (MyProduct) myProductsList.get(getAdapterPosition());
-                ((ShopProductListActivity)context).showProductDetails(item);
+                if(context instanceof ShoppursProductActivity)
+                ((ShoppursProductActivity)context).showProductDetails(item);
+                else ((ShopProductListActivity)context).showProductDetails(item);
             }else if(v == text_frequency){
                 ProductFrequency frequency = myProductsList.get(getAdapterPosition()).getFrequency();
-                if(frequency!=null && frequency.getStatus().equals("1"))
-                    DialogAndToast.showDialog("Product Frequency is already Active", context);
-                else
-                ((ShopProductListActivity)context).showFrequencyBottomShet(myProductsList.get(getAdapterPosition()), getAdapterPosition());
+                if(context instanceof ShoppursProductActivity) {
+                    if (frequency != null && frequency.getStatus().equals("1"))
+                        DialogAndToast.showDialog("Product Frequency is already Active", context);
+                    else
+                        ((ShoppursProductActivity) context).showFrequencyBottomShet(myProductsList.get(getAdapterPosition()), getAdapterPosition());
+                }else {
+                    if (frequency != null && frequency.getStatus().equals("1"))
+                        DialogAndToast.showDialog("Product Frequency is already Active", context);
+                    else
+                        ((ShopProductListActivity) context).showFrequencyBottomShet(myProductsList.get(getAdapterPosition()), getAdapterPosition());
+                }
             }
         }
     }

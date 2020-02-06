@@ -157,7 +157,7 @@
 
         <TextView
             android:id="@+id/text_footer_4"
-            android:text="@string/search"
+            android:text="@string/products"
             android:textSize="@dimen/bottom_nav_text_size"
             android:layout_below="@+id/image_footer_4"
             android:layout_marginTop="@dimen/bottom_nav_text_vertical_margin"

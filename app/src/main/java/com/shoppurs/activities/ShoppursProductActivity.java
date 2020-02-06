@@ -1,18 +1,18 @@
 package com.shoppurs.activities;
 
-import android.content.Intent;
-import android.graphics.Typeface;
-import android.os.Bundle;
-import androidx.core.content.ContextCompat;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Typeface;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -23,19 +23,26 @@ import com.android.volley.Request;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.signature.ObjectKey;
 import com.shoppurs.R;
+import com.shoppurs.activities.Settings.SettingActivity;
 import com.shoppurs.adapters.ShopProductListAdapter;
+import com.shoppurs.adapters.StoreAdapter;
 import com.shoppurs.adapters.TopCategoriesAdapter;
 import com.shoppurs.database.DbHelper;
+import com.shoppurs.fragments.BottomLocationFragment;
 import com.shoppurs.fragments.BottomSearchFragment;
 import com.shoppurs.fragments.FrequencyFragment;
 import com.shoppurs.fragments.OfferDescriptionFragment;
+import com.shoppurs.interfaces.LocationActionListener;
 import com.shoppurs.models.Barcode;
-import com.shoppurs.models.DeliveryAddress;
-import com.shoppurs.models.ProductFrequency;
+import com.shoppurs.models.CatListItem;
+import com.shoppurs.models.Category;
 import com.shoppurs.models.MyProduct;
+import com.shoppurs.models.MyShop;
 import com.shoppurs.models.ProductColor;
 import com.shoppurs.models.ProductDiscountOffer;
+import com.shoppurs.models.ProductFrequency;
 import com.shoppurs.models.ProductPriceDetails;
 import com.shoppurs.models.ProductPriceOffer;
 import com.shoppurs.models.ProductSize;
@@ -51,101 +58,92 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by suraj kumar singh on 20-04-2019.
- */
+import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ShopProductListActivity extends HandleCartActivity {
+public class ShoppursProductActivity extends HandleCartActivity {
 
-    private Toolbar toolbar;
-    private Menu menu;
+    private List<Object> categoryList;
+    private StoreAdapter myItemAdapter;
+    private RecyclerView recyclerView;
+    private TextView textViewError;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ProgressBar progressBar;
+    private CircleImageView customer_profile;
+    private ImageView iv_cart, iv_search;
+    private TextView text_left_label, text_right_label;
+    private boolean isVisible;
+    protected ProgressDialog progressDialog;
+
     private RecyclerView recyclerViewProduct, recyclerViewCategory;
     private TextView tvNoData, cartItemCount, cartItemPrice, viewCart;
-    private TextView text_shop_name, tv_shortName, text_mobile, text_address, text_state_city, text_left_label, text_right_label;
-    private ProgressBar progressBar;
     private RelativeLayout rlfooterviewcart;
     private ShopProductListAdapter shopProductAdapter;
     private TopCategoriesAdapter categoriesAdapter;
     private List<SubCategory> subCategoryList;
     private List<MyProduct> myProductList;
-   // private CartItem cartItem;
-    private MyProduct myProduct, freeProdut;
     private DbHelper dbHelper;
-    private ImageView image_view_shop, image_fav, image_search, image_scan;
-    private String shopCode, shopName, shopImage, shopMobile, address, statecity, catId, selectdSubCatId, selectedSubCatName, custCode, shopdbname, custdbname, dbuser, dbpassword;
-
+    private String shopCode, shopName, shopImage, shopMobile, address, statecity, catId, selectdSubCatId, selectedSubCatName, shopdbname;
     private int position, type, productDetailsType, selectdSubCatPosition;
     private int counter;
     private ShopDeliveryModel shopDeliveryModel;
     private Typeface typeface;
+    private boolean isFrequencySelected;
+    private View view_top_sub_cat, seperator_1;
 
-    public boolean isFrequencySelecte() {
-        return isFrequencySelecte;
+    public boolean isFrequencySelected() {
+        return isFrequencySelected;
     }
-
-    public void setFrequencySelecte(boolean frequencySelecte, ProductFrequency frequency, int position) {
-        isFrequencySelecte = frequencySelecte;
+    public void setFrequencySelected(boolean frequencySelected, ProductFrequency frequency, int position) {
+        isFrequencySelected = frequencySelected;
         myProductList.get(position).setFrequency(frequency);
     }
-
-    private boolean isFrequencySelecte;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shop_product_list);
-        dbHelper = new DbHelper(this);
-        shopCode = sharedPreferences.getString(Constants.SHOP_INSIDE_CODE,"");
-        shopName = sharedPreferences.getString(Constants.SHOP_INSIDE_NAME,"");
-        shopdbname = sharedPreferences.getString(Constants.SHOP_DBNAME,"");
-        shopImage = getIntent().getStringExtra("photo");
-        Log.d("shopImage", shopImage);
-        shopMobile = getIntent().getStringExtra("mobile");
-        address = getIntent().getStringExtra("address");
-        statecity = getIntent().getStringExtra("stateCity");
-        catId = getIntent().getStringExtra("catId");
-        selectdSubCatId = getIntent().getStringExtra("subcatid");
-        selectedSubCatName = getIntent().getStringExtra("subcatname");
-        shopDeliveryModel = new ShopDeliveryModel();
-        shopDeliveryModel = (ShopDeliveryModel) getIntent().getSerializableExtra("shopDeliveryModel");
-        custCode = sharedPreferences.getString(Constants.USER_ID,"");
-        custdbname = sharedPreferences.getString(Constants.DB_NAME, "");
-        initViews();
+        setContentView(R.layout.activity_shoppurs_product);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        init();
+        getShopDetails();
     }
 
-    private void initViews(){
-        text_shop_name = findViewById(R.id.text_shop_name);
-        tv_shortName = findViewById(R.id.tv_shortName);
-        image_view_shop = findViewById(R.id.image_view_shop);
-        text_mobile = findViewById(R.id.text_mobile);
-        text_address = findViewById(R.id.text_address);
-        text_state_city = findViewById(R.id.text_state_city);
-        image_fav = findViewById(R.id.image_fav);
-        Log.d("isShopFavourite ", ""+dbHelper.isShopFavorited(shopCode));
-        if(dbHelper.isShopFavorited(shopCode))
-            image_fav.setImageDrawable(ContextCompat.getDrawable(ShopProductListActivity.this,R.drawable.favroite_selected));
-        else image_fav.setImageDrawable(ContextCompat.getDrawable(ShopProductListActivity.this, R.drawable.favrorite_select));
+    private void init(){
+        dbHelper = new DbHelper(this);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Loading..");
 
-        image_search = findViewById(R.id.image_search);
-        image_fav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(dbHelper.isShopFavorited(shopCode))
-                    shopFavorite("N");
-                else shopFavorite("Y");
-            }
-        });
+        swipeRefreshLayout=findViewById(R.id.swipe_refresh);
+        progressBar=findViewById(R.id.progress_bar);
+        textViewError = findViewById(R.id.tvNoData);
+        categoryList = new ArrayList<>();
+        recyclerView=findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        myItemAdapter=new StoreAdapter(this,categoryList,"catList");
+        myItemAdapter.setColorTheme(colorTheme);
+        recyclerView.setAdapter(myItemAdapter);
 
-        image_search.setOnClickListener(new View.OnClickListener() {
+        text_left_label = findViewById(R.id.text_left_label);
+        text_right_label = findViewById(R.id.text_right_label);
+
+        //initFooter(this,3);
+
+        iv_search = findViewById(R.id.iv_search);
+        iv_search.setColorFilter(colorTheme,
+                android.graphics.PorterDuff.Mode.SRC_IN);
+        iv_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 BottomSearchFragment bottomSearchFragment = new BottomSearchFragment();
@@ -155,43 +153,46 @@ public class ShopProductListActivity extends HandleCartActivity {
                 bundle.putString("shopAddress", address);
                 bundle.putString("shopMobile", shopMobile);
                 bottomSearchFragment.setArguments(bundle);
-                bottomSearchFragment.setCallingActivityName("ShopProductListActivity", sharedPreferences, isDarkTheme);
-                bottomSearchFragment.setTypeFace(Utility.getSimpleLineIconsFont(ShopProductListActivity.this));
+                bottomSearchFragment.setCallingActivityName("ShoppursProductActivity", sharedPreferences, isDarkTheme);
+                bottomSearchFragment.setTypeFace(Utility.getSimpleLineIconsFont(ShoppursProductActivity.this));
                 bottomSearchFragment.setSubCatName(selectedSubCatName);
                 bottomSearchFragment.setSubcatId(selectdSubCatId);
                 bottomSearchFragment.show(getSupportFragmentManager(), bottomSearchFragment.getTag());
             }
         });
-
-        image_scan = findViewById(R.id.image_scan);
-        image_scan.setOnClickListener(new View.OnClickListener() {
+        iv_cart = findViewById(R.id.iv_cart);
+        iv_cart.setColorFilter(colorTheme,
+                android.graphics.PorterDuff.Mode.SRC_IN);
+        iv_cart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ShopProductListActivity.this,ScannarActivity.class);
-                intent.putExtra("flag","scan");
-                intent.putExtra("type","scanProducts");
-                intent.putExtra("shopCode",shopCode);
-                // startActivity(intent);
-                startActivityForResult(intent,112);
+                startActivity(new Intent(ShoppursProductActivity.this, CartActivity.class));
+            }
+        });
+        customer_profile= findViewById(R.id.profile_image);
+        customer_profile.setCircleBackgroundColor(colorTheme);
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+        // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
+        requestOptions.centerCrop();
+        requestOptions.skipMemoryCache(false);
+        requestOptions.signature(new ObjectKey(sharedPreferences.getString("profile_image_signature","")));
+        Glide.with(this)
+                .load(sharedPreferences.getString(Constants.PROFILE_PIC, ""))
+                .apply(requestOptions)
+                .error(R.drawable.ic_photo_black_192dp)
+                .into(customer_profile);
+        customer_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ShoppursProductActivity.this, SettingActivity.class);
+                startActivity(intent);
             }
         });
 
-        text_left_label = findViewById(R.id.text_left_label);
-        text_right_label = findViewById(R.id.text_right_label);
-        text_left_label.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //startActivity(new Intent(ShopProductListActivity.this, ShopListActivity.class));
-                finish();
-            }
-        });
+        shopCode = "SHP1";
+        shopDeliveryModel = new ShopDeliveryModel();
 
-        setShopDetails();
-
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        swipeRefreshLayout =findViewById(R.id.swipe_refresh);
-       // tv_shopname = findViewById(R.id.tv_shopname);
         recyclerViewProduct = findViewById(R.id.recycler_viewProduct);
         recyclerViewCategory = findViewById(R.id.recycler_viewCategory);
         tvNoData = findViewById(R.id.tvNoData);
@@ -202,7 +203,7 @@ public class ShopProductListActivity extends HandleCartActivity {
         viewCart = findViewById(R.id.viewCart);
 
         myProductList = new ArrayList<>();
-       // recyclerViewProduct.setHasFixedSize(true);
+        // recyclerViewProduct.setHasFixedSize(true);
         final RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerViewProduct.setLayoutManager(linearLayoutManager);
         recyclerViewProduct.setItemAnimator(new DefaultItemAnimator());
@@ -216,13 +217,12 @@ public class ShopProductListActivity extends HandleCartActivity {
        /* setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);*/
-        getsubCategories();
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 offset = 0;
                 if(subCategoryList.size()>0)
-                getProducts(selectdSubCatId, "onRefreshProduct");
+                    getProducts(selectdSubCatId, "onRefreshProduct");
             }
         });
 
@@ -248,48 +248,36 @@ public class ShopProductListActivity extends HandleCartActivity {
                 }
             }
         });
+
+        view_top_sub_cat = findViewById(R.id.view_top_sub_cat);
+        seperator_1 = findViewById(R.id.seperator_1);
+
     }
 
-    private void setShopDetails(){
-        text_shop_name.setText(shopName);
+    private void getShopDetails(){
+        Map<String,String> params=new HashMap<>();
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/shop/shop_details_by_code";
+        params.put("code", shopCode);
+        params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
+        params.put("dbUserName", sharedPreferences.getString(Constants.DB_USER_NAME, ""));
+        params.put("dbPassword", sharedPreferences.getString(Constants.DB_PASSWORD, ""));
+        Log.d(TAG, params.toString());
+        showProgressBar(true);
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"shopDetails");
+    }
 
-        if(shopName.length()>1) {
-            tv_shortName.setText(shopName.substring(0, 1));
-            //image_view_shop .setText(shopName);
-            String initials = "";
-            if (shopName.contains(" ")) {
-                String[] nameArray = shopName.split(" ");
-                initials = nameArray[0].substring(0, 1) + nameArray[1].substring(0, 1);
-            } else {
-                initials = shopName.substring(0, 2);
-            }
-
-            tv_shortName.setText(initials);
+    public void getAllCategories(){
+        Map<String,String> params=new HashMap<>();
+        if(!TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS,""))){
+            params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
+            params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
+        }else {
+            params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT, ""));
+            params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG, ""));
         }
-
-        text_mobile.setText(shopMobile);
-        text_address.setText(address);
-        text_state_city.setText(statecity);
-
-        if(shopImage !=null && shopImage.contains("http")){
-            tv_shortName.setVisibility(View.GONE);
-            image_view_shop.setVisibility(View.VISIBLE);
-            RequestOptions requestOptions = new RequestOptions();
-            requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
-            requestOptions.dontTransform();
-            // requestOptions.override(Utility.dpToPx(150, context), Utility.dpToPx(150, context));
-            // requestOptions.centerCrop();
-            requestOptions.skipMemoryCache(false);
-
-            Glide.with(this)
-                    .load(shopImage)
-                    .apply(requestOptions)
-                    .into(image_view_shop);
-
-        }else{
-            tv_shortName.setVisibility(View.VISIBLE);
-            image_view_shop.setVisibility(View.GONE);
-        }
+        params.put("dbName", sharedPreferences.getString(Constants.DB_NAME,""));
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/cat_subcat";
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"categories");
     }
 
     private void getsubCategories(){
@@ -303,10 +291,10 @@ public class ShopProductListActivity extends HandleCartActivity {
 
 
         Map<String,String> params=new HashMap<>();
-        params.put("code", shopCode);
+        params.put("id",catId);
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
-        String url=getResources().getString(R.string.url_shop)+"categories/retailer_sub_categories";
-        showProgress(true);
+        String url=getResources().getString(R.string.url_customer)+"/api/customers/subcategories";
+        //showProgress(true);
         jsonObjectApiRequest(Request.Method.POST,url, new JSONObject(params),"get_subcategories");
     }
 
@@ -351,30 +339,86 @@ public class ShopProductListActivity extends HandleCartActivity {
             addFrequencyProducttoCart(type, position, shopCode, myProductList.get(position),shopDeliveryModel, this);
     }
 
-    public void shopFavorite(String status){
-        Map<String,String> params=new HashMap<>();
-        params.put("favStatus", status);
-        params.put("code",shopCode);
-        params.put("dbName", custdbname);
-        params.put("dbUserName",dbuser);
-        params.put("dbPassword",dbpassword);
-        Log.d(TAG, params.toString());
-        String url=getResources().getString(R.string.url_customer)+"/api/customers/shop/favourite";
-        //showProgressBar(true);
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"shopFavorite");
-    }
-
     @Override
     public void onJsonObjectResponse(JSONObject response, String apiName) {
-        showProgressBar(false);
         try {
             // JSONObject jsonObject=response.getJSONObject("response");
             Log.d("response", response.toString());
-            if(apiName.equals("productfromshop")){
+
+            if(swipeRefreshLayout.isRefreshing())
+                swipeRefreshLayout.setRefreshing(false);
+            if(apiName.equals("productfromshop"))
+            showProgressBar(false);
+            if (apiName.equals("shopDetails")) {
+                if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
+                    //DialogAndToast.showDialog(response.getString("message"), ScannarActivity.this);
+                    if(response.getString("result")!=null) {
+                        JSONObject jsonObject = response.getJSONArray("result").getJSONObject(0);
+
+                        shopName = jsonObject.getString("retshopname");
+                        shopdbname = jsonObject.getString("dbname");
+                        shopMobile = jsonObject.getString("retmobile");
+                        address =  jsonObject.getString("retaddress");
+                        shopImage = jsonObject.getString("retphoto");
+                        shopDeliveryModel.setShopCode(shopCode);
+                        shopDeliveryModel.setRetLat(jsonObject.getDouble("retLat"));
+                        shopDeliveryModel.setRetLong(jsonObject.getDouble("retLong"));
+                        shopDeliveryModel.setIsDeliveryAvailable(jsonObject.getString("isDeliveryAvailable"));
+                        shopDeliveryModel.setMinDeliveryAmount(jsonObject.getDouble("minDeliveryAmount"));
+                        shopDeliveryModel.setMinDeliverytime(jsonObject.getString("minDeliverytime"));
+                        shopDeliveryModel.setMinDeliverydistance(jsonObject.getInt("minDeliverydistance"));
+                        shopDeliveryModel.setChargesAfterMinDistance(jsonObject.getDouble("chargesAfterMinDistance"));
+                        editor.putString(Constants.SHOP_INSIDE_CODE,shopCode);
+                        editor.putString(Constants.SHOP_INSIDE_NAME, shopName);
+                        editor.putString(Constants.SHOP_DBNAME,shopdbname);
+                        editor.commit();
+                        getAllCategories();
+                    }else {
+                        showMyDialog(response.getString("message"));
+                    }
+                } else {
+                    showMyDialog(response.getString("message"));
+                }
+            }else if(apiName.equals("categories")){
+                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
+                    JSONObject jsonObject = response.getJSONObject("result");
+                    JSONArray catJArray = jsonObject.getJSONArray("categories");
+                    List<Object> catList = new ArrayList<>();
+                    Category category = new Category();
+                    category.setName("Scan Products");
+                    catList.add(category);
+                    for(int i=0;i<catJArray.length();i++){
+                        category= new Category();
+                        category.setId(catJArray.getJSONObject(i).getString("catId"));
+                        category.setName(catJArray.getJSONObject(i).getString("catName"));
+                        category.setImage(catJArray.getJSONObject(i).getString("catImage"));
+                        catList.add(category);
+                    }
+                    if(catList.size()>0) {
+                        Log.d("catList size ", catList.size() + "");
+                        CatListItem myItem = new CatListItem();
+                        myItem.setType(0);
+                        myItem.setItemList(catList);
+                        categoryList.add(myItem);
+                        myItemAdapter.notifyDataSetChanged();
+                        catId = catJArray.getJSONObject(0).getString("catId");
+                        text_left_label.setText(catJArray.getJSONObject(0).getString("catName"));
+                        getsubCategories();
+                    }else{
+                        showProgressBar(false);
+                    }
+
+                }else {
+                    DialogAndToast.showDialog(response.getString("message"),ShoppursProductActivity.this);
+                    showProgressBar(false);
+                }
+            }if(apiName.equals("productfromshop")){
                 loading = false;
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
                     JSONObject dataObject;
                     if (!response.getString("result").equals("null")) {
+                        myItemAdapter.notifyDataSetChanged();
+                        categoriesAdapter.notifyDataSetChanged();
                         final JSONArray productJArray = response.getJSONArray("result");
                         if (productJArray.length() > 0 && selectdSubCatId.equals(response.getJSONArray("result")
                                 .getJSONObject(0).getString("prodSubCatId"))){
@@ -578,45 +622,51 @@ public class ShopProductListActivity extends HandleCartActivity {
                                 }
                                 myProductList.add(myProduct);
                             }
-                        if (myProductList.size() > 0) {
-                            if (productJArray.length() > 0) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        shopProductAdapter.notifyItemRangeInserted(offset, myProductList.size());
-                                    }
-                                });
-                            } else {
-                                Log.d(TAG, "NO ITEMS FOUND");
-                            }
+                            if (myProductList.size() > 0) {
+                                if (productJArray.length() > 0) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            shopProductAdapter.notifyItemRangeInserted(offset, myProductList.size());
+                                        }
+                                    });
+                                } else {
+                                    Log.d(TAG, "NO ITEMS FOUND");
+                                }
 
-                            if (productJArray.length() != limit) {
-                                isScroll = false;
+                                if (productJArray.length() != limit) {
+                                    isScroll = false;
+                                }
                             }
                         }
-                    }
-                }else {
+                    }else {
                         showNoData(true);
                     }
 
                 }else {
-                    DialogAndToast.showDialog(response.getString("message"),ShopProductListActivity.this);
+                    DialogAndToast.showDialog(response.getString("message"),ShoppursProductActivity.this);
                 }
             }else if(apiName.equals("get_subcategories")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
+                if(response.getString("status").equals("true")||response.getString("status").equals(true)) {
+                    if (response.getString("result").equals("null")) {
+                        view_top_sub_cat.setVisibility(View.GONE);
+                        seperator_1.setVisibility(View.GONE);
+                        showProgressBar(false);
+                        showNoData(true);
+                    }else {
                     JSONArray subcatJArray = response.getJSONArray("result");
-
                     for (int j = 0; j < subcatJArray.length(); j++) {
-                            SubCategory subCategory = new SubCategory();
-                            subCategory.setSubcatid(subcatJArray.getJSONObject(j).getString("subCatId"));
-                            subCategory.setId(subcatJArray.getJSONObject(j).getString("catId"));
-                            subCategory.setName(subcatJArray.getJSONObject(j).getString("subCatName"));
-                            subCategoryList.add(subCategory);
+                        SubCategory subCategory = new SubCategory();
+                        subCategory.setSubcatid(subcatJArray.getJSONObject(j).getString("subCatId"));
+                        subCategory.setId(subcatJArray.getJSONObject(j).getString("catId"));
+                        subCategory.setName(subcatJArray.getJSONObject(j).getString("subCatName"));
+                        subCategoryList.add(subCategory);
                     }
 
-                    if(subCategoryList.size()>0) {
-
-                        if(!TextUtils.isEmpty(selectdSubCatId)) {
+                    if (subCategoryList.size() > 0) {
+                        view_top_sub_cat.setVisibility(View.VISIBLE);
+                        seperator_1.setVisibility(View.VISIBLE);
+                        if (!TextUtils.isEmpty(selectdSubCatId)) {
                             selectdSubCatPosition = 0;
                             for (SubCategory subCategory : subCategoryList) {
                                 if (subCategory.getSubcatid().equals(selectdSubCatId)) {
@@ -625,76 +675,35 @@ public class ShopProductListActivity extends HandleCartActivity {
                                     break;
                                 }
                             }
-                        }else {
+                        } else {
                             subCategoryList.get(0).setSelected(true);
                             selectdSubCatId = subCategoryList.get(0).getSubcatid();
                         }
 
-                        categoriesAdapter.notifyDataSetChanged();
-                        Log.d("selectdSubCatPosition", ""+selectdSubCatPosition);
+                        // categoriesAdapter.notifyDataSetChanged();
+                        Log.d("selectdSubCatPosition", "" + selectdSubCatPosition);
                         recyclerViewCategory.scrollToPosition(selectdSubCatPosition);
-                        getProducts(selectdSubCatId, "");
+                        getProducts(selectdSubCatId, "onSubCategorySelected");
                     }
-                }else {
-                    DialogAndToast.showToast(response.getString("message"),ShopProductListActivity.this);
                 }
-            } else if(apiName.equals("addtocart")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    dbHelper.addProductToCart(myProduct, "normal");
-                    updateCartCount();
-                    Log.d(TAG, "added o cart" );
                 }else {
-                    DialogAndToast.showToast(response.getString("message"),ShopProductListActivity.this);
-                }
-            }else if(apiName.equals("updatCart")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                  dbHelper.updateCartData(myProduct, "normal");
-                    updateCartCount();
-                    Log.d(TAG, "updated cart" );
-                }else {
-                    DialogAndToast.showToast(response.getString("message"),ShopProductListActivity.this);
-                }
-            }else if(apiName.equals("removeCart")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                //    dbHelper.deleteCart(cartItem);
-                    updateCartCount();
-                    Log.d(TAG, "Deleted cart" );
-                }else {
-                    DialogAndToast.showToast(response.getString("message"),ShopProductListActivity.this);
-                }
-            }else if(apiName.equals("shopFavorite")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    Log.d(TAG, "Added in Favorite Shop" );
-                    if(dbHelper.isShopFavorited(shopCode)) {
-                        dbHelper.remove_from_Favorite(shopCode);
-                        image_fav.setImageDrawable(ContextCompat.getDrawable(ShopProductListActivity.this, R.drawable.favrorite_select));
-                    }else {
-                        dbHelper.add_to_Favorite(shopCode);
-                        image_fav.setImageDrawable(ContextCompat.getDrawable(ShopProductListActivity.this, R.drawable.favroite_selected));
-                    }
-                }else {
-                    DialogAndToast.showToast(response.getString("message"),ShopProductListActivity.this);
-                }
-            }else if(apiName.equals("shopRating")){
-                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
-                    Log.d(TAG, "Rated Shop" );
-                }else {
-                    DialogAndToast.showToast(response.getString("message"),ShopProductListActivity.this);
+                    DialogAndToast.showToast(response.getString("message"),ShoppursProductActivity.this);
                 }
             }
+
         } catch (JSONException e) {
             e.printStackTrace();
-            DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),ShopProductListActivity.this);
+            DialogAndToast.showToast(getResources().getString(R.string.json_parser_error)+e.toString(),ShoppursProductActivity.this);
         }
     }
 
     private void showNoData(boolean show){
         if(show){
-            recyclerViewProduct.setVisibility(View.GONE);
-            tvNoData.setVisibility(View.VISIBLE);
+           // recyclerView.setVisibility(View.GONE);
+            textViewError.setVisibility(View.VISIBLE);
         }else{
-            recyclerViewProduct.setVisibility(View.VISIBLE);
-            tvNoData.setVisibility(View.GONE);
+            //recyclerView.setVisibility(View.VISIBLE);
+            textViewError.setVisibility(View.GONE);
         }
     }
 
@@ -710,17 +719,17 @@ public class ShopProductListActivity extends HandleCartActivity {
         }
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("ShopProductListAct", "onResume");
+        isVisible = true;
         if(shopProductAdapter!=null) {
             shopProductAdapter.notifyDataSetChanged();
             counter = dbHelper.getCartCount();
         }
         updateCartCount();
     }
-
 
     float totalPrice;
     public void updateCartCount(){
@@ -730,7 +739,7 @@ public class ShopProductListActivity extends HandleCartActivity {
             viewCart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(ShopProductListActivity.this, CartActivity.class));
+                    startActivity(new Intent(ShoppursProductActivity.this, CartActivity.class));
                 }
             });
 
@@ -769,7 +778,7 @@ public class ShopProductListActivity extends HandleCartActivity {
     public void showFrequencyBottomShet(MyProduct item, int position){
         FrequencyFragment frequencyFragment = new FrequencyFragment();
         if(item.getFrequency()!=null)
-        frequencyFragment.setProduct(item, position, "edit");
+            frequencyFragment.setProduct(item, position, "edit");
         else frequencyFragment.setProduct(item, position, "add");
         frequencyFragment.setColorTheme(colorTheme);
         frequencyFragment.show(getSupportFragmentManager(), "Product ProductFrequency Bottom Sheet");
@@ -807,12 +816,45 @@ public class ShopProductListActivity extends HandleCartActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    protected void onPause() {
+        super.onPause();
+        isVisible = false;
+    }
+
+    public void scanBarCode(){
+        Intent intent = new Intent(this,ScannarActivity.class);
+        intent.putExtra("flag","scan");
+        intent.putExtra("type","scanProducts");
+        intent.putExtra("shopCode",shopCode);
+        // startActivity(intent);
+        startActivityForResult(intent,111);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        Log.d("requestCode " + requestCode, "intent " + intent);
-        if (requestCode == 102) {
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                String contents = intent.getStringExtra("SCAN_RESULT");
+                String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+                Log.d(TAG, contents);
+                Log.d(TAG, format);
+                // Handle successful scan
+            } else if (resultCode == RESULT_CANCELED) {
+                // Handle cancel
+            }
+        } else if (requestCode == 102) {
             myProductList.get(position).setFrequency(null);
             //myProductList.get(getIntent().getIntExtra("position", 0)).setFrequency(null);
         }
     }
+
+    public void selectCategory(Category category){
+       // DialogAndToast.showDialog("Category Selected "+category.getName(), this);
+        text_left_label.setText(category.getName());
+        selectdSubCatId = "";
+        catId = category.getId();
+        showProgressBar(true);
+        getsubCategories();
+    }
+
 }
