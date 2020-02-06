@@ -69,7 +69,7 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
     private ProgressBar progress_bar;
     String searchCatId;
     private boolean isCategorySearch, isSearchByProduct;
-    private ImageView iv_cancel;
+    private ImageView iv_cancel, tv_back;
     private Category selectedCategory, selectedSubCategory;
     private LinearLayout linear_top;
     private TextView text_cat, text_sub_cat;
@@ -83,7 +83,7 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         appBarLayout = findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
-        initFooter(this,3);
+        //initFooter(this,3);
 
         init();
     }
@@ -230,6 +230,13 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
             }
         });
 
+        tv_back = findViewById(R.id.tv_back);
+        tv_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         iv_cancel = findViewById(R.id.iv_cancel);
        // ((GradientDrawable)iv_cancel.getBackground()).setColor(colorTheme);
         text_search_by_product.setOnClickListener(new View.OnClickListener() {

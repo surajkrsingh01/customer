@@ -12,18 +12,35 @@
         android:id="@+id/relatvive_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <TextView
+
+        <LinearLayout
+            android:id="@+id/linear_address"
             android:layout_toLeftOf="@+id/linear_cart_profile"
-            android:maxLines="1"
-            android:text="AB 7 Safdarjan Enclave Behind Kamal Cinema"
-            android:id="@+id/text_customer_address"
-            android:textColor="?attr/secondaryTextColor"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/view_horizontal_margin"
-            android:paddingRight="@dimen/view_horizontal_margin"
-            android:textSize="@dimen/home_list_header_text_size"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:id="@+id/tv_back"
+                android:src="@drawable/arrow_back"
+                android:tint="?attr/primaryTextColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/view_horizontal_margin"
+                android:layout_marginLeft="@dimen/view_horizontal_margin" />
+            <TextView
+                android:maxLines="1"
+                android:text="AB 7 Safdarjan Enclave Behind Kamal Cinema"
+                android:id="@+id/text_customer_address"
+                android:textColor="?attr/secondaryTextColor"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/view_horizontal_margin"
+                android:paddingRight="@dimen/view_horizontal_margin"
+                android:textSize="@dimen/home_list_header_text_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
 
         <TextView
             android:text="Search Shops"
@@ -32,7 +49,7 @@
             android:layout_marginBottom="5dp"
             android:paddingLeft="@dimen/view_horizontal_margin"
             android:paddingRight="@dimen/view_horizontal_margin"
-            android:layout_below="@+id/text_customer_address"
+            android:layout_below="@+id/linear_address"
             android:textColor="?attr/primaryTextColor"
             android:textStyle="bold"
             android:textSize="@dimen/product_list_very_large_text_size"
@@ -45,11 +62,12 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginRight="@dimen/view_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/text_customer_address">
+            android:layout_alignTop="@+id/linear_address">
             <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:id="@+id/iv_cart"
                 android:src="@drawable/cart"
                 android:layout_marginLeft="@dimen/activity_vertical_margin"
@@ -107,8 +125,8 @@
 
     </RelativeLayout>
 
+    <!--android:layout_above="@+id/linear_footer"-->
     <androidx.core.widget.NestedScrollView
-        android:layout_above="@+id/linear_footer"
         android:layout_below="@+id/relative_search_cancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -257,7 +275,7 @@
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <include layout="@layout/footer_layout"/>
+    <!--<include layout="@layout/footer_layout"/>-->
 
     <ProgressBar
         android:id="@+id/progress_bar"
