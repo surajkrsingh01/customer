@@ -129,7 +129,7 @@ public class ShopContactListActivity extends NetworkBaseActivity {
         Map<String, String> params = new HashMap<>();
         params.put("query",query);
         params.put("limit", "10");
-        params.put("offset", ""+myShopList.size());
+        params.put("offset", ""+offset);
         params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
@@ -207,8 +207,11 @@ public class ShopContactListActivity extends NetworkBaseActivity {
             }else if(apiName.equals("contactList")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                     JSONArray shopJArray = null;
-                    if(searchByQuery)
-                        shopJArray = response.getJSONArray("result");
+                    if(searchByQuery) {
+                        JSONObject jsonObject = response.getJSONObject("result");
+                        shopJArray = jsonObject.getJSONArray("data");
+                        offset = jsonObject.getInt("offset");
+                    }
                     else {
                         JSONObject jsonObject = response.getJSONObject("result");
                         shopJArray = jsonObject.getJSONArray("shoplist");

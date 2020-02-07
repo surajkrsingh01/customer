@@ -171,6 +171,7 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
                       //  DialogAndToast.showToast("Selected SubCategory is "+selectedSubCategory.getId(), SearchActivity.this);
                         cancel.setVisibility(View.VISIBLE);
                         showShopListRecycleView(true);
+                        offset = 0;
                         searchShopbyQuery(s.toString());
                     }else {
                         cancel.setVisibility(View.VISIBLE);
@@ -179,6 +180,7 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
                             isCategorySearch = false;
                             searchShopsbyCategory(searchCatId);
                         } else {
+                            offset = 0;
                             searchShopbyQuery(s.toString());
                         }
                     }
@@ -251,6 +253,7 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
         iv_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                offset = 0;
                 searchByProductVisibility(false);
                 relative_search_cancel.setVisibility(View.VISIBLE);
             }
@@ -292,8 +295,8 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
 
         Map<String,String> params=new HashMap<>();
         params.put("id",catId);
-        params.put("limit","10");
-        params.put("offset", ""+shopList.size());
+        params.put("limit", ""+limit);
+        params.put("offset", ""+offset);
         params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
@@ -318,8 +321,8 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
         String url ="";
         Map<String, String> params = new HashMap<>();
         params.put("query",query);
-        params.put("limit", "10");
-        params.put("offset", ""+shopList.size());
+        ;//////////////////
+        params.put("offset", ""+offset);
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
@@ -470,8 +473,9 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
             if(apiName.equals("NormalShops")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
 
-                    //JSONObject jsonObject = response.getJSONObject("result");
-                    JSONArray shopJArray = response.getJSONArray("result");
+                    JSONObject jsonObject = response.getJSONObject("result");
+                    JSONArray shopJArray = jsonObject.getJSONArray("data");
+                    offset = jsonObject.getInt("offset");
                     shopList.clear();
                     for(int i=0;i<shopJArray.length();i++){
                         MyShop myShop = new MyShop();

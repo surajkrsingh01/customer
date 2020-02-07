@@ -79,6 +79,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
     private DbHelper dbHelper;
     private MyListItemClickListener myListItemClickListener;
     private Typeface typeface;
+    private int offset;
 
     public MyItemClickListener getMyItemClickListener() {
         return myItemClickListener;
@@ -197,7 +198,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
         Map<String,String> params=new HashMap<>();
         params.put("query",query);
         params.put("limit", "10");
-        params.put("offset", ""+myShopList.size());
+        params.put("offset", ""+offset);
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
         params.put("dbUserName",sharedPreferences.getString(Constants.DB_USER_NAME,""));
         params.put("dbPassword",sharedPreferences.getString(Constants.DB_PASSWORD,""));
@@ -240,7 +241,9 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
             Log.d("response", response.toString());
             if(apiName.equals("searchShops")) {
                 if (response.getString("status").equals("true") || response.getString("status").equals(true)) {
-                    JSONArray shopJArray = response.getJSONArray("result");
+                    JSONObject jsonObject = response.getJSONObject("result");
+                    JSONArray shopJArray = jsonObject.getJSONArray("data");
+                    offset = jsonObject.getInt("offset");
                     for (int i = 0; i < shopJArray.length(); i++) {
                         MyShop myShop = new MyShop();
                         String shop_code = shopJArray.getJSONObject(i).getString("retcode");

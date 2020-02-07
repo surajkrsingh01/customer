@@ -135,7 +135,7 @@ public class InstantScannarActivity extends NetworkBaseActivity {
         Map<String, String> params = new HashMap<>();
         params.put("query",query);
         params.put("limit", "10");
-        params.put("offset", ""+myShopList.size());
+        params.put("offset", ""+offset);
         params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
         params.put("dbName",sharedPreferences.getString(Constants.DB_NAME,""));
@@ -267,8 +267,9 @@ public class InstantScannarActivity extends NetworkBaseActivity {
             }else if(apiName.equals("shopList")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
 
-                    //JSONObject jsonObject = response.getJSONObject("result");
-                    JSONArray shopJArray = response.getJSONArray("result");
+                    JSONObject jsonObject = response.getJSONObject("result");
+                    JSONArray shopJArray = jsonObject.getJSONArray("data");
+                    offset = jsonObject.getInt("offset");
                     myShopList.clear();
                     for(int i=0;i<shopJArray.length();i++){
                         MyShop myShop = new MyShop();
