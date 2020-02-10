@@ -110,7 +110,7 @@
         <ImageView
             android:id="@+id/image_footer_3"
             android:layout_below="@+id/separator_footer_3"
-            android:src="@drawable/ic_star_black_24dp"
+            android:src="@drawable/store_nearby_icon"
             android:tint="@color/bottom_nav_fore_color"
             android:layout_centerHorizontal="true"
             android:layout_width="@dimen/bottom_nav_icon_size"
@@ -149,7 +149,7 @@
         <ImageView
             android:id="@+id/image_footer_4"
             android:layout_below="@+id/separator_footer_4"
-            android:src="@drawable/ic_search_black_24dp"
+            android:src="@drawable/product_icon"
             android:tint="@color/bottom_nav_fore_color"
             android:layout_centerHorizontal="true"
             android:layout_width="@dimen/bottom_nav_icon_size"
