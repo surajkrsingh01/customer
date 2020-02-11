@@ -75,7 +75,6 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 app:civ_fill_color="@color/green700"
                 android:id="@+id/profile_image"
-                android:src="@drawable/thumb_2"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:tint="@color/white"/>

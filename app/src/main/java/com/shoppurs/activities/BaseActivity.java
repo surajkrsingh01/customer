@@ -126,8 +126,8 @@ public class BaseActivity extends AppCompatActivity {
 
         ImageView imageViewFooter1 = findViewById(R.id.image_footer_1);
         ImageView imageViewFooter2 = findViewById(R.id.image_footer_2);
-        ImageView imageViewFooter3 = findViewById(R.id.image_footer_3);
-        ImageView imageViewFooter4 = findViewById(R.id.image_footer_4);
+        TextView imageViewFooter3 = findViewById(R.id.image_footer_3);
+        TextView imageViewFooter4 = findViewById(R.id.image_footer_4);
         ImageView imageViewFooter5 = findViewById(R.id.image_footer_5);
 
         TextView textViewFooter1 = findViewById(R.id.text_footer_1);
@@ -144,26 +144,36 @@ public class BaseActivity extends AppCompatActivity {
 
         switch (type) {
             case 0:
+                imageViewFooter4.setTypeface(Utility.getAwsomeSolidFont(this));
+                imageViewFooter3.setTypeface(Utility.getAwsomeSolidFont(this));
                 imageViewFooter1.setColorFilter(colorTheme);
                 textViewFooter1.setTextColor(colorTheme);
                 view1.setBackgroundColor(colorTheme);
                 break;
             case 1:
+                imageViewFooter4.setTypeface(Utility.getAwsomeSolidFont(this));
+                imageViewFooter3.setTypeface(Utility.getAwsomeSolidFont(this));
                 imageViewFooter2.setColorFilter(colorTheme);
                 textViewFooter2.setTextColor(colorTheme);
                 view2.setBackgroundColor(colorTheme);
                 break;
             case 2:
-                imageViewFooter3.setColorFilter(colorTheme);
+                imageViewFooter4.setTypeface(Utility.getAwsomeSolidFont(this));
+                imageViewFooter3.setTypeface(Utility.getAwsomeSolidFont(this));
+                imageViewFooter3.setTextColor(colorTheme);
                 textViewFooter3.setTextColor(colorTheme);
                 view3.setBackgroundColor(colorTheme);
                 break;
             case 3:
-                imageViewFooter4.setColorFilter(colorTheme);
+                imageViewFooter4.setTypeface(Utility.getAwsomeSolidFont(this));
+                imageViewFooter4.setTextColor(colorTheme);
+                imageViewFooter3.setTypeface(Utility.getAwsomeSolidFont(this));
                 textViewFooter4.setTextColor(colorTheme);
                 view4.setBackgroundColor(colorTheme);
                 break;
             case 4:
+                imageViewFooter4.setTypeface(Utility.getAwsomeSolidFont(this));
+                imageViewFooter3.setTypeface(Utility.getAwsomeSolidFont(this));
                 imageViewFooter5.setColorFilter(colorTheme);
                 textViewFooter5.setTextColor(colorTheme);
                 view5.setBackgroundColor(colorTheme);

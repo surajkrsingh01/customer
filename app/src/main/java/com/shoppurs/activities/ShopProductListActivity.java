@@ -394,7 +394,7 @@ public class ShopProductListActivity extends HandleCartActivity {
                                 myProduct.setIsBarcodeAvailable(productJArray.getJSONObject(i).getString("isBarcodeAvailable"));
                                 //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
                                 myProduct.setDesc(productJArray.getJSONObject(i).getString("prodDesc"));
-                                myProduct.setLocalImage(R.drawable.thumb_16);
+                                //myProduct.setLocalImage(R.drawable.thumb_16);
                                 myProduct.setProdImage1(productJArray.getJSONObject(i).getString("prodImage1"));
                                 myProduct.setProdImage2(productJArray.getJSONObject(i).getString("prodImage2"));
                                 myProduct.setProdImage3(productJArray.getJSONObject(i).getString("prodImage3"));

@@ -233,7 +233,7 @@ public class ShopContactListActivity extends NetworkBaseActivity {
                         myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                         myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
                         myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));
-                        myShop.setImage(R.drawable.thumb_21);
+                      //  myShop.setImage(R.drawable.thumb_21);
                         Log.d(myShopList.toString(), "shop_code"+ shop_code);
 
                         myShopList.add(myShop);

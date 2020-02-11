@@ -262,7 +262,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                         myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                         myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
                         myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));
-                        myShop.setImage(R.drawable.thumb_21);
+                       // myShop.setImage(R.drawable.thumb_21);
                         myShopList.add(myShop);
                     }
                     if (myShopList.size() > 0)
@@ -297,7 +297,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                             myProduct.setIsBarcodeAvailable(productJArray.getJSONObject(i).getString("isBarcodeAvailable"));
                             //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
                             myProduct.setDesc(productJArray.getJSONObject(i).getString("prodDesc"));
-                            myProduct.setLocalImage(R.drawable.thumb_16);
+                            //myProduct.setLocalImage(R.drawable.thumb_16);
                             myProduct.setProdImage1(productJArray.getJSONObject(i).getString("prodImage1"));
                             myProduct.setProdImage2(productJArray.getJSONObject(i).getString("prodImage2"));
                             myProduct.setProdImage3(productJArray.getJSONObject(i).getString("prodImage3"));
@@ -504,7 +504,7 @@ public class BottomSearchFragment extends BottomSheetDialogFragment implements M
                         freeProdut.setIsBarcodeAvailable(jsonObject.getString("isBarcodeAvailable"));
                         //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
                         freeProdut.setDesc(jsonObject.getString("prodDesc"));
-                        freeProdut.setLocalImage(R.drawable.thumb_16);
+                        //freeProdut.setLocalImage(R.drawable.thumb_16);
                         freeProdut.setProdImage1(jsonObject.getString("prodImage1"));
                         freeProdut.setProdImage2(jsonObject.getString("prodImage2"));
                         freeProdut.setProdImage3(jsonObject.getString("prodImage3"));

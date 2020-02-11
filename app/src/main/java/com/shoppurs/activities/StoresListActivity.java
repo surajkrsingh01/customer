@@ -279,7 +279,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
                             myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                             myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
                             myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));
-                            myShop.setImage(R.drawable.thumb_21);
+                          //  myShop.setImage(R.drawable.thumb_21);
                             //Log.d(favoriteShopList.toString(), "shop_code"+ shop_code);
                             if (myfavoriteShopIds.contains(shop_code)) {
                                 favoriteShopList.add(myShop);
@@ -410,12 +410,12 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
 
         category = new Category();
         category.setName("Yor grocery store just around the corner");
-        category.setLocalImage(R.drawable.thumb_14);
+        //category.setLocalImage(R.drawable.thumb_14);
         catList.add(category);
 
         category = new Category();
         category.setName("Your stationary store here");
-        category.setLocalImage(R.drawable.thumb_15);
+        //category.setLocalImage(R.drawable.thumb_15);
         catList.add(category);
         myItem.setItemList(catList);
         itemList.add(myItem);
@@ -428,21 +428,21 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
         MyShop myshop = new MyShop();
         myshop.setAddress("The Best Diet for a Flatter Belly");
         myshop.setName("BIRYANI BLUES");
-        myshop.setImage(R.drawable.thumb_11);
+        //myshop.setImage(R.drawable.thumb_11);
         myshop.setType(8);
         shopList.add(myshop);
 
         myshop = new MyShop();
         myshop.setAddress("Were Vegetables Better Before?");
         myshop.setName("AROGYA MEALS");
-        myshop.setImage(R.drawable.thumb_12);
+        //myshop.setImage(R.drawable.thumb_12);
         myshop.setType(8);
         shopList.add(myshop);
 
         myshop = new MyShop();
         myshop.setAddress("Here Are the Five Best Fruits of the");
         myshop.setName("DANA CHOGA");
-        myshop.setImage(R.drawable.thumb_13);
+        //myshop.setImage(R.drawable.thumb_13);
         myshop.setType(8);
         shopList.add(myshop);
 

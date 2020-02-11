@@ -224,6 +224,11 @@ public class Utility {
         return custom_font;
     }
 
+    public static Typeface getAwsomeSolidFont(Context context) {
+        Typeface custom_font = Typeface.createFromAsset(context.getAssets(), "fonts/font_awsome_solid.otf");
+        return custom_font;
+    }
+
     public static void setColorFilter(Drawable drawable, int color){
         drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP));
     }

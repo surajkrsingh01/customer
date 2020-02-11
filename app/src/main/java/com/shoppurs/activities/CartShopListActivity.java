@@ -203,14 +203,15 @@ public class CartShopListActivity extends NetworkBaseActivity {
                         myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                         myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
                         myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));
-                        myShop.setImage(R.drawable.thumb_21);
+                       // myShop.setImage(R.drawable.thumb_21);
                         itemList.add(myShop);
                     }
                     if (itemList.size() > 0)
                         myItemAdapter.notifyDataSetChanged();
                     else {
-                        itemList.clear();
-                        myItemAdapter.notifyDataSetChanged();
+                        showNoData(true);
+                        //itemList.clear();
+                        //myItemAdapter.notifyDataSetChanged();
                     }
 
                 } else {

@@ -53,6 +53,8 @@
     <string name="today">Today</string>
     <string name="categories">Categories</string>
     <string name="stores_near_by">Stores Nearby</string>
+    <string name="stores_near_by_icon">&#xf54e;</string>
+    <string name="product_icon">&#xf291;</string>
     <string name="search">Search</string>
     <string name="products">Products</string>
     <string name="profile">Profile</string>

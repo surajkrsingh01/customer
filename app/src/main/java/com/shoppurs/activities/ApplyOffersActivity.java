@@ -200,7 +200,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                             myProduct.setIsBarcodeAvailable(productJArray.getJSONObject(i).getString("isBarcodeAvailable"));
                             //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
                             myProduct.setDesc(productJArray.getJSONObject(i).getString("prodDesc"));
-                            myProduct.setLocalImage(R.drawable.thumb_16);
+                            //myProduct.setLocalImage(R.drawable.thumb_16);
                             myProduct.setProdImage1(productJArray.getJSONObject(i).getString("prodImage1"));
                             myProduct.setProdImage2(productJArray.getJSONObject(i).getString("prodImage2"));
                             myProduct.setProdImage3(productJArray.getJSONObject(i).getString("prodImage3"));
@@ -401,7 +401,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                                 myProduct.setIsBarcodeAvailable(comboProductJArray.getJSONObject(n).getString("isBarcodeAvailable"));
                                 //myProduct.setBarCode(comboProductJArray.getJSONObject(n).getString("prodBarCode"));
                                 myProduct.setDesc(comboProductJArray.getJSONObject(n).getString("prodDesc"));
-                                myProduct.setLocalImage(R.drawable.thumb_16);
+                                //myProduct.setLocalImage(R.drawable.thumb_16);
                                 myProduct.setProdImage1(comboProductJArray.getJSONObject(n).getString("prodImage1"));
                                 myProduct.setProdImage2(comboProductJArray.getJSONObject(n).getString("prodImage2"));
                                 myProduct.setProdImage3(comboProductJArray.getJSONObject(n).getString("prodImage3"));
@@ -453,7 +453,7 @@ public class ApplyOffersActivity extends NetworkBaseActivity {
                         freeProdut.setIsBarcodeAvailable(jsonObject.getString("isBarcodeAvailable"));
                         //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
                         freeProdut.setDesc(jsonObject.getString("prodDesc"));
-                        freeProdut.setLocalImage(R.drawable.thumb_16);
+                        //freeProdut.setLocalImage(R.drawable.thumb_16);
                         freeProdut.setProdImage1(jsonObject.getString("prodImage1"));
                         freeProdut.setProdImage2(jsonObject.getString("prodImage2"));
                         freeProdut.setProdImage3(jsonObject.getString("prodImage3"));

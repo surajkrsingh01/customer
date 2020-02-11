@@ -501,7 +501,7 @@ public class SearchActivity extends BaseLocation implements LocationActionListen
                         myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                         myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
                         myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));
-                        myShop.setImage(R.drawable.thumb_21);
+                      //  myShop.setImage(R.drawable.thumb_21);
                         Log.d(shopList.toString(), "shop_code"+ shop_code);
 
                         shopList.add(myShop);

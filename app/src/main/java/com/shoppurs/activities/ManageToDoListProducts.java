@@ -109,7 +109,7 @@ public class ManageToDoListProducts extends NetworkBaseActivity{
                         freeProdut.setIsBarcodeAvailable(jsonObject.getString("isBarcodeAvailable"));
                         //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
                         freeProdut.setDesc(jsonObject.getString("prodDesc"));
-                        freeProdut.setLocalImage(R.drawable.thumb_16);
+                        //freeProdut.setLocalImage(R.drawable.thumb_16);
                         freeProdut.setProdImage1(jsonObject.getString("prodImage1"));
                         freeProdut.setProdImage2(jsonObject.getString("prodImage2"));
                         freeProdut.setProdImage3(jsonObject.getString("prodImage3"));

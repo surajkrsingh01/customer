@@ -259,7 +259,7 @@ public class ShopListActivity extends NetworkBaseActivity {
                         myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
                         myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
                         myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));
-                        myShop.setImage(R.drawable.thumb_21);
+                       // myShop.setImage(R.drawable.thumb_21);
                         Log.d(myfavoriteLists.toString(), "shop_code" + shop_code);
                         if (myfavoriteLists.contains(shop_code)) {
                             myFavoriteitemList.add(myShop);

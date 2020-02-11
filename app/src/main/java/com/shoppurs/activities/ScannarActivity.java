@@ -224,7 +224,7 @@ public class ScannarActivity extends NetworkBaseActivity {
                         myShop.setDbname(jsonObject.getString("dbname"));
                         myShop.setDbusername(jsonObject.getString("dbuser"));
                         myShop.setDbpassword(jsonObject.getString("dbpassword"));
-                        myShop.setImage(R.drawable.thumb_21);
+                      //  myShop.setImage(R.drawable.thumb_21);
 
                         if(!myShop.getId().equals("null")){
                             Intent intent = new Intent(this, ShopProductListActivity.class);
@@ -276,7 +276,7 @@ public class ScannarActivity extends NetworkBaseActivity {
                         myProduct.setIsBarcodeAvailable(productJObject.getString("isBarcodeAvailable"));
                         //myProduct.setBarCode(productJObject.getString("prodBarCode"));
                         myProduct.setDesc(productJObject.getString("prodDesc"));
-                        myProduct.setLocalImage(R.drawable.thumb_16);
+                        //myProduct.setLocalImage(R.drawable.thumb_16);
                         myProduct.setProdImage1(productJObject.getString("prodImage1"));
                         myProduct.setProdImage2(productJObject.getString("prodImage2"));
                         myProduct.setProdImage3(productJObject.getString("prodImage3"));

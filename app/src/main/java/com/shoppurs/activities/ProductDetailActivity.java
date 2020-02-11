@@ -700,7 +700,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                         myProduct.setIsBarcodeAvailable(jsonObject.getString("isBarcodeAvailable"));
                         //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
                         myProduct.setDesc(jsonObject.getString("prodDesc"));
-                        myProduct.setLocalImage(R.drawable.thumb_16);
+                        //myProduct.setLocalImage(R.drawable.thumb_16);
                         myProduct.setProdImage1(jsonObject.getString("prodImage1"));
                         myProduct.setProdImage2(jsonObject.getString("prodImage2"));
                         myProduct.setProdImage3(jsonObject.getString("prodImage3"));
@@ -730,7 +730,7 @@ public class ProductDetailActivity extends NetworkBaseActivity {
                         freeProdut.setIsBarcodeAvailable(jsonObject.getString("isBarcodeAvailable"));
                         //myProduct.setBarCode(productJArray.getJSONObject(i).getString("prodBarCode"));
                         freeProdut.setDesc(jsonObject.getString("prodDesc"));
-                        freeProdut.setLocalImage(R.drawable.thumb_16);
+                        //freeProdut.setLocalImage(R.drawable.thumb_16);
                         freeProdut.setProdImage1(jsonObject.getString("prodImage1"));
                         freeProdut.setProdImage2(jsonObject.getString("prodImage2"));
                         freeProdut.setProdImage3(jsonObject.getString("prodImage3"));

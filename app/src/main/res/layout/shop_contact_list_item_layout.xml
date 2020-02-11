@@ -34,7 +34,6 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_centerVertical="true"
                 android:id="@+id/image_view"
-                android:src="@drawable/thumb_12"
                 android:scaleType="centerCrop"
                 android:visibility="gone"
                 android:layout_width="@dimen/shop_list_image_size"

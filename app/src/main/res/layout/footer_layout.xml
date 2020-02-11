@@ -107,10 +107,20 @@
             android:layout_width="match_parent"
             android:layout_height="3dp"/>
 
-        <ImageView
+        <!--<ImageView
             android:id="@+id/image_footer_3"
             android:layout_below="@+id/separator_footer_3"
             android:src="@drawable/store_nearby_icon"
+            android:tint="@color/bottom_nav_fore_color"
+            android:layout_centerHorizontal="true"
+            android:layout_width="@dimen/bottom_nav_icon_size"
+            android:layout_height="@dimen/bottom_nav_icon_size" />-->
+
+        <TextView
+            android:textSize="@dimen/large_text_size"
+            android:id="@+id/image_footer_3"
+            android:layout_below="@+id/separator_footer_3"
+            android:text="@string/stores_near_by_icon"
             android:tint="@color/bottom_nav_fore_color"
             android:layout_centerHorizontal="true"
             android:layout_width="@dimen/bottom_nav_icon_size"
@@ -146,10 +156,20 @@
             android:layout_width="match_parent"
             android:layout_height="3dp"/>
 
-        <ImageView
+        <!--<ImageView
             android:id="@+id/image_footer_4"
             android:layout_below="@+id/separator_footer_4"
             android:src="@drawable/product_icon"
+            android:tint="@color/bottom_nav_fore_color"
+            android:layout_centerHorizontal="true"
+            android:layout_width="@dimen/bottom_nav_icon_size"
+            android:layout_height="@dimen/bottom_nav_icon_size" />-->
+
+        <TextView
+            android:textSize="@dimen/large_text_size"
+            android:id="@+id/image_footer_4"
+            android:layout_below="@+id/separator_footer_4"
+            android:text="@string/product_icon"
             android:tint="@color/bottom_nav_fore_color"
             android:layout_centerHorizontal="true"
             android:layout_width="@dimen/bottom_nav_icon_size"

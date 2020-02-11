@@ -35,7 +35,6 @@
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/text_desc"
         android:id="@+id/profile_image"
-        android:src="@drawable/thumb_2"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:tint="@color/white"/>

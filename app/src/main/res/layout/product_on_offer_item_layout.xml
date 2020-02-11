@@ -24,7 +24,6 @@
 
             <ImageView
                 android:id="@+id/image_view"
-                android:src="@drawable/thumb_12"
                 android:scaleType="centerCrop"
                 android:layout_width="@dimen/cart_list_image_width"
                 android:layout_height="@dimen/cart_list_image_height" />
