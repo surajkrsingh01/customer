@@ -28,6 +28,7 @@ import com.shoppurs.fragments.BottomLocationFragment;
 import com.shoppurs.interfaces.LocationActionListener;
 import com.shoppurs.models.CatListItem;
 import com.shoppurs.models.Category;
+import com.shoppurs.models.Market;
 import com.shoppurs.models.MyShop;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
@@ -58,8 +59,9 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     private CircleImageView customer_profile;
     private ImageView iv_cart, iv_search;
     private TextView text_customer_address;
-    private boolean isVisible,loadingComplete, isUpdateAvailable;
+    private boolean isVisible, isScrolling, isUpdateAvailable;
     protected ProgressDialog progressDialog;
+    private int shopListPosition;
 
 
 
@@ -85,9 +87,9 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
         progressBar=findViewById(R.id.progress_bar);
         textViewError = findViewById(R.id.text_error);
         recyclerView=findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(false);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         myItemAdapter=new StoreAdapter(this,itemList,"catList");
         myItemAdapter.setColorTheme(colorTheme);
@@ -111,6 +113,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
             @Override
             public void onRefresh() {
                 swipeRefreshLayout.setRefreshing(true);
+                offset = 0;
                 getItemList();
             }
         });
@@ -159,6 +162,30 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
         if(!sharedPreferences.getBoolean(Constants.IS_TOKEN_SAVED, false)){
             saveToken();
         }
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(isScroll && myItemAdapter.getLayoutManager()!=null){
+                    int  visibleItemCount, totalItemCount, pastVisibleItems;
+                    visibleItemCount = myItemAdapter.getLayoutManager().getChildCount();
+                    totalItemCount = myItemAdapter.getLayoutManager().getItemCount();
+                    Log.i(TAG,"visible "+visibleItemCount+" total "+totalItemCount);
+                    pastVisibleItems = ((LinearLayoutManager)myItemAdapter.getLayoutManager()).findLastVisibleItemPosition();
+                    Log.i(TAG,"total visible "+(visibleItemCount+pastVisibleItems));
+
+                    if (!isScrolling) {
+                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                            isScrolling = true;
+                            //offset = limit + offset;
+                            getNormalStores("loadOnScroll");
+                            showProgressBar(true);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public void saveToken(){
@@ -172,7 +199,6 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     }
 
     public void getAllCategories(){
-        loadingComplete = false;
         Map<String,String> params=new HashMap<>();
         if(!TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS,""))){
             params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
@@ -194,7 +220,8 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
         jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"FavoriteShops");
     }
 
-    private void getNormalStores(){
+    private void getNormalStores(String type){
+        isScrolling = true;
         Map<String,String> params=new HashMap<>();
         if(!TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS,""))){
             params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
@@ -203,9 +230,11 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
             params.put("lattitude", sharedPreferences.getString(Constants.CUST_LAT, ""));
             params.put("longitude", sharedPreferences.getString(Constants.CUST_LONG, ""));
         }
+        params.put("limit", limit+"");
+        params.put("offset", offset+"");
         params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
         String url=getResources().getString(R.string.url_customer)+"/api/customers/allshoplist";
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"NormalShops");
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),type);
     }
 
 
@@ -248,14 +277,15 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
                     DialogAndToast.showDialog(response.getString("message"),StoresListActivity.this);
                     showProgressBar(false);
                 }
-            } else if(apiName.equals("NormalShops")){
-                loadingComplete = true;
+            } else if(apiName.equals("initialLoading")){
+                isScrolling = false;
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                     showProgressBar(false);
                     if(!response.getString("result").equals("null")) {
-                        JSONObject jsonObject = response.getJSONObject("result");
-                        JSONArray shopJArray = jsonObject.getJSONArray("shoplist");
-
+                        JSONObject jsonObject = response.getJSONObject("result").getJSONObject("shoplist");
+                        JSONArray shopJArray = jsonObject.getJSONArray("data");
+                        offset = jsonObject.getInt("offset");
+                        shopListPosition = shopJArray.length();
                         for (int i = 0; i < shopJArray.length(); i++) {
                             MyShop myShop = new MyShop();
                             String shop_code = shopJArray.getJSONObject(i).getString("retcode");
@@ -301,6 +331,8 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
                           //  myItemAdapter.notifyDataSetChanged();
                         }//else tv_myfav.setVisibility(View.GONE);
 
+                        //getLocalMarketPlace();
+
                         if (normalShopList.size() > 0) {
                             CatListItem myItem1 = new CatListItem();
                             myItem1.setTitle("My Stores");
@@ -309,11 +341,84 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
                             itemList.add(myItem1);
                             //myItemAdapter.notifyDataSetChanged();
                         }
-                        if (itemList.size() == 0) {
-                            showNoData(true);
-                        }else  myItemAdapter.notifyDataSetChanged();
+                        if (normalShopList.size() > 0) {
+                            if(shopJArray.length() < limit){
+                                isScroll = false;
+                            }
+                            if(shopJArray.length() > 0){
+                                recyclerView.post(new Runnable() {
+                                    public void run() {
+                                        myItemAdapter.notifyItemChanged(6);
+                                    }
+                                });
+                                Log.d(TAG, "NEXT ITEMS LOADED");
+                            }else{
+                                Log.d(TAG, "NO ITEMS FOUND");
+                            }
+
+                        }
                     }else {
                         //DialogAndToast.showDialog(response.getString("message"),StoresListActivity.this);
+                        showProgressBar(false);
+                        myItemAdapter.notifyDataSetChanged();
+                    }
+
+                }else {
+                    DialogAndToast.showDialog(response.getString("message"),StoresListActivity.this);
+                    showProgressBar(false);
+                }
+            } else if(apiName.equals("loadOnScroll")){
+                isScrolling = false;
+                if(response.getString("status").equals("true")||response.getString("status").equals(true)){
+                    showProgressBar(false);
+                    if(!response.getString("result").equals("null")) {
+                        JSONObject jsonObject = response.getJSONObject("result").getJSONObject("shoplist");
+                        JSONArray shopJArray = jsonObject.getJSONArray("data");
+                        offset = jsonObject.getInt("offset");
+
+                        for (int i = 0; i < shopJArray.length(); i++) {
+                            MyShop myShop = new MyShop();
+                            String shop_code = shopJArray.getJSONObject(i).getString("retcode");
+                            myShop.setId(shop_code);
+                            Log.d("shop_id", myShop.getId());
+                            myShop.setName(shopJArray.getJSONObject(i).getString("retshopname"));
+                            myShop.setMobile(shopJArray.getJSONObject(i).getString("retmobile"));
+                            myShop.setAddress(shopJArray.getJSONObject(i).getString("retaddress"));
+                            myShop.setState(shopJArray.getJSONObject(i).getString("retcountry"));
+                            myShop.setCity(shopJArray.getJSONObject(i).getString("retcity"));
+                            myShop.setShopimage(shopJArray.getJSONObject(i).getString("retphoto"));
+
+                            myShop.setLatitude(shopJArray.getJSONObject(i).getDouble("retLat"));
+                            myShop.setLongitude(shopJArray.getJSONObject(i).getDouble("retLong"));
+                            myShop.setDeliveryAvailable(shopJArray.getJSONObject(i).getString("isDeliveryAvailable"));
+                            myShop.setMinDeliveryAmount(shopJArray.getJSONObject(i).getDouble("minDeliveryAmount"));
+                            myShop.setMinDeliverytime(shopJArray.getJSONObject(i).getString("minDeliverytime"));
+                            myShop.setMinDeliverydistance(shopJArray.getJSONObject(i).getInt("minDeliverydistance"));
+                            myShop.setChargesAfterMinDistance(shopJArray.getJSONObject(i).getDouble("chargesAfterMinDistance"));
+
+                            myShop.setDbname(shopJArray.getJSONObject(i).getString("dbname"));
+                            myShop.setDbusername(shopJArray.getJSONObject(i).getString("dbuser"));
+                            myShop.setDbpassword(shopJArray.getJSONObject(i).getString("dbpassword"));
+
+                            normalShopList.add(myShop);
+                        }
+                        if (normalShopList.size() > 0) {
+                            if(shopJArray.length() < limit){
+                                isScroll = false;
+                            }
+                            if(shopJArray.length() > 0){
+                                recyclerView.post(new Runnable() {
+                                    public void run() {
+                                        myItemAdapter.notifyItemChanged(6);
+                                    }
+                                });
+                                Log.d(TAG, "NEXT ITEMS LOADED");
+                            }else{
+                                Log.d(TAG, "NO ITEMS FOUND");
+                            }
+
+                        }
+                    }else {
                         showProgressBar(false);
                         myItemAdapter.notifyDataSetChanged();
                     }
@@ -329,7 +434,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
                         Log.d(TAG, jsonArray.getJSONObject(i).getString(""+i));
                         myfavoriteShopIds.add(jsonArray.getJSONObject(i).getString(""+i));
                     }
-                    getNormalStores();
+                    getNormalStores("initialLoading");
                 }else {
                     showProgressBar(false);
                 }
@@ -527,6 +632,35 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
     protected void onPause() {
         super.onPause();
         isVisible = false;
+    }
+
+    private void getLocalMarketPlace(){
+        List<Object> marketList = new ArrayList<>();
+
+        Market market = new Market();
+        market.setId("1");
+        market.setName("HongKong Bazar");
+        market.setLocalImage(R.drawable.default_pic);
+        marketList.add(market);
+
+        market = new Market();
+        market.setId("2");
+        market.setName("Bestech Mall");
+        market.setLocalImage(R.drawable.default_pic);
+        marketList.add(market);
+
+        market = new Market();
+        market.setId("3");
+        market.setName("Huda Market");
+        market.setLocalImage(R.drawable.default_pic);
+        marketList.add(market);
+
+        CatListItem myItem = new CatListItem();
+         //myItem.setTitle("AB 7 Safdarjan Enclave Behind Kamal Cinema ");
+        myItem.setDesc("The Nearby Marketplace");
+        myItem.setType(0);
+        myItem.setItemList(marketList);
+        itemList.add(myItem);
     }
 
 }

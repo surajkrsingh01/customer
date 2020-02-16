@@ -105,7 +105,7 @@ public class ShopContactListActivity extends NetworkBaseActivity {
         recycler_viewShops.setAdapter(shopContactsAdapter);
 
         Map<String,String> params=new HashMap<>();
-        params.put("limit", "10");
+        params.put("limit", limit+"");
         params.put("offset", ""+myShopList.size());
         params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
@@ -128,7 +128,7 @@ public class ShopContactListActivity extends NetworkBaseActivity {
 
         Map<String, String> params = new HashMap<>();
         params.put("query",query);
-        params.put("limit", "10");
+        params.put("limit", limit+"");
         params.put("offset", ""+offset);
         params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
         params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
@@ -138,7 +138,7 @@ public class ShopContactListActivity extends NetworkBaseActivity {
         String url=getResources().getString(R.string.url_customer)+"/api/search/shops";
         //String url=getResources().getString(R.string.root_url)+"search/shops_by_mobile";
         showProgressBar(true);
-        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"contactList");
+        jsonObjectApiRequest(Request.Method.POST,url,new JSONObject(params),"searchContactList");
     }
 
     private void showNoData(boolean show){
@@ -204,7 +204,7 @@ public class ShopContactListActivity extends NetworkBaseActivity {
                 }else {
                     DialogAndToast.showDialog(response.getString("message"), ShopContactListActivity.this);
                 }
-            }else if(apiName.equals("contactList")){
+            }else if(apiName.equals("contactList") || apiName.equals("searchContactList")){
                 if(response.getString("status").equals("true")||response.getString("status").equals(true)){
                     JSONArray shopJArray = null;
                     if(searchByQuery) {
@@ -213,8 +213,8 @@ public class ShopContactListActivity extends NetworkBaseActivity {
                         offset = jsonObject.getInt("offset");
                     }
                     else {
-                        JSONObject jsonObject = response.getJSONObject("result");
-                        shopJArray = jsonObject.getJSONArray("shoplist");
+                        JSONObject jsonObject = response.getJSONObject("result").getJSONObject("shoplist");
+                        shopJArray = jsonObject.getJSONArray("data");
                     }
 
                     myShopList.clear();

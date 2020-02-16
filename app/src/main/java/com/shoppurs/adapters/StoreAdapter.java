@@ -29,12 +29,14 @@ import com.bumptech.glide.request.RequestOptions;
 import com.shoppurs.R;
 import com.shoppurs.activities.Settings.SettingActivity;
 import com.shoppurs.activities.ShopAddressActivity;
+import com.shoppurs.activities.ShopListActivity;
 import com.shoppurs.activities.ShopProductListActivity;
 import com.shoppurs.activities.ShoppursProductActivity;
 import com.shoppurs.activities.StoresListActivity;
 import com.shoppurs.activities.SubCatListActivity;
 import com.shoppurs.models.CatListItem;
 import com.shoppurs.models.Category;
+import com.shoppurs.models.Market;
 import com.shoppurs.models.MyItem;
 import com.shoppurs.models.MyShop;
 import com.shoppurs.models.ShopDeliveryModel;
@@ -71,13 +73,14 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     public class MyCategoryHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        private TextView textHeader,textDesc;
+        private TextView marketHeader, textHeader,textDesc;
         private RecyclerView recyclerView;
         private ImageView profile_image;
 
         public MyCategoryHeaderViewHolder(View itemView) {
             super(itemView);
             textHeader=itemView.findViewById(R.id.text_date_range);
+            marketHeader = itemView.findViewById(R.id.text_header);
             textDesc=itemView.findViewById(R.id.text_desc);
             recyclerView=itemView.findViewById(R.id.recycler_view);
             profile_image = itemView.findViewById(R.id.profile_image);
@@ -93,11 +96,22 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         }
     }
 
+    public LinearLayoutManager layoutManager;
+
+    public LinearLayoutManager getLayoutManager() {
+        return layoutManager;
+    }
+
+    public void setLayoutManager(LinearLayoutManager layoutManager) {
+        this.layoutManager = layoutManager;
+    }
+
     public class MyStoreHeader1ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView textHeader;
         private Button btnSeeAll;
         private RecyclerView recyclerView;
+
 
         public MyStoreHeader1ViewHolder(View itemView) {
             super(itemView);
@@ -105,7 +119,6 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             btnSeeAll=itemView.findViewById(R.id.btn_see_all);
             Utility.setColorFilter(btnSeeAll.getBackground(), colorTheme);
             recyclerView=itemView.findViewById(R.id.recycler_view);
-
             btnSeeAll.setOnClickListener(this);
         }
 
@@ -197,6 +210,52 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                     if(context instanceof StoresListActivity)
                     ((StoresListActivity)(context)).scanBarCode();
                     else ((ShoppursProductActivity)(context)).scanBarCode();
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                    zoomAnimation(false,rootView);
+                    break;
+            }
+            return true;
+        }
+    }
+
+    public class MyMarketViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener {
+
+        private TextView textTitle;
+        private ImageView imageView;
+        private View rootView;
+
+        public MyMarketViewHolder(View itemView) {
+            super(itemView);
+            rootView = itemView;
+            textTitle=itemView.findViewById(R.id.text_title);
+            imageView=itemView.findViewById(R.id.image_view);
+            rootView.setOnTouchListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+        }
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    zoomAnimation(true,rootView);
+                    break;
+
+                case MotionEvent.ACTION_UP:
+                    zoomAnimation(false,rootView);
+                    Market item = (Market) itemList.get(getAdapterPosition());
+                    DialogAndToast.showToast(item.getName(), context);
+
+                    Intent intent = new Intent(context, ShopListActivity.class);
+                    intent.putExtra("flag", "MarketStore");
+                    intent.putExtra("subCatName","");
+                    intent.putExtra("subCatId","");
+                    intent.putExtra("CatId","");
+                    context.startActivity(intent);
+
                     break;
                 case MotionEvent.ACTION_CANCEL:
                     zoomAnimation(false,rootView);
@@ -378,6 +437,12 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 viewHolder = new MyStoreListType1ViewHolder(v8);
                 break;
 
+            case 3:
+                // View v1 = inflater.inflate(R.layout.list_item_type_3_1_layout, parent, false);
+                View v3 = inflater.inflate(R.layout.list_item_market_layout, parent, false);
+                viewHolder = new MyMarketViewHolder(v3);
+                break;
+
             default:
                 View v = inflater.inflate(R.layout.list_item_layout, parent, false);
                 viewHolder = new MyViewHolder(v);
@@ -405,7 +470,8 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 }else{
                     return 1;
                 }
-
+            }else if(item instanceof Market){
+                return 3;
             }else if(item instanceof MyShop){ //used for products
                 Log.d("type ", "myShop");
                 return 8;
@@ -425,8 +491,15 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
             CatListItem item = (CatListItem) itemList.get(position);
             MyCategoryHeaderViewHolder myViewHolder = (MyCategoryHeaderViewHolder)holder;
-            myViewHolder.textHeader.setText(item.getTitle());
-            myViewHolder.textDesc.setText(item.getDesc());
+            if(item.getItemList().size()>0){
+                if(item.getItemList().get(0)instanceof Market) {
+                    myViewHolder.marketHeader.setVisibility(View.VISIBLE);
+                    myViewHolder.marketHeader.setText(item.getDesc());
+                }else {
+                    myViewHolder.marketHeader.setVisibility(View.GONE);
+                }
+            }
+
 
             myViewHolder.recyclerView.setHasFixedSize(true);
             RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false);
@@ -442,13 +515,14 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             myViewHolder.textHeader.setText(item.getTitle());
             myViewHolder.recyclerView.setHasFixedSize(true);
            // myViewHolder.recyclerView.setNestedScrollingEnabled(false);
-            if(item.getItemList().get(0) instanceof  MyShop) { //call catList section type 8 layout
+            //if(item.getItemList().get(0) instanceof  MyShop) { //call catList section type 8 layout
                 Log.d("itemType 8",""+item.getType());
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
+               LinearLayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
                 myViewHolder.recyclerView.setLayoutManager(layoutManager);
-            }
+            //}
             myViewHolder.recyclerView.setItemAnimator(new DefaultItemAnimator());
             StoreAdapter myItemAdapter = new StoreAdapter(context,item.getItemList(),"catList");
+            myItemAdapter.setLayoutManager(layoutManager);
             myViewHolder.recyclerView.setAdapter(myItemAdapter);
 
         }else if(holder instanceof MyCategoryScanViewHolder){
@@ -459,6 +533,17 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         else if(holder instanceof MyCategoryAllViewHolder){
             Category item = (Category) itemList.get(position);
             MyCategoryAllViewHolder myViewHolder = (MyCategoryAllViewHolder)holder;
+            myViewHolder.textTitle.setText(item.getName());
+            RequestOptions requestOptions = new RequestOptions();
+            requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+            requestOptions.skipMemoryCache(false);
+            Glide.with(context)
+                    .load(item.getImage())
+                    .apply(requestOptions)
+                    .into(myViewHolder.imageView);
+        }else if(holder instanceof MyMarketViewHolder){
+            Market item = (Market) itemList.get(position);
+            MyMarketViewHolder myViewHolder = (MyMarketViewHolder)holder;
             myViewHolder.textTitle.setText(item.getName());
             RequestOptions requestOptions = new RequestOptions();
             requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);

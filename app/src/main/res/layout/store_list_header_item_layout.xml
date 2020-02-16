@@ -5,72 +5,65 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!--<View
-        android:id="@+id/view_1"
-        android:background="@color/red_500"
+    <RelativeLayout
+        android:id="@+id/relative_top"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/product_list_back_accent_height"/>
+        android:layout_height="wrap_content">
 
-    <View
-        android:visibility="gone"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="@dimen/product_list_back_white_margin"
-        android:layout_below="@+id/view_1"
-        android:background="@color/white"
-        android:layout_width="@dimen/product_list_back_white_width"
-        android:layout_height="@dimen/product_list_back_accent_height"/>
+        <TextView
+            android:visibility="gone"
+            android:layout_toLeftOf="@+id/profile_image"
+            android:id="@+id/text_date_range"
+            android:textColor="@color/blue100"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text=""
+            android:paddingLeft="@dimen/view_horizontal_margin"
+            android:paddingRight="@dimen/view_horizontal_margin"
+            android:textSize="@dimen/home_list_header_text_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-    <View
-        android:visibility="gone"
-        android:layout_marginTop="@dimen/product_list_rotate_margin"
-        android:layout_below="@+id/view_1"
-        android:rotation="-5"
-        android:background="@color/white"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/product_list_back_accent_height"/>-->
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/text_desc"
+            android:layout_marginTop="@dimen/view_vertical_margin"
+            android:paddingLeft="@dimen/view_horizontal_margin"
+            android:paddingRight="@dimen/view_horizontal_margin"
+            android:layout_below="@+id/text_date_range"
+            android:textColor="?attr/primaryTextColor"
+            android:textStyle="bold"
+            android:textSize="@dimen/product_list_very_large_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-   <!-- <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/profile_image">
-    </RelativeLayout>-->
-    <TextView
-        android:visibility="gone"
-        android:layout_toLeftOf="@+id/profile_image"
-        android:id="@+id/text_date_range"
-        android:textColor="@color/blue100"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/view_horizontal_margin"
-        android:paddingRight="@dimen/view_horizontal_margin"
-        android:textSize="@dimen/home_list_header_text_size"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/text_header"
+            android:layout_marginTop="@dimen/view_vertical_margin"
+            android:layout_marginBottom="@dimen/view_vertical_margin"
+            android:paddingLeft="@dimen/view_horizontal_margin"
+            android:paddingRight="@dimen/view_horizontal_margin"
+            android:layout_below="@+id/text_date_range"
+            android:textColor="?attr/primaryTextColor"
+            android:textStyle="bold"
+            android:textSize="@dimen/large_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-    <TextView
-        android:visibility="gone"
-        android:id="@+id/text_desc"
-        android:layout_marginTop="@dimen/view_vertical_margin"
-        android:paddingLeft="@dimen/view_horizontal_margin"
-        android:paddingRight="@dimen/view_horizontal_margin"
-        android:layout_below="@+id/text_date_range"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:textSize="@dimen/product_list_very_large_text_size"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    </RelativeLayout>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:visibility="gone"
         android:layout_marginRight="@dimen/view_horizontal_margin"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/text_date_range"
+        android:layout_alignTop="@+id/relative_top"
         android:id="@+id/profile_image"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:tint="@color/white"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_below="@+id/text_desc"
+        android:layout_below="@+id/relative_top"
         android:id="@+id/recycler_view"
         android:paddingLeft="@dimen/view_horizontal_margin"
         android:layout_width="match_parent"

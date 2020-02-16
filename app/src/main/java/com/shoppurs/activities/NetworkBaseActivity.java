@@ -1,5 +1,6 @@
 package com.shoppurs.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -10,11 +11,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.shoppurs.R;
+import com.shoppurs.activities.Settings.SettingActivity;
 import com.shoppurs.utilities.AppController;
 import com.shoppurs.utilities.Constants;
 import com.shoppurs.utilities.DialogAndToast;
 import com.shoppurs.utilities.JsonArrayRequest;
 import com.shoppurs.utilities.JsonArrayRequestV2;
+import com.shoppurs.utilities.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -261,7 +264,19 @@ public class NetworkBaseActivity extends BaseActivity {
     }
 
     public void onServerErrorResponse(VolleyError error, String apiName) {
-
+        if(error.networkResponse!=null){
+           if(error.networkResponse.statusCode== 400 || error.networkResponse.statusCode== 401 ||
+            error.networkResponse.statusCode== 403){
+               String fcmTocken = sharedPreferences.getString(Constants.FCM_TOKEN,"");
+               dbHelper.deleteAllTable();
+               editor.clear();
+               editor.putString(Constants.FCM_TOKEN, fcmTocken);
+               editor.commit();
+               Intent intent = new Intent(NetworkBaseActivity.this, LoginActivity.class);
+               intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+               startActivity(intent);
+            }
+        }
     }
 
     public void onStatusNotOk(String message, String apiName) {

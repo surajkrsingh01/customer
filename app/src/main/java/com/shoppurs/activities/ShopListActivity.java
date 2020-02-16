@@ -103,7 +103,10 @@ public class ShopListActivity extends NetworkBaseActivity {
         });
 
         text_left_label = findViewById(R.id.text_left_label);
-        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency")  || !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product") || !TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List"))
+        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency")  ||
+                !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product") ||
+                !TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List") ||
+                !TextUtils.isEmpty(shopListType) && shopListType.equals("MarketStore"))
             text_left_label.setText("Settings");
         text_right_label = findViewById(R.id.text_right_label);
         text_left_label.setOnClickListener(new View.OnClickListener() {
@@ -115,7 +118,10 @@ public class ShopListActivity extends NetworkBaseActivity {
         });
 
         initFooter(this,1);
-        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency") || !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product") || !TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List"))
+        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency") ||
+                !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product") ||
+                !TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List")  ||
+                !TextUtils.isEmpty(shopListType) && shopListType.equals("MarketStore"))
             getNormalShops();
         else
         getFavoriteShops();
@@ -124,10 +130,15 @@ public class ShopListActivity extends NetworkBaseActivity {
 
     private void getItemList(){
         swipeRefreshLayout.setRefreshing(false);
+        tv_mynormal.setVisibility(View.GONE);
+        tv_myfav.setVisibility(View.GONE);
         myFavoriteitemList.clear();
         myNormalitemList.clear();
         myfavoriteLists.clear();
-        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency") || !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product") || !TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List"))
+        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency") ||
+                !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product") ||
+                !TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List") ||
+                !TextUtils.isEmpty(shopListType) && shopListType.equals("MarketStore"))
             getNormalShops();
         else
         getFavoriteShops();
@@ -203,10 +214,17 @@ public class ShopListActivity extends NetworkBaseActivity {
             params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
             params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
             params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
+            params.put("limit", limit+"");
+            params.put("offset", offset+"");
             url=getResources().getString(R.string.url_customer)+"/api/customers/allshoplist";
-        }
-
-        else{
+        }else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("MarketStore")){
+            params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
+            params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
+            params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
+            params.put("limit", limit+"");
+            params.put("offset", offset+"");
+            url=getResources().getString(R.string.url_customer)+"/api/customers/allshoplist";
+        } else{
             params.put("subcatid",subCatId);
             params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
             params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
@@ -230,8 +248,13 @@ public class ShopListActivity extends NetworkBaseActivity {
                     if(!response.getString("result").equals("null")){
                         JSONArray shopJArray = null;
 
-                        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency") || !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product")){
+                        if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency") ||
+                                !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product")){
                             shopJArray = response.getJSONArray("result");
+                        }else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("MarketStore") ||
+                                !TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List")){
+                            JSONObject jsonObject = response.getJSONObject("result").getJSONObject("shoplist");
+                            shopJArray = jsonObject.getJSONArray("data");
                         }else{
                             JSONObject jsonObject = response.getJSONObject("result");
                             shopJArray = jsonObject.getJSONArray("shoplist");
@@ -270,9 +293,11 @@ public class ShopListActivity extends NetworkBaseActivity {
                     }
 
                     if (myNormalitemList.size() > 0) {
+                        tv_mynormal.setVisibility(View.VISIBLE);
                         myNormalshopAdapter.notifyDataSetChanged();
                     } else tv_mynormal.setVisibility(View.GONE);
                     if (myFavoriteitemList.size() > 0) {
+                        tv_myfav.setVisibility(View.VISIBLE);
                         myFavoriteshopAdapter.notifyDataSetChanged();
                     } else tv_myfav.setVisibility(View.GONE);
                     if (myNormalitemList.size() == 0 && myFavoriteitemList.size() == 0) {
