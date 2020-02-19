@@ -58,6 +58,15 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private int colorTheme;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+    public LinearLayoutManager layoutManager;
+
+    public LinearLayoutManager getLayoutManager() {
+        return layoutManager;
+    }
+
+    public void setLayoutManager(LinearLayoutManager layoutManager) {
+        this.layoutManager = layoutManager;
+    }
 
     public void setColorTheme(int colorTheme){
         this.colorTheme = colorTheme;
@@ -96,15 +105,6 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         }
     }
 
-    public LinearLayoutManager layoutManager;
-
-    public LinearLayoutManager getLayoutManager() {
-        return layoutManager;
-    }
-
-    public void setLayoutManager(LinearLayoutManager layoutManager) {
-        this.layoutManager = layoutManager;
-    }
 
     public class MyStoreHeader1ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
@@ -247,13 +247,11 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 case MotionEvent.ACTION_UP:
                     zoomAnimation(false,rootView);
                     Market item = (Market) itemList.get(getAdapterPosition());
-                    DialogAndToast.showToast(item.getName(), context);
+                    //DialogAndToast.showToast(item.getName(), context);
 
                     Intent intent = new Intent(context, ShopListActivity.class);
                     intent.putExtra("flag", "MarketStore");
-                    intent.putExtra("subCatName","");
-                    intent.putExtra("subCatId","");
-                    intent.putExtra("CatId","");
+                    intent.putExtra("marketId",item.getId());
                     context.startActivity(intent);
 
                     break;
@@ -519,10 +517,10 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 Log.d("itemType 8",""+item.getType());
                LinearLayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
                 myViewHolder.recyclerView.setLayoutManager(layoutManager);
+                //setLayoutManager(layoutManager);
             //}
             myViewHolder.recyclerView.setItemAnimator(new DefaultItemAnimator());
             StoreAdapter myItemAdapter = new StoreAdapter(context,item.getItemList(),"catList");
-            myItemAdapter.setLayoutManager(layoutManager);
             myViewHolder.recyclerView.setAdapter(myItemAdapter);
 
         }else if(holder instanceof MyCategoryScanViewHolder){
@@ -579,8 +577,8 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
                 myViewHolder.tv_shortName.setText(initials);
             }
-            Log.d("shopImage ", item.getShopimage());
-            Log.d("shopName ", item.getName());
+           // Log.d("shopImage ", item.getShopimage());
+            //Log.d("shopName ", item.getName());
             if(item.getShopimage() !=null && item.getShopimage().contains("http")){
                 myViewHolder.tv_shortName.setVisibility(View.GONE);
                 myViewHolder.imageView.setVisibility(View.VISIBLE);

@@ -221,9 +221,10 @@ public class ShopListActivity extends NetworkBaseActivity {
             params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT,""));
             params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG,""));
             params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
+            params.put("id", getIntent().getStringExtra("marketId"));
             params.put("limit", limit+"");
             params.put("offset", offset+"");
-            url=getResources().getString(R.string.url_customer)+"/api/customers/allshoplist";
+            url=getResources().getString(R.string.url_customer)+"/api/market/searchShop";
         } else{
             params.put("subcatid",subCatId);
             params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
@@ -251,8 +252,10 @@ public class ShopListActivity extends NetworkBaseActivity {
                         if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency") ||
                                 !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product")){
                             shopJArray = response.getJSONArray("result");
-                        }else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("MarketStore") ||
-                                !TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List")){
+                        }else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("MarketStore")){
+                            shopJArray = response.getJSONArray("result");
+                            //shopJArray = jsonObject.getJSONArray("data");
+                        }else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List")){
                             JSONObject jsonObject = response.getJSONObject("result").getJSONObject("shoplist");
                             shopJArray = jsonObject.getJSONArray("data");
                         }else{
