@@ -74,6 +74,8 @@
     <dimen name="home_list_image_size_1">400dp</dimen>
     <dimen name="home_list_image_size_width">180dp</dimen>
     <dimen name="home_list_image_size_height">260dp</dimen>
+    <dimen name="market_list_image_size_width">210dp</dimen>
+    <dimen name="market_list_image_size_height">140dp</dimen>
     <dimen name="home_list_image_size_2">300dp</dimen>
     <dimen name="home_list_image_width_4">90dp</dimen>
     <dimen name="home_list_image_height_4">70dp</dimen>

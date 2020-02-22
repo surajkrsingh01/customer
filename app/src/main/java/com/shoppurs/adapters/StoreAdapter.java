@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurs.R;
+import com.shoppurs.activities.ScrollShopListActivity;
 import com.shoppurs.activities.Settings.SettingActivity;
 import com.shoppurs.activities.ShopAddressActivity;
 import com.shoppurs.activities.ShopListActivity;
@@ -58,15 +59,6 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private int colorTheme;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
-    public LinearLayoutManager layoutManager;
-
-    public LinearLayoutManager getLayoutManager() {
-        return layoutManager;
-    }
-
-    public void setLayoutManager(LinearLayoutManager layoutManager) {
-        this.layoutManager = layoutManager;
-    }
 
     public void setColorTheme(int colorTheme){
         this.colorTheme = colorTheme;
@@ -125,10 +117,11 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         @Override
         public void onClick(View view) {
             if(view == btnSeeAll){
-                /*CatListItem myItem = (CatListItem) itemList.get(getAdapterPosition());
-                Intent intent = new Intent(context,SubCatListActivity.class);
-                intent.putExtra("catName",myItem.getTitle());
-                context.startActivity(intent);*/
+                CatListItem item = (CatListItem) itemList.get(getAdapterPosition());
+                Intent intent = new Intent(context, ScrollShopListActivity.class);
+                intent.putExtra("flag", item.getTitle());
+                context.startActivity(intent);
+                //DialogAndToast.showToast("clicked "+item.getTitle() +" " +item.getDesc(), context);
             }
         }
     }
@@ -249,7 +242,7 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                     Market item = (Market) itemList.get(getAdapterPosition());
                     //DialogAndToast.showToast(item.getName(), context);
 
-                    Intent intent = new Intent(context, ShopListActivity.class);
+                    Intent intent = new Intent(context, ScrollShopListActivity.class);
                     intent.putExtra("flag", "MarketStore");
                     intent.putExtra("marketId",item.getId());
                     context.startActivity(intent);
@@ -517,7 +510,6 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 Log.d("itemType 8",""+item.getType());
                LinearLayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
                 myViewHolder.recyclerView.setLayoutManager(layoutManager);
-                //setLayoutManager(layoutManager);
             //}
             myViewHolder.recyclerView.setItemAnimator(new DefaultItemAnimator());
             StoreAdapter myItemAdapter = new StoreAdapter(context,item.getItemList(),"catList");

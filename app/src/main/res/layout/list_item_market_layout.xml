@@ -6,8 +6,8 @@
     android:layout_margin="5dp"
     card_view:cardElevation="5dp"
     android:background="@color/white"
-    android:layout_width="@dimen/home_list_image_size_height"
-    android:layout_height="@dimen/home_list_image_size_width"
+    android:layout_width="@dimen/market_list_image_size_width"
+    android:layout_height="@dimen/market_list_image_size_height"
     card_view:cardCornerRadius="10dp">
 
     <RelativeLayout
@@ -18,7 +18,7 @@
         android:id="@+id/image_view"
         android:scaleType="centerCrop"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/home_list_image_size_width" />
+        android:layout_height="@dimen/market_list_image_size_height" />
 
         <RelativeLayout
             android:paddingLeft="@dimen/view_horizontal_margin"

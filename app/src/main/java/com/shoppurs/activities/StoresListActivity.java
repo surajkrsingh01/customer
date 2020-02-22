@@ -162,31 +162,6 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
         if(!sharedPreferences.getBoolean(Constants.IS_TOKEN_SAVED, false)){
             saveToken();
         }
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                Log.d("layoutManager ", myItemAdapter.getLayoutManager()+"");
-                if(isScroll && myItemAdapter.getLayoutManager()!=null){
-                    int  visibleItemCount, totalItemCount, pastVisibleItems;
-                    visibleItemCount = myItemAdapter.getLayoutManager().getChildCount();
-                    totalItemCount = myItemAdapter.getLayoutManager().getItemCount();
-                    Log.i(TAG,"visible "+visibleItemCount+" total "+totalItemCount);
-                    pastVisibleItems = ((LinearLayoutManager)myItemAdapter.getLayoutManager()).findLastVisibleItemPosition();
-                    Log.i(TAG,"total visible "+(visibleItemCount+pastVisibleItems));
-
-                    if (!isScrolling) {
-                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
-                            isScrolling = true;
-                            //offset = limit + offset;
-                            getNormalStores("loadOnScroll");
-                            showProgressBar(true);
-                        }
-                    }
-                }
-            }
-        });
     }
 
     public void saveToken(){
@@ -493,6 +468,7 @@ public class StoresListActivity extends BaseLocation implements LocationActionLi
 
 
     private void getItemList(){
+        offset = 0;
         favoriteShopList.clear();
         normalShopList.clear();
         itemList.clear();
