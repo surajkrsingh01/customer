@@ -61,7 +61,7 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
         setStatusLayout(false);
 
         flag = getIntent().getStringExtra("flag");
-        if(!TextUtils.isEmpty(flag) && flag.equals("instantPay")){
+        if(!TextUtils.isEmpty(flag) && flag.equals("instantPay") || !TextUtils.isEmpty(flag) && flag.equals("Khatabook")){
             try {
                 setStatusLayout(true);
                 tvStatus.setText("You Payment has been Received.");
@@ -89,7 +89,8 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
             @Override
             public void onClick(View view) {
                 //openInvoiceActivity();
-                if(!TextUtils.isEmpty(flag) && flag.equals("instantPay")){
+                if(!TextUtils.isEmpty(flag)){
+                    if(flag.equals("instantPay") || flag.equals("Khatabook"))
                     finish();
                 }else {
                     Intent intent = new Intent(TransactionDetailsActivity.this, MyOrderActivity.class);
@@ -107,6 +108,9 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
             imageStatusSuccess.setVisibility(View.VISIBLE);
             imageViewStatusFailure.setVisibility(View.GONE);
             textViewStatusHeader.setText("Congrats");
+            if(!TextUtils.isEmpty(flag) && flag.equals("Khatabook"))
+                tvStatus.setText("Payment has been successfully processed.");
+            else
             tvStatus.setText("Order has been successfully placed.");
             //placeOrder();
 

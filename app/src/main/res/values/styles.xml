@@ -75,6 +75,10 @@
             @drawable/white_border_background
         </item>
         <item name="borderBottomSolidBackground">@drawable/dark_theme_grey_border_bottom_background</item>
+
+        <item name="borderRoundBackground">
+            @drawable/white_border_round_background
+        </item>
     </style>
 
     <style name="Light" parent="AppTheme.NoActionBar">
@@ -89,6 +93,9 @@
         </item>
         <item name="borderBackground">
             @drawable/grey_border_background
+        </item>
+        <item name="borderRoundBackground">
+            @drawable/grey_border_round_background
         </item>
     </style>
 

@@ -21,7 +21,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.ScrollShopListActivity"></activity>
+        <activity android:name=".activities.Settings.KhataBookActivity"></activity>
+        <activity android:name=".activities.ScrollShopListActivity" />
         <activity android:name=".activities.ShoppursProductActivity" />
         <activity android:name=".activities.Settings.ToDoListActivity" />
         <activity android:name=".activities.Settings.ToDoListDetailsActivity" />
@@ -142,6 +143,10 @@
         <activity
             android:name=".activities.payment.ccavenue.activities.CCAvenueWebViewActivity"
             android:label="@string/title_activity_ccAvenue"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.Settings.PayKhataActivity"
+            android:label="@string/title_activity_payKhata"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.payment.ccavenue.activities.PaymentActivity"

@@ -563,11 +563,11 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/tv_mpos"
-            android:clickable="true"
             android:visibility="gone"
-            android:layout_below="@id/tv_pay_option_header"
-            android:text="ME30S"
+            android:id="@+id/tv_khatabook"
+            android:clickable="true"
+            android:layout_below="@id/tv_pay_card"
+            android:text="Khatabook"
             android:textColor="?attr/primaryTextColor"
             android:padding="12dp"
             android:gravity="center_horizontal"
@@ -576,7 +576,7 @@
 
         <TextView
             android:id="@+id/tv_android_pos"
-            android:layout_below="@id/tv_mpos"
+            android:layout_below="@id/tv_khatabook"
             android:text="N910"
             android:clickable="true"
             android:visibility="gone"

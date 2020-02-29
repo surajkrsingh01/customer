@@ -92,7 +92,7 @@ public class Constants {
     public static String UPDATE_ADDRESS="/api/customers/profile/update_address";
     public static String GENERATE_ORDER="/api/order/generate_order";
     public static String PLACE_ORDER="/api/order/place_order";
-    public static String ADD_TRANS_DATA="/api/trans/add_trans_data";
+    public static String ADD_TRANS_DATA="trans/add_trans_data";
     public static String ADD_INVOICE_DATA="/api/trans/generate_invoice";
     public static String GET_COUNTRIES="/api/customers/countries";
     public static String GET_STATES="/api/customers/states?countryId=";
@@ -109,4 +109,8 @@ public class Constants {
     public static String GET_MESSAGE="/api/chat/get_chat_for_support";
     public static String GET_CHAT_USERS="/api/chat/get_chat_users";
     public static String ASSIGN_STATUS="/api/delivery/order/get_shop_order_Status";
+
+    public static String KHATA_TRANSACTIONS="/api/khata/transactions";
+
+
 }

@@ -128,6 +128,33 @@
                 android:tint="?attr/secondaryTextColor"/>
         </RelativeLayout>
 
+
+        <RelativeLayout
+            android:id="@+id/relative_khatabook"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingBottom="@dimen/view_vertical_margin"
+            android:background="?attr/borderBottomSolidBackground"
+            android:layout_marginTop="@dimen/view_vertical_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_alignParentLeft="true"
+                android:id="@+id/text_khatabook"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:textColor="?attr/primaryTextColor"
+                android:text="KhataBook"
+                android:textSize="@dimen/normal_text_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/arrow_right"
+                android:tint="?attr/secondaryTextColor"/>
+        </RelativeLayout>
+
         <RelativeLayout
             android:id="@+id/relative_frequency_product_list"
             android:paddingRight="@dimen/activity_horizontal_margin"

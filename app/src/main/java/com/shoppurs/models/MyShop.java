@@ -7,7 +7,8 @@ import java.io.Serializable;
  */
 
 public class MyShop implements Serializable {
-    private String id, merchantId,accessCode, name,code,desc,subCatName,address,mobile, state, city, shopimage, dbname, dbusername, dbpassword;
+    private String id, merchantId,accessCode, name,code,desc,subCatName,address,mobile, state, city,
+            shopimage, dbname, dbusername, dbpassword, khataNumber;
     private int image, type;
     private double latitude, longitude;
     private String isDeliveryAvailable;
@@ -15,6 +16,14 @@ public class MyShop implements Serializable {
     private String minDeliverytime;
     private int minDeliverydistance;
     private double chargesAfterMinDistance;
+
+    public String getKhataNumber() {
+        return khataNumber;
+    }
+
+    public void setKhataNumber(String khataNumber) {
+        this.khataNumber = khataNumber;
+    }
 
     public String getIsDeliveryAvailable() {
         return isDeliveryAvailable;

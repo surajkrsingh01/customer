@@ -23,8 +23,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shoppurs.R;
+import com.shoppurs.activities.ScrollShopListActivity;
 import com.shoppurs.activities.SearchActivity;
 import com.shoppurs.activities.Settings.FrequencyProductsActivity;
+import com.shoppurs.activities.Settings.KhataBookActivity;
 import com.shoppurs.activities.Settings.ReturnProductsActivity;
 import com.shoppurs.activities.Settings.ToDoListActivity;
 import com.shoppurs.activities.Settings.ToDoListDetailsActivity;
@@ -129,6 +131,8 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 final MyShop shop = (MyShop) mShopList.get(getAdapterPosition());
                 if(flag!=null && flag.equals("SearchActivity"))
                     ((SearchActivity)context).showLargeImageDialog(shop, imageView);
+                else if(flag!=null && flag.contains("ScrollShopList"))
+                    ((ScrollShopListActivity)context).showLargeImageDialog(shop, imageView);
                 else
                ((ShopListActivity)context).showLargeImageDialog(shop, imageView);
             }else if(view == imageMenu){
@@ -213,9 +217,9 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                         intent = new Intent(context, ReturnProductsActivity.class);
                     }else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("ToDo List")) {
                         intent = new Intent(context, ToDoListActivity.class);
-                    }
-                    else
-                    intent = new Intent(context, ShopProductListActivity.class);
+                    }else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("KhataBook")) {
+                        intent = new Intent(context, KhataBookActivity.class);
+                    } else intent = new Intent(context, ShopProductListActivity.class);
 
                     intent.putExtra("callingClass","ShopListActivity");
                     intent.putExtra("name",shop.getName());
@@ -230,6 +234,7 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                     intent.putExtra("dbuser",shop.getDbusername());
                     intent.putExtra("dbpassword",shop.getDbpassword());
                     intent.putExtra("shop_code",shop.getId());
+                    intent.putExtra("khataNo",shop.getKhataNumber());
 
                     ShopDeliveryModel shopDeliveryModel = new ShopDeliveryModel();
                     shopDeliveryModel.setShopCode(shop.getId());
@@ -334,12 +339,17 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 MyShopListViewHolder myViewHolder = (MyShopListViewHolder)holder;
                 myViewHolder.textShopName.setText(item.getName());
                 myViewHolder.text_shop_mobile.setText(item.getMobile());
-                if(TextUtils.isEmpty(item.getAddress()) || item.getAddress().equals("null")){
-                    myViewHolder.textAddress.setVisibility(View.GONE);
-                }else{
-                    myViewHolder.textAddress.setVisibility(View.VISIBLE);
-                    myViewHolder.textAddress.setText(item.getAddress());
+                if(!TextUtils.isEmpty(shopListType) && shopListType.equals("KhataBook")){
+                    myViewHolder.textAddress.setText("KNO: "+item.getKhataNumber());
+                }else {
+                    if(TextUtils.isEmpty(item.getAddress()) || item.getAddress().equals("null")){
+                        myViewHolder.textAddress.setVisibility(View.GONE);
+                    }else{
+                        myViewHolder.textAddress.setVisibility(View.VISIBLE);
+                        myViewHolder.textAddress.setText(item.getAddress());
+                    }
                 }
+
 
                 if(item.getName().length()>1) {
                     myViewHolder.tv_shortName.setText(item.getName().substring(0, 1));

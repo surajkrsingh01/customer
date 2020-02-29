@@ -31,5 +31,6 @@
 	<attr name="summarySecondaryBackground" format="reference"/>
 	<attr name="commentSectionBackground" format="reference"/>
 	<attr name="solidPrimaryStrokeBorderBackground" format="reference"/>
+	<attr name="borderRoundBackground" format="reference"/>
 
 </resources>

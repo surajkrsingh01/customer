@@ -18,6 +18,7 @@ import com.shoppurs.activities.CartActivity;
 import com.shoppurs.activities.ChangePasswordActivity;
 import com.shoppurs.activities.LoginActivity;
 import com.shoppurs.activities.MyOrderActivity;
+import com.shoppurs.activities.ScrollShopListActivity;
 import com.shoppurs.activities.ShopListActivity;
 import com.shoppurs.activities.UserListForChatActivity;
 import com.shoppurs.utilities.Constants;
@@ -25,7 +26,8 @@ import com.shoppurs.utilities.CountDrawable;
 
 public class SettingActivity extends BaseActivity implements View.OnClickListener {
 
-    private RelativeLayout relative_personalInfo, relative_my_cart, relative_display, relative_my_order, relative_delivery_address, relative_invite,
+    private RelativeLayout relative_personalInfo, relative_my_cart, relative_display, relative_my_order,
+            relative_khatabook, relative_delivery_address, relative_invite,
             relative_frequency_product_list,relative_return_product, relative_chat,relative_change_password, relative_logout, relative_todo_list;
     private Toolbar toolbar;
     private Menu myMenu;
@@ -91,6 +93,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         relative_my_cart = findViewById(R.id.relative_my_cart);
         relative_display = findViewById(R.id.relative_display);
         relative_my_order = findViewById(R.id.relative_my_order);
+        relative_khatabook = findViewById(R.id.relative_khatabook);
         relative_delivery_address = findViewById(R.id.relative_delivery_address);
         relative_frequency_product_list = findViewById(R.id.relative_frequency_product_list);
         relative_return_product  = findViewById(R.id.relative_return_product);
@@ -104,6 +107,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
         relative_my_cart.setOnClickListener(this);
         relative_display.setOnClickListener(this);
         relative_my_order.setOnClickListener(this);
+        relative_khatabook.setOnClickListener(this);
         relative_delivery_address.setOnClickListener(this);
         relative_frequency_product_list.setOnClickListener(this);
         relative_return_product.setOnClickListener(this);
@@ -122,6 +126,10 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
             startActivity(new Intent( SettingActivity.this, DisplayActivity.class));
         }else if(view == relative_my_order){
             startActivity(new Intent( SettingActivity.this, MyOrderActivity.class));
+        }else if(view == relative_khatabook){
+            Intent intent = new Intent( SettingActivity.this, ScrollShopListActivity.class);
+            intent.putExtra("flag", "KhataBook");
+            startActivity(intent);
         }else if(view == relative_delivery_address){
             startActivity(new Intent( SettingActivity.this, DeliveryAddressListActivity.class));
         }else if(view == relative_invite){

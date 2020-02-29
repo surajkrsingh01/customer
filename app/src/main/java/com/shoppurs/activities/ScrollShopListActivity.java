@@ -86,6 +86,7 @@ public class ScrollShopListActivity extends NetworkBaseActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         shopAdapter=new ShopAdapter(this,itemList,"shopList", catId, subCatId, subCatName);
+        shopAdapter.setFlag("ScrollShopList");
         shopAdapter.setShopListType(shopListType);
         recyclerView.setAdapter(shopAdapter);
 
@@ -115,8 +116,11 @@ public class ScrollShopListActivity extends NetworkBaseActivity {
                 shopListType.equals("ToDo List") || shopListType.equals("MarketStore") ||
                 shopListType.contains("Stores")  || shopListType.contains("Favourite")) {
                 text_left_label.setText("Nearby");
-            }
+            }else if(shopListType.equals("KhataBook"))
+                text_left_label.setText("Settings");
         }
+
+        initFooter(this,2);
 
         text_right_label = findViewById(R.id.text_right_label);
         text_left_label.setOnClickListener(new View.OnClickListener() {
@@ -127,11 +131,11 @@ public class ScrollShopListActivity extends NetworkBaseActivity {
             }
         });
 
-        initFooter(this,2);
         if(!TextUtils.isEmpty(shopListType)) {
             if (shopListType.equals("Frequency") || shopListType.equals("Return Product") ||
                     shopListType.equals("ToDo List") || shopListType.equals("MarketStore") ||
-                    shopListType.contains("Stores")  || shopListType.contains("Favourite")) {
+                    shopListType.contains("Stores")  || shopListType.contains("Favourite") ||
+                    shopListType.equals("KhataBook")) {
                 getNormalShops("initialLoading");
             }
         }
@@ -169,7 +173,8 @@ public class ScrollShopListActivity extends NetworkBaseActivity {
         if(!TextUtils.isEmpty(shopListType)) {
             if (shopListType.equals("Frequency") || shopListType.equals("Return Product") ||
                     shopListType.equals("ToDo List") || shopListType.equals("MarketStore") ||
-                    shopListType.contains("Stores")  || shopListType.contains("Favourite")) {
+                    shopListType.contains("Stores")  || shopListType.contains("Favourite") ||
+                    shopListType.equals("KhataBook")) {
                 getNormalShops("initialLoading");
             }
         }
@@ -220,7 +225,15 @@ public class ScrollShopListActivity extends NetworkBaseActivity {
             params.put("limit", limit+"");
             params.put("offset", offset+"");
             url=getResources().getString(R.string.url_customer)+"/api/market/searchShop";
-        } else if(!TextUtils.isEmpty(shopListType)){
+        }else if(!TextUtils.isEmpty(shopListType) && shopListType.equals("KhataBook")){
+            params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
+            params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
+            params.put("limit", limit+"");
+            params.put("offset", offset+"");
+            params.put("dbName", sharedPreferences.getString(Constants.DB_NAME, ""));
+            //url=getResources().getString(R.string.url_customer)+"/api/customers/allshoplist";
+            url=getResources().getString(R.string.url_customer)+"/api/khata/shops";
+        }else if(!TextUtils.isEmpty(shopListType)){
             if(!TextUtils.isEmpty(sharedPreferences.getString(Constants.CUST_CURRENT_ADDRESS,""))){
                 params.put("lattitude", sharedPreferences.getString(Constants.CUST_CURRENT_LAT, ""));
                 params.put("longitude", sharedPreferences.getString(Constants.CUST_CURRENT_LONG, ""));
@@ -252,6 +265,7 @@ public class ScrollShopListActivity extends NetworkBaseActivity {
                     showProgress(false);
                     if(!response.getString("result").equals("null")){
                         JSONArray shopJArray = null;
+                        JSONArray khataJArray = null;
 
                         if(!TextUtils.isEmpty(shopListType) && shopListType.equals("Frequency") ||
                                 !TextUtils.isEmpty(shopListType) && shopListType.equals("Return Product")){
@@ -268,6 +282,11 @@ public class ScrollShopListActivity extends NetworkBaseActivity {
                                 JSONObject jsonObject = response.getJSONObject("result").getJSONObject("shoplist");
                                 shopJArray = jsonObject.getJSONArray("data");
                                 offset = jsonObject.getInt("offset");
+                            }else if(shopListType.contains("KhataBook")){
+                                JSONObject jsonObject = response.getJSONObject("result");
+                                shopJArray = jsonObject.getJSONArray("shopList");
+                                khataJArray = jsonObject.getJSONArray("khataList");
+                                offset =  shopJArray.length();
                             }
                         }else{
                             JSONObject jsonObject = response.getJSONObject("result");
@@ -278,6 +297,8 @@ public class ScrollShopListActivity extends NetworkBaseActivity {
                             String shop_code = shopJArray.getJSONObject(i).getString("retcode");
                             myShop.setId(shop_code);
                             Log.d("shop_id", myShop.getId());
+                            if(khataJArray!=null && khataJArray.length()>=i)
+                            myShop.setKhataNumber(khataJArray.getJSONObject(i).getString("kbNo"));
                             myShop.setName(shopJArray.getJSONObject(i).getString("retshopname"));
                             myShop.setMobile(shopJArray.getJSONObject(i).getString("retmobile"));
                             myShop.setAddress(shopJArray.getJSONObject(i).getString("retaddress"));

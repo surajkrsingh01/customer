@@ -283,7 +283,7 @@ public class CCAvenueWebViewActivity extends NetworkBaseActivity {
     public void get_RSA() {
 
         Log.i(TAG,"Getting RSA...");
-        String url=getResources().getString(R.string.url_customer)+"/api/getRSAKey?orderId="+orderId+"&accessCode="+ACCESS_CODE;
+        String url=getResources().getString(R.string.url_shop)+"getRSAKey?orderId="+orderId+"&accessCode="+ACCESS_CODE;
         progressDialog.setMessage("Loading...");
         showProgress(true);
         // Log.i(TAG,"params "+params.toString());

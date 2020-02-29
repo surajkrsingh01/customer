@@ -70,7 +70,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
     private TextView tvItemCount,tvNetPayable,tvCheckout,tvItemTotal,tvTotalTaxes,tvSgst,tvTotalDiscount,
             tvDeliveryCharges;
     private RelativeLayout relativeLayoutPayOptionLayout,rlDiscount,rlDelivery,rl_offer_applied_layout,rlOfferLayout;
-    private TextView tvCash,tvCard,tvMPos,tvAndroidPos;
+    private TextView tvCash,tvCard,tv_khatabook,tvAndroidPos;
 
     private ImageView imageViewScan,imageViewSearch,imageViewRemoveOffer;
 
@@ -136,7 +136,7 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         tvCheckout=findViewById(R.id.viewCart);
         tvCard = findViewById(R.id.tv_pay_card);
         tvCash = findViewById(R.id.tv_pay_cash);
-        tvMPos = findViewById(R.id.tv_mpos);
+        tv_khatabook = findViewById(R.id.tv_khatabook);
         tvAndroidPos = findViewById(R.id.tv_android_pos);
         linearLayoutScanCenter = findViewById(R.id.linear_action);
 
@@ -221,11 +221,10 @@ public class CartActivity extends NetworkBaseActivity implements MyItemTypeClick
         });
 
 
-        tvMPos.setOnClickListener(new View.OnClickListener() {
+        tv_khatabook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                paymentMode = "Credit/Debit Card";
-                deviceType = "ME30S";
+                paymentMode = "Khatabook";
                 generateJson(paymentMode);
             }
         });
