@@ -235,6 +235,7 @@ public class ShopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                     intent.putExtra("dbpassword",shop.getDbpassword());
                     intent.putExtra("shop_code",shop.getId());
                     intent.putExtra("khataNo",shop.getKhataNumber());
+                    intent.putExtra("khataOpenDate",shop.getKhataOpenDate());
 
                     ShopDeliveryModel shopDeliveryModel = new ShopDeliveryModel();
                     shopDeliveryModel.setShopCode(shop.getId());

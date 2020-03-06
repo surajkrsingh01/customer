@@ -103,6 +103,7 @@ public class PayKhataActivity extends NetworkBaseActivity {
             intent.putExtra(AvenuesParams.AMOUNT, String.valueOf(amount)+".00");
             //intent.putExtra(AvenuesParams.AMOUNT, amount);//String.format("%.02f",amount));
             intent.putExtra(AvenuesParams.CURRENCY, "INR");
+            intent.putExtra("status", "Approved");
             intent.putExtra("remarks", "Khata Payment");
             intent.putExtra("orderNumber",Utility.getTimeStamp());
             intent.putExtra("flag","KhataTransaction");
@@ -122,7 +123,8 @@ public class PayKhataActivity extends NetworkBaseActivity {
             dataObject.put("responseCode","00");
             dataObject.put("responseMessage","Approved");
             dataObject.put("dateTime", Utility.getTimeStamp());
-           // dataObject.put("referenceNumber",mCardSaleResponseData.getRRNO());
+            dataObject.put("billing_name",sharedPreferences.getString(Constants.USER_ID,""));
+            dataObject.put("status","Pending");
             dataObject.put("amount",String.valueOf(amount));
           //  dataObject.put("rrn",mCardSaleResponseData.getRRNO());
             dataObject.put("transactionStatus",true);

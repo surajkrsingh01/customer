@@ -39,7 +39,7 @@ public class KhataBookActivity extends NetworkBaseActivity implements MyItemClic
     private TextView text_action, text_left_label, text_second_label;
     private RelativeLayout relative_footer_action;
     private TextView textKhataNo,textTotalDueAmount,tvKhataNo,textKhataOpenDate,textCustomerName,textCustMobile;
-    private String khataNo;
+    private String khataNo, khataOpenDate;
     private RecyclerView recyclerView;
     private List<KhataTransaction> itemList;
     private KhataTransactionAdapter itemAdapter;
@@ -55,7 +55,8 @@ public class KhataBookActivity extends NetworkBaseActivity implements MyItemClic
 
     private void init(){
         initHeaderFooter();
-        khataNo = getIntent().getStringExtra("khataNo"); //"1SJ4ALBH9X";
+        khataNo = getIntent().getStringExtra("khataNo");
+        khataOpenDate = getIntent().getStringExtra("khataOpenDate");
         if(ConnectionDetector.isNetworkAvailable(this)){
             getTransactions();
         }else{
@@ -70,11 +71,9 @@ public class KhataBookActivity extends NetworkBaseActivity implements MyItemClic
         textCustMobile = findViewById(R.id.textCustMobile);
         rlFooter = findViewById(R.id.relative_footer_action);
         textKhataNo.setText("Khata No - "+khataNo);
-        textKhataOpenDate.setText("Open Date - "+Utility.getTimeStamp("dd MMM YYYY"));
+        textKhataOpenDate.setText("Open Date - "+Utility.parseDate(khataOpenDate,"yyyy-MM-dd HH:mm:ss","dd MMM yyyy"));
         textCustomerName.setText(getIntent().getStringExtra("name")
                 +" "+getIntent().getStringExtra("mobile"));
-        //textCustomerName.setText(getIntent().getStringExtra("name"));
-        //textCustMobile.setText(getIntent().getStringExtra("mobile"));
 
         itemList = new ArrayList<>();
         recyclerView = findViewById(R.id.recycler_view);
@@ -143,9 +142,12 @@ public class KhataBookActivity extends NetworkBaseActivity implements MyItemClic
                     Gson gson = new Gson();
                     for(int i=0;i<len;i++){
                         item = gson.fromJson(jsonArray.getJSONObject(i).toString(),KhataTransaction.class);
+                        if(item.getPaymentStatus()==null || item.getPaymentStatus().equals("null"))
+                            item.setPaymentStatus("Pending");
                         if(item.getPaymentTransactionType().contains("Credit")){
                             totalDueAmount = totalDueAmount + item.getPaymentAmount();
                         }else{
+                            if(item.getPaymentStatus().equals("Approved"))
                             totalDueAmount = totalDueAmount - item.getPaymentAmount();
                         }
                         itemList.add(item);

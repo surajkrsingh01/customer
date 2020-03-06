@@ -64,7 +64,7 @@ public class TransactionDetailsActivity extends NetworkBaseActivity {
         if(!TextUtils.isEmpty(flag) && flag.equals("instantPay") || !TextUtils.isEmpty(flag) && flag.equals("Khatabook")){
             try {
                 setStatusLayout(true);
-                tvStatus.setText("You Payment has been Received.");
+                tvStatus.setText("Your Payment has been Received.");
                 textViewStatusHeader.setText("Thanks");
                 JSONObject dataObject = new JSONObject(getIntent().getStringExtra("response"));
                 Log.d("InstantPay Response ", dataObject.toString());

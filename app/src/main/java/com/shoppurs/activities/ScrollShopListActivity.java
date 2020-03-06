@@ -297,8 +297,10 @@ public class ScrollShopListActivity extends NetworkBaseActivity {
                             String shop_code = shopJArray.getJSONObject(i).getString("retcode");
                             myShop.setId(shop_code);
                             Log.d("shop_id", myShop.getId());
-                            if(khataJArray!=null && khataJArray.length()>=i)
-                            myShop.setKhataNumber(khataJArray.getJSONObject(i).getString("kbNo"));
+                            if(khataJArray!=null && khataJArray.length()>=i) {
+                                myShop.setKhataNumber(khataJArray.getJSONObject(i).getString("kbNo"));
+                                myShop.setKhataOpenDate(khataJArray.getJSONObject(i).getString("createdDate"));
+                            }
                             myShop.setName(shopJArray.getJSONObject(i).getString("retshopname"));
                             myShop.setMobile(shopJArray.getJSONObject(i).getString("retmobile"));
                             myShop.setAddress(shopJArray.getJSONObject(i).getString("retaddress"));

@@ -59,7 +59,7 @@ public class KhataTransactionAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     public class MyHomeDebitViewHolder extends RecyclerView.ViewHolder{
 
-        private TextView tvAmt,tvDate,tvView,tvPaymentMode,tvTransaction;
+        private TextView tvAmt,tvDate,tvView,tvPaymentMode,tvTransaction, tvPaymentStatus;
 
         public MyHomeDebitViewHolder(View itemView) {
             super(itemView);
@@ -67,6 +67,7 @@ public class KhataTransactionAdapter extends RecyclerView.Adapter<RecyclerView.V
             tvDate=itemView.findViewById(R.id.tvDate);
             tvPaymentMode=itemView.findViewById(R.id.tvPaymentMode);
             tvTransaction=itemView.findViewById(R.id.tvTransaction);
+            tvPaymentStatus = itemView.findViewById(R.id.tvPaymentStatus);
             RelativeLayout relative_message_layout = itemView.findViewById(R.id.relative_message_layout);
             // Utility.setColorFilter(relative_message_layout.getBackground(),context.getResources().getColor(R.color.green500));
         }
@@ -121,6 +122,10 @@ public class KhataTransactionAdapter extends RecyclerView.Adapter<RecyclerView.V
             myViewHolder.tvTransaction.setText(item.getPaymentTransactionId());
             myViewHolder.tvAmt.setText(String.format("%.02f",item.getPaymentAmount()));
             myViewHolder.tvDate.setText(Utility.parseDate(item.getCreatedDate(),"yyyy-MM-dd HH:mm:ss","dd MMM yyyy"));
+            if(item.getPaymentStatus().equals("Approved")){
+                myViewHolder.tvPaymentStatus.setTextColor(context.getResources().getColor(R.color.green500));
+            }
+            myViewHolder.tvPaymentStatus.setText(item.getPaymentStatus());
         }
     }
 

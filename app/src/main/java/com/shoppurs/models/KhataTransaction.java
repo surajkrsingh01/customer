@@ -4,8 +4,17 @@ public class KhataTransaction {
 
     private int paymentId;
     private String coNo,paymentTransactionType,paymentTransactionId,paymentPaymentMethod,
-            paymentPaymentBrand,paymentPaymentMode,paymentPaymentDate,paymentPaymentInvoiceNo,createdDate;
+            paymentPaymentBrand,paymentPaymentMode,paymentPaymentDate,paymentPaymentInvoiceNo,
+            createdDate, paymentStatus;
     private float paymentAmount;
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
 
     public int getPaymentId() {
         return paymentId;
